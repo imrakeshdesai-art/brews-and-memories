@@ -1,18 +1,18 @@
-import api from './api';
+import api from "./api";
 
-export async function loginAdmin(credentials) {
-  const response = await api.post('/auth/login', credentials);
-  return response.data;
-}
+export const loginAdmin = async (credentials) => {
+  const res = await api.post("/auth/login", credentials);
+  return res.data;
+};
 
-export function saveAdminToken(token) {
-  localStorage.setItem('bm_admin_token', token);
-}
+export const saveAdminToken = (token) => {
+  localStorage.setItem("admin_token", token);
+};
 
-export function clearAdminToken() {
-  localStorage.removeItem('bm_admin_token');
-}
+export const getAdminToken = () => {
+  return localStorage.getItem("admin_token");
+};
 
-export function getAdminToken() {
-  return localStorage.getItem('bm_admin_token');
-}
+export const clearAdminToken = () => {
+  localStorage.removeItem("admin_token");
+};

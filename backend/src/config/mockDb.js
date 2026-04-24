@@ -45,11 +45,11 @@ class MockOrder {
     return Promise.resolve(mockOrders);
   }
 
-  static findByIdAndUpdate(id, update) {
+  static findByIdAndUpdate(id, update, options = {}) {
     const order = mockOrders.find(o => o._id === id);
     if (order) {
       Object.assign(order, update);
-      return Promise.resolve(order);
+      return Promise.resolve(options.new ? order : null);
     }
     return Promise.resolve(null);
   }

@@ -31,7 +31,8 @@ router.post('/', async (req, res) => {
 
     res.status(201).json(newOrder);
   } catch (error) {
-    res.status(500).json({ message: 'Could not create order', error: error.message });
+    console.error('Order creation error:', error);
+    res.status(500).json({ message: 'Could not create order' });
   }
 });
 
@@ -40,7 +41,8 @@ router.get('/', authMiddleware, async (req, res) => {
     const orders = process.env.USE_MOCK_DB === 'true' ? await Order.find() : await Order.find().sort({ createdAt: -1 });
     res.json(orders);
   } catch (error) {
-    res.status(500).json({ message: 'Could not fetch orders', error: error.message });
+    console.error('Fetch orders error:', error);
+    res.status(500).json({ message: 'Could not fetch orders' });
   }
 });
 
@@ -64,7 +66,8 @@ router.patch('/:id', authMiddleware, async (req, res) => {
 
     res.json(updatedOrder);
   } catch (error) {
-    res.status(500).json({ message: 'Could not update order', error: error.message });
+    console.error('Update order error:', error);
+    res.status(500).json({ message: 'Could not update order' });
   }
 });
 

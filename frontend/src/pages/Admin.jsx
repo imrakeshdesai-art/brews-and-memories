@@ -1,124 +1,122 @@
-import { useEffect, useMemo, useState } from 'react';
-import api from '../services/api';
-import { loginAdmin, saveAdminToken, clearAdminToken, getAdminToken } from '../services/auth';
-import { useToast } from '../components/ToastProvider';
+import { useEffect, useMemo, useState } from "react";
+import api from "../services/api";
+import {
+  loginAdmin,
+  saveAdminToken,
+  clearAdminToken,
+  getAdminToken,
+} from "../services/auth";
+import { useToast } from "../components/ToastProvider";
 
 function Admin() {
   const toast = useToast();
 
-  // ✅ FIXED EMAIL
-  const [email, setEmail] = useState('admin@brews.local');
-  const [password, setPassword] = useState('');
-
+  const [email, setEmail] = useState("admin@brews-memories.local");
+  const [password, setPassword] = useState("");
   const [token, setToken] = useState(getAdminToken());
+
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
-  // ✅ FETCH ORDERS WHEN TOKEN EXISTS
- useEffect(() => {
-  fetchOrders();   // force call for debugging
-}, []);
-
+  // ✅ Fetch orders
   const fetchOrders = async () => {
     setLoading(true);
-    setError('');
-
+    setError("");
     try {
-      // ✅ FIXED ENDPOINT
-      const response = await api.get('/api/orders');
-      setOrders(response.data);
+      const res = await api.get("/orders");
+      setOrders(res.data);
     } catch (err) {
-      console.error(err);
-      setError(err.response?.data?.message || 'Could not fetch orders');
-
-      if (err.response?.status === 401) {
-        logout();
-      }
+      setError(err.response?.data?.message || "Could not fetch orders");
+      if (err.response?.status === 401) logout();
     } finally {
       setLoading(false);
     }
   };
 
-  const handleLogin = async (event) => {
-    event.preventDefault();
-    setError('');
+  // ✅ RUN when token exists
+  useEffect(() => {
+    if (!token) return;
+
+    fetchOrders();
+
+    // 🔥 Auto refresh every 5 sec (PRO feature)
+    const interval = setInterval(fetchOrders, 5000);
+    return () => clearInterval(interval);
+  }, [token]);
+
+  // ✅ Login
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setError("");
 
     try {
       const data = await loginAdmin({ email, password });
-
       saveAdminToken(data.token);
       setToken(data.token);
-
-      toast('Signed in successfully');
+      toast("Logged in successfully");
     } catch (err) {
-      console.error(err);
-      setError(err.response?.data?.message || 'Invalid login credentials');
+      setError(err.response?.data?.message || "Invalid credentials");
     }
   };
 
+  // ✅ Logout
   const logout = () => {
     clearAdminToken();
     setToken(null);
     setOrders([]);
-    setPassword('');
-    toast('Signed out');
+    setPassword("");
+    toast("Logged out");
   };
 
-  const updateStatus = async (orderId, status) => {
+  // ✅ Update status
+  const updateStatus = async (id, status) => {
     try {
-      // ✅ FIXED ENDPOINT
-      await api.patch(`/api/orders/${orderId}`, { status });
+      await api.patch(`/orders/${id}`, { status });
 
-      setOrders((current) =>
-        current.map((item) =>
-          item._id === orderId ? { ...item, status } : item
-        )
+      setOrders((prev) =>
+        prev.map((o) => (o._id === id ? { ...o, status } : o))
       );
 
-      toast(`Order updated → ${status}`);
+      toast(`Updated to ${status}`);
     } catch (err) {
-      console.error(err);
-      toast(err.response?.data?.message || 'Update failed');
+      toast(err.response?.data?.message || "Update failed");
     }
   };
 
+  // ✅ Stats
   const stats = useMemo(() => {
-    const totalRevenue = orders.reduce((sum, o) => sum + o.total, 0);
-    const pendingCount = orders.filter((o) => o.status === 'pending').length;
-    const completedCount = orders.filter((o) => o.status === 'completed').length;
-
     return {
-      totalRevenue,
-      pendingCount,
-      completedCount,
-      orderCount: orders.length,
+      totalRevenue: orders.reduce((s, o) => s + o.total, 0),
+      pending: orders.filter((o) => o.status === "pending").length,
+      completed: orders.filter((o) => o.status === "completed").length,
+      count: orders.length,
     };
   }, [orders]);
 
-  // 🔐 LOGIN SCREEN
+  // 🔐 LOGIN UI
   if (!token) {
     return (
       <section className="section admin-panel">
         <div className="admin-login">
-          <h2>Admin Login</h2>
+          <h2>🔐 Admin Login</h2>
 
           <form onSubmit={handleLogin}>
             <input
               type="email"
-              placeholder="Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              placeholder="Email"
             />
 
             <input
               type="password"
-              placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              placeholder="Password"
             />
 
-            {error && <p style={{ color: 'red' }}>{error}</p>}
+            {error && <p style={{ color: "red" }}>{error}</p>}
 
             <button type="submit">Login</button>
           </form>
@@ -127,58 +125,71 @@ function Admin() {
     );
   }
 
-  // 📊 DASHBOARD
+  // 📊 DASHBOARD UI
   return (
     <section className="section admin-panel">
-      <h2>Orders Dashboard</h2>
+      <div className="admin-dashboard">
+        <div className="admin-header">
+          <h2>📊 Orders Dashboard</h2>
+          <button onClick={logout}>Sign Out</button>
+        </div>
 
-      <button onClick={logout}>Logout</button>
+        <div className="admin-stats">
+          <div>Total Orders: {stats.count}</div>
+          <div>Total Revenue: ₹{stats.totalRevenue}</div>
+          <div>Pending: {stats.pending}</div>
+          <div>Completed: {stats.completed}</div>
+        </div>
 
-      <div>
-        <p>Total Orders: {stats.orderCount}</p>
-        <p>Total Revenue: ₹{stats.totalRevenue}</p>
-        <p>Pending: {stats.pendingCount}</p>
-        <p>Completed: {stats.completedCount}</p>
-      </div>
-
-      {loading ? (
-        <p>Loading...</p>
-      ) : orders.length === 0 ? (
-        <p>No orders yet</p>
-      ) : (
         <table>
           <thead>
             <tr>
               <th>ID</th>
               <th>Name</th>
+              <th>Phone</th>
+              <th>Items</th>
               <th>Total</th>
+              <th>Time</th>
               <th>Status</th>
             </tr>
           </thead>
 
           <tbody>
-            {orders.map((o) => (
-              <tr key={o._id}>
-                <td>{o._id.slice(-6)}</td>
-                <td>{o.name}</td>
-                <td>₹{o.total}</td>
-                <td>
-                  <select
-                    value={o.status}
-                    onChange={(e) =>
-                      updateStatus(o._id, e.target.value)
-                    }
-                  >
-                    <option value="pending">Pending</option>
-                    <option value="preparing">Preparing</option>
-                    <option value="completed">Completed</option>
-                  </select>
-                </td>
+            {loading ? (
+              <tr>
+                <td colSpan="7">Loading...</td>
               </tr>
-            ))}
+            ) : orders.length === 0 ? (
+              <tr>
+                <td colSpan="7">No orders</td>
+              </tr>
+            ) : (
+              orders.map((o) => (
+                <tr key={o._id}>
+                  <td>{o._id.slice(-6)}</td>
+                  <td>{o.name}</td>
+                  <td>{o.phone}</td>
+                  <td>{o.items.map((i) => i.name).join(", ")}</td>
+                  <td>₹{o.total}</td>
+                  <td>{new Date(o.createdAt).toLocaleString()}</td>
+                  <td>
+                    <select
+                      value={o.status}
+                      onChange={(e) =>
+                        updateStatus(o._id, e.target.value)
+                      }
+                    >
+                      <option value="pending">Pending</option>
+                      <option value="preparing">Preparing</option>
+                      <option value="completed">Completed</option>
+                    </select>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
-      )}
+      </div>
     </section>
   );
 }
