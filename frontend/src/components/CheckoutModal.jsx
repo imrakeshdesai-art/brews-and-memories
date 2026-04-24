@@ -1,0 +1,167 @@
+import { useEffect, useMemo, useState } from 'react';
+import api from '../services/api';
+import { useToast } from './ToastProvider';
+
+function CheckoutModal({ open, cart, total, payment, setPayment, onClose, onClearCart }) {
+  const [name, setName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [address, setAddress] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [orderSuccess, setOrderSuccess] = useState(null);
+  const toast = useToast();
+
+  useEffect(() => {
+    if (!open) {
+      setOrderSuccess(null);
+      setName('');
+      setPhone('');
+      setAddress('');
+      setIsLoading(false);
+    }
+  }, [open]);
+
+  const summaryItems = useMemo(
+    () =>
+      cart.map((item) => (
+        <div key={item.id} style={{ marginBottom: 8 }}>
+          {item.emoji} {item.name} {item.variant ? `(${item.variant})` : ''} × {item.qty} — ₹{item.price * item.qty}
+        </div>
+      )),
+    [cart]
+  );
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    if (!name.trim() || !phone.trim() || !address.trim()) {
+      toast('Please complete all fields before placing your order');
+      return;
+    }
+    if (cart.length === 0) {
+      toast('Your cart is empty');
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const response = await api.post('/orders', {
+        name: name.trim(),
+        phone: phone.trim(),
+        address: address.trim(),
+        items: cart,
+        total,
+        payment,
+      });
+      const order = response.data;
+      setOrderSuccess(order);
+      onClearCart();
+      toast(`Order ${order._id} created successfully`);
+    } catch (error) {
+      const message = error.response?.data?.message || 'Failed to place order';
+      toast(message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleClose = () => {
+    onClose();
+  };
+
+  if (!open) return null;
+
+  return (
+    <div className="modal-backdrop open" role="dialog" aria-modal="true">
+      <div className="modal-card">
+        <div className="modal-header">
+          <span>{orderSuccess ? '🎉 Order Confirmed' : '🛍 Place Your Order'}</span>
+          <button className="btn-secondary" type="button" onClick={handleClose} aria-label="Close checkout">
+            ✕
+          </button>
+        </div>
+        <div className="modal-body">
+          {orderSuccess ? (
+            <div className="order-success">
+              <div className="success-icon">✅</div>
+              <div className="success-title">Thank you, {orderSuccess.name}!</div>
+              <p style={{ color: 'var(--text-light)', lineHeight: 1.7, marginBottom: 20 }}>
+                Your order has been received and is now in the kitchen. Track it from admin dashboard after login.
+              </p>
+              <div className="order-card">
+                <div>
+                  <strong>Order ID:</strong> {orderSuccess._id}
+                </div>
+                <div>
+                  <strong>Payment:</strong> {orderSuccess.payment.toUpperCase()}
+                </div>
+                <div>
+                  <strong>Total:</strong> ₹{orderSuccess.total}
+                </div>
+              </div>
+              <button className="btn-primary" type="button" onClick={handleClose}>
+                Close
+              </button>
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit}>
+              <div className="order-card">
+                <div className="order-summary-title">Order Summary</div>
+                <div>{summaryItems}</div>
+                <div className="order-total-mini" style={{ marginTop: 12, display: 'flex', justifyContent: 'space-between' }}>
+                  <span>Total</span>
+                  <strong>₹{total}</strong>
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="order-name">Your Name *</label>
+                <input id="order-name" value={name} onChange={(event) => setName(event.target.value)} placeholder="Enter your full name" />
+              </div>
+              <div className="form-group">
+                <label htmlFor="order-phone">Phone Number *</label>
+                <input id="order-phone" type="tel" value={phone} onChange={(event) => setPhone(event.target.value)} placeholder="+91 XXXXX XXXXX" />
+              </div>
+              <div className="form-group">
+                <label htmlFor="order-address">Delivery Address *</label>
+                <textarea id="order-address" value={address} onChange={(event) => setAddress(event.target.value)} placeholder="Street, Area, City…" />
+              </div>
+              <div className="form-group">
+                <label>Payment Method</label>
+                <div className="payment-grid">
+                  <button
+                    type="button"
+                    className={`payment-card ${payment === 'cod' ? 'selected' : ''}`}
+                    onClick={() => setPayment('cod')}
+                  >
+                    <span className="icon">💵</span>
+                    <div>Cash on Delivery</div>
+                  </button>
+                  <button
+                    type="button"
+                    className={`payment-card ${payment === 'upi' ? 'selected' : ''}`}
+                    onClick={() => setPayment('upi')}
+                  >
+                    <span className="icon">📱</span>
+                    <div>UPI / QR</div>
+                  </button>
+                  <button
+                    type="button"
+                    className={`payment-card ${payment === 'card' ? 'selected' : ''}`}
+                    onClick={() => setPayment('card')}
+                  >
+                    <span className="icon">💳</span>
+                    <div>Card</div>
+                  </button>
+                </div>
+              </div>
+              <button className="btn-primary" type="submit" disabled={isLoading}>
+                {isLoading ? 'Placing order…' : '✅ Place Order'}
+              </button>
+            </form>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default CheckoutModal;
