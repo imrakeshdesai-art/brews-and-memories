@@ -1758,43 +1758,65 @@ function selectPayment(el, method){
   el.classList.add('selected');
   selectedPayment = method;
 }
-function placeOrder(){
+async function placeOrder(){
   const name = document.getElementById('orderName').value.trim();
   const phone = document.getElementById('orderPhone').value.trim();
   const address = document.getElementById('orderAddress').value.trim();
-  if(!name||!phone||!address){
-    showToast('⚠️ Please fill all required fields');return;
+
+  if(!name || !phone || !address){
+    showToast('⚠️ Please fill all required fields');
+    return;
   }
-  const total = cart.reduce((s,i) => s+(i.price*i.qty), 0);
-  const orderId = 'BM'+Date.now().toString().slice(-6);
+
+  const total = cart.reduce((s,i) => s + (i.price * i.qty), 0);
+  const orderId = 'BM' + Date.now().toString().slice(-6);
+
   const order = {
-    id:orderId,
-    customer:name,phone,address,
-    items:[...cart],
-    total,
-    payment:selectedPayment,
-    status:'Pending',
-    time:new Date().toLocaleString('en-IN')
+    name: name,
+    phone: phone,
+    address: address,
+    items: cart.map(i => ({
+      name: i.name,
+      qty: i.qty
+    })),
+    total: total,
+    status: "Pending"
   };
-  orders.push(order);
-  localStorage.setItem('brewsOrders', JSON.stringify(orders));
-  cart = [];
-  updateCartUI();
-  // Show success
-  document.getElementById('checkoutBody').innerHTML = `
-    <div class="order-success">
-      <div class="success-icon">✅</div>
-      <div class="success-title">Order Placed!</div>
-      <p class="success-subtitle">Thank you, <b>${name}</b>! Your order has been received. We'll prepare it fresh for you.</p>
-      <div class="order-id">Order ID: <b>${orderId}</b></div>
-      <p style="font-size:0.85rem;color:var(--text-light);line-height:1.6">
-        📍 Delivery to: ${address}<br>
-        💰 Payment: ${selectedPayment.toUpperCase()}<br>
-        💵 Total: ₹${total}
-      </p>
-      <button class="btn-primary" onclick="closeCheckout()" style="margin-top:24px;display:inline-block">Done</button>
-    </div>`;
-  showToast(`🎉 Order ${orderId} placed!`);
+
+  try {
+    await fetch("https://brews-backend.onrender.com/api/orders", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(order)
+    });
+
+    // clear cart
+    cart = [];
+    updateCartUI();
+
+    // success UI (UNCHANGED)
+    document.getElementById('checkoutBody').innerHTML = `
+      <div class="order-success">
+        <div class="success-icon">✅</div>
+        <div class="success-title">Order Placed!</div>
+        <p class="success-subtitle">Thank you, <b>${name}</b>! Your order has been received. We'll prepare it fresh for you.</p>
+        <div class="order-id">Order ID: <b>${orderId}</b></div>
+        <p style="font-size:0.85rem;color:var(--text-light);line-height:1.6">
+          📍 Delivery to: ${address}<br>
+          💰 Payment: ${selectedPayment.toUpperCase()}<br>
+          💵 Total: ₹${total}
+        </p>
+        <button class="btn-primary" onclick="closeCheckout()" style="margin-top:24px;display:inline-block">Done</button>
+      </div>`;
+
+    showToast(`🎉 Order ${orderId} placed!`);
+
+  } catch (err) {
+    console.error(err);
+    showToast("❌ Failed to place order");
+  }
 }
 function getCheckoutForm(){
   const total = 0;
