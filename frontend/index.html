@@ -1532,7 +1532,7 @@ const REVIEWS_DATA = [
 // ==================== STATE ====================
 let cart = [];
 let selectedPayment = 'cod';
-let orders = JSON.parse(localStorage.getItem('brewsOrders') || '[]');
+let orders = [];
 let activeCategory = 'All';
 
 // ==================== LOADER ====================
@@ -1759,64 +1759,88 @@ function selectPayment(el, method){
   selectedPayment = method;
 }
 async function placeOrder(){
+  const btn = document.querySelector('.btn-primary');
+  btn.disabled = true; // 🚫 prevent double click
+
   const name = document.getElementById('orderName').value.trim();
   const phone = document.getElementById('orderPhone').value.trim();
   const address = document.getElementById('orderAddress').value.trim();
-
+  // Validation
   if(!name || !phone || !address){
-    showToast('⚠️ Please fill all required fields');
-    return;
-  }
+  showToast('⚠️ Please fill all required fields');
+  btn.disabled = false; // re-enable
+  return;
+  if(!/^\d{10}$/.test(phone)){
+  showToast("Enter valid 10-digit phone number");
+  btn.disabled = false;
+  return;
+}
+}
 
-  const total = cart.reduce((s,i) => s + (i.price * i.qty), 0);
+  // Calculate total
+  const total = cart.reduce((s, i) => s + (i.price * i.qty), 0);
+
+  // Frontend order ID (only for UI display)
   const orderId = 'BM' + Date.now().toString().slice(-6);
 
+  // Payload for backend
   const order = {
     name: name,
     phone: phone,
     address: address,
     items: cart.map(i => ({
       name: i.name,
-      qty: i.qty
+      qty: i.qty,
+      price: i.price   // ✅ IMPORTANT FIX
     })),
     total: total,
-    status: "Pending"
+    payment: selectedPayment || 'cod'  // optional but clean
   };
 
   try {
-    await fetch("https://brews-backend.onrender.com/api/orders", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(order)
-    });
+    const res = await fetch("https://brews-backend.onrender.com/api/orders", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify(order)
+});
 
-    // clear cart
+if (!res.ok) {
+  throw new Error("Order failed");
+}
+
+    // Clear cart
     cart = [];
     updateCartUI();
 
-    // success UI (UNCHANGED)
+    // Success UI (UNCHANGED)
     document.getElementById('checkoutBody').innerHTML = `
       <div class="order-success">
         <div class="success-icon">✅</div>
         <div class="success-title">Order Placed!</div>
-        <p class="success-subtitle">Thank you, <b>${name}</b>! Your order has been received. We'll prepare it fresh for you.</p>
+        <p class="success-subtitle">
+          Thank you, <b>${name}</b>! Your order has been received. We'll prepare it fresh for you.
+        </p>
         <div class="order-id">Order ID: <b>${orderId}</b></div>
         <p style="font-size:0.85rem;color:var(--text-light);line-height:1.6">
           📍 Delivery to: ${address}<br>
-          💰 Payment: ${selectedPayment.toUpperCase()}<br>
+          💰 Payment: ${(selectedPayment || 'cod').toUpperCase()}<br>
           💵 Total: ₹${total}
         </p>
-        <button class="btn-primary" onclick="closeCheckout()" style="margin-top:24px;display:inline-block">Done</button>
-      </div>`;
+        <button class="btn-primary" onclick="closeCheckout()" style="margin-top:24px;display:inline-block">
+          Done
+        </button>
+      </div>
+    `;
 
     showToast(`🎉 Order ${orderId} placed!`);
 
   } catch (err) {
-    console.error(err);
-    showToast("❌ Failed to place order");
-  }
+  console.error(err);
+  showToast("❌ Failed to place order");
+  btn.disabled = false; // re-enable on error
+}
 }
 function getCheckoutForm(){
   const total = 0;
@@ -1868,48 +1892,76 @@ function adminLogout(){
   document.getElementById('adminUser').value='admin';
   document.getElementById('adminPass').value='';
 }
-function renderAdminDash(){
-  const orders_ = JSON.parse(localStorage.getItem('brewsOrders') || '[]');
-  const total = orders_.reduce((s,o) => s+o.total, 0);
-  const pending = orders_.filter(o => o.status==='Pending').length;
-  const completed = orders_.filter(o => o.status==='Completed').length;
-  document.getElementById('adminStats').innerHTML = `
-    <div class="admin-stat"><div class="admin-stat-num">${orders_.length}</div><div class="admin-stat-label">Total Orders</div></div>
-    <div class="admin-stat"><div class="admin-stat-num">₹${total}</div><div class="admin-stat-label">Total Sales</div></div>
-    <div class="admin-stat"><div class="admin-stat-num">${pending}</div><div class="admin-stat-label">Pending</div></div>
-    <div class="admin-stat"><div class="admin-stat-num">${completed}</div><div class="admin-stat-label">Completed</div></div>`;
-  document.getElementById('orderCount').textContent = `${orders_.length} orders`;
-  const tbody = document.getElementById('ordersBody');
-  if(orders_.length === 0){
-    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--text-light)">No orders yet. Place some orders from the menu!</td></tr>`;
-    return;
+async function renderAdminDash() {
+  try {
+    const res = await fetch('https://brews-backend.onrender.com/api/orders');
+    if (!res.ok) throw new Error("Failed to fetch orders");
+
+    const orders_ = await res.json();
+
+    const total = orders_.reduce((s, o) => s + o.total, 0);
+    const pending = orders_.filter(o => o.status === 'pending').length;
+    const completed = orders_.filter(o => o.status === 'completed').length;
+
+    document.getElementById('adminStats').innerHTML = `
+      <div class="admin-stat"><div class="admin-stat-num">${orders_.length}</div><div class="admin-stat-label">Total Orders</div></div>
+      <div class="admin-stat"><div class="admin-stat-num">₹${total}</div><div class="admin-stat-label">Total Sales</div></div>
+      <div class="admin-stat"><div class="admin-stat-num">${pending}</div><div class="admin-stat-label">Pending</div></div>
+      <div class="admin-stat"><div class="admin-stat-num">${completed}</div><div class="admin-stat-label">Completed</div></div>
+    `;
+
+    document.getElementById('orderCount').textContent = `${orders_.length} orders`;
+
+    const tbody = document.getElementById('ordersBody');
+
+    if (orders_.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:40px;">No orders</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = orders_.slice().reverse().map(o => `
+      <tr>
+        <td><b>${o._id}</b></td>
+        <td>${o.name}</td>
+        <td>${o.phone}</td>
+        <td>${o.items.map(it => it.name).join(', ')}</td>
+        <td>₹${o.total}</td>
+        <td>${new Date(o.createdAt).toLocaleString()}</td>
+        <td>
+          <select onchange="updateOrderStatus('${o._id}', this.value)">
+            <option value="pending" ${o.status==='pending'?'selected':''}>Pending</option>
+            <option value="preparing" ${o.status==='preparing'?'selected':''}>Preparing</option>
+            <option value="completed" ${o.status==='completed'?'selected':''}>Completed</option>
+          </select>
+        </td>
+      </tr>
+    `).join('');
+
+  } catch (err) {
+    console.error(err);
+    showToast("❌ Failed to load dashboard");
   }
-  tbody.innerHTML = orders_.slice().reverse().map((o,i) => {
-    const realIdx = orders_.length - 1 - i;
-    return `<tr>
-      <td><b>${o.id}</b></td>
-      <td>${o.customer}</td>
-      <td>${o.phone}</td>
-      <td style="max-width:200px;white-space:normal;font-size:0.8rem">${o.items.map(it=>it.name).join(', ')}</td>
-      <td><b>₹${o.total}</b></td>
-      <td style="font-size:0.78rem">${o.time}</td>
-      <td>
-        <select class="status-select" onchange="updateOrderStatus(${realIdx},this.value)">
-          <option ${o.status==='Pending'?'selected':''}>Pending</option>
-          <option ${o.status==='Preparing'?'selected':''}>Preparing</option>
-          <option ${o.status==='Completed'?'selected':''}>Completed</option>
-        </select>
-      </td>
-    </tr>`;
-  }).join('');
 }
-function updateOrderStatus(idx, status){
-  const orders_ = JSON.parse(localStorage.getItem('brewsOrders') || '[]');
-  orders_[idx].status = status;
-  localStorage.setItem('brewsOrders', JSON.stringify(orders_));
-  orders = orders_;
-  showToast(`Order status updated to ${status}`);
-  renderAdminDash();
+async function updateOrderStatus(id, status) {
+  try {
+    const res = await fetch(`https://brews-backend.onrender.com/api/orders/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status })
+    });
+
+    if (!res.ok) {
+      const txt = await res.text();
+      throw new Error(`Update failed: ${res.status} ${txt}`);
+    }
+
+    showToast(`✅ Status updated to ${status}`);
+
+    await renderAdminDash(); // ensure refresh after success
+  } catch (err) {
+    console.error(err);
+    showToast("❌ Failed to update order");
+  }
 }
 
 // ==================== TOAST ====================
@@ -1933,6 +1985,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 });
+setInterval(() => {
+  if (document.getElementById('adminDash').style.display === 'block') {
+    renderAdminDash();
+  }
+}, 5000);
 </script>
 </body>
 </html>

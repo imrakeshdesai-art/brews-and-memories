@@ -11,14 +11,32 @@ router.post('/', async (req, res) => {
   try {
     const { name, phone, address, items, total, payment } = req.body;
 
-    if (!name || !phone || !address || !Array.isArray(items) || items.length === 0) {
-      return res.status(400).json({ message: 'Invalid order payload' });
+    // 🔒 Strong validation
+    if (!name || !phone || !address) {
+      return res.status(400).json({ message: 'Missing required fields' });
     }
 
+    if (!/^\d{10}$/.test(phone)) {
+      return res.status(400).json({ message: 'Invalid phone number' });
+    }
+
+    if (!Array.isArray(items) || items.length === 0) {
+      return res.status(400).json({ message: 'No items in order' });
+    }
+
+    if (items.some(i => !i.name || Number(i.qty) < 1 || Number(i.price) < 0)) {
+      return res.status(400).json({ message: 'Invalid item data' });
+    }
+
+    if (Number(total) <= 0) {
+      return res.status(400).json({ message: 'Invalid total amount' });
+    }
+
+    // Normalize items
     const normalizedItems = items.map((item) => ({
-      name: item.name,
-      qty: Number(item.qty) || 1,
-      price: Number(item.price) || 0,
+      name: String(item.name).trim(),
+      qty: Number(item.qty),
+      price: Number(item.price),
       variant: item.variant || '',
     }));
 
@@ -27,13 +45,14 @@ router.post('/', async (req, res) => {
       phone: phone.trim(),
       address: address.trim(),
       items: normalizedItems,
-      total: Number(total) || 0,
+      total: Number(total),
       payment: payment || 'cod',
       status: 'pending',
       createdAt: new Date(),
     });
 
     res.status(201).json(newOrder);
+
   } catch (error) {
     console.error('Order creation error:', error);
     res.status(500).json({ message: 'Could not create order' });
@@ -77,6 +96,7 @@ router.patch('/:id', async (req, res) => {
     }
 
     res.json(updatedOrder);
+
   } catch (error) {
     console.error('Update order error:', error);
     res.status(500).json({ message: 'Could not update order' });
