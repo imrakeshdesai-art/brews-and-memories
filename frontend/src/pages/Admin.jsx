@@ -19,12 +19,12 @@ function Admin() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // ✅ Fetch orders
+  // ================= FETCH ORDERS =================
   const fetchOrders = async () => {
     setLoading(true);
     setError("");
     try {
-      const res = await api.get("/orders");
+      const res = await api.get("/orders"); // token auto attached (we fix below)
       setOrders(res.data);
     } catch (err) {
       setError(err.response?.data?.message || "Could not fetch orders");
@@ -34,18 +34,17 @@ function Admin() {
     }
   };
 
-  // ✅ RUN when token exists
+  // ================= RUN WHEN TOKEN EXISTS =================
   useEffect(() => {
     if (!token) return;
 
     fetchOrders();
 
-    // 🔥 Auto refresh every 5 sec (PRO feature)
     const interval = setInterval(fetchOrders, 5000);
     return () => clearInterval(interval);
   }, [token]);
 
-  // ✅ Login
+  // ================= LOGIN =================
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
@@ -53,17 +52,17 @@ function Admin() {
     try {
       const data = await loginAdmin({ email, password });
 
-localStorage.setItem('adminToken', data.token); // 🔥 ADD THIS
+      // ✅ SINGLE SOURCE OF TRUTH
+      saveAdminToken(data.token);
+      setToken(data.token);
 
-saveAdminToken(data.token);
-setToken(data.token);
       toast("Logged in successfully");
     } catch (err) {
       setError(err.response?.data?.message || "Invalid credentials");
     }
   };
 
-  // ✅ Logout
+  // ================= LOGOUT =================
   const logout = () => {
     clearAdminToken();
     setToken(null);
@@ -72,7 +71,7 @@ setToken(data.token);
     toast("Logged out");
   };
 
-  // ✅ Update status
+  // ================= UPDATE STATUS =================
   const updateStatus = async (id, status) => {
     try {
       await api.patch(`/orders/${id}`, { status });
@@ -87,7 +86,7 @@ setToken(data.token);
     }
   };
 
-  // ✅ Stats
+  // ================= STATS =================
   const stats = useMemo(() => {
     return {
       totalRevenue: orders.reduce((s, o) => s + o.total, 0),
@@ -97,7 +96,7 @@ setToken(data.token);
     };
   }, [orders]);
 
-  // 🔐 LOGIN UI
+  // ================= LOGIN UI =================
   if (!token) {
     return (
       <section className="section admin-panel">
@@ -128,7 +127,7 @@ setToken(data.token);
     );
   }
 
-  // 📊 DASHBOARD UI
+  // ================= DASHBOARD =================
   return (
     <section className="section admin-panel">
       <div className="admin-dashboard">

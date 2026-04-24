@@ -1,38 +1,28 @@
-import axios from "axios";
+router.post('/login', (req, res) => {
+  try {
+    const { user, pass } = req.body;
 
-const api = axios.create({
-  baseURL: "https://brews-backend.onrender.com/api",
-});
-
-// 🔐 Attach JWT token to every request
-api.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem("adminToken");
-
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+    if (!user || !pass) {
+      return res.status(400).json({ message: 'Missing credentials' });
     }
 
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
-
-// 🔥 Optional: auto logout if token invalid (PRO feature)
-api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response && error.response.status === 401) {
-      console.warn("Unauthorized → clearing token");
-
-      localStorage.removeItem("adminToken");
-
-      // optional reload (keeps UX clean)
-      window.location.reload();
+    if (
+      user === process.env.ADMIN_USER &&
+      pass === process.env.ADMIN_PASS
+    ) {
+      return res.json({
+        success: true,
+        token: "mock_admin_token_123"
+      });
     }
 
-    return Promise.reject(error);
+    return res.status(401).json({
+      success: false,
+      message: 'Invalid credentials'
+    });
+
+  } catch (err) {
+    console.error('Auth error:', err);
+    res.status(500).json({ message: 'Server error' });
   }
-);
-
-export default api;
+});
