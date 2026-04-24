@@ -1,12 +1,16 @@
 const express = require('express');
-const Order = process.env.USE_MOCK_DB === 'true' ? require('../config/mockDb').Order : require('../models/Order');
-const authMiddleware = require('../middleware/auth');
-
 const router = express.Router();
 
+const Order = process.env.USE_MOCK_DB === 'true'
+  ? require('../config/mockDb').Order
+  : require('../models/Order');
+
+
+// ==================== CREATE ORDER ====================
 router.post('/', async (req, res) => {
   try {
     const { name, phone, address, items, total, payment } = req.body;
+
     if (!name || !phone || !address || !Array.isArray(items) || items.length === 0) {
       return res.status(400).json({ message: 'Invalid order payload' });
     }
@@ -24,9 +28,9 @@ router.post('/', async (req, res) => {
       address: address.trim(),
       items: normalizedItems,
       total: Number(total) || 0,
+      payment: payment || 'cod',
       status: 'pending',
       createdAt: new Date(),
-      payment: payment || 'cod',
     });
 
     res.status(201).json(newOrder);
@@ -36,9 +40,14 @@ router.post('/', async (req, res) => {
   }
 });
 
-router.get('/', authMiddleware, async (req, res) => {
+
+// ==================== GET ALL ORDERS ====================
+router.get('/', async (req, res) => {
   try {
-    const orders = process.env.USE_MOCK_DB === 'true' ? await Order.find() : await Order.find().sort({ createdAt: -1 });
+    const orders = process.env.USE_MOCK_DB === 'true'
+      ? await Order.find()
+      : await Order.find().sort({ createdAt: -1 });
+
     res.json(orders);
   } catch (error) {
     console.error('Fetch orders error:', error);
@@ -46,10 +55,13 @@ router.get('/', authMiddleware, async (req, res) => {
   }
 });
 
-router.patch('/:id', authMiddleware, async (req, res) => {
+
+// ==================== UPDATE ORDER STATUS ====================
+router.patch('/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const { status } = req.body;
+
     if (!['pending', 'preparing', 'completed'].includes(status)) {
       return res.status(400).json({ message: 'Invalid order status' });
     }
@@ -71,4 +83,6 @@ router.patch('/:id', authMiddleware, async (req, res) => {
   }
 });
 
+
+// ==================== EXPORT ====================
 module.exports = router;
