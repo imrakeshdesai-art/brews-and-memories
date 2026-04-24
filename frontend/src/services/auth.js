@@ -1,18 +1,30 @@
-import api from "./api";
+const express = require('express');
+const jwt = require('jsonwebtoken');
+const router = express.Router();
 
-export const loginAdmin = async (credentials) => {
-  const res = await api.post("/auth/login", credentials);
-  return res.data;
-};
+router.post('/login', (req, res) => {
+  const { user, pass } = req.body;
 
-export const saveAdminToken = (token) => {
-  localStorage.setItem("admin_token", token);
-};
+  if (
+    user === process.env.ADMIN_USER &&
+    pass === process.env.ADMIN_PASS
+  ) {
+    const token = jwt.sign(
+      { role: 'admin' },
+      process.env.JWT_SECRET,
+      { expiresIn: '8h' }
+    );
 
-export const getAdminToken = () => {
-  return localStorage.getItem("admin_token");
-};
+    return res.json({
+      success: true,
+      token: token   // 🔥 MUST BE HERE
+    });
+  }
 
-export const clearAdminToken = () => {
-  localStorage.removeItem("admin_token");
-};
+  return res.status(401).json({
+    success: false,
+    message: 'Invalid credentials'
+  });
+});
+
+module.exports = router;
