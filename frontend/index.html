@@ -1190,15 +1190,16 @@ footer{
         <p class="admin-login-sub">Sign in to manage orders and view sales</p>
         <div class="form-group">
           <label>Username</label>
-          <input type="text" id="adminUser" placeholder="admin" value="admin"/>
+          <input type="text" id="adminUser" placeholder="Enter username" />
         </div>
         <div class="form-group">
           <label>Password</label>
           <input type="password" id="adminPass" placeholder="••••••••"/>
         </div>
-        <div id="loginError" style="color:var(--red);font-size:0.85rem;margin-bottom:12px;display:none">❌ Invalid credentials. Try admin / brew123</div>
+        <div id="loginError" style="color:var(--red);font-size:0.85rem;margin-bottom:12px;display:none;">
+❌ Invalid credentials
+</div>
         <button class="btn-primary" onclick="adminLogin()" style="width:100%;text-align:center;justify-content:center">Sign In →</button>
-        <p style="text-align:center;font-size:0.78rem;color:var(--text-light);margin-top:16px">Demo: username <b>admin</b>, password <b>brew123</b></p>
       </div>
       <!-- Dashboard -->
       <div class="admin-dashboard" id="adminDash">
@@ -1873,17 +1874,37 @@ function initAdmin(){
   document.getElementById('adminLogin').style.display = 'block';
   document.getElementById('adminDash').style.display = 'none';
 }
-function adminLogin(){
+async function adminLogin(){
   const user = document.getElementById('adminUser').value;
   const pass = document.getElementById('adminPass').value;
   const err = document.getElementById('loginError');
-  if(user==='admin' && pass==='brew123'){
-    err.style.display='none';
-    document.getElementById('adminLogin').style.display='none';
-    document.getElementById('adminDash').style.display='block';
-    renderAdminDash();
-  } else {
-    err.style.display='block';
+
+  try {
+    const res = await fetch('https://brews-backend.onrender.com/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ user, pass })
+    });
+
+    const data = await res.json();
+
+    if (res.ok && data.success) {
+      err.style.display = 'none';
+
+      document.getElementById('adminLogin').style.display = 'none';
+      document.getElementById('adminDash').style.display = 'block';
+
+      renderAdminDash();
+      showToast("✅ Logged in");
+
+    } else {
+      err.style.display = 'block';
+      err.textContent = "❌ Invalid credentials";
+    }
+
+  } catch (e) {
+    console.error(e);
+    showToast("❌ Login failed");
   }
 }
 function adminLogout(){
