@@ -1,3 +1,4 @@
+const auth = require('../middleware/auth');
 const express = require('express');
 const router = express.Router();
 
@@ -61,7 +62,7 @@ router.post('/', async (req, res) => {
 
 
 // ==================== GET ALL ORDERS ====================
-router.get('/', async (req, res) => {
+router.get('/', auth, async (req, res) => {
   try {
     const orders = process.env.USE_MOCK_DB === 'true'
       ? await Order.find()
@@ -76,7 +77,7 @@ router.get('/', async (req, res) => {
 
 
 // ==================== UPDATE ORDER STATUS ====================
-router.patch('/:id', async (req, res) => {
+router.patch('/:id', auth, async (req, res) => {
   try {
     const { id } = req.params;
     const { status } = req.body;

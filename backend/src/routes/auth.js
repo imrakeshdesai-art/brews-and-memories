@@ -1,7 +1,8 @@
 const express = require('express');
+const jwt = require('jsonwebtoken');
+
 const router = express.Router();
 
-// SIMPLE ADMIN LOGIN (NO DB)
 router.post('/login', (req, res) => {
   try {
     const { user, pass } = req.body;
@@ -14,9 +15,15 @@ router.post('/login', (req, res) => {
       user === process.env.ADMIN_USER &&
       pass === process.env.ADMIN_PASS
     ) {
+      const token = jwt.sign(
+        { role: 'admin' },
+        process.env.JWT_SECRET,
+        { expiresIn: '2h' }
+      );
+
       return res.json({
         success: true,
-        message: 'Login successful'
+        token
       });
     }
 
