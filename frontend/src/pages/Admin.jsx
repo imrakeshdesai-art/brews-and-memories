@@ -52,8 +52,11 @@ function Admin() {
 
     try {
       const data = await loginAdmin({ email, password });
-      saveAdminToken(data.token);
-      setToken(data.token);
+
+localStorage.setItem('adminToken', data.token); // 🔥 ADD THIS
+
+saveAdminToken(data.token);
+setToken(data.token);
       toast("Logged in successfully");
     } catch (err) {
       setError(err.response?.data?.message || "Invalid credentials");
