@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import api from "../services/api";
 import {
-  loginAdmin,
   saveAdminToken,
   clearAdminToken,
   getAdminToken,
@@ -23,12 +22,16 @@ function Admin() {
   const fetchOrders = async () => {
     setLoading(true);
     setError("");
+
     try {
-      const res = await api.get("/orders"); // token auto attached (we fix below)
+      const res = await api.get("/orders"); // token auto attached
       setOrders(res.data);
     } catch (err) {
       setError(err.response?.data?.message || "Could not fetch orders");
-      if (err.response?.status === 401) logout();
+
+      if (err.response?.status === 401) {
+        logout();
+      }
     } finally {
       setLoading(false);
     }
@@ -50,14 +53,20 @@ function Admin() {
     setError("");
 
     try {
-      const data = await loginAdmin({ email, password });
+      const res = await api.post("/auth/login", {
+        email,
+        password,
+      });
 
-      // ✅ SINGLE SOURCE OF TRUTH
-      saveAdminToken(data.token);
-      setToken(data.token);
+      // ✅ STORE TOKEN HERE (CRITICAL)
+      if (res.data.token) {
+        saveAdminToken(res.data.token);
+        setToken(res.data.token);
+      }
 
-      toast("Logged in successfully");
+      toast("✅ Logged in successfully");
     } catch (err) {
+      console.error(err);
       setError(err.response?.data?.message || "Invalid credentials");
     }
   };
@@ -109,6 +118,7 @@ function Admin() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Email"
+              required
             />
 
             <input
@@ -116,6 +126,7 @@ function Admin() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Password"
+              required
             />
 
             {error && <p style={{ color: "red" }}>{error}</p>}
