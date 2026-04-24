@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-// ==================== SIMPLE ADMIN LOGIN ====================
+// SIMPLE ADMIN LOGIN (NO DB)
 router.post('/login', (req, res) => {
   try {
     const { user, pass } = req.body;
@@ -9,10 +9,6 @@ router.post('/login', (req, res) => {
     if (!user || !pass) {
       return res.status(400).json({ message: 'Missing credentials' });
     }
-
-    // Debug (safe)
-    console.log("Incoming:", user);
-    console.log("Expected:", process.env.ADMIN_USER);
 
     if (
       user === process.env.ADMIN_USER &&
