@@ -4,7 +4,7 @@ const cors = require('cors');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
 const authRoutes = require('./routes/auth');
-const orderRoutes = require('./routes/orders');
+const orderRoutes = require('./src/routes/orders');
 
 const app = express();
 
