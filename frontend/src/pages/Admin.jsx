@@ -16,11 +16,9 @@ function Admin() {
   const [error, setError] = useState('');
 
   // ✅ FETCH ORDERS WHEN TOKEN EXISTS
-  useEffect(() => {
-    if (token) {
-      fetchOrders();
-    }
-  }, [token]);
+ useEffect(() => {
+  fetchOrders();   // force call for debugging
+}, []);
 
   const fetchOrders = async () => {
     setLoading(true);
