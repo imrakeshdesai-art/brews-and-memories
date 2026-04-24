@@ -12,12 +12,19 @@ const app = express();
 app.use(helmet());
 
 // CORS: Restrict to allowed origins
-const allowedOrigins = (process.env.ALLOWED_ORIGINS || 'http://localhost:4173').split(',');
+const allowedOrigins = [
+  'http://localhost:4173',
+  'https://brews-and-memories.vercel.app'
+];
 app.use(cors({
-  origin: allowedOrigins,
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('CORS not allowed'));
+    }
+  },
   credentials: true,
-  methods: ['GET', 'POST', 'PATCH', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 
 // Body parser
