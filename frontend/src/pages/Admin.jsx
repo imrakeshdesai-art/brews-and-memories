@@ -49,27 +49,31 @@ function Admin() {
 
   // ================= LOGIN =================
   const handleLogin = async (e) => {
-    e.preventDefault();
-    setError("");
+  e.preventDefault();
+  setError("");
 
-    try {
-      const res = await api.post("/auth/login", {
-        email,
-        password,
-      });
+  try {
+    const res = await api.post("/auth/login", {
+      email,
+      password,
+    });
 
-      // ✅ STORE TOKEN HERE (CRITICAL)
-      if (res.data.token) {
-        saveAdminToken(res.data.token);
-        setToken(res.data.token);
-      }
+    const token = res.data.token;
 
-      toast("✅ Logged in successfully");
-    } catch (err) {
-      console.error(err);
-      setError(err.response?.data?.message || "Invalid credentials");
+    if (!token) {
+      throw new Error("Token not received");
     }
-  };
+
+    localStorage.setItem("adminToken", token);
+    saveAdminToken(token);
+    setToken(token);
+
+    toast("✅ Logged in successfully");
+  } catch (err) {
+    console.error(err);
+    setError(err.response?.data?.message || "Invalid credentials");
+  }
+};
 
   // ================= LOGOUT =================
   const logout = () => {
