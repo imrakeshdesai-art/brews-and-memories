@@ -48,7 +48,7 @@ function Admin() {
   }, [token]);
 
   // ================= LOGIN =================
-  const handleLogin = async (e) => {
+const handleLogin = async (e) => {
   e.preventDefault();
   setError("");
 
@@ -60,15 +60,16 @@ function Admin() {
 
     const token = res.data.token;
 
+    console.log("TOKEN RECEIVED:", token); // 🔥 DEBUG
+
     if (!token) {
       throw new Error("Token not received");
     }
 
-    localStorage.setItem("adminToken", token);
-    saveAdminToken(token);
+    localStorage.setItem("adminToken", token); // ✅ CRITICAL
     setToken(token);
 
-    toast("✅ Logged in successfully");
+    toast("Logged in successfully");
   } catch (err) {
     console.error(err);
     setError(err.response?.data?.message || "Invalid credentials");
