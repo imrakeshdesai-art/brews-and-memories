@@ -893,7 +893,7 @@ footer{
 
 <!-- LOADER -->
 <div id="loader">
-  <div class="loader-logo"><img src="./logo.jpg" alt="Logo" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"/></div>
+  <div class="loader-logo"><img src="logo.jpg" alt="Logo" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"/></div>
   <div class="loader-text">Brews & Memories</div>
   <div class="loader-dots"><span></span><span></span><span></span></div>
 </div>
@@ -901,7 +901,7 @@ footer{
 <!-- NAV -->
 <nav id="mainNav">
   <div class="nav-logo">
-    <div class="logo-icon"><img src="./logo.jpg" alt="Brews & Memories Logo" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"/></div>
+    <div class="logo-icon"><img src="logo.jpg" alt="Brews & Memories Logo" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"/></div>
     <div>
       <div>Brews & Memories</div>
       <div style="font-size:0.68rem;opacity:0.6;font-family:'Lato',sans-serif;font-weight:300;letter-spacing:1px">CAFÉ</div>
@@ -1037,8 +1037,8 @@ footer{
           </div>
         </div>
         <div class="about-visual">
-          <div class="about-img-frame">
-  <img src="./logo.jpg" alt="Brews & Memories Logo" style="width:70%;max-width:260px;border-radius:50%;box-shadow:0 8px 40px rgba(0,0,0,0.3);"/>
+          <div class="about-img-frame" style="font-size:0;padding:0;">
+  <img src="logo.jpg" alt="Brews & Memories Logo" style="width:70%;max-width:260px;border-radius:50%;box-shadow:0 8px 40px rgba(0,0,0,0.3);"/>
 </div>
         </div>
       </div>
@@ -1190,16 +1190,15 @@ footer{
         <p class="admin-login-sub">Sign in to manage orders and view sales</p>
         <div class="form-group">
           <label>Username</label>
-          <input type="text" id="adminUser" placeholder="Enter username" />
+          <input type="text" id="adminUser" placeholder="admin" value="admin"/>
         </div>
         <div class="form-group">
           <label>Password</label>
           <input type="password" id="adminPass" placeholder="••••••••"/>
         </div>
-        <div id="loginError" style="color:var(--red);font-size:0.85rem;margin-bottom:12px;display:none;">
-❌ Invalid credentials
-</div>
+        <div id="loginError" style="color:var(--red);font-size:0.85rem;margin-bottom:12px;display:none">❌ Invalid credentials. Try admin / brew123</div>
         <button class="btn-primary" onclick="adminLogin()" style="width:100%;text-align:center;justify-content:center">Sign In →</button>
+        <p style="text-align:center;font-size:0.78rem;color:var(--text-light);margin-top:16px">Demo: username <b>admin</b>, password <b>brew123</b></p>
       </div>
       <!-- Dashboard -->
       <div class="admin-dashboard" id="adminDash">
@@ -1240,7 +1239,7 @@ footer{
   <div class="footer-grid">
     <div class="footer-brand">
       <div class="logo-wrap">
-        <div class="logo-icon"><img src="./logo.jpg" alt="Logo" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"/></div>
+        <div class="logo-icon"><img src="logo.jpg" alt="Logo" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"/></div>
         <div>
           <div class="footer-brand-name">Brews & Memories</div>
           <div class="footer-brand-tag">CAFÉ · COFFEE · MORE</div>
@@ -1533,7 +1532,7 @@ const REVIEWS_DATA = [
 // ==================== STATE ====================
 let cart = [];
 let selectedPayment = 'cod';
-let orders = [];
+let orders = JSON.parse(localStorage.getItem('brewsOrders') || '[]');
 let activeCategory = 'All';
 
 // ==================== LOADER ====================
@@ -1759,89 +1758,43 @@ function selectPayment(el, method){
   el.classList.add('selected');
   selectedPayment = method;
 }
-async function placeOrder(){
-  const btn = document.querySelector('.btn-primary');
-  btn.disabled = true; // 🚫 prevent double click
-
+function placeOrder(){
   const name = document.getElementById('orderName').value.trim();
   const phone = document.getElementById('orderPhone').value.trim();
   const address = document.getElementById('orderAddress').value.trim();
-  // Validation
-  if(!name || !phone || !address){
-  showToast('⚠️ Please fill all required fields');
-  btn.disabled = false; // re-enable
-  return;
-  if(!/^\d{10}$/.test(phone)){
-  showToast("Enter valid 10-digit phone number");
-  btn.disabled = false;
-  return;
-}
-}
-
-  // Calculate total
-  const total = cart.reduce((s, i) => s + (i.price * i.qty), 0);
-
-  // Frontend order ID (only for UI display)
-  const orderId = 'BM' + Date.now().toString().slice(-6);
-
-  // Payload for backend
+  if(!name||!phone||!address){
+    showToast('⚠️ Please fill all required fields');return;
+  }
+  const total = cart.reduce((s,i) => s+(i.price*i.qty), 0);
+  const orderId = 'BM'+Date.now().toString().slice(-6);
   const order = {
-    name: name,
-    phone: phone,
-    address: address,
-    items: cart.map(i => ({
-      name: i.name,
-      qty: i.qty,
-      price: i.price   // ✅ IMPORTANT FIX
-    })),
-    total: total,
-    payment: selectedPayment || 'cod'  // optional but clean
+    id:orderId,
+    customer:name,phone,address,
+    items:[...cart],
+    total,
+    payment:selectedPayment,
+    status:'Pending',
+    time:new Date().toLocaleString('en-IN')
   };
-
-  try {
-    const res = await fetch("https://brews-backend.onrender.com/api/orders", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json"
-  },
-  body: JSON.stringify(order)
-});
-
-if (!res.ok) {
-  throw new Error("Order failed");
-}
-
-    // Clear cart
-    cart = [];
-    updateCartUI();
-
-    // Success UI (UNCHANGED)
-    document.getElementById('checkoutBody').innerHTML = `
-      <div class="order-success">
-        <div class="success-icon">✅</div>
-        <div class="success-title">Order Placed!</div>
-        <p class="success-subtitle">
-          Thank you, <b>${name}</b>! Your order has been received. We'll prepare it fresh for you.
-        </p>
-        <div class="order-id">Order ID: <b>${orderId}</b></div>
-        <p style="font-size:0.85rem;color:var(--text-light);line-height:1.6">
-          📍 Delivery to: ${address}<br>
-          💰 Payment: ${(selectedPayment || 'cod').toUpperCase()}<br>
-          💵 Total: ₹${total}
-        </p>
-        <button class="btn-primary" onclick="closeCheckout()" style="margin-top:24px;display:inline-block">
-          Done
-        </button>
-      </div>
-    `;
-
-    showToast(`🎉 Order ${orderId} placed!`);
-
-  } catch (err) {
-  console.error(err);
-  showToast("❌ Failed to place order");
-  btn.disabled = false; // re-enable on error
-}
+  orders.push(order);
+  localStorage.setItem('brewsOrders', JSON.stringify(orders));
+  cart = [];
+  updateCartUI();
+  // Show success
+  document.getElementById('checkoutBody').innerHTML = `
+    <div class="order-success">
+      <div class="success-icon">✅</div>
+      <div class="success-title">Order Placed!</div>
+      <p class="success-subtitle">Thank you, <b>${name}</b>! Your order has been received. We'll prepare it fresh for you.</p>
+      <div class="order-id">Order ID: <b>${orderId}</b></div>
+      <p style="font-size:0.85rem;color:var(--text-light);line-height:1.6">
+        📍 Delivery to: ${address}<br>
+        💰 Payment: ${selectedPayment.toUpperCase()}<br>
+        💵 Total: ₹${total}
+      </p>
+      <button class="btn-primary" onclick="closeCheckout()" style="margin-top:24px;display:inline-block">Done</button>
+    </div>`;
+  showToast(`🎉 Order ${orderId} placed!`);
 }
 function getCheckoutForm(){
   const total = 0;
@@ -1874,37 +1827,17 @@ function initAdmin(){
   document.getElementById('adminLogin').style.display = 'block';
   document.getElementById('adminDash').style.display = 'none';
 }
-async function adminLogin(){
+function adminLogin(){
   const user = document.getElementById('adminUser').value;
   const pass = document.getElementById('adminPass').value;
   const err = document.getElementById('loginError');
-
-  try {
-    const res = await fetch('https://brews-backend.onrender.com/api/auth/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ user, pass })
-    });
-
-    const data = await res.json();
-
-    if (res.ok && data.success) {
-      err.style.display = 'none';
-
-      document.getElementById('adminLogin').style.display = 'none';
-      document.getElementById('adminDash').style.display = 'block';
-
-      renderAdminDash();
-      showToast("✅ Logged in");
-
-    } else {
-      err.style.display = 'block';
-      err.textContent = "❌ Invalid credentials";
-    }
-
-  } catch (e) {
-    console.error(e);
-    showToast("❌ Login failed");
+  if(user==='admin' && pass==='brew123'){
+    err.style.display='none';
+    document.getElementById('adminLogin').style.display='none';
+    document.getElementById('adminDash').style.display='block';
+    renderAdminDash();
+  } else {
+    err.style.display='block';
   }
 }
 function adminLogout(){
@@ -1913,76 +1846,48 @@ function adminLogout(){
   document.getElementById('adminUser').value='admin';
   document.getElementById('adminPass').value='';
 }
-async function renderAdminDash() {
-  try {
-    const res = await fetch('https://brews-backend.onrender.com/api/orders');
-    if (!res.ok) throw new Error("Failed to fetch orders");
-
-    const orders_ = await res.json();
-
-    const total = orders_.reduce((s, o) => s + o.total, 0);
-    const pending = orders_.filter(o => o.status === 'pending').length;
-    const completed = orders_.filter(o => o.status === 'completed').length;
-
-    document.getElementById('adminStats').innerHTML = `
-      <div class="admin-stat"><div class="admin-stat-num">${orders_.length}</div><div class="admin-stat-label">Total Orders</div></div>
-      <div class="admin-stat"><div class="admin-stat-num">₹${total}</div><div class="admin-stat-label">Total Sales</div></div>
-      <div class="admin-stat"><div class="admin-stat-num">${pending}</div><div class="admin-stat-label">Pending</div></div>
-      <div class="admin-stat"><div class="admin-stat-num">${completed}</div><div class="admin-stat-label">Completed</div></div>
-    `;
-
-    document.getElementById('orderCount').textContent = `${orders_.length} orders`;
-
-    const tbody = document.getElementById('ordersBody');
-
-    if (orders_.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:40px;">No orders</td></tr>`;
-      return;
-    }
-
-    tbody.innerHTML = orders_.slice().reverse().map(o => `
-      <tr>
-        <td><b>${o._id}</b></td>
-        <td>${o.name}</td>
-        <td>${o.phone}</td>
-        <td>${o.items.map(it => it.name).join(', ')}</td>
-        <td>₹${o.total}</td>
-        <td>${new Date(o.createdAt).toLocaleString()}</td>
-        <td>
-          <select onchange="updateOrderStatus('${o._id}', this.value)">
-            <option value="pending" ${o.status==='pending'?'selected':''}>Pending</option>
-            <option value="preparing" ${o.status==='preparing'?'selected':''}>Preparing</option>
-            <option value="completed" ${o.status==='completed'?'selected':''}>Completed</option>
-          </select>
-        </td>
-      </tr>
-    `).join('');
-
-  } catch (err) {
-    console.error(err);
-    showToast("❌ Failed to load dashboard");
+function renderAdminDash(){
+  const orders_ = JSON.parse(localStorage.getItem('brewsOrders') || '[]');
+  const total = orders_.reduce((s,o) => s+o.total, 0);
+  const pending = orders_.filter(o => o.status==='Pending').length;
+  const completed = orders_.filter(o => o.status==='Completed').length;
+  document.getElementById('adminStats').innerHTML = `
+    <div class="admin-stat"><div class="admin-stat-num">${orders_.length}</div><div class="admin-stat-label">Total Orders</div></div>
+    <div class="admin-stat"><div class="admin-stat-num">₹${total}</div><div class="admin-stat-label">Total Sales</div></div>
+    <div class="admin-stat"><div class="admin-stat-num">${pending}</div><div class="admin-stat-label">Pending</div></div>
+    <div class="admin-stat"><div class="admin-stat-num">${completed}</div><div class="admin-stat-label">Completed</div></div>`;
+  document.getElementById('orderCount').textContent = `${orders_.length} orders`;
+  const tbody = document.getElementById('ordersBody');
+  if(orders_.length === 0){
+    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--text-light)">No orders yet. Place some orders from the menu!</td></tr>`;
+    return;
   }
+  tbody.innerHTML = orders_.slice().reverse().map((o,i) => {
+    const realIdx = orders_.length - 1 - i;
+    return `<tr>
+      <td><b>${o.id}</b></td>
+      <td>${o.customer}</td>
+      <td>${o.phone}</td>
+      <td style="max-width:200px;white-space:normal;font-size:0.8rem">${o.items.map(it=>it.name).join(', ')}</td>
+      <td><b>₹${o.total}</b></td>
+      <td style="font-size:0.78rem">${o.time}</td>
+      <td>
+        <select class="status-select" onchange="updateOrderStatus(${realIdx},this.value)">
+          <option ${o.status==='Pending'?'selected':''}>Pending</option>
+          <option ${o.status==='Preparing'?'selected':''}>Preparing</option>
+          <option ${o.status==='Completed'?'selected':''}>Completed</option>
+        </select>
+      </td>
+    </tr>`;
+  }).join('');
 }
-async function updateOrderStatus(id, status) {
-  try {
-    const res = await fetch(`https://brews-backend.onrender.com/api/orders/${id}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ status })
-    });
-
-    if (!res.ok) {
-      const txt = await res.text();
-      throw new Error(`Update failed: ${res.status} ${txt}`);
-    }
-
-    showToast(`✅ Status updated to ${status}`);
-
-    await renderAdminDash(); // ensure refresh after success
-  } catch (err) {
-    console.error(err);
-    showToast("❌ Failed to update order");
-  }
+function updateOrderStatus(idx, status){
+  const orders_ = JSON.parse(localStorage.getItem('brewsOrders') || '[]');
+  orders_[idx].status = status;
+  localStorage.setItem('brewsOrders', JSON.stringify(orders_));
+  orders = orders_;
+  showToast(`Order status updated to ${status}`);
+  renderAdminDash();
 }
 
 // ==================== TOAST ====================
@@ -2006,11 +1911,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 });
-setInterval(() => {
-  if (document.getElementById('adminDash').style.display === 'block') {
-    renderAdminDash();
-  }
-}, 5000);
 </script>
 </body>
 </html>
