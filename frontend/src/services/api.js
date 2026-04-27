@@ -1,28 +1,29 @@
-router.post('/login', (req, res) => {
-  try {
-    const { user, pass } = req.body;
+import axios from 'axios';
+import { getAdminToken } from './auth';
 
-    if (!user || !pass) {
-      return res.status(400).json({ message: 'Missing credentials' });
-    }
+const isLocal =
+  window.location.protocol === 'file:' ||
+  window.location.hostname === 'localhost' ||
+  window.location.hostname === '127.0.0.1';
 
-    if (
-      user === process.env.ADMIN_USER &&
-      pass === process.env.ADMIN_PASS
-    ) {
-      return res.json({
-        success: true,
-        token: "mock_admin_token_123"
-      });
-    }
+// Local: Vite proxy handles /api → localhost:5000
+// Production (Vercel): calls go directly to Render backend
+const API_BASE = isLocal
+  ? ''
+  : 'https://brews-backend.onrender.com';
 
-    return res.status(401).json({
-      success: false,
-      message: 'Invalid credentials'
-    });
-
-  } catch (err) {
-    console.error('Auth error:', err);
-    res.status(500).json({ message: 'Server error' });
-  }
+const api = axios.create({
+  baseURL: `${API_BASE}/api`,
+  timeout: 10000,
+  headers: { 'Content-Type': 'application/json' },
 });
+
+api.interceptors.request.use((config) => {
+  const token = getAdminToken();
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+export default api;

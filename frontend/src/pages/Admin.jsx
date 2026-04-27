@@ -1,142 +1,129 @@
-import { useEffect, useMemo, useState } from "react";
-import api from "../services/api";
-import {
-  saveAdminToken,
-  clearAdminToken,
-  getAdminToken,
-} from "../services/auth";
-import { useToast } from "../components/ToastProvider";
+import { useEffect, useMemo, useState } from 'react';
+import api from '../services/api';
+import { saveAdminToken, clearAdminToken, getAdminToken } from '../services/auth';
+import { useToast } from '../components/ToastProvider';
 
 function Admin() {
   const toast = useToast();
 
-  const [email, setEmail] = useState("admin@brews-memories.local");
-  const [password, setPassword] = useState("");
+  const [user, setUser] = useState('brews_admin');
+  const [pass, setPass] = useState('');
   const [token, setToken] = useState(getAdminToken());
 
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
 
   // ================= FETCH ORDERS =================
   const fetchOrders = async () => {
     setLoading(true);
-    setError("");
-
+    setError('');
     try {
-      const res = await api.get("/orders"); // token auto attached
+      const res = await api.get('/orders');
       setOrders(res.data);
     } catch (err) {
-      setError(err.response?.data?.message || "Could not fetch orders");
-
-      if (err.response?.status === 401) {
-        logout();
-      }
+      setError(err.response?.data?.message || 'Could not fetch orders');
+      if (err.response?.status === 401) logout();
     } finally {
       setLoading(false);
     }
   };
 
-  // ================= RUN WHEN TOKEN EXISTS =================
   useEffect(() => {
     if (!token) return;
-
     fetchOrders();
-
     const interval = setInterval(fetchOrders, 5000);
     return () => clearInterval(interval);
   }, [token]);
 
   // ================= LOGIN =================
-const handleLogin = async (e) => {
-  e.preventDefault();
-  setError("");
-
-  try {
-    const res = await api.post("/auth/login", {
-      email,
-      password,
-    });
-
-    const token = res.data.token;
-
-    console.log("TOKEN RECEIVED:", token); // 🔥 DEBUG
-
-    if (!token) {
-      throw new Error("Token not received");
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setError('');
+    try {
+      const res = await api.post('/auth/login', { user, pass });
+      const receivedToken = res.data.token;
+      if (!receivedToken) throw new Error('Token not received');
+      saveAdminToken(receivedToken);
+      setToken(receivedToken);
+      toast('Logged in successfully ✅');
+    } catch (err) {
+      setError(err.response?.data?.message || 'Invalid credentials');
     }
-
-    localStorage.setItem("adminToken", token); // ✅ CRITICAL
-    setToken(token);
-
-    toast("Logged in successfully");
-  } catch (err) {
-    console.error(err);
-    setError(err.response?.data?.message || "Invalid credentials");
-  }
-};
+  };
 
   // ================= LOGOUT =================
   const logout = () => {
     clearAdminToken();
     setToken(null);
     setOrders([]);
-    setPassword("");
-    toast("Logged out");
+    setPass('');
+    toast('Logged out');
   };
 
   // ================= UPDATE STATUS =================
   const updateStatus = async (id, status) => {
     try {
       await api.patch(`/orders/${id}`, { status });
-
-      setOrders((prev) =>
-        prev.map((o) => (o._id === id ? { ...o, status } : o))
-      );
-
-      toast(`Updated to ${status}`);
+      setOrders((prev) => prev.map((o) => (o._id === id ? { ...o, status } : o)));
+      toast(`Status updated to: ${status}`);
     } catch (err) {
-      toast(err.response?.data?.message || "Update failed");
+      toast(err.response?.data?.message || 'Update failed');
     }
   };
 
   // ================= STATS =================
-  const stats = useMemo(() => {
-    return {
-      totalRevenue: orders.reduce((s, o) => s + o.total, 0),
-      pending: orders.filter((o) => o.status === "pending").length,
-      completed: orders.filter((o) => o.status === "completed").length,
-      count: orders.length,
-    };
-  }, [orders]);
+  const stats = useMemo(() => ({
+    totalRevenue: orders.reduce((s, o) => s + o.total, 0),
+    pending: orders.filter((o) => o.status === 'pending').length,
+    preparing: orders.filter((o) => o.status === 'preparing').length,
+    completed: orders.filter((o) => o.status === 'completed').length,
+    count: orders.length,
+  }), [orders]);
 
   // ================= LOGIN UI =================
   if (!token) {
     return (
       <section className="section admin-panel">
         <div className="admin-login">
-          <h2>🔐 Admin Login</h2>
-
-          <form onSubmit={handleLogin}>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Email"
-              required
-            />
-
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Password"
-              required
-            />
-
-            {error && <p style={{ color: "red" }}>{error}</p>}
-
-            <button type="submit">Login</button>
+          <div style={{ textAlign: 'center', marginBottom: 32 }}>
+            <div style={{ fontSize: '3rem', marginBottom: 8 }}>🔐</div>
+            <h2 className="admin-login-title">Admin Login</h2>
+            <p style={{ color: 'var(--text-light)', fontSize: '0.9rem' }}>Brews & Memories Dashboard</p>
+          </div>
+          <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <div className="form-group">
+              <label htmlFor="admin-user">Username</label>
+              <input
+                id="admin-user"
+                type="text"
+                value={user}
+                onChange={(e) => setUser(e.target.value)}
+                placeholder="Admin username"
+                required
+                autoComplete="username"
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="admin-pass">Password</label>
+              <input
+                id="admin-pass"
+                type="password"
+                value={pass}
+                onChange={(e) => setPass(e.target.value)}
+                placeholder="Enter password"
+                required
+                autoComplete="current-password"
+              />
+            </div>
+            {error && (
+              <div style={{ background: '#fee2e2', color: '#991b1b', padding: '12px 16px', borderRadius: 8, fontSize: '0.9rem' }}>
+                ⚠️ {error}
+              </div>
+            )}
+            <button className="btn-primary" type="submit" style={{ width: '100%', padding: '14px', marginTop: 8 }}>
+              Login to Dashboard
+            </button>
           </form>
         </div>
       </section>
@@ -149,64 +136,101 @@ const handleLogin = async (e) => {
       <div className="admin-dashboard">
         <div className="admin-header">
           <h2>📊 Orders Dashboard</h2>
-          <button onClick={logout}>Sign Out</button>
+          <button className="btn-outline" onClick={logout} style={{ color: 'var(--red)', borderColor: 'var(--red)', padding: '8px 20px' }}>
+            Sign Out
+          </button>
         </div>
 
         <div className="admin-stats">
-          <div>Total Orders: {stats.count}</div>
-          <div>Total Revenue: ₹{stats.totalRevenue}</div>
-          <div>Pending: {stats.pending}</div>
-          <div>Completed: {stats.completed}</div>
+          <div className="admin-stat">
+            <div className="admin-stat-num">{stats.count}</div>
+            <div style={{ color: 'var(--text-light)', fontSize: '0.85rem', marginTop: 4 }}>Total Orders</div>
+          </div>
+          <div className="admin-stat" style={{ borderTopColor: '#fbbf24' }}>
+            <div className="admin-stat-num" style={{ color: '#92400e' }}>₹{stats.totalRevenue}</div>
+            <div style={{ color: 'var(--text-light)', fontSize: '0.85rem', marginTop: 4 }}>Total Revenue</div>
+          </div>
+          <div className="admin-stat" style={{ borderTopColor: '#f97316' }}>
+            <div className="admin-stat-num" style={{ color: '#9a3412' }}>{stats.pending}</div>
+            <div style={{ color: 'var(--text-light)', fontSize: '0.85rem', marginTop: 4 }}>Pending</div>
+          </div>
+          <div className="admin-stat" style={{ borderTopColor: '#22c55e' }}>
+            <div className="admin-stat-num" style={{ color: '#166534' }}>{stats.completed}</div>
+            <div style={{ color: 'var(--text-light)', fontSize: '0.85rem', marginTop: 4 }}>Completed</div>
+          </div>
         </div>
 
-        <table>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Name</th>
-              <th>Phone</th>
-              <th>Items</th>
-              <th>Total</th>
-              <th>Time</th>
-              <th>Status</th>
-            </tr>
-          </thead>
+        {error && (
+          <div style={{ background: '#fee2e2', color: '#991b1b', padding: '12px 16px', borderRadius: 8, marginBottom: 16 }}>
+            ⚠️ {error}
+          </div>
+        )}
 
-          <tbody>
-            {loading ? (
-              <tr>
-                <td colSpan="7">Loading...</td>
+        <div className="admin-table-wrap">
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
+            <thead>
+              <tr style={{ background: 'var(--green)', color: 'var(--cream)' }}>
+                <th style={{ padding: '12px 14px', textAlign: 'left' }}>ID</th>
+                <th style={{ padding: '12px 14px', textAlign: 'left' }}>Name</th>
+                <th style={{ padding: '12px 14px', textAlign: 'left' }}>Phone</th>
+                <th style={{ padding: '12px 14px', textAlign: 'left' }}>Items</th>
+                <th style={{ padding: '12px 14px', textAlign: 'right' }}>Total</th>
+                <th style={{ padding: '12px 14px', textAlign: 'left' }}>Time</th>
+                <th style={{ padding: '12px 14px', textAlign: 'left' }}>Status</th>
               </tr>
-            ) : orders.length === 0 ? (
-              <tr>
-                <td colSpan="7">No orders</td>
-              </tr>
-            ) : (
-              orders.map((o) => (
-                <tr key={o._id}>
-                  <td>{o._id.slice(-6)}</td>
-                  <td>{o.name}</td>
-                  <td>{o.phone}</td>
-                  <td>{o.items.map((i) => i.name).join(", ")}</td>
-                  <td>₹{o.total}</td>
-                  <td>{new Date(o.createdAt).toLocaleString()}</td>
-                  <td>
-                    <select
-                      value={o.status}
-                      onChange={(e) =>
-                        updateStatus(o._id, e.target.value)
-                      }
-                    >
-                      <option value="pending">Pending</option>
-                      <option value="preparing">Preparing</option>
-                      <option value="completed">Completed</option>
-                    </select>
+            </thead>
+            <tbody>
+              {loading ? (
+                <tr>
+                  <td colSpan="7" style={{ padding: 32, textAlign: 'center', color: 'var(--text-light)' }}>
+                    Loading orders…
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              ) : orders.length === 0 ? (
+                <tr>
+                  <td colSpan="7" style={{ padding: 32, textAlign: 'center', color: 'var(--text-light)' }}>
+                    No orders yet
+                  </td>
+                </tr>
+              ) : (
+                orders.map((o, idx) => (
+                  <tr key={o._id} style={{ background: idx % 2 === 0 ? '#fff' : 'var(--cream-light)', borderBottom: '1px solid var(--cream-dark)' }}>
+                    <td style={{ padding: '12px 14px', fontFamily: 'monospace', fontSize: '0.8rem' }}>#{o._id.slice(-6).toUpperCase()}</td>
+                    <td style={{ padding: '12px 14px', fontWeight: 700 }}>{o.name}</td>
+                    <td style={{ padding: '12px 14px' }}>{o.phone}</td>
+                    <td style={{ padding: '12px 14px', maxWidth: 200, color: 'var(--text-light)', fontSize: '0.82rem' }}>
+                      {o.items.map((i) => `${i.name}${i.variant ? ` (${i.variant})` : ''} ×${i.qty}`).join(', ')}
+                    </td>
+                    <td style={{ padding: '12px 14px', fontWeight: 700, textAlign: 'right', color: 'var(--green)' }}>₹{o.total}</td>
+                    <td style={{ padding: '12px 14px', fontSize: '0.8rem', color: 'var(--text-light)' }}>
+                      {new Date(o.createdAt).toLocaleString('en-IN', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                    </td>
+                    <td style={{ padding: '12px 14px' }}>
+                      <select
+                        className="status-select"
+                        value={o.status}
+                        onChange={(e) => updateStatus(o._id, e.target.value)}
+                        style={{
+                          background: o.status === 'pending' ? '#fef3c7' : o.status === 'preparing' ? '#dbeafe' : '#d1fae5',
+                          color: o.status === 'pending' ? '#92400e' : o.status === 'preparing' ? '#1e40af' : '#065f46',
+                          fontWeight: 700,
+                          border: 'none',
+                          borderRadius: 8,
+                          padding: '6px 10px',
+                          cursor: 'pointer',
+                        }}
+                      >
+                        <option value="pending">⏳ Pending</option>
+                        <option value="preparing">👨‍🍳 Preparing</option>
+                        <option value="completed">✅ Completed</option>
+                      </select>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </section>
   );

@@ -1,44 +1,18 @@
-const express = require('express');
-const jwt = require('jsonwebtoken');
+import api from './api';
 
-const router = express.Router();
+export const loginAdmin = async (credentials) => {
+  const res = await api.post('/auth/login', credentials);
+  return res.data;
+};
 
-router.post('/login', (req, res) => {
-  try {
-    const { user, pass } = req.body;
+export const saveAdminToken = (token) => {
+  localStorage.setItem('admin_token', token);
+};
 
-    if (!user || !pass) {
-      return res.status(400).json({ message: 'Missing credentials' });
-    }
+export const getAdminToken = () => {
+  return localStorage.getItem('admin_token');
+};
 
-    // ✅ Validate admin
-    if (
-      user === process.env.ADMIN_USER &&
-      pass === process.env.ADMIN_PASS
-    ) {
-      // 🔥 CREATE TOKEN
-      const token = jwt.sign(
-        { role: 'admin', username: user },
-        process.env.JWT_SECRET,
-        { expiresIn: '8h' }
-      );
-
-      // ✅ RETURN TOKEN
-      return res.json({
-        success: true,
-        token: token
-      });
-    }
-
-    return res.status(401).json({
-      success: false,
-      message: 'Invalid credentials'
-    });
-
-  } catch (err) {
-    console.error('Auth error:', err);
-    res.status(500).json({ message: 'Server error' });
-  }
-});
-
-module.exports = router;
+export const clearAdminToken = () => {
+  localStorage.removeItem('admin_token');
+};

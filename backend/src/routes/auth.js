@@ -3,6 +3,8 @@ const jwt = require('jsonwebtoken');
 
 const router = express.Router();
 
+// POST /api/auth/login
+// Body: { user, pass }
 router.post('/login', (req, res) => {
   try {
     const { user, pass } = req.body;
@@ -11,26 +13,24 @@ router.post('/login', (req, res) => {
       return res.status(400).json({ message: 'Missing credentials' });
     }
 
-    if (
-      user === process.env.ADMIN_USER &&
-      pass === process.env.ADMIN_PASS
-    ) {
-      const token = jwt.sign(
-        { role: 'admin' },
-        process.env.JWT_SECRET,
-        { expiresIn: '2h' }
-      );
+    const adminUser = process.env.ADMIN_USER;
+    const adminPass = process.env.ADMIN_PASS;
 
-      return res.json({
-        success: true,
-        token
-      });
+    if (!adminUser || !adminPass) {
+      console.error('ADMIN_USER or ADMIN_PASS not set in .env');
+      return res.status(500).json({ message: 'Server misconfiguration' });
     }
 
-    return res.status(401).json({
-      success: false,
-      message: 'Invalid credentials'
-    });
+    if (user === adminUser && pass === adminPass) {
+      const token = jwt.sign(
+        { role: 'admin', username: user },
+        process.env.JWT_SECRET,
+        { expiresIn: '8h' }
+      );
+      return res.json({ success: true, token });
+    }
+
+    return res.status(401).json({ success: false, message: 'Invalid credentials' });
 
   } catch (err) {
     console.error('Auth error:', err);

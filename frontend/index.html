@@ -1190,15 +1190,14 @@ footer{
         <p class="admin-login-sub">Sign in to manage orders and view sales</p>
         <div class="form-group">
           <label>Username</label>
-          <input type="text" id="adminUser" placeholder="admin" value="admin"/>
+          <input type="text" id="adminUser" placeholder="Username" value="brews_admin"/>
         </div>
         <div class="form-group">
           <label>Password</label>
           <input type="password" id="adminPass" placeholder="••••••••"/>
         </div>
-        <div id="loginError" style="color:var(--red);font-size:0.85rem;margin-bottom:12px;display:none">❌ Invalid credentials. Try admin / brew123</div>
+        <div id="loginError" style="color:var(--red);font-size:0.85rem;margin-bottom:12px;display:none">❌ Invalid credentials. Please check your username and password.</div>
         <button class="btn-primary" onclick="adminLogin()" style="width:100%;text-align:center;justify-content:center">Sign In →</button>
-        <p style="text-align:center;font-size:0.78rem;color:var(--text-light);margin-top:16px">Demo: username <b>admin</b>, password <b>brew123</b></p>
       </div>
       <!-- Dashboard -->
       <div class="admin-dashboard" id="adminDash">
@@ -1827,23 +1826,43 @@ function initAdmin(){
   document.getElementById('adminLogin').style.display = 'block';
   document.getElementById('adminDash').style.display = 'none';
 }
-function adminLogin(){
-  const user = document.getElementById('adminUser').value;
+async function adminLogin(){
+  const user = document.getElementById('adminUser').value.trim();
   const pass = document.getElementById('adminPass').value;
   const err = document.getElementById('loginError');
-  if(user==='admin' && pass==='brew123'){
-    err.style.display='none';
-    document.getElementById('adminLogin').style.display='none';
-    document.getElementById('adminDash').style.display='block';
-    renderAdminDash();
-  } else {
+  const btn = document.querySelector('#adminLogin .btn-primary');
+  if(!user || !pass){ err.textContent='❌ Please enter username and password.'; err.style.display='block'; return; }
+  btn.textContent='Signing in…'; btn.disabled=true;
+  try {
+    const API = (location.hostname==='localhost'||location.hostname==='127.0.0.1')
+      ? 'http://localhost:5000' : 'https://brews-backend.onrender.com';
+    const res = await fetch(`${API}/api/auth/login`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({user,pass})
+    });
+    const data = await res.json();
+    if(res.ok && data.token){
+      localStorage.setItem('admin_token', data.token);
+      err.style.display='none';
+      document.getElementById('adminLogin').style.display='none';
+      document.getElementById('adminDash').style.display='block';
+      renderAdminDash();
+    } else {
+      err.textContent='❌ '+(data.message||'Invalid credentials');
+      err.style.display='block';
+    }
+  } catch(e){
+    err.textContent='❌ Cannot reach server. Is the backend running?';
     err.style.display='block';
   }
+  btn.textContent='Sign In →'; btn.disabled=false;
 }
 function adminLogout(){
+  localStorage.removeItem('admin_token');
   document.getElementById('adminLogin').style.display='block';
   document.getElementById('adminDash').style.display='none';
-  document.getElementById('adminUser').value='admin';
+  document.getElementById('adminUser').value='brews_admin';
   document.getElementById('adminPass').value='';
 }
 function renderAdminDash(){

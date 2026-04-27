@@ -11,41 +11,44 @@ const app = express();
 // Security: Helmet for HTTP headers
 app.use(helmet());
 
-// CORS: Restrict to allowed origins
+// CORS: Allow dev, prod, and file:// origins
 const allowedOrigins = [
-  'http://localhost:4173',
-  'https://brews-and-memories.vercel.app'
+  'http://localhost:5173',   // Vite dev server
+  'http://localhost:4173',   // Vite preview
+  'http://localhost:3000',
+  'https://brews-and-memories.vercel.app',
+  'https://brews-and-memories-rd0arywx1-imrakeshdesai-arts-projects.vercel.app',
 ];
+
 app.use(cors({
   origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('CORS not allowed'));
-    }
+    // Allow requests with no origin (file://, Postman, mobile apps)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) return callback(null, true);
+    callback(new Error(`CORS not allowed for origin: ${origin}`));
   },
   credentials: true,
 }));
 
 // Body parser
-app.use(express.json({ limit: '10kb' })); // Limit payload size
-app.use(morgan('combined')); // Detailed logging in production
+app.use(express.json({ limit: '10kb' }));
+app.use(morgan('dev'));
 
-// Rate limiting: Global limit
+// Rate limiting: Global
 const globalLimiter = rateLimit({
-  windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS, 10) || 900000, // 15 minutes
-  max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS, 10) || 100,
+  windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS, 10) || 900000,
+  max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS, 10) || 200,
   message: 'Too many requests from this IP, please try again later.',
   standardHeaders: true,
   legacyHeaders: false,
 });
 app.use(globalLimiter);
 
-// Rate limiting: Strict limit on auth endpoints
+// Rate limiting: Strict limit on auth endpoints (5 per 15 min)
 const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5, // 5 attempts per 15 minutes
-  skipSuccessfulRequests: true, // Only count failed requests
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  skipSuccessfulRequests: true,
   message: 'Too many login attempts, please try again later.',
   standardHeaders: true,
   legacyHeaders: false,
@@ -55,7 +58,7 @@ app.use('/api/auth', authLimiter, authRoutes);
 app.use('/api/orders', orderRoutes);
 
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok' });
+  res.json({ status: 'ok', mode: process.env.USE_MOCK_DB === 'true' ? 'mock' : 'mongo' });
 });
 
 app.use((req, res) => {
@@ -63,14 +66,11 @@ app.use((req, res) => {
 });
 
 app.use((err, req, res, next) => {
-  const isDevelopment = process.env.NODE_ENV === 'development';
+  const isDev = process.env.NODE_ENV !== 'production';
   console.error(err);
-  
-  // Don't expose detailed errors in production
-  const message = isDevelopment ? err.message : 'Internal server error';
   res.status(err.status || 500).json({
-    message,
-    ...(isDevelopment && { stack: err.stack }),
+    message: isDev ? err.message : 'Internal server error',
+    ...(isDev && { stack: err.stack }),
   });
 });
 
