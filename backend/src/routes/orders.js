@@ -2,9 +2,7 @@ const auth = require('../middleware/auth');
 const express = require('express');
 const router = express.Router();
 
-const Order = process.env.USE_MOCK_DB === 'true'
-  ? require('../config/mockDb').Order
-  : require('../models/Order');
+const Order = require('../models/Order');
 
 
 // ==================== CREATE ORDER ====================
@@ -64,9 +62,7 @@ router.post('/', async (req, res) => {
 // ==================== GET ALL ORDERS ====================
 router.get('/', auth, async (req, res) => {
   try {
-    const orders = process.env.USE_MOCK_DB === 'true'
-      ? await Order.find()
-      : await Order.find().sort({ createdAt: -1 });
+    const orders = await Order.find().sort({ createdAt: -1 });
 
     res.json(orders);
   } catch (error) {
