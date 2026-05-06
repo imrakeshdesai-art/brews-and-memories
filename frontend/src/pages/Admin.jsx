@@ -22,11 +22,18 @@ function Admin() {
       const res = await api.get('/orders');
       setOrders(res.data);
     } catch (err) {
-      setError(err.response?.data?.message || 'Could not fetch orders');
-      if (err.response?.status === 401) logout();
-    } finally {
-      setLoading(false);
-    }
+
+  // Unauthorized → immediately force login screen
+  if (err.response?.status === 401) {
+    logout();
+    return;
+  }
+
+  setError(err.response?.data?.message || 'Could not fetch orders');
+
+} finally {
+  setLoading(false);
+}
   };
 
   useEffect(() => {
@@ -82,7 +89,7 @@ function Admin() {
   }), [orders]);
 
   // ================= LOGIN UI =================
-  if (!token) {
+  if (!token || !getAdminToken()) {
     return (
       <section className="section admin-panel">
         <div className="admin-login">
