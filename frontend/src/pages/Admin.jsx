@@ -8,12 +8,15 @@ import {
 import { useToast } from '../components/ToastProvider';
 
 function Admin() {
+
   const toast = useToast();
 
   const [user, setUser] = useState('brews_admin');
   const [pass, setPass] = useState('');
 
-  const [token, setToken] = useState(null);
+  // IMPORTANT
+  const [token, setToken] = useState(getAdminToken());
+
   const [authChecked, setAuthChecked] = useState(false);
 
   const [orders, setOrders] = useState([]);
@@ -22,39 +25,73 @@ function Admin() {
 
   // ================= FETCH ORDERS =================
   const fetchOrders = async () => {
+
     setLoading(true);
     setError('');
 
     try {
+
       const res = await api.get('/orders');
+
       setOrders(res.data);
+
     } catch (err) {
-      // Unauthorized → logout immediately
+
+      console.error('FETCH ORDERS ERROR:', err);
+
+      // Unauthorized
       if (err.response?.status === 401) {
+
         logout();
+
+        setError('Session expired. Please login again.');
+
         return;
       }
 
-      setError(err.response?.data?.message || 'Could not fetch orders');
+      // Forbidden
+      if (err.response?.status === 403) {
+
+        setError('Access denied.');
+
+        return;
+      }
+
+      // Network/CORS
+      if (!err.response) {
+
+        setError('Network or CORS error.');
+
+        return;
+      }
+
+      setError(
+        err.response?.data?.message ||
+        'Could not fetch orders'
+      );
+
     } finally {
+
       setLoading(false);
+
     }
   };
 
-  // ================= INITIAL AUTH CHECK =================
+  // ================= AUTH + LOAD ORDERS =================
   useEffect(() => {
-    const storedToken = getAdminToken();
 
-    // No token → show login screen
-    if (!storedToken) {
+    // No token → show login
+    if (!token) {
+
       setAuthChecked(true);
+
       return;
     }
 
-    setToken(storedToken);
-
     const loadOrders = async () => {
+
       await fetchOrders();
+
       setAuthChecked(true);
     };
 
@@ -63,15 +100,18 @@ function Admin() {
     const interval = setInterval(loadOrders, 5000);
 
     return () => clearInterval(interval);
-  }, []);
+
+  }, [token]);
 
   // ================= LOGIN =================
   const handleLogin = async (e) => {
+
     e.preventDefault();
 
     setError('');
 
     try {
+
       const res = await api.post('/auth/login', {
         user,
         pass,
@@ -83,20 +123,26 @@ function Admin() {
         throw new Error('Token not received');
       }
 
+      // Save token
       saveAdminToken(receivedToken);
 
+      // Update state
       setToken(receivedToken);
 
       toast('Logged in successfully ✅');
 
-      await fetchOrders();
     } catch (err) {
-      setError(err.response?.data?.message || 'Invalid credentials');
+
+      setError(
+        err.response?.data?.message ||
+        'Invalid credentials'
+      );
     }
   };
 
   // ================= LOGOUT =================
   const logout = () => {
+
     clearAdminToken();
 
     setToken(null);
@@ -110,45 +156,58 @@ function Admin() {
 
   // ================= UPDATE STATUS =================
   const updateStatus = async (id, status) => {
+
     try {
-      await api.patch(`/orders/${id}`, { status });
+
+      await api.patch(`/orders/${id}`, {
+        status,
+      });
 
       setOrders((prev) =>
         prev.map((o) =>
-          o._id === id ? { ...o, status } : o
+          o._id === id
+            ? { ...o, status }
+            : o
         )
       );
 
       toast(`Status updated to: ${status}`);
+
     } catch (err) {
-      toast(err.response?.data?.message || 'Update failed');
+
+      toast(
+        err.response?.data?.message ||
+        'Update failed'
+      );
     }
   };
 
   // ================= STATS =================
-  const stats = useMemo(
-    () => ({
-      totalRevenue: orders.reduce((s, o) => s + o.total, 0),
+  const stats = useMemo(() => ({
+    totalRevenue: orders.reduce(
+      (s, o) => s + o.total,
+      0
+    ),
 
-      pending: orders.filter(
-        (o) => o.status === 'pending'
-      ).length,
+    pending: orders.filter(
+      (o) => o.status === 'pending'
+    ).length,
 
-      preparing: orders.filter(
-        (o) => o.status === 'preparing'
-      ).length,
+    preparing: orders.filter(
+      (o) => o.status === 'preparing'
+    ).length,
 
-      completed: orders.filter(
-        (o) => o.status === 'completed'
-      ).length,
+    completed: orders.filter(
+      (o) => o.status === 'completed'
+    ).length,
 
-      count: orders.length,
-    }),
-    [orders]
-  );
+    count: orders.length,
 
-  // ================= WAIT FOR AUTH CHECK =================
+  }), [orders]);
+
+  // ================= LOADING =================
   if (!authChecked) {
+
     return (
       <section className="section admin-panel">
         <div
@@ -167,9 +226,12 @@ function Admin() {
 
   // ================= LOGIN UI =================
   if (!token) {
+
     return (
       <section className="section admin-panel">
+
         <div className="admin-login">
+
           <div
             style={{
               textAlign: 'center',
@@ -207,7 +269,9 @@ function Admin() {
               gap: 16,
             }}
           >
+
             <div className="form-group">
+
               <label htmlFor="admin-user">
                 Username
               </label>
@@ -223,9 +287,11 @@ function Admin() {
                 required
                 autoComplete="username"
               />
+
             </div>
 
             <div className="form-group">
+
               <label htmlFor="admin-pass">
                 Password
               </label>
@@ -241,9 +307,11 @@ function Admin() {
                 required
                 autoComplete="current-password"
               />
+
             </div>
 
             {error && (
+
               <div
                 style={{
                   background: '#fee2e2',
@@ -255,6 +323,7 @@ function Admin() {
               >
                 ⚠️ {error}
               </div>
+
             )}
 
             <button
@@ -268,18 +337,24 @@ function Admin() {
             >
               Login to Dashboard
             </button>
+
           </form>
+
         </div>
+
       </section>
     );
   }
 
   // ================= DASHBOARD =================
   return (
+
     <section className="section admin-panel">
+
       <div className="admin-dashboard">
 
         <div className="admin-header">
+
           <h2>📊 Orders Dashboard</h2>
 
           <button
@@ -293,6 +368,7 @@ function Admin() {
           >
             Sign Out
           </button>
+
         </div>
 
         <div className="admin-stats">
@@ -315,11 +391,15 @@ function Admin() {
 
           <div
             className="admin-stat"
-            style={{ borderTopColor: '#fbbf24' }}
+            style={{
+              borderTopColor: '#fbbf24',
+            }}
           >
             <div
               className="admin-stat-num"
-              style={{ color: '#92400e' }}
+              style={{
+                color: '#92400e',
+              }}
             >
               ₹{stats.totalRevenue}
             </div>
@@ -337,11 +417,15 @@ function Admin() {
 
           <div
             className="admin-stat"
-            style={{ borderTopColor: '#f97316' }}
+            style={{
+              borderTopColor: '#f97316',
+            }}
           >
             <div
               className="admin-stat-num"
-              style={{ color: '#9a3412' }}
+              style={{
+                color: '#9a3412',
+              }}
             >
               {stats.pending}
             </div>
@@ -359,11 +443,15 @@ function Admin() {
 
           <div
             className="admin-stat"
-            style={{ borderTopColor: '#22c55e' }}
+            style={{
+              borderTopColor: '#22c55e',
+            }}
           >
             <div
               className="admin-stat-num"
-              style={{ color: '#166534' }}
+              style={{
+                color: '#166534',
+              }}
             >
               {stats.completed}
             </div>
@@ -382,6 +470,7 @@ function Admin() {
         </div>
 
         {error && (
+
           <div
             style={{
               background: '#fee2e2',
@@ -393,6 +482,7 @@ function Admin() {
           >
             ⚠️ {error}
           </div>
+
         )}
 
         <div className="admin-table-wrap">
@@ -406,12 +496,14 @@ function Admin() {
           >
 
             <thead>
+
               <tr
                 style={{
                   background: 'var(--green)',
                   color: 'var(--cream)',
                 }}
               >
+
                 <th style={{ padding: '12px 14px', textAlign: 'left' }}>
                   ID
                 </th>
@@ -439,12 +531,15 @@ function Admin() {
                 <th style={{ padding: '12px 14px', textAlign: 'left' }}>
                   Status
                 </th>
+
               </tr>
+
             </thead>
 
             <tbody>
 
               {loading ? (
+
                 <tr>
                   <td
                     colSpan="7"
@@ -457,7 +552,9 @@ function Admin() {
                     Loading orders…
                   </td>
                 </tr>
+
               ) : orders.length === 0 ? (
+
                 <tr>
                   <td
                     colSpan="7"
@@ -470,8 +567,11 @@ function Admin() {
                     No orders yet
                   </td>
                 </tr>
+
               ) : (
+
                 orders.map((o, idx) => (
+
                   <tr
                     key={o._id}
                     style={{
@@ -589,6 +689,7 @@ function Admin() {
                           cursor: 'pointer',
                         }}
                       >
+
                         <option value="pending">
                           ⏳ Pending
                         </option>
@@ -600,12 +701,15 @@ function Admin() {
                         <option value="completed">
                           ✅ Completed
                         </option>
+
                       </select>
 
                     </td>
 
                   </tr>
+
                 ))
+
               )}
 
             </tbody>
@@ -615,6 +719,7 @@ function Admin() {
         </div>
 
       </div>
+
     </section>
   );
 }
