@@ -91,6 +91,9 @@ function CheckoutModal({ open, cart, total, payment, setPayment, onClose, onClea
                   <strong>Order ID:</strong> {orderSuccess._id}
                 </div>
                 <div>
+                  <strong>Table:</strong> {orderSuccess.address}
+                </div>
+                <div>
                   <strong>Payment:</strong> {orderSuccess.payment.toUpperCase()}
                 </div>
                 <div>
@@ -121,35 +124,19 @@ function CheckoutModal({ open, cart, total, payment, setPayment, onClose, onClea
                 <input id="order-phone" type="tel" value={phone} onChange={(event) => setPhone(event.target.value)} placeholder="+91 XXXXX XXXXX" />
               </div>
               <div className="form-group">
-                <label htmlFor="order-address">Delivery Address *</label>
-                <textarea id="order-address" value={address} onChange={(event) => setAddress(event.target.value)} placeholder="Street, Area, City…" />
+                <label htmlFor="order-address">Table Number *</label>
+                <input id="order-address" value={address} onChange={(event) => setAddress(event.target.value)} placeholder="Table Number" />
               </div>
               <div className="form-group">
                 <label>Payment Method</label>
                 <div className="payment-grid">
                   <button
                     type="button"
-                    className={`payment-card ${payment === 'cod' ? 'selected' : ''}`}
-                    onClick={() => setPayment('cod')}
+                    className={`payment-card ${payment === 'counter' ? 'selected' : ''}`}
+                    onClick={() => setPayment('counter')}
                   >
                     <span className="icon">💵</span>
-                    <div>Cash on Delivery</div>
-                  </button>
-                  <button
-                    type="button"
-                    className={`payment-card ${payment === 'upi' ? 'selected' : ''}`}
-                    onClick={() => setPayment('upi')}
-                  >
-                    <span className="icon">📱</span>
-                    <div>UPI / QR</div>
-                  </button>
-                  <button
-                    type="button"
-                    className={`payment-card ${payment === 'card' ? 'selected' : ''}`}
-                    onClick={() => setPayment('card')}
-                  >
-                    <span className="icon">💳</span>
-                    <div>Card</div>
+                    <div>Pay at Counter</div>
                   </button>
                 </div>
               </div>

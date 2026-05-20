@@ -20,7 +20,7 @@ function App() {
   const [cart, setCart] = useState(defaultCart);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
-  const [selectedPayment, setSelectedPayment] = useState('cod');
+  const [selectedPayment, setSelectedPayment] = useState('counter');
   const location = useLocation();
 
   useEffect(() => {

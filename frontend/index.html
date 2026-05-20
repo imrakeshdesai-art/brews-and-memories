@@ -1324,23 +1324,15 @@ footer{
         <input type="tel" id="orderPhone" placeholder="+91 XXXXX XXXXX"/>
       </div>
       <div class="form-group">
-        <label>Delivery Address *</label>
-        <textarea id="orderAddress" placeholder="Street, Area, City…"></textarea>
+        <label>Table Number *</label>
+        <input type="text" id="orderAddress" placeholder="Table Number" />
       </div>
       <div class="form-group">
         <label>Payment Method</label>
         <div class="payment-options">
-          <div class="payment-opt selected" onclick="selectPayment(this,'cod')">
+          <div class="payment-opt selected" onclick="selectPayment(this,'counter')">
             <span class="opt-icon">💵</span>
-            <span class="opt-label">Cash on Delivery</span>
-          </div>
-          <div class="payment-opt" onclick="selectPayment(this,'upi')">
-            <span class="opt-icon">📱</span>
-            <span class="opt-label">UPI / QR</span>
-          </div>
-          <div class="payment-opt" onclick="selectPayment(this,'card')">
-            <span class="opt-icon">💳</span>
-            <span class="opt-label">Card</span>
+            <span class="opt-label">Pay at Counter</span>
           </div>
         </div>
       </div>
@@ -1557,7 +1549,7 @@ const REVIEWS_DATA = [
 
 // ==================== STATE ====================
 let cart = [];
-let selectedPayment = 'cod';
+let selectedPayment = 'counter';
 let orders = JSON.parse(localStorage.getItem('brewsOrders') || '[]');
 let activeCategory = 'All';
 
@@ -1814,7 +1806,7 @@ function placeOrder(){
       <p class="success-subtitle">Thank you, <b>${name}</b>! Your order has been received. We'll prepare it fresh for you.</p>
       <div class="order-id">Order ID: <b>${orderId}</b></div>
       <p style="font-size:0.85rem;color:var(--text-light);line-height:1.6">
-        📍 Delivery to: ${address}<br>
+        📍 Table: ${address}<br>
         💰 Payment: ${selectedPayment.toUpperCase()}<br>
         💵 Total: ₹${total}
       </p>
@@ -1824,7 +1816,7 @@ function placeOrder(){
 }
 function getCheckoutForm(){
   const total = 0;
-  return `<div class="order-summary-mini"><div class="order-summary-title">Order Summary</div><div class="order-summary-items" id="checkoutItems"></div><div class="order-total-mini"><span>Total</span><span id="checkoutTotal">₹0</span></div></div><div class="form-group"><label>Your Name *</label><input type="text" id="orderName" placeholder="Enter your full name"/></div><div class="form-group"><label>Phone Number *</label><input type="tel" id="orderPhone" placeholder="+91 XXXXX XXXXX"/></div><div class="form-group"><label>Delivery Address *</label><textarea id="orderAddress" placeholder="Street, Area, City…"></textarea></div><div class="form-group"><label>Payment Method</label><div class="payment-options"><div class="payment-opt selected" onclick="selectPayment(this,'cod')"><span class="opt-icon">💵</span><span class="opt-label">Cash on Delivery</span></div><div class="payment-opt" onclick="selectPayment(this,'upi')"><span class="opt-icon">📱</span><span class="opt-label">UPI / QR</span></div><div class="payment-opt" onclick="selectPayment(this,'card')"><span class="opt-icon">💳</span><span class="opt-label">Card</span></div></div></div><button class="btn-place-order" onclick="placeOrder()">✅ Place Order</button>`;
+  return `<div class="order-summary-mini"><div class="order-summary-title">Order Summary</div><div class="order-summary-items" id="checkoutItems"></div><div class="order-total-mini"><span>Total</span><span id="checkoutTotal">₹0</span></div></div><div class="form-group"><label>Your Name *</label><input type="text" id="orderName" placeholder="Enter your full name"/></div><div class="form-group"><label>Phone Number *</label><input type="tel" id="orderPhone" placeholder="+91 XXXXX XXXXX"/></div><div class="form-group"><label>Table Number *</label><input type="text" id="orderAddress" placeholder="Table Number" /></div><div class="form-group"><label>Payment Method</label><div class="payment-options"><div class="payment-opt selected" onclick="selectPayment(this,'counter')"><span class="opt-icon">💵</span><span class="opt-label">Pay at Counter</span></div></div></div><button class="btn-place-order" onclick="placeOrder()">✅ Place Order</button>`;
 }
 
 // ==================== REVIEWS ====================
