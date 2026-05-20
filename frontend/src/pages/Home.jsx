@@ -1,11 +1,11 @@
 import { Link } from 'react-router-dom';
 
 const FEATURED_CATEGORIES = [
-  { emoji: '☕', label: 'Coffee', category: 'Hot Beverages' },
+  { emoji: '☕', label: 'Coffee', category: 'Beverages' },
   { emoji: '🍕', label: 'Pizza', category: 'Pizza' },
   { emoji: '🍔', label: 'Burgers', category: 'Burgers' },
   { emoji: '🍫', label: 'Desserts', category: 'Desserts' },
-  { emoji: '🥤', label: 'Milkshakes', category: 'Milkshakes' },
+  { emoji: '🥤', label: 'Milk Shakes', category: 'Milk Shakes' },
   { emoji: '🥟', label: 'Momos', category: 'Momos' },
   { emoji: '🌯', label: 'Rolls', category: 'Rolls' },
   { emoji: '🍟', label: 'Fries', category: 'Fries' },
