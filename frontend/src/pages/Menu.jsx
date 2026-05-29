@@ -84,8 +84,8 @@ function Menu({ addToCart }) {
         <div className="section-divider" />
       </div>
 
-      <div className="menu-controls">
-        <div className="menu-search">
+      <div className="menu-controls" style={{ display: 'flex', flexWrap: 'wrap', gap: 16, justifyContent: 'space-between', alignItems: 'center', maxWidth: 900, margin: '0 auto 24px' }}>
+        <div className="menu-search" style={{ flexGrow: 1, maxWidth: 500 }}>
           <span>🔍</span>
           <input
             value={searchQuery}
@@ -94,6 +94,15 @@ function Menu({ addToCart }) {
             aria-label="Search menu items"
           />
         </div>
+        <a 
+          href="/menu.pdf" 
+          target="_blank" 
+          rel="noreferrer" 
+          className="btn-primary"
+          style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '12px 24px', fontSize: '0.9rem', borderRadius: 8, textDecoration: 'none', cursor: 'pointer' }}
+        >
+          📥 Download Menu PDF
+        </a>
       </div>
 
       <div className="cat-filters">
