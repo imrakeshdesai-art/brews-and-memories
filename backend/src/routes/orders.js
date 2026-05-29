@@ -15,7 +15,13 @@ router.post('/', async (req, res) => {
       return res.status(400).json({ message: 'Missing required fields' });
     }
 
-    if (!/^\d{10}$/.test(phone)) {
+    // Normalize phone number: remove all non-digits, strip India country code if 12 digits
+    const cleanPhone = String(phone).replace(/\D/g, '');
+    const normalizedPhone = (cleanPhone.length === 12 && cleanPhone.startsWith('91'))
+      ? cleanPhone.slice(2)
+      : cleanPhone;
+
+    if (!/^\d{10}$/.test(normalizedPhone)) {
       return res.status(400).json({ message: 'Invalid phone number' });
     }
 
@@ -41,7 +47,7 @@ router.post('/', async (req, res) => {
 
     const newOrder = await Order.create({
       name: name.trim(),
-      phone: phone.trim(),
+      phone: normalizedPhone,
       address: address.trim(),
       items: normalizedItems,
       total: Number(total),

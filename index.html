@@ -1548,6 +1548,8 @@ const REVIEWS_DATA = [
 ];
 
 // ==================== STATE ====================
+const API_BASE = (location.hostname==='localhost'||location.hostname==='127.0.0.1')
+  ? 'http://localhost:5000' : 'https://brews-backend.onrender.com';
 let cart = [];
 let selectedPayment = 'counter';
 let orders = JSON.parse(localStorage.getItem('brewsOrders') || '[]');
@@ -1776,7 +1778,7 @@ function selectPayment(el, method){
   el.classList.add('selected');
   selectedPayment = method;
 }
-function placeOrder(){
+async function placeOrder(){
   const name = document.getElementById('orderName').value.trim();
   const phone = document.getElementById('orderPhone').value.trim();
   const address = document.getElementById('orderAddress').value.trim();
@@ -1784,35 +1786,78 @@ function placeOrder(){
     showToast('⚠️ Please fill all required fields');return;
   }
   const total = cart.reduce((s,i) => s+(i.price*i.qty), 0);
-  const orderId = 'BM'+Date.now().toString().slice(-6);
-  const order = {
-    id:orderId,
-    customer:name,phone,address,
-    items:[...cart],
+  
+  const btn = document.querySelector('.btn-place-order');
+  btn.textContent = 'Placing Order...';
+  btn.disabled = true;
+
+  const orderPayload = {
+    name,
+    phone,
+    address,
+    items: cart.map(i => ({ name: i.name, qty: i.qty, price: i.price, variant: i.variant || '' })),
     total,
-    payment:selectedPayment,
-    status:'Pending',
-    time:new Date().toLocaleString('en-IN')
+    payment: selectedPayment
   };
-  orders.push(order);
-  localStorage.setItem('brewsOrders', JSON.stringify(orders));
-  cart = [];
-  updateCartUI();
-  // Show success
-  document.getElementById('checkoutBody').innerHTML = `
-    <div class="order-success">
-      <div class="success-icon">✅</div>
-      <div class="success-title">Order Placed!</div>
-      <p class="success-subtitle">Thank you, <b>${name}</b>! Your order has been received. We'll prepare it fresh for you.</p>
-      <div class="order-id">Order ID: <b>${orderId}</b></div>
-      <p style="font-size:0.85rem;color:var(--text-light);line-height:1.6">
-        📍 Table: ${address}<br>
-        💰 Payment: ${selectedPayment.toUpperCase()}<br>
-        💵 Total: ₹${total}
-      </p>
-      <button class="btn-primary" onclick="closeCheckout()" style="margin-top:24px;display:inline-block">Done</button>
-    </div>`;
-  showToast(`🎉 Order ${orderId} placed!`);
+
+  let orderId = '';
+  let showSuccess = false;
+
+  try {
+    const res = await fetch(`${API_BASE}/api/orders`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(orderPayload)
+    });
+    const data = await res.json();
+    if (res.ok && data._id) {
+      orderId = data._id;
+      showSuccess = true;
+      showToast(`🎉 Order ${orderId.slice(-6).toUpperCase()} placed successfully!`);
+    } else {
+      showToast('⚠️ ' + (data.message || 'Failed to place order.'));
+    }
+  } catch (error) {
+    console.error('Error placing order on server:', error);
+  }
+
+  // Fallback to local storage if server call failed
+  if (!showSuccess) {
+    orderId = 'BM' + Date.now().toString().slice(-6);
+    const fallbackOrder = {
+      id: orderId,
+      customer: name,
+      phone: phone,
+      address: address,
+      items: [...cart],
+      total,
+      payment: selectedPayment,
+      status: 'Pending',
+      time: new Date().toLocaleString('en-IN')
+    };
+    orders.push(fallbackOrder);
+    localStorage.setItem('brewsOrders', JSON.stringify(orders));
+    showSuccess = true;
+    showToast(`🎉 Local Order ${orderId} saved!`);
+  }
+
+  if (showSuccess) {
+    cart = [];
+    updateCartUI();
+    document.getElementById('checkoutBody').innerHTML = `
+      <div class="order-success">
+        <div class="success-icon">✅</div>
+        <div class="success-title">Order Placed!</div>
+        <p class="success-subtitle">Thank you, <b>${name}</b>! Your order has been received.</p>
+        <div class="order-id">Order ID: <b>${orderId.slice(-6).toUpperCase()}</b></div>
+        <p style="font-size:0.85rem;color:var(--text-light);line-height:1.6">
+          📍 Table: ${address}<br>
+          💰 Payment: ${selectedPayment.toUpperCase()}<br>
+          💵 Total: ₹${total}
+        </p>
+        <button class="btn-primary" onclick="closeCheckout()" style="margin-top:24px;display:inline-block">Done</button>
+      </div>`;
+  }
 }
 function getCheckoutForm(){
   const total = 0;
@@ -1845,67 +1890,166 @@ function initAdmin(){
   document.getElementById('adminLogin').style.display = 'block';
   document.getElementById('adminDash').style.display = 'none';
 }
-function adminLogin(){
-  const user = document.getElementById('adminUser').value;
+async function adminLogin(){
+  const user = document.getElementById('adminUser').value.trim();
   const pass = document.getElementById('adminPass').value;
   const err = document.getElementById('loginError');
-  if(user==='admin' && pass==='brew123'){
-    err.style.display='none';
-    document.getElementById('adminLogin').style.display='none';
-    document.getElementById('adminDash').style.display='block';
-    renderAdminDash();
-  } else {
-    err.style.display='block';
+  const btn = document.querySelector('#adminLogin .btn-primary');
+  
+  if(!user || !pass){ 
+    err.textContent = '❌ Please enter username and password.'; 
+    err.style.display = 'block'; 
+    return; 
   }
+  
+  btn.textContent = 'Signing in…'; 
+  btn.disabled = true;
+  
+  try {
+    const res = await fetch(`${API_BASE}/api/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ user, pass })
+    });
+    const data = await res.json();
+    if(res.ok && data.token){
+      localStorage.setItem('admin_token', data.token);
+      err.style.display = 'none';
+      document.getElementById('adminLogin').style.display = 'none';
+      document.getElementById('adminDash').style.display = 'block';
+      renderAdminDash();
+    } else {
+      err.textContent = '❌ ' + (data.message || 'Invalid credentials');
+      err.style.display = 'block';
+    }
+  } catch(e) {
+    err.textContent = '❌ Cannot reach server. Is the backend running?';
+    err.style.display = 'block';
+  }
+  btn.textContent = 'Sign In →'; 
+  btn.disabled = false;
 }
+
 function adminLogout(){
-  document.getElementById('adminLogin').style.display='block';
-  document.getElementById('adminDash').style.display='none';
-  document.getElementById('adminUser').value='admin';
-  document.getElementById('adminPass').value='';
+  localStorage.removeItem('admin_token');
+  document.getElementById('adminLogin').style.display = 'block';
+  document.getElementById('adminDash').style.display = 'none';
+  document.getElementById('adminUser').value = 'brews_admin';
+  document.getElementById('adminPass').value = '';
 }
-function renderAdminDash(){
-  const orders_ = JSON.parse(localStorage.getItem('brewsOrders') || '[]');
-  const total = orders_.reduce((s,o) => s+o.total, 0);
-  const pending = orders_.filter(o => o.status==='Pending').length;
-  const completed = orders_.filter(o => o.status==='Completed').length;
+
+async function renderAdminDash(){
+  const token = localStorage.getItem('admin_token');
+  let orders_ = [];
+  let isLocalMode = false;
+  
+  if (token) {
+    try {
+      const res = await fetch(`${API_BASE}/api/orders`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (res.ok) {
+        orders_ = await res.json();
+      } else if (res.status === 401) {
+        showToast('Session expired. Please log in again.');
+        adminLogout();
+        return;
+      } else {
+        isLocalMode = true;
+      }
+    } catch (e) {
+      console.error('Cannot reach backend to fetch orders, using localStorage:', e);
+      isLocalMode = true;
+    }
+  } else {
+    isLocalMode = true;
+  }
+
+  if (isLocalMode) {
+    orders_ = JSON.parse(localStorage.getItem('brewsOrders') || '[]');
+  }
+
+  const total = orders_.reduce((s,o) => s + (o.total || 0), 0);
+  const pending = orders_.filter(o => {
+    const st = String(o.status).toLowerCase();
+    return st === 'pending';
+  }).length;
+  const completed = orders_.filter(o => {
+    const st = String(o.status).toLowerCase();
+    return st === 'completed';
+  }).length;
+
   document.getElementById('adminStats').innerHTML = `
     <div class="admin-stat"><div class="admin-stat-num">${orders_.length}</div><div class="admin-stat-label">Total Orders</div></div>
     <div class="admin-stat"><div class="admin-stat-num">₹${total}</div><div class="admin-stat-label">Total Sales</div></div>
     <div class="admin-stat"><div class="admin-stat-num">${pending}</div><div class="admin-stat-label">Pending</div></div>
     <div class="admin-stat"><div class="admin-stat-num">${completed}</div><div class="admin-stat-label">Completed</div></div>`;
   document.getElementById('orderCount').textContent = `${orders_.length} orders`;
+  
   const tbody = document.getElementById('ordersBody');
   if(orders_.length === 0){
     tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--text-light)">No orders yet. Place some orders from the menu!</td></tr>`;
     return;
   }
-  tbody.innerHTML = orders_.slice().reverse().map((o,i) => {
-    const realIdx = orders_.length - 1 - i;
+
+  tbody.innerHTML = orders_.map((o) => {
+    const orderIdDisplay = o._id ? `#${o._id.slice(-6).toUpperCase()}` : o.id;
+    const nameDisplay = o.name || o.customer;
+    const itemsDisplay = o.items.map(it => `${it.name}${it.variant ? ` (${it.variant})` : ''} ×${it.qty || 1}`).join(', ');
+    const timeDisplay = o.createdAt ? new Date(o.createdAt).toLocaleString('en-IN', {day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit'}) : o.time;
+    const currentStatus = String(o.status).toLowerCase();
+
     return `<tr>
-      <td><b>${o.id}</b></td>
-      <td>${o.customer}</td>
+      <td><b>${orderIdDisplay}</b></td>
+      <td>${nameDisplay}</td>
       <td>${o.phone}</td>
-      <td style="max-width:200px;white-space:normal;font-size:0.8rem">${o.items.map(it=>it.name).join(', ')}</td>
+      <td style="max-width:200px;white-space:normal;font-size:0.8rem">${itemsDisplay}</td>
       <td><b>₹${o.total}</b></td>
-      <td style="font-size:0.78rem">${o.time}</td>
+      <td style="font-size:0.78rem">${timeDisplay}</td>
       <td>
-        <select class="status-select" onchange="updateOrderStatus(${realIdx},this.value)">
-          <option ${o.status==='Pending'?'selected':''}>Pending</option>
-          <option ${o.status==='Preparing'?'selected':''}>Preparing</option>
-          <option ${o.status==='Completed'?'selected':''}>Completed</option>
+        <select class="status-select" onchange="updateOrderStatus('${o._id || o.id}', this.value, ${!o._id})">
+          <option value="pending" ${currentStatus==='pending'?'selected':''}>Pending</option>
+          <option value="preparing" ${currentStatus==='preparing'?'selected':''}>Preparing</option>
+          <option value="completed" ${currentStatus==='completed'?'selected':''}>Completed</option>
         </select>
       </td>
     </tr>`;
   }).join('');
 }
-function updateOrderStatus(idx, status){
-  const orders_ = JSON.parse(localStorage.getItem('brewsOrders') || '[]');
-  orders_[idx].status = status;
-  localStorage.setItem('brewsOrders', JSON.stringify(orders_));
-  orders = orders_;
-  showToast(`Order status updated to ${status}`);
-  renderAdminDash();
+
+async function updateOrderStatus(id, status, isLocal){
+  if (isLocal) {
+    const orders_ = JSON.parse(localStorage.getItem('brewsOrders') || '[]');
+    const idx = orders_.findIndex(o => o.id === id);
+    if (idx !== -1) {
+      orders_[idx].status = status.charAt(0).toUpperCase() + status.slice(1);
+      localStorage.setItem('brewsOrders', JSON.stringify(orders_));
+      showToast(`Order status updated to ${status}`);
+    }
+    renderAdminDash();
+  } else {
+    const token = localStorage.getItem('admin_token');
+    try {
+      const res = await fetch(`${API_BASE}/api/orders/${id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ status })
+      });
+      if (res.ok) {
+        showToast(`Order status updated to ${status}`);
+      } else {
+        const data = await res.json();
+        showToast('⚠️ ' + (data.message || 'Failed to update status.'));
+      }
+    } catch (e) {
+      console.error('Cannot update status on backend:', e);
+      showToast('⚠️ Cannot reach server to update status.');
+    }
+    renderAdminDash();
+  }
 }
 
 // ==================== TOAST ====================

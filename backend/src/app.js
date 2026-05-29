@@ -66,7 +66,7 @@ app.use('/api/auth', authLimiter, authRoutes);
 app.use('/api/orders', orderRoutes);
 
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', mode: process.env.USE_MOCK_DB === 'true' ? 'mock' : 'mongo' });
+  res.json({ status: 'ok', mode: 'mongo' });
 });
 
 app.use((req, res) => {

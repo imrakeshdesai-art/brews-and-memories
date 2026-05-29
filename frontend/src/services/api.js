@@ -1,14 +1,17 @@
 import axios from 'axios';
 import { getAdminToken } from './auth';
 
+const isFileProtocol = window.location.protocol === 'file:';
 const isLocal =
-  window.location.protocol === 'file:' ||
+  isFileProtocol ||
   window.location.hostname === 'localhost' ||
   window.location.hostname === '127.0.0.1';
 
-// Local: Vite proxy handles /api → localhost:5000
+// Local: Vite proxy handles /api → localhost:5000, but file protocol needs explicit host
 // Production (Vercel): calls go directly to Render backend
-const API_BASE = isLocal
+const API_BASE = isFileProtocol
+  ? 'http://localhost:5000'
+  : isLocal
   ? ''
   : 'https://brews-backend.onrender.com';
 
