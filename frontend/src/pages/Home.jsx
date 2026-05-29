@@ -91,10 +91,10 @@ const INSTAGRAM_POSTS = [
     postUrl: 'https://www.instagram.com/reel/DXlAGMzkX4g/?igsh=aXhkN3NlOWlxMXVo'
   },
   {
-    username: 'aditya_k',
-    initials: 'AK',
-    image: '/images/instagram/pizza.webp',
-    caption: 'Fresh, cheesy, and 100% pure veg! Outstanding Peri Peri Paneer Pizza at @brews_and_memories_ 🍕😋 def coming back.',
+    username: 'foodieme_5',
+    initials: 'FM',
+    image: '/images/instagram/foodieme_5.jpeg',
+    caption: 'Hot dog.. coffee.... and vibes...☕️\n📍Brews and Memories\n\n#winter#food#hotdog#coffee',
     likes: 312,
     comments: 48,
     date: 'May 05, 2026',
