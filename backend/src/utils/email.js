@@ -1,10 +1,57 @@
 const nodemailer = require('nodemailer');
+const https = require('https');
 
 // ── Config ───────────────────────────────────────────────────────────────────
 const GMAIL_USER = process.env.GMAIL_USER;   // e.g. brewsandmemories@gmail.com
 const GMAIL_PASS = process.env.GMAIL_APP_PASS; // Gmail App Password (16 chars)
+const GMAIL_PROXY_URL = process.env.GMAIL_PROXY_URL; // Google Apps Script URL
+const GMAIL_PROXY_TOKEN = process.env.GMAIL_PROXY_TOKEN || 'brews-memories-secret';
 
-// ── Transporter ──────────────────────────────────────────────────────────────
+// ── HTTPS Helper for Proxy ────────────────────────────────────────────────────
+function sendPostRequest(url, data) {
+  return new Promise((resolve, reject) => {
+    try {
+      const urlObj = new URL(url);
+      const postData = JSON.stringify(data);
+      
+      const options = {
+        hostname: urlObj.hostname,
+        path: urlObj.pathname + urlObj.search,
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Content-Length': Buffer.byteLength(postData)
+        },
+        timeout: 10000 // 10 seconds timeout
+      };
+      
+      const req = https.request(options, (res) => {
+        let body = '';
+        res.on('data', (chunk) => body += chunk);
+        res.on('end', () => {
+          try {
+            resolve(JSON.parse(body));
+          } catch (e) {
+            reject(new Error('Invalid JSON response from proxy'));
+          }
+        });
+      });
+      
+      req.on('error', (e) => reject(e));
+      req.on('timeout', () => {
+        req.destroy();
+        reject(new Error('Proxy connection timed out'));
+      });
+      
+      req.write(postData);
+      req.end();
+    } catch (err) {
+      reject(err);
+    }
+  });
+}
+
+// ── Transporter (For Direct SMTP Fallback) ────────────────────────────────────
 function createTransporter() {
   return nodemailer.createTransport({
     service: 'gmail',
@@ -122,28 +169,55 @@ function buildCustomerEmailHTML({ name, items, total, payment, address, orderId 
 
 // ── Main send function ────────────────────────────────────────────────────────
 async function sendOrderEmail(orderData) {
-  if (!GMAIL_USER || !GMAIL_PASS) {
-    console.warn('[Email] Gmail credentials not set — skipping email notification.');
-    return;
-  }
   if (!orderData.email) {
     console.log('[Email] No customer email provided — skipping.');
     return;
   }
 
-  const transporter = createTransporter();
+  const subject = `✅ Order Confirmed — Brews & Memories (#${String(orderData.orderId).slice(-6)})`;
+  const htmlContent = buildCustomerEmailHTML(orderData);
 
+  // 1️⃣ Try sending via Google HTTP Proxy if configured (Bypasses Render free tier SMTP blocks)
+  if (GMAIL_PROXY_URL) {
+    try {
+      console.log(`[Email] Attempting HTTP Proxy send to ${orderData.email}...`);
+      const result = await sendPostRequest(GMAIL_PROXY_URL, {
+        to: orderData.email,
+        subject: subject,
+        htmlBody: htmlContent,
+        token: GMAIL_PROXY_TOKEN
+      });
+      
+      if (result && result.success) {
+        console.log(`[Email] Confirmation sent via HTTP Proxy → ${orderData.email}`);
+        return result;
+      } else {
+        throw new Error((result && result.error) || 'Proxy execution failed');
+      }
+    } catch (err) {
+      console.error('[Email] HTTP Proxy send failed:', err.message);
+      console.log('[Email] Falling back to direct SMTP...');
+    }
+  }
+
+  // 2️⃣ Direct SMTP Fallback (Will fail on Render Free tier due to port blocks, but works locally/paid tier)
+  if (!GMAIL_USER || !GMAIL_PASS) {
+    console.warn('[Email] Direct SMTP credentials not set — skipping fallback.');
+    return;
+  }
+
+  const transporter = createTransporter();
   try {
     const info = await transporter.sendMail({
       from: `"Brews & Memories ☕" <${GMAIL_USER}>`,
       to: orderData.email,
-      subject: `✅ Order Confirmed — Brews & Memories (#${String(orderData.orderId).slice(-6)})`,
-      html: buildCustomerEmailHTML(orderData),
+      subject: subject,
+      html: htmlContent,
     });
-    console.log(`[Email] Confirmation sent → ${orderData.email} | MessageID: ${info.messageId}`);
+    console.log(`[Email] Confirmation sent via SMTP → ${orderData.email} | MessageID: ${info.messageId}`);
     return info;
   } catch (err) {
-    console.error('[Email] Failed to send:', err.message);
+    console.error('[Email] Direct SMTP send failed:', err.message);
   }
 }
 
