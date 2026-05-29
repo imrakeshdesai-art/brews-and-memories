@@ -296,6 +296,7 @@ button {
   background: transparent;
   gap: 5px;
   flex-direction: column;
+  cursor: pointer;
 }
 
 .mobile-toggle span {
@@ -303,12 +304,25 @@ button {
   height: 2px;
   background: var(--cream);
   border-radius: 1px;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.mobile-toggle.open span:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+
+.mobile-toggle.open span:nth-child(2) {
+  opacity: 0;
+}
+
+.mobile-toggle.open span:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
 }
 
 .mobile-menu {
   display: none;
   position: fixed;
-  top: 68px;
+  top: 78px;
   left: 0;
   right: 0;
   background: var(--green-dark);
@@ -1231,7 +1245,7 @@ button {
   }
 
   .mobile-menu.open {
-    display: flex;
+    display: flex !important;
   }
 
   .hero-section {
@@ -1624,7 +1638,11 @@ button {
     padding: 12px 5% !important;
   }
   .mobile-menu {
-    top: 68px;
+    display: none;
+    top: 78px;
+  }
+  .mobile-menu.open {
+    display: flex !important;
   }
 }
 
