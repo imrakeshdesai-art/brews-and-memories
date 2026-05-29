@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router();
 
 const Order = require('../models/Order');
+const { sendOrderWhatsApp } = require('../utils/whatsapp');
 
 
 // ==================== CREATE ORDER ====================
@@ -57,6 +58,16 @@ router.post('/', async (req, res) => {
     });
 
     res.status(201).json(newOrder);
+
+    // 📲 Fire WhatsApp notifications (non-blocking — never fails the order)
+    sendOrderWhatsApp({
+      name:    newOrder.name,
+      phone:   newOrder.phone,
+      address: newOrder.address,
+      items:   newOrder.items,
+      total:   newOrder.total,
+      payment: newOrder.payment,
+    }).catch((err) => console.error('[WhatsApp] Unexpected error:', err.message));
 
   } catch (error) {
     console.error('Order creation error:', error);
