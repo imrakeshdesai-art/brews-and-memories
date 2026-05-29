@@ -107,10 +107,10 @@ export const menuData = {
       desc: 'Creamy and thick strawberry milkshake'
     },
     {
-      name: 'Batterscos Milk Shaker',
+      name: 'Butterscotch Milkshake',
       price: 119,
       emoji: '🥛',
-      desc: 'Creamy and thick batterscos milk shaker'
+      desc: 'Creamy and thick butterscotch milkshake'
     },
     {
       name: 'Mango Milk Shake',
@@ -312,7 +312,7 @@ export const menuData = {
       desc: 'Crispy patty in soft buns with fresh veggies'
     },
     {
-      name: 'Veg Cheesee Burger',
+      name: 'Veg Cheese Burger',
       price: 109,
       emoji: '🧀',
       desc: 'Crispy patty in soft buns with fresh veggies'
@@ -324,7 +324,7 @@ export const menuData = {
       desc: 'Crispy patty in soft buns with fresh veggies'
     },
     {
-      name: 'Barbeque Paneer Burger',
+      name: 'BBQ Paneer Burger',
       price: 119,
       emoji: '🍔',
       desc: 'Crispy patty in soft buns with fresh veggies'
@@ -344,7 +344,7 @@ export const menuData = {
       desc: 'Freshly toasted sandwich with butter and toppings'
     },
     {
-      name: 'Veg Cheesee Sandwich',
+      name: 'Veg Cheese Sandwich',
       price: 109,
       emoji: '🧀',
       desc: 'Freshly toasted sandwich with butter and toppings'
@@ -362,7 +362,7 @@ export const menuData = {
       desc: 'Freshly toasted sandwich with butter and toppings'
     },
     {
-      name: 'Burn Garlic Mushroom Sandwich',
+      name: 'Burnt Garlic Mushroom Sandwich',
       price: 149,
       emoji: '🧄',
       desc: 'Freshly toasted sandwich with butter and toppings'
@@ -386,7 +386,7 @@ export const menuData = {
       desc: 'Freshly toasted sandwich with butter and toppings'
     },
     {
-      name: 'Bbq Paneer Sandwich',
+      name: 'BBQ Paneer Sandwich',
       price: 109,
       emoji: '🥪',
       desc: 'Freshly toasted sandwich with butter and toppings'
@@ -430,16 +430,16 @@ export const menuData = {
       desc: 'Freshly prepared garlic pops'
     },
     {
-      name: 'Ring Onion',
+      name: 'Onion Rings',
       price: 99,
       emoji: '🍟',
-      desc: 'Freshly prepared ring onion'
+      desc: 'Freshly prepared onion rings'
     },
     {
-      name: 'Smily',
+      name: 'Smileys',
       price: 99,
       emoji: '🍟',
-      desc: 'Freshly prepared smily'
+      desc: 'Freshly prepared smileys'
     },
   ],
   'Rolls': [
@@ -482,10 +482,10 @@ export const menuData = {
       desc: 'Freshly prepared veg momo fried'
     },
     {
-      name: 'Corn Momo Fries',
+      name: 'Corn Momos Fried',
       price: 89,
       emoji: '🌽',
-      desc: 'Freshly prepared corn momo fries'
+      desc: 'Freshly prepared corn momos fried'
     },
   ],
   'Maggi': [
@@ -496,10 +496,10 @@ export const menuData = {
       desc: 'Freshly prepared veg maggi'
     },
     {
-      name: 'Cheesee Maggi',
+      name: 'Cheese Maggi',
       price: 99,
       emoji: '🧀',
-      desc: 'Freshly prepared cheesee maggi'
+      desc: 'Freshly prepared cheese maggi'
     },
     {
       name: 'Peri Peri Maggi',
@@ -516,7 +516,7 @@ export const menuData = {
   ],
   'Garlic Bread': [
     {
-      name: 'Cheesee Garlic Bread',
+      name: 'Cheese Garlic Bread',
       price: 109,
       emoji: '🧀',
       desc: 'Baked with garlic butter and herbs'
@@ -528,7 +528,7 @@ export const menuData = {
       desc: 'Baked with garlic butter and herbs'
     },
     {
-      name: 'Premium Garlic Bread Capsicum,Onion',
+      name: 'Premium Garlic Bread (Capsicum & Onion)',
       price: 129,
       emoji: '🧄',
       desc: 'Topped with fresh capsicum and onions'

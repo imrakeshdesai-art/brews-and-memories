@@ -89,7 +89,12 @@ function Menu({ addToCart }) {
           <span>🔍</span>
           <input
             value={searchQuery}
-            onChange={(event) => setSearchQuery(event.target.value)}
+            onChange={(event) => {
+              setSearchQuery(event.target.value);
+              if (activeCategory !== 'All') {
+                setActiveCategory('All');
+              }
+            }}
             placeholder="Search items…"
             aria-label="Search menu items"
           />

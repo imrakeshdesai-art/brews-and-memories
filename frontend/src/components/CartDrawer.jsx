@@ -27,7 +27,9 @@ function CartDrawer({ open, cart, total, onClose, onUpdateQty, onRemove, onCheck
                 <div>
                   <div className="cart-item-name">{item.name}</div>
                   {item.variant ? (
-                    <div style={{ fontSize: '0.8rem', color: 'var(--text-light)' }}>Size: {item.variant}</div>
+                    <div style={{ fontSize: '0.8rem', color: 'var(--text-light)' }}>
+                      Size: {item.variant === 'S' ? 'Small' : item.variant === 'M' ? 'Medium' : item.variant === 'L' ? 'Large' : item.variant}
+                    </div>
                   ) : null}
                   <div className="cart-item-price">₹{item.price} each</div>
                   <div className="cart-item-state">

@@ -26,7 +26,7 @@ function CheckoutModal({ open, cart, total, payment, setPayment, onClose, onClea
     () =>
       cart.map((item) => (
         <div key={item.id} style={{ marginBottom: 8 }}>
-          {item.emoji} {item.name} {item.variant ? `(${item.variant})` : ''} × {item.qty} — ₹{item.price * item.qty}
+          {item.emoji} {item.name} {item.variant ? `(${item.variant === 'S' ? 'Small' : item.variant === 'M' ? 'Medium' : item.variant === 'L' ? 'Large' : item.variant})` : ''} × {item.qty} — ₹{item.price * item.qty}
         </div>
       )),
     [cart]
