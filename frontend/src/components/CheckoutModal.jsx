@@ -5,6 +5,7 @@ import { useToast } from './ToastProvider';
 function CheckoutModal({ open, cart, total, payment, setPayment, onClose, onClearCart }) {
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
+  const [email, setEmail] = useState('');
   const [address, setAddress] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [orderSuccess, setOrderSuccess] = useState(null);
@@ -15,6 +16,7 @@ function CheckoutModal({ open, cart, total, payment, setPayment, onClose, onClea
       setOrderSuccess(null);
       setName('');
       setPhone('');
+      setEmail('');
       setAddress('');
       setIsLoading(false);
     }
@@ -46,6 +48,7 @@ function CheckoutModal({ open, cart, total, payment, setPayment, onClose, onClea
       const response = await api.post('/orders', {
         name: name.trim(),
         phone: phone.trim(),
+        email: email.trim(),
         address: address.trim(),
         items: cart,
         total,
@@ -122,6 +125,10 @@ function CheckoutModal({ open, cart, total, payment, setPayment, onClose, onClea
               <div className="form-group">
                 <label htmlFor="order-phone">Phone Number *</label>
                 <input id="order-phone" type="tel" value={phone} onChange={(event) => setPhone(event.target.value)} placeholder="+91 XXXXX XXXXX" />
+              </div>
+              <div className="form-group">
+                <label htmlFor="order-email">Email Address <span style={{color:'#aaa',fontWeight:400,fontSize:'0.85em'}}>(optional — for confirmation)</span></label>
+                <input id="order-email" type="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="yourname@gmail.com" />
               </div>
               <div className="form-group">
                 <label htmlFor="order-address">Table Number *</label>

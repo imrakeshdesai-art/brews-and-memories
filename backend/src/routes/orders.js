@@ -4,12 +4,13 @@ const router = express.Router();
 
 const Order = require('../models/Order');
 const { sendOrderWhatsApp } = require('../utils/whatsapp');
+const { sendOrderEmail } = require('../utils/email');
 
 
 // ==================== CREATE ORDER ====================
 router.post('/', async (req, res) => {
   try {
-    const { name, phone, address, items, total, payment } = req.body;
+    const { name, phone, email, address, items, total, payment } = req.body;
 
     // 🔒 Strong validation
     if (!name || !phone || !address) {
@@ -49,6 +50,7 @@ router.post('/', async (req, res) => {
     const newOrder = await Order.create({
       name: name.trim(),
       phone: normalizedPhone,
+      email: (email || '').trim().toLowerCase(),
       address: address.trim(),
       items: normalizedItems,
       total: Number(total),
@@ -68,6 +70,17 @@ router.post('/', async (req, res) => {
       total:   newOrder.total,
       payment: newOrder.payment,
     }).catch((err) => console.error('[WhatsApp] Unexpected error:', err.message));
+
+    // 📧 Fire email confirmation (non-blocking — never fails the order)
+    sendOrderEmail({
+      name:    newOrder.name,
+      email:   newOrder.email,
+      orderId: newOrder._id,
+      address: newOrder.address,
+      items:   newOrder.items,
+      total:   newOrder.total,
+      payment: newOrder.payment,
+    }).catch((err) => console.error('[Email] Unexpected error:', err.message));
 
   } catch (error) {
     console.error('Order creation error:', error);
