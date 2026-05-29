@@ -69,6 +69,17 @@ const INSTAGRAM_POSTS = [
     postUrl: 'https://www.instagram.com/reels/DXb9UdHj9jh/'
   },
   {
+    username: 'manju.duddagi',
+    collaborators: 'and 1 other',
+    initials: 'MD',
+    image: '/images/instagram/manju_duddagi.jpeg',
+    caption: 'New Cafein Bijapur..! ✨\nCome for The Brews, Stay for The Memories ☕💛\n📍Visit Today & Create Your Story Here!\n#brewsandmemories\n\n#brewsandmemories #cafelaunch #coffeevibes #cozycafe #cafenights #newcafeInbijapur #coffeeloversclub #cafegoals #eveningvibes #foodielife #bestplace #instacafevibes #bijapur #bijapurmerijaan #bijapurfoodwalks #vijayapura #karnataka #foodlovers #viral #reels #cafe #cafelovers',
+    likes: 356,
+    comments: 52,
+    date: 'May 08, 2026',
+    postUrl: 'https://www.instagram.com/reels/DQssSCUibgo/'
+  },
+  {
     username: 'aditya_k',
     initials: 'AK',
     image: '/images/instagram/pizza.webp',
@@ -77,16 +88,6 @@ const INSTAGRAM_POSTS = [
     comments: 48,
     date: 'May 05, 2026',
     postUrl: 'https://www.instagram.com/p/DSHhXKkDakg/?igsh=ZXNkZnRqbjkxanFi'
-  },
-  {
-    username: 'priya_sharma',
-    initials: 'PS',
-    image: '/images/instagram/chocolate_safari.webp',
-    caption: 'Sunday dates at my favorite spot! Loaded Chocolate Safari sundae is a must-try at @brews_and_memories_ 🍨🍫✨',
-    likes: 156,
-    comments: 18,
-    date: 'Apr 28, 2026',
-    postUrl: 'https://www.instagram.com/reel/DQssSCUibgo/?igsh=MXkwN3Ewb3luY29tbg=='
   },
   {
     username: 'mohammed_a',
