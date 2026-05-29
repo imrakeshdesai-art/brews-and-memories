@@ -11,7 +11,7 @@ function Admin() {
 
   const toast = useToast();
 
-  const [user, setUser] = useState('brews_admin');
+  const [user, setUser] = useState('admin@brews-memories.local');
   const [pass, setPass] = useState('');
 
   // IMPORTANT
@@ -273,19 +273,19 @@ function Admin() {
             <div className="form-group">
 
               <label htmlFor="admin-user">
-                Username
+                Admin Email
               </label>
 
               <input
                 id="admin-user"
-                type="text"
+                type="email"
                 value={user}
                 onChange={(e) =>
                   setUser(e.target.value)
                 }
-                placeholder="Admin username"
+                placeholder="admin@brews-memories.local"
                 required
-                autoComplete="username"
+                autoComplete="email"
               />
 
             </div>
