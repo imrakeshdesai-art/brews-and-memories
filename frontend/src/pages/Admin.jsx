@@ -11,7 +11,7 @@ function Admin() {
 
   const toast = useToast();
 
-  const [user, setUser] = useState('admin@brews-memories.local');
+  const [user, setUser] = useState('admin@brews.local');
   const [pass, setPass] = useState('');
 
   // IMPORTANT
@@ -283,7 +283,7 @@ function Admin() {
                 onChange={(e) =>
                   setUser(e.target.value)
                 }
-                placeholder="admin@brews-memories.local"
+                placeholder="admin@brews.local"
                 required
                 autoComplete="email"
               />
