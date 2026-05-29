@@ -48,23 +48,23 @@ const FAVORITES_CONFIG = [
 // Sourced directly from official Instagram handle @brews_and_memories_
 const INSTAGRAM_POSTS = [
   {
-    image: '/images/instagram/birthday_celebration.png',
-    caption: '🎉 Creating beautiful memories at Brews & Memories! Book your private birthday table decoration for free.',
+    image: '/images/instagram/chocolate_safari.webp',
+    caption: '🍫 Indulge in our signature Chocolate Safari - a premium chocolate ice cream sundae loaded with rich chocolate chips and fresh apple slices! 🍏🍨',
     likes: 245,
     comments: 34,
     date: 'May 18, 2026',
     postUrl: 'https://www.instagram.com/brews_and_memories_/'
   },
   {
-    image: '/images/instagram/post1.png',
-    caption: '🥤 Beat the summer heat with Vijayapura\'s most popular Hazelnut Cold Coffee! Creamy, rich, and freshly brewed. 🤎',
+    image: '/images/instagram/cold_coffee.webp',
+    caption: '🥤 Beat the summer heat with Vijayapura\'s most popular Cold Coffee! Creamy, rich, and freshly brewed. 🤎',
     likes: 189,
     comments: 24,
     date: 'May 12, 2026',
     postUrl: 'https://www.instagram.com/brews_and_memories_/'
   },
   {
-    image: '/images/instagram/post2.png',
+    image: '/images/instagram/pizza.webp',
     caption: '🍕 Fresh, cheesy, and hand-tossed Peri Peri Paneer Pizza hot out of the oven! 100% pure vegetarian goodness. 😋',
     likes: 312,
     comments: 48,
@@ -72,24 +72,24 @@ const INSTAGRAM_POSTS = [
     postUrl: 'https://www.instagram.com/brews_and_memories_/'
   },
   {
-    image: '/images/instagram/post3.png',
-    caption: '🥪 A delicious, crispy double-decker Veg Club Sandwich paired with golden fries. Perfect evening snack! 🍟',
+    image: '/images/instagram/sandwich.webp',
+    caption: '🥪 A delicious, crispy grilled Veg Club Sandwich. The perfect evening snack! 🥪',
     likes: 156,
     comments: 18,
     date: 'Apr 28, 2026',
     postUrl: 'https://www.instagram.com/brews_and_memories_/'
   },
   {
-    image: '/images/instagram/post4.png',
-    caption: '✨ Slow down, relax, and create memories in our cozy modern café interior. Come for the coffee, stay for the vibe. 🛋️',
+    image: '/images/instagram/ambience_night.webp',
+    caption: '✨ Slow down, relax, and create memories in our cozy outdoor garden setup. Come for the coffee, stay for the vibe. 🛋️',
     likes: 278,
     comments: 16,
     date: 'Apr 20, 2026',
     postUrl: 'https://www.instagram.com/brews_and_memories_/'
   },
   {
-    image: '/images/instagram/post5.png',
-    caption: '🍔 Our premium Veg Burger - a crispy golden patty with fresh lettuce, tomatoes, and secret sauce inside soft toasted buns. 😋',
+    image: '/images/instagram/fries.webp',
+    caption: '🍟 Crispy and delicious Honey Chilli Sesame Fries. The ultimate sweet, spicy, and crunchy snack to share! 😋',
     likes: 210,
     comments: 29,
     date: 'Apr 12, 2026',
