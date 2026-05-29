@@ -80,6 +80,17 @@ const INSTAGRAM_POSTS = [
     postUrl: 'https://www.instagram.com/reels/DQssSCUibgo/'
   },
   {
+    username: 'mahantesh_loni',
+    collaborators: 'and brews_and_memories_',
+    initials: 'ML',
+    image: '/images/instagram/mahantesh_loni.jpeg',
+    caption: '#cafe #coffeelover #pizza',
+    likes: 294,
+    comments: 21,
+    date: 'Apr 24, 2026',
+    postUrl: 'https://www.instagram.com/reel/DXlAGMzkX4g/?igsh=aXhkN3NlOWlxMXVo'
+  },
+  {
     username: 'aditya_k',
     initials: 'AK',
     image: '/images/instagram/pizza.webp',
@@ -88,16 +99,6 @@ const INSTAGRAM_POSTS = [
     comments: 48,
     date: 'May 05, 2026',
     postUrl: 'https://www.instagram.com/p/DSHhXKkDakg/?igsh=ZXNkZnRqbjkxanFi'
-  },
-  {
-    username: 'mohammed_a',
-    initials: 'MA',
-    image: '/images/instagram/ambience_night.webp',
-    caption: 'Mellow warm lighting, slow music, and great coffee. Creating beautiful memories at @brews_and_memories_ outdoor garden setup ✨🌙☕',
-    likes: 278,
-    comments: 16,
-    date: 'Apr 20, 2026',
-    postUrl: 'https://www.instagram.com/reel/DXlAGMzkX4g/?igsh=aXhkN3NlOWlxMXVo'
   }
 ];
 
