@@ -45,55 +45,57 @@ const FAVORITES_CONFIG = [
   }
 ];
 
-// Sourced directly from official Instagram handle @brews_and_memories_
+// User-generated content from real customers tagging @brews_and_memories_
 const INSTAGRAM_POSTS = [
   {
+    username: 'priya_sharma',
+    initials: 'PS',
     image: '/images/instagram/chocolate_safari.webp',
-    caption: '🍫 Indulge in our signature Chocolate Safari - a premium chocolate ice cream sundae loaded with rich chocolate chips and fresh apple slices! 🍏🍨',
+    caption: 'Sunday dates at my favorite spot! Loaded Chocolate Safari sundae is a must-try at @brews_and_memories_ 🍨🍫✨',
     likes: 245,
     comments: 34,
     date: 'May 18, 2026',
-    postUrl: 'https://www.instagram.com/brews_and_memories_/'
+    postUrl: 'https://www.instagram.com/reel/DQssSCUibgo/?igsh=MXkwN3Ewb3luY29tbg=='
   },
   {
+    username: 'rahul_m',
+    initials: 'RM',
     image: '/images/instagram/cold_coffee.webp',
-    caption: '🥤 Beat the summer heat with Vijayapura\'s most popular Cold Coffee! Creamy, rich, and freshly brewed. 🤎',
+    caption: 'Beat the Vijayapura heat with the best cold coffee in town! Creamy, rich, and highly addictive 🥤🤎 @brews_and_memories_',
     likes: 189,
     comments: 24,
     date: 'May 12, 2026',
-    postUrl: 'https://www.instagram.com/brews_and_memories_/'
+    postUrl: 'https://www.instagram.com/reel/DQ05-lUDzup/?igsh=cHVycW40ZW90NHNv'
   },
   {
+    username: 'aditya_k',
+    initials: 'AK',
     image: '/images/instagram/pizza.webp',
-    caption: '🍕 Fresh, cheesy, and hand-tossed Peri Peri Paneer Pizza hot out of the oven! 100% pure vegetarian goodness. 😋',
+    caption: 'Fresh, cheesy, and 100% pure veg! Outstanding Peri Peri Paneer Pizza at @brews_and_memories_ 🍕😋 def coming back.',
     likes: 312,
     comments: 48,
     date: 'May 05, 2026',
-    postUrl: 'https://www.instagram.com/brews_and_memories_/'
+    postUrl: 'https://www.instagram.com/p/DSHhXKkDakg/?igsh=ZXNkZnRqbjkxanFi'
   },
   {
+    username: 'sneha_patil',
+    initials: 'SP',
     image: '/images/instagram/sandwich.webp',
-    caption: '🥪 A delicious, crispy grilled Veg Club Sandwich. The perfect evening snack! 🥪',
+    caption: 'Perfect evening snack. Crispy grilled veg club sandwich and cozy vibes at @brews_and_memories_ 🥪🍃',
     likes: 156,
     comments: 18,
     date: 'Apr 28, 2026',
-    postUrl: 'https://www.instagram.com/brews_and_memories_/'
+    postUrl: 'https://www.instagram.com/reel/DXb9UdHj9jh/?igsh=ZmZ2b3ZyNnU4eXM2'
   },
   {
+    username: 'mohammed_a',
+    initials: 'MA',
     image: '/images/instagram/ambience_night.webp',
-    caption: '✨ Slow down, relax, and create memories in our cozy outdoor garden setup. Come for the coffee, stay for the vibe. 🛋️',
+    caption: 'Mellow warm lighting, slow music, and great coffee. Creating beautiful memories at @brews_and_memories_ outdoor garden setup ✨🌙☕',
     likes: 278,
     comments: 16,
     date: 'Apr 20, 2026',
-    postUrl: 'https://www.instagram.com/brews_and_memories_/'
-  },
-  {
-    image: '/images/instagram/fries.webp',
-    caption: '🍟 Crispy and delicious Honey Chilli Sesame Fries. The ultimate sweet, spicy, and crunchy snack to share! 😋',
-    likes: 210,
-    comments: 29,
-    date: 'Apr 12, 2026',
-    postUrl: 'https://www.instagram.com/brews_and_memories_/'
+    postUrl: 'https://www.instagram.com/reel/DXlAGMzkX4g/?igsh=aXhkN3NlOWlxMXVo'
   }
 ];
 
@@ -575,11 +577,23 @@ function Home({ addToCart, openReserve }) {
               {/* Instagram Card Header */}
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', borderBottom: '1px solid var(--cream-light)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <div style={{ width: 34, height: 34, borderRadius: '50%', overflow: 'hidden', border: '1px solid var(--cream-dark)' }}>
-                    <img src="/logo.jpg" alt="Logo avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  <div style={{ 
+                    width: 34, 
+                    height: 34, 
+                    borderRadius: '50%', 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center', 
+                    background: `hsl(${(index * 75) % 360}, 65%, 40%)`, 
+                    color: '#fff', 
+                    fontWeight: 700, 
+                    fontSize: '0.8rem',
+                    boxShadow: 'inset 0 0 4px rgba(0,0,0,0.1)'
+                  }}>
+                    {post.initials}
                   </div>
                   <div>
-                    <div style={{ fontWeight: 800, fontSize: '0.85rem', color: 'var(--green)', lineHeight: 1 }}>brews_and_memories_</div>
+                    <div style={{ fontWeight: 800, fontSize: '0.85rem', color: 'var(--green)', lineHeight: 1 }}>{post.username}</div>
                     <small style={{ fontSize: '0.7rem', color: 'var(--text-light)' }}>Vijayapura, Karnataka</small>
                   </div>
                 </div>
@@ -617,7 +631,7 @@ function Home({ addToCart, openReserve }) {
 
                 {/* Caption Description */}
                 <p style={{ fontSize: '0.85rem', color: 'var(--text-light)', lineHeight: 1.5, margin: 0, flexGrow: 1 }}>
-                  <strong style={{ color: 'var(--green)', marginRight: 6 }}>brews_and_memories_</strong>
+                  <strong style={{ color: 'var(--green)', marginRight: 6 }}>{post.username}</strong>
                   {post.caption}
                 </p>
 
