@@ -1,7 +1,7 @@
 function Contact() {
   const phone = '+919945446137';
   const whatsappUrl = 'https://wa.me/919945446137?text=Hello%20Brews%20%26%20Memories%2C%20I%20would%20like%20to%20inquire!';
-  const directionsUrl = 'https://maps.google.com/?q=B+M+Patil+Circle+Ring+Rd+Vijayapura+Karnataka+586102';
+  const directionsUrl = 'https://maps.app.goo.gl/2fYwvrLgfTP9ytBW7?g_st=ac';
 
   return (
     <section className="section" id="contact" style={{ padding: '80px 20px' }}>
@@ -11,7 +11,7 @@ function Contact() {
         <div className="section-divider" style={{ width: 60, height: 3, background: 'var(--green)', margin: '16px auto 0' }} />
       </div>
 
-      <div className="contact-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 24, maxWidth: 1100, margin: '0 auto' }}>
+      <div className="contact-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 24, maxWidth: 1100, margin: '0 auto 40px' }}>
         
         {/* Address Card */}
         <div className="contact-card" style={{ background: '#fff', border: '1px solid var(--cream-dark)', borderRadius: 12, padding: '30px 24px', boxShadow: 'var(--shadow)', display: 'flex', flexDirection: 'column', gap: 14 }}>
@@ -93,30 +93,32 @@ function Contact() {
         </div>
       </div>
 
-      {/* Embed map */}
-      <div className="map-frame" style={{ marginTop: 48, borderRadius: 14, overflow: 'hidden', border: '2px solid var(--cream-dark)', boxShadow: 'var(--shadow)' }}>
-        <iframe
-          title="Brews & Memories Café Location B M Patil Circle Vijayapura"
-          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3821.5794503716616!2d75.70327361118671!3d16.822765383921865!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bc5d481f9b3e107%3A0x334460f9ec347101!2sB%20M%20Patil%20Circle%2C%20Vijayapura%2C%20Karnataka%20586102!5e0!3m2!1sen!2sin!4v1717000000000"
-          width="100%"
-          height="450"
-          style={{ border: 0, display: 'block' }}
-          allowFullScreen=""
-          loading="lazy"
-          referrerPolicy="no-referrer-when-downgrade"
-        />
-      </div>
+      {/* Embed map - Centered and Half size */}
+      <div style={{ maxWidth: '650px', margin: '0 auto', textAlign: 'center' }}>
+        <div className="map-frame" style={{ borderRadius: 14, overflow: 'hidden', border: '2px solid var(--cream-dark)', boxShadow: 'var(--shadow)', marginBottom: 24 }}>
+          <iframe
+            title="Brews & Memories Café Location B M Patil Circle Vijayapura"
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3821.5583151834246!2d75.70057147597148!3d16.823621218768007!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bc5da002e21ca6b%3A0x5e0f7227d8db546!2sBrews%20%26%20Memories!5e0!3m2!1sen!2sin!4v1717000000000"
+            width="100%"
+            height="350"
+            style={{ border: 0, display: 'block' }}
+            allowFullScreen=""
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+          />
+        </div>
 
-      <div style={{ textAlign: 'center', marginTop: 32 }}>
-        <a
-          href={directionsUrl}
-          target="_blank"
-          rel="noreferrer"
-          className="btn-primary"
-          style={{ display: 'inline-flex', padding: '14px 32px', fontSize: '1rem', textDecoration: 'none' }}
-        >
-          🗺️ Open directly in Google Maps App
-        </a>
+        <div>
+          <a
+            href={directionsUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="btn-primary"
+            style={{ display: 'inline-flex', padding: '12px 28px', fontSize: '0.95rem', textDecoration: 'none' }}
+          >
+            🗺️ Open directly in Google Maps App
+          </a>
+        </div>
       </div>
     </section>
   );

@@ -22,7 +22,13 @@ function About() {
             </p>
           </div>
           <div className="card" style={{ background: 'rgba(245,230,200,0.08)', border: 'none' }}>
-            <div style={{ fontSize: '5rem', textAlign: 'center', marginBottom: 24 }}>☕</div>
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 24 }}>
+              <img 
+                src="/logo.jpg" 
+                alt="Brews & Memories Logo" 
+                style={{ width: 120, height: 120, borderRadius: '50%', border: '3px solid var(--cream)', objectFit: 'cover', boxShadow: 'var(--shadow-lg)' }} 
+              />
+            </div>
             <div className="about-card" style={{ textAlign: 'center' }}>
               <div className="card-title" style={{ color: 'var(--cream)' }}>Brews & Memories</div>
               <div style={{ color: 'rgba(245,230,200,0.9)', lineHeight: 1.8 }}>

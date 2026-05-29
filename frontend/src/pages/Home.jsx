@@ -3,14 +3,14 @@ import { Link } from 'react-router-dom';
 import { useToast } from '../components/ToastProvider';
 
 const FEATURED_CATEGORIES = [
-  { emoji: '☕', label: 'Coffee', category: 'Beverages' },
-  { emoji: '🍕', label: 'Pizza', category: 'Pizza' },
-  { emoji: '🍔', label: 'Burgers', category: 'Burgers' },
-  { emoji: '🍝', label: 'Pasta', category: 'Pasta' },
-  { emoji: '🍫', label: 'Desserts', category: 'Desserts' },
-  { emoji: '🥤', label: 'Shakes', category: 'Milk Shakes' },
-  { emoji: '🥟', label: 'Momos', category: 'Momos' },
-  { emoji: '🥪', label: 'Sandwiches', category: 'Sandwiches' },
+  { image: 'https://images.unsplash.com/photo-1507133750040-4a8f57021571?auto=format&fit=crop&w=400&q=80', label: 'Coffee', category: 'Beverages' },
+  { image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=400&q=80', label: 'Pizza', category: 'Pizza' },
+  { image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=400&q=80', label: 'Burgers', category: 'Burgers' },
+  { image: 'https://images.unsplash.com/photo-1645112411341-6c4fd023714a?auto=format&fit=crop&w=400&q=80', label: 'Pasta', category: 'Pasta' },
+  { image: 'https://images.unsplash.com/photo-1551024601-bec78aea704b?auto=format&fit=crop&w=400&q=80', label: 'Desserts', category: 'Desserts' },
+  { image: 'https://images.unsplash.com/photo-1579954115545-a95591f28bfc?auto=format&fit=crop&w=400&q=80', label: 'Shakes', category: 'Milk Shakes' },
+  { image: 'https://images.unsplash.com/photo-1601050690597-df056fb4ce78?auto=format&fit=crop&w=400&q=80', label: 'Momos', category: 'Momos' },
+  { image: 'https://images.unsplash.com/photo-1528735602780-2552fd46c7af?auto=format&fit=crop&w=400&q=80', label: 'Sandwiches', category: 'Sandwiches' },
 ];
 
 const FAVORITES = [
@@ -294,7 +294,9 @@ function Home({ addToCart, openReserve }) {
                   transition: 'all 0.3s ease',
                 }}
               >
-                <div style={{ fontSize: '2.2rem', marginBottom: 8 }}>{cat.emoji}</div>
+                <div style={{ height: 100, borderRadius: 8, overflow: 'hidden', marginBottom: 12 }}>
+                  <img src={cat.image} alt={cat.label} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                </div>
                 <div style={{ fontWeight: 700, fontSize: '0.92rem', color: 'var(--green)' }}>{cat.label}</div>
               </div>
             </Link>
