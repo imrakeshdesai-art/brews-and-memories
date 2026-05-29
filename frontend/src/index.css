@@ -87,8 +87,9 @@ button {
   position: fixed;
   inset: 0 0 auto;
   z-index: 1000;
-  background: rgba(15, 61, 62, 0.96);
-  backdrop-filter: blur(12px);
+  background: rgba(15, 61, 62, 0.75) !important;
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
   padding: 0 5%;
   height: 78px;
   display: flex;
@@ -96,6 +97,8 @@ button {
   justify-content: space-between;
   gap: 14px;
   box-shadow: 0 2px 20px rgba(0, 0, 0, 0.2);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  transition: all 0.3s ease-in-out;
 }
 
 .site-brand {
