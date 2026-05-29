@@ -57,7 +57,7 @@ function Contact() {
       <div className="map-frame" style={{ marginTop: 48 }}>
         <iframe
           title="Brews & Memories Café Location"
-          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3821.6543!2d75.7151!3d16.8245!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bc5c0b0b0b0b0b1%3A0xabc123!2sB%20M%20Patil%20Circle%2C%20Vijayapura%2C%20Karnataka%20586102!5e0!3m2!1sen!2sin!4v1700000000000"
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3821.5794503716616!2d75.70327361118671!3d16.822765383921865!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bc5d481f9b3e107%3A0x334460f9ec347101!2sB%20M%20Patil%20Circle%2C%20Vijayapura%2C%20Karnataka%20586102!5e0!3m2!1sen!2sin!4v1717000000000"
           width="100%"
           height="420"
           style={{ border: 0, display: 'block' }}

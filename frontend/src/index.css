@@ -1,5 +1,5 @@
 :root {
-  color-scheme: dark;
+  color-scheme: light;
   --green: #0f3d3e;
   --green-light: #1a5c5e;
   --green-dark: #092829;
@@ -349,7 +349,7 @@ button {
 .hero-section {
   min-height: 92vh;
   padding: 120px 5% 80px;
-  background: linear-gradient(135deg, rgba(9, 40, 41, 0.88) 0%, rgba(15, 61, 62, 0.75) 50%, rgba(139, 0, 0, 0.4) 100%), url('/logo.jpg') center/cover no-repeat;
+  background: linear-gradient(135deg, rgba(9, 40, 41, 0.88) 0%, rgba(15, 61, 62, 0.75) 50%, rgba(139, 0, 0, 0.4) 100%), url('https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?q=80&w=1600') center/cover no-repeat;
   color: #fff;
   position: relative;
   overflow: hidden;

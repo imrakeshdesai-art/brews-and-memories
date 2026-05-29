@@ -97,7 +97,7 @@ function Admin() {
 
     loadOrders();
 
-    const interval = setInterval(loadOrders, 5000);
+    const interval = setInterval(loadOrders, 20000);
 
     return () => clearInterval(interval);
 

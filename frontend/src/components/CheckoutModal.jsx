@@ -138,6 +138,15 @@ function CheckoutModal({ open, cart, total, payment, setPayment, onClose, onClea
                     <span className="icon">💵</span>
                     <div>Pay at Counter</div>
                   </button>
+                  <button
+                    type="button"
+                    className="payment-card"
+                    disabled
+                    style={{ opacity: 0.6, cursor: 'not-allowed' }}
+                  >
+                    <span className="icon">📱</span>
+                    <div>Pay with UPI (Coming Soon)</div>
+                  </button>
                 </div>
               </div>
               <button className="btn-primary" type="submit" disabled={isLoading}>
