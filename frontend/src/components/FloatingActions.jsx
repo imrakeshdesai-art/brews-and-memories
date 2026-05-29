@@ -17,24 +17,6 @@ function FloatingActions() {
         >
           💬
         </a>
-        <a 
-          href={`tel:${phone}`} 
-          className="float-btn call" 
-          title="Call Us"
-          aria-label="Call Us"
-        >
-          📞
-        </a>
-        <a 
-          href={directionsUrl} 
-          target="_blank" 
-          rel="noreferrer" 
-          className="float-btn directions" 
-          title="Get Directions"
-          aria-label="Get Directions"
-        >
-          🗺️
-        </a>
       </div>
 
       {/* Mobile Bottom Sticky Bar Actions */}

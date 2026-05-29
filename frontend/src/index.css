@@ -313,9 +313,14 @@ button {
   border-radius: 8px;
 }
 
-/* Sections */
 .section {
-  padding: 80px 5%;
+  padding: 60px 5%;
+}
+
+@media (max-width: 768px) {
+  .section {
+    padding: 36px 4%;
+  }
 }
 
 .section-header {
@@ -1593,4 +1598,172 @@ button {
     padding-bottom: 64px;
   }
 }
+
+/* ==================== RESPONSIVE NAVIGATION COLLAPSE ==================== */
+@media (max-width: 992px) {
+  .desktop-menu {
+    display: none !important;
+  }
+  .mobile-toggle {
+    display: flex !important;
+  }
+  .site-nav {
+    min-height: 68px;
+    height: auto;
+    padding: 12px 5% !important;
+  }
+  .mobile-menu {
+    top: 68px;
+  }
+}
+
+/* ==================== HERO STAGGERED COLLAGE ==================== */
+.hero-food-collage {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-template-rows: repeat(12, 1fr);
+  height: 440px;
+  width: 100%;
+  position: relative;
+  margin-top: 20px;
+}
+
+.collage-item {
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.collage-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.collage-item:hover {
+  transform: translateY(-6px) scale(1.02);
+  z-index: 10 !important;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.45);
+}
+
+.collage-item.pizza {
+  grid-column: 1 / 9;
+  grid-row: 1 / 10;
+  z-index: 2;
+  border: 4px solid var(--green);
+}
+
+.collage-item.coffee {
+  grid-column: 6 / 13;
+  grid-row: 4 / 13;
+  z-index: 3;
+  border: 4px solid var(--green);
+}
+
+.collage-item.ambiance {
+  grid-column: 3 / 7;
+  grid-row: 8 / 13;
+  z-index: 4;
+  border: 3px solid var(--green);
+}
+
+@media (max-width: 768px) {
+  .hero-food-collage {
+    height: 320px;
+    max-width: 450px;
+    margin: 20px auto 0;
+  }
+}
+
+/* ==================== HOME GOOGLE REVIEWS SECTION ==================== */
+.reviews-grid-home {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 28px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.review-card-home {
+  background: #fff;
+  border: 1px solid var(--cream-dark);
+  border-radius: 16px;
+  padding: 26px;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  position: relative;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  text-align: left;
+}
+
+.review-card-home:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+.review-card-home .review-header-home {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.review-card-home .avatar-home {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--green);
+  color: var(--cream);
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  font-size: 1.1rem;
+  border: 2px solid rgba(245, 230, 200, 0.3);
+}
+
+.review-card-home .review-name-home {
+  font-weight: 800;
+  color: var(--green);
+  font-size: 0.98rem;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.review-card-home .review-meta-home {
+  font-size: 0.75rem;
+  color: var(--text-light);
+  margin-top: 2px;
+}
+
+.review-card-home .review-stars-home {
+  color: #fbbf24;
+  font-size: 1.1rem;
+  letter-spacing: 1px;
+}
+
+.review-card-home .review-text-home {
+  font-size: 0.88rem;
+  line-height: 1.6;
+  color: var(--text-light);
+  margin: 0;
+  font-style: italic;
+  flex-grow: 1;
+}
+
+.review-card-home .google-badge-home {
+  position: absolute;
+  top: 26px;
+  right: 26px;
+  font-size: 0.72rem;
+  color: var(--text-light);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 700;
+  opacity: 0.8;
+}
+
 

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useToast } from '../components/ToastProvider';
 import { menuData } from '../data/menuData';
+import { reviewsData } from '../data/reviewsData';
 
 const FEATURED_CATEGORIES = [
   { image: '/images/menu/cold_coffee.png', label: 'Cold Coffee', category: 'Cold Beverages' },
@@ -221,122 +222,100 @@ function Home({ addToCart, openReserve }) {
   return (
     <div>
       {/* COMPACT & BALANCED PREMIUM HERO */}
-      <section className="hero-section" style={{ background: 'var(--green)', color: 'var(--cream)', padding: '95px 20px 48px', minHeight: 'auto' }}>
+      <section className="hero-section" style={{ background: 'var(--green)', color: 'var(--cream)', padding: '105px 20px 48px', minHeight: 'auto' }}>
         <div className="hero-container" style={{ gap: 32 }}>
           
           {/* Left Column: Copy & Actions */}
-          <div className="hero-content" style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+          <div className="hero-content" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             
-            {/* Timings and Google rating trust badge */}
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, alignItems: 'center' }}>
-              <div className="hero-badge" style={{ background: 'var(--cream)', color: 'var(--green)', fontWeight: 700, padding: '5px 12px', borderRadius: 20, fontSize: '0.78rem', display: 'inline-flex', alignItems: 'center', gap: 6, margin: 0 }}>
-                <span className="dot" style={{ width: 8, height: 8, background: '#22c55e', borderRadius: '50%', display: 'inline-block' }} />
-                Open Daily · 10 AM – 10:30 PM
-              </div>
-              <span style={{ fontSize: '0.82rem', color: '#fbbf24', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-                ⭐ 4.8 / 5 Rated Café
-              </span>
-            </div>
-
-            <h1 className="hero-title" style={{ fontSize: 'clamp(2.4rem, 4.5vw, 3.8rem)', lineHeight: 1.15, color: 'var(--cream)', fontWeight: 800, margin: 0 }}>
+            <h1 className="hero-title" style={{ fontSize: 'clamp(2.4rem, 4.5vw, 3.8rem)', lineHeight: 1.12, color: 'var(--cream)', fontWeight: 800, margin: 0 }}>
               Brews &amp;<br />
               <span style={{ color: '#fbbf24', fontFamily: "'Dancing Script', cursive" }}>Memories</span>
             </h1>
 
-            {/* Tagline size enlarged for readability */}
-            <p className="hero-tagline" style={{ fontSize: 'clamp(1.15rem, 2.5vw, 1.6rem)', color: 'var(--cream-dark)', margin: 0, fontWeight: 700, lineHeight: 1.35, letterSpacing: '0.3px' }}>
-              Vijayapura's Favorite Cozy Cafe, Coffee &amp; More
-            </p>
-
-            {/* Strong Customer Review Proof Snippet */}
-            <div style={{ background: 'rgba(255,255,255,0.06)', borderLeft: '4px solid #fbbf24', padding: '12px 16px', borderRadius: '0 8px 8px 0', margin: '4px 0 8px' }}>
-              <div style={{ display: 'flex', gap: 4, color: '#fbbf24', fontSize: '1rem', marginBottom: 4 }}>⭐⭐⭐⭐⭐</div>
-              <p style={{ fontStyle: 'italic', color: 'rgba(245, 230, 200, 0.85)', margin: 0, fontSize: '0.88rem', lineHeight: 1.4 }}>
-                "Absolutely love their cold coffee and paneer pizza! The vibe is unmatched, best café in Vijayapura."
-              </p>
-              <div style={{ fontSize: '0.75rem', color: 'rgba(245,230,200,0.6)', marginTop: 4, fontWeight: 700 }}>— Verified Google Review</div>
+            {/* Social Proof Rating Badge directly under the title */}
+            <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '6px 12px', color: '#fbbf24', fontWeight: 700, fontSize: 'clamp(0.85rem, 1.8vw, 1.05rem)' }}>
+              <span>⭐⭐⭐⭐⭐</span>
+              <span style={{ color: 'var(--cream)' }}>4.8/5 Rating</span>
+              <span style={{ color: 'rgba(245, 230, 200, 0.4)', fontWeight: 400 }}>|</span>
+              <a 
+                href="https://maps.app.goo.gl/2fYwvrLgfTP9ytBW7" 
+                target="_blank" 
+                rel="noreferrer" 
+                style={{ color: '#fbbf24', textDecoration: 'underline', cursor: 'pointer' }}
+              >
+                500+ Google Reviews
+              </a>
             </div>
 
-            {/* Structured CTA buttons with clear hierarchy */}
-            <div className="hero-btns" style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }}>
-              <Link 
-                to="/menu" 
+            {/* Tagline explaining what the business is and why it's special */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, margin: '4px 0 8px' }}>
+              <p className="hero-tagline" style={{ fontSize: 'clamp(1.2rem, 2.5vw, 1.65rem)', color: '#fbbf24', margin: 0, fontWeight: 800, lineHeight: 1.3 }}>
+                Premium Coffee &amp; Pure Veg Café in Vijayapura
+              </p>
+              <p className="hero-subtitle" style={{ fontSize: 'clamp(0.95rem, 1.8vw, 1.15rem)', color: 'rgba(245, 230, 200, 0.85)', margin: 0, lineHeight: 1.45, fontWeight: 500 }}>
+                Fresh brews, delicious food, and a cozy atmosphere.
+              </p>
+            </div>
+
+            {/* Simplified CTA buttons with clear hierarchy (2 buttons maximum) */}
+            <div className="hero-btns" style={{ display: 'flex', flexWrap: 'wrap', gap: 14 }}>
+              <button 
+                onClick={openReserve} 
                 className="btn-primary" 
                 style={{ 
                   background: '#fbbf24', 
                   color: '#0f3d3e', 
-                  padding: '14px 28px', 
-                  fontSize: '0.98rem', 
+                  padding: '14px 32px', 
+                  fontSize: '1.02rem', 
                   fontWeight: 800, 
-                  borderRadius: 8, 
-                  minWidth: 150, 
-                  textAlign: 'center', 
-                  border: 'none', 
-                  boxShadow: '0 4px 14px rgba(251, 191, 36, 0.3)' 
-                }}
-              >
-                🟢 View Menu
-              </Link>
-              <button 
-                onClick={openReserve} 
-                className="btn-outline" 
-                style={{ 
-                  padding: '14px 28px', 
-                  fontSize: '0.98rem', 
-                  fontWeight: 700, 
                   borderRadius: 8, 
                   minWidth: 190, 
                   textAlign: 'center', 
+                  border: 'none', 
+                  cursor: 'pointer',
+                  boxShadow: '0 4px 14px rgba(251, 191, 36, 0.3)' 
+                }}
+                aria-label="Book a table now"
+              >
+                📅 Reserve A Table
+              </button>
+              <Link 
+                to="/menu" 
+                className="btn-outline" 
+                style={{ 
+                  padding: '14px 32px', 
+                  fontSize: '1.02rem', 
+                  fontWeight: 700, 
+                  borderRadius: 8, 
+                  minWidth: 160, 
+                  textAlign: 'center', 
                   background: 'transparent', 
                   border: '2px solid #fbbf24', 
-                  color: '#fbbf24' 
+                  color: '#fbbf24',
+                  textDecoration: 'none'
                 }}
-                aria-label="Book a table now popup"
               >
-                📅 Reserve Your Table
-              </button>
-              <a 
-                href="https://maps.app.goo.gl/2fYwvrLgfTP9ytBW7?g_st=ac"
-                target="_blank" 
-                rel="noreferrer" 
-                className="btn-outline"
-                style={{ 
-                  padding: '14px 24px', 
-                  fontSize: '0.92rem', 
-                  fontWeight: 600, 
-                  borderRadius: 8, 
-                  background: 'transparent', 
-                  border: '2px solid rgba(245,230,200,0.4)', 
-                  color: 'var(--cream-dark)',
-                  textDecoration: 'none',
-                  textAlign: 'center'
-                }}
-                aria-label="Get directions to the cafe on google maps"
-              >
-                🗺️ Get Directions
-              </a>
+                Explore Menu
+              </Link>
             </div>
           </div>
 
-          {/* Right Column: Hero Media with Overlay Trust Cards */}
-          <div className="hero-media" style={{ position: 'relative' }}>
-            <img 
-              src="/ambiance.webp" 
-              alt="Real interior ambiance of Brews & Memories Vijayapura"
-              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-            />
-            
-            {/* Overlay Bestseller Food Card */}
-            <div style={{ position: 'absolute', bottom: 16, left: 16, background: 'rgba(15, 61, 62, 0.92)', backdropFilter: 'blur(8px)', padding: '10px 14px', borderRadius: 8, border: '1px solid rgba(245,230,200,0.2)', color: 'var(--cream)', maxWidth: 220, textAlign: 'left', boxShadow: 'var(--shadow-lg)' }}>
-              <div style={{ color: '#fbbf24', fontSize: '0.8rem', fontWeight: 800, marginBottom: 2 }}>🔥 Best Sellers</div>
-              <div style={{ fontSize: '0.82rem', fontWeight: 700 }}>Hazelnut Cold Coffee & Pizza</div>
-              <div style={{ fontSize: '0.72rem', color: 'rgba(245,230,200,0.7)', marginTop: 2 }}>Order our signature combo now!</div>
-            </div>
-
-            {/* Overlay Count Stat Card */}
-            <div style={{ position: 'absolute', top: 16, right: 16, background: 'rgba(255,255,255,0.96)', padding: '8px 14px', borderRadius: 8, color: 'var(--green)', display: 'flex', flexDirection: 'column', alignItems: 'center', boxShadow: 'var(--shadow-lg)' }}>
-              <div style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--green)', lineHeight: 1 }}>50+</div>
-              <div style={{ fontSize: '0.62rem', textTransform: 'uppercase', letterSpacing: 0.5, color: 'var(--text-light)', fontWeight: 800, marginTop: 2 }}>Dishes & Brews</div>
+          {/* Right Column: Hero Media - Overlapping Grid Collage of Food & Drinks */}
+          <div className="hero-media-wrapper" style={{ width: '100%' }}>
+            <div className="hero-food-collage" aria-label="Brews & Memories Signature Food Collage">
+              {/* Main Pizza Card */}
+              <div className="collage-item pizza" title="Wood-Fired Peri Peri Paneer Pizza">
+                <img src="/images/instagram/pizza.webp" alt="Freshly baked Peri Peri Paneer Pizza" />
+              </div>
+              {/* Coffee Card (Overlapping) */}
+              <div className="collage-item coffee" title="Creamy Cold Coffee">
+                <img src="/images/instagram/cold_coffee.webp" alt="Signature Hazelnut Cold Coffee" />
+              </div>
+              {/* Ambiance Card (Small Overlapping) */}
+              <div className="collage-item ambiance" title="Cozy Outdoor Seating">
+                <img src="/images/instagram/ambience_night.webp" alt="Cozy outdoor garden seating ambiance at night" />
+              </div>
             </div>
           </div>
         </div>
@@ -411,10 +390,10 @@ function Home({ addToCart, openReserve }) {
         
         <div className="grid-4" style={{ maxWidth: 1100, margin: '0 auto', gap: 24 }}>
           {[
-            { icon: '☕', title: 'Premium Specialty Coffee', desc: 'Expertly sourced and roasted coffee beans brewed to absolute perfection by skilled baristas.' },
-            { icon: '🌿', title: '100% Pure Vegetarian', desc: 'A wide range of delicious, fresh, and hygienic pure vegetarian snack selections and heavy bites.' },
-            { icon: '🔌', title: 'Work & Chill Friendly', desc: 'Equipped with high-speed free Wi-Fi and accessible power outlets at seating spots.' },
-            { icon: '🛋️', title: 'Signature Ambiance', desc: 'Cozy modern seating, mellow warm lighting, and calm chill music to help you create memories.' },
+            { icon: '☕', title: 'Freshly Roasted Coffee', desc: 'Expertly sourced and roasted Arabica beans brewed to absolute perfection by skilled baristas.' },
+            { icon: '🍕', title: 'Wood-Fired Pizza', desc: 'Deliciously fresh, cheesy, hand-tossed vegetarian pizzas baked hot out of the oven.' },
+            { icon: '🛋️', title: 'Family-Friendly Seating', desc: 'Cozy modern seating, warm ambient lighting, and group tables perfect for get-togethers.' },
+            { icon: '🔌', title: 'Free Wi-Fi & Work Space', desc: 'High-speed internet access and plenty of accessible charging ports at seating locations.' },
           ].map((item) => (
             <div key={item.title} className="card" style={{ cursor: 'default', background: '#fff', border: '1px solid var(--cream-dark)', padding: '30px 24px', borderRadius: 12 }}>
               <div className="card-icon" style={{ fontSize: '2.5rem', marginBottom: 16 }}>{item.icon}</div>
@@ -673,12 +652,67 @@ function Home({ addToCart, openReserve }) {
         </div>
       </section>
 
-      {/* IN-PAGE RESERVATION FORM */}
+      {/* GOOGLE REVIEWS SUMMARY SECTION */}
       <section className="section" style={{ background: '#fff', padding: '80px 20px' }}>
+        <div className="section-header" style={{ marginBottom: 48, textAlign: 'center' }}>
+          <span className="section-label" style={{ color: 'var(--green)', textTransform: 'uppercase', letterSpacing: 2, fontSize: '0.85rem', fontWeight: 700 }}>Google Reviews</span>
+          <h2 className="section-title" style={{ fontFamily: "'Playfair Display', serif", fontSize: '2.2rem', color: 'var(--green)', margin: '8px 0 0' }}>Loved By Local <em>Foodies</em></h2>
+          <div className="section-divider" style={{ width: 60, height: 3, background: 'var(--green)', margin: '16px auto 0' }} />
+        </div>
+
+        <div className="reviews-grid-home">
+          {reviewsData.slice(0, 3).map((review) => (
+            <article key={review.name} className="review-card-home">
+              <div className="google-badge-home">
+                <span style={{ color: '#4285F4' }}>G</span>
+                <span style={{ color: '#EA4335' }}>o</span>
+                <span style={{ color: '#FBBC05' }}>o</span>
+                <span style={{ color: '#4285F4' }}>g</span>
+                <span style={{ color: '#34A853' }}>l</span>
+                <span style={{ color: '#EA4335' }}>e</span>
+              </div>
+              <div className="review-header-home">
+                <div className="avatar-home">{review.initials}</div>
+                <div>
+                  <h4 className="review-name-home">{review.name}</h4>
+                  <div className="review-meta-home">Verified Customer · {review.date}</div>
+                </div>
+              </div>
+              <div className="review-stars-home">
+                {'★'.repeat(review.rating) + '☆'.repeat(5 - review.rating)}
+              </div>
+              <p className="review-text-home">"{review.text}"</p>
+            </article>
+          ))}
+        </div>
+
+        <div style={{ textAlign: 'center', marginTop: 36 }}>
+          <Link 
+            to="/reviews" 
+            className="btn-outline" 
+            style={{ 
+              display: 'inline-block', 
+              padding: '12px 30px', 
+              textDecoration: 'none', 
+              color: 'var(--green)', 
+              borderColor: 'var(--green)',
+              fontWeight: 700
+            }}
+          >
+            ⭐ Read More Verified Reviews
+          </Link>
+        </div>
+      </section>
+
+      {/* IN-PAGE RESERVATION FORM */}
+      <section className="section" style={{ background: 'var(--cream-light)', padding: '80px 20px' }}>
         <div className="section-header" style={{ marginBottom: 40, textAlign: 'center' }}>
           <span className="section-label" style={{ color: 'var(--green)', textTransform: 'uppercase', letterSpacing: 2, fontSize: '0.85rem', fontWeight: 700 }}>Instant Booking</span>
           <h2 className="section-title" style={{ fontFamily: "'Playfair Display', serif", fontSize: '2.2rem', color: 'var(--green)', margin: '8px 0 0' }}>Reserve A <em>Table</em></h2>
           <div className="section-divider" style={{ width: 60, height: 3, background: 'var(--green)', margin: '16px auto 0' }} />
+          <p style={{ color: 'var(--text-light)', fontSize: '0.98rem', marginTop: 18, fontWeight: 700 }}>
+            ⏳ Weekend tables and evening slots fill up quickly. Reserve your seat today to avoid waiting!
+          </p>
         </div>
 
         <div className="reservation-form-container">
