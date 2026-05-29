@@ -318,7 +318,7 @@ function Home({ addToCart, openReserve }) {
               </div>
               {/* Ambiance Card (Small Overlapping) */}
               <div className="collage-item ambiance" title="Cozy Outdoor Seating">
-                <img src="/images/instagram/nightambience.jpeg" alt="Cozy outdoor garden seating ambiance at night" />
+                <img src="/images/instagram/nightambience.jpeg.png" alt="Cozy outdoor garden seating ambiance at night" />
               </div>
             </div>
           </div>
