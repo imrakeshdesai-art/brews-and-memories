@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useToast } from '../components/ToastProvider';
 import { menuData } from '../data/menuData';
-import { reviewsData } from '../data/reviewsData';
 
 const FEATURED_CATEGORIES = [
   { image: '/images/menu/cold_coffee.png', label: 'Cold Coffee', category: 'Cold Beverages' },
@@ -652,205 +651,96 @@ function Home({ addToCart, openReserve }) {
         </div>
       </section>
 
-      {/* GOOGLE REVIEWS SUMMARY SECTION */}
-      <section className="section" style={{ background: '#fff', padding: '80px 20px' }}>
-        <div className="section-header" style={{ marginBottom: 48, textAlign: 'center' }}>
-          <span className="section-label" style={{ color: 'var(--green)', textTransform: 'uppercase', letterSpacing: 2, fontSize: '0.85rem', fontWeight: 700 }}>Google Reviews</span>
-          <h2 className="section-title" style={{ fontFamily: "'Playfair Display', serif", fontSize: '2.2rem', color: 'var(--green)', margin: '8px 0 0' }}>Loved By Local <em>Foodies</em></h2>
-          <div className="section-divider" style={{ width: 60, height: 3, background: 'var(--green)', margin: '16px auto 0' }} />
-        </div>
-
-        <div className="reviews-grid-home">
-          {reviewsData.slice(0, 3).map((review) => (
-            <article key={review.name} className="review-card-home">
-              <div className="google-badge-home">
-                <span style={{ color: '#4285F4' }}>G</span>
-                <span style={{ color: '#EA4335' }}>o</span>
-                <span style={{ color: '#FBBC05' }}>o</span>
-                <span style={{ color: '#4285F4' }}>g</span>
-                <span style={{ color: '#34A853' }}>l</span>
-                <span style={{ color: '#EA4335' }}>e</span>
-              </div>
-              <div className="review-header-home">
-                <div className="avatar-home">{review.initials}</div>
-                <div>
-                  <h4 className="review-name-home">{review.name}</h4>
-                  <div className="review-meta-home">Verified Customer · {review.date}</div>
-                </div>
-              </div>
-              <div className="review-stars-home">
-                {'★'.repeat(review.rating) + '☆'.repeat(5 - review.rating)}
-              </div>
-              <p className="review-text-home">"{review.text}"</p>
-            </article>
-          ))}
-        </div>
-
-        <div style={{ textAlign: 'center', marginTop: 36 }}>
+      {/* GOOGLE REVIEWS SUMMARY BANNER */}
+      <section className="section" style={{ background: '#fff', padding: '60px 20px' }}>
+        <div style={{ maxWidth: 850, margin: '0 auto', textAlign: 'center', background: 'var(--cream-light)', padding: '40px 30px', borderRadius: 16, border: '1px solid var(--cream-dark)', boxShadow: 'var(--shadow)' }}>
+          <span style={{ fontSize: '2.5rem', display: 'block', marginBottom: 12 }} aria-hidden="true">⭐️</span>
+          <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: '2.2rem', color: 'var(--green)', margin: '0 0 12px' }}>Loved by Local Foodies</h2>
+          <p style={{ color: 'var(--text-light)', fontSize: '1.05rem', lineHeight: 1.6, margin: '0 0 24px', fontStyle: 'italic' }}>
+            "Rated 4.8/5 stars based on 500+ Google Reviews. Our guests love the signature cold coffee, fresh pizzas, and cozy garden vibe!"
+          </p>
           <Link 
             to="/reviews" 
-            className="btn-outline" 
+            className="btn-primary" 
             style={{ 
               display: 'inline-block', 
-              padding: '12px 30px', 
+              padding: '12px 32px', 
               textDecoration: 'none', 
-              color: 'var(--green)', 
-              borderColor: 'var(--green)',
-              fontWeight: 700
+              color: '#0f3d3e', 
+              background: '#fbbf24',
+              fontWeight: 800,
+              borderRadius: 8
             }}
           >
-            ⭐ Read More Verified Reviews
+            ⭐ Read Guest Reviews
           </Link>
         </div>
       </section>
 
-      {/* IN-PAGE RESERVATION FORM */}
-      <section className="section" style={{ background: 'var(--cream-light)', padding: '80px 20px' }}>
-        <div className="section-header" style={{ marginBottom: 40, textAlign: 'center' }}>
-          <span className="section-label" style={{ color: 'var(--green)', textTransform: 'uppercase', letterSpacing: 2, fontSize: '0.85rem', fontWeight: 700 }}>Instant Booking</span>
-          <h2 className="section-title" style={{ fontFamily: "'Playfair Display', serif", fontSize: '2.2rem', color: 'var(--green)', margin: '8px 0 0' }}>Reserve A <em>Table</em></h2>
-          <div className="section-divider" style={{ width: 60, height: 3, background: 'var(--green)', margin: '16px auto 0' }} />
-          <p style={{ color: 'var(--text-light)', fontSize: '0.98rem', marginTop: 18, fontWeight: 700 }}>
-            ⏳ Weekend tables and evening slots fill up quickly. Reserve your seat today to avoid waiting!
+      {/* RESERVATION CTA BANNER */}
+      <section className="section" style={{ background: 'var(--green)', color: 'var(--cream)', padding: '60px 20px' }}>
+        <div style={{ maxWidth: 850, margin: '0 auto', textAlign: 'center' }}>
+          <span style={{ fontSize: '2.5rem', display: 'block', marginBottom: 12 }} aria-hidden="true">📅</span>
+          <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: '2.2rem', color: 'var(--cream)', margin: '0 0 12px' }}>Reserve Your Table</h2>
+          <p style={{ color: 'rgba(245, 230, 200, 0.85)', fontSize: '1.02rem', lineHeight: 1.6, margin: '0 0 24px' }}>
+            ⏳ Weekend tables and evening slots fill up quickly. Book your table today to secure your space for dates, family get-togethers, or work sessions!
           </p>
-        </div>
-
-        <div className="reservation-form-container">
-          {resSuccess ? (
-            <div className="order-success" style={{ textAlign: 'center', padding: '20px 0' }}>
-              <div style={{ fontSize: '3.5rem', marginBottom: 12 }}>🎉</div>
-              <h3 style={{ fontSize: '1.5rem', color: 'var(--green)', margin: '0 0 10px' }}>Request Submitted!</h3>
-              <p style={{ color: 'var(--text-light)', lineHeight: 1.6, fontSize: '0.95rem' }}>
-                Thank you, <strong>{resName}</strong>! We have received your booking request for <strong>{resGuests} guests</strong> on <strong>{resDate}</strong> at <strong>{resTime}</strong>.
-              </p>
-              <div className="order-card" style={{ textAlign: 'left', background: 'var(--cream-light)', padding: 16, borderRadius: 8, border: '1px solid var(--cream-dark)', display: 'inline-block', width: '100%', margin: '16px 0' }}>
-                <div><strong>Status:</strong> Pending SMS Confirmation</div>
-                <div style={{ fontSize: '0.82rem', color: 'var(--text-light)', marginTop: 4 }}>
-                  We will verify seat availability and text confirmation to {resPhone} shortly.
-                </div>
-              </div>
-              <button className="btn-primary" type="button" onClick={resetResForm} style={{ padding: '10px 24px', display: 'inline-block', margin: '8px auto 0' }}>
-                Make Another Booking
-              </button>
-            </div>
-          ) : (
-            <form onSubmit={handleInPageReserve} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-              {resError && (
-                <div style={{ background: '#fee2e2', color: '#991b1b', padding: '12px 16px', borderRadius: 8, fontSize: '0.85rem', fontWeight: 600 }}>
-                  ⚠️ {resError}
-                </div>
-              )}
-              
-              <div className="form-group">
-                <label htmlFor="hp-reserve-name" style={{ fontWeight: 600, fontSize: '0.9rem', marginBottom: 6, display: 'block' }}>Your Name *</label>
-                <input
-                  id="hp-reserve-name"
-                  type="text"
-                  value={resName}
-                  onChange={(e) => setResName(e.target.value)}
-                  placeholder="Enter full name"
-                  style={{ width: '100%', padding: '12px 16px', borderRadius: 8, border: '1px solid var(--cream-dark)', outline: 'none' }}
-                  required
-                />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="hp-reserve-phone" style={{ fontWeight: 600, fontSize: '0.9rem', marginBottom: 6, display: 'block' }}>Phone Number *</label>
-                <input
-                  id="hp-reserve-phone"
-                  type="tel"
-                  value={resPhone}
-                  onChange={(e) => setResPhone(e.target.value)}
-                  placeholder="Enter 10-digit mobile number"
-                  style={{ width: '100%', padding: '12px 16px', borderRadius: 8, border: '1px solid var(--cream-dark)', outline: 'none' }}
-                  required
-                />
-              </div>
-
-              <div className="form-row">
-                <div className="form-group">
-                  <label htmlFor="hp-reserve-guests" style={{ fontWeight: 600, fontSize: '0.9rem', marginBottom: 6, display: 'block' }}>Number of Guests *</label>
-                  <select
-                    id="hp-reserve-guests"
-                    value={resGuests}
-                    onChange={(e) => setResGuests(e.target.value)}
-                    style={{ width: '100%', padding: '12px 16px', borderRadius: 8, border: '1px solid var(--cream-dark)', background: '#fff', outline: 'none' }}
-                  >
-                    <option value="1">1 Person</option>
-                    <option value="2">2 People</option>
-                    <option value="3">3 People</option>
-                    <option value="4">4 People</option>
-                    <option value="5">5 People</option>
-                    <option value="6">6 People</option>
-                    <option value="7">7+ People (Party)</option>
-                  </select>
-                </div>
-                <div className="form-group">
-                  <label htmlFor="hp-reserve-time" style={{ fontWeight: 600, fontSize: '0.9rem', marginBottom: 6, display: 'block' }}>Preferred Time *</label>
-                  <select
-                    id="hp-reserve-time"
-                    value={resTime}
-                    onChange={(e) => setResTime(e.target.value)}
-                    style={{ width: '100%', padding: '12px 16px', borderRadius: 8, border: '1px solid var(--cream-dark)', background: '#fff', outline: 'none' }}
-                    required
-                  >
-                    <option value="">Select Slot</option>
-                    <option value="11:00 AM">11:00 AM</option>
-                    <option value="12:30 PM">12:30 PM</option>
-                    <option value="2:00 PM">2:00 PM</option>
-                    <option value="4:00 PM">4:00 PM</option>
-                    <option value="6:00 PM">6:00 PM</option>
-                    <option value="7:30 PM">7:30 PM</option>
-                    <option value="9:00 PM">9:00 PM</option>
-                    <option value="10:00 PM">10:00 PM</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="hp-reserve-date" style={{ fontWeight: 600, fontSize: '0.9rem', marginBottom: 6, display: 'block' }}>Select Date *</label>
-                <input
-                  id="hp-reserve-date"
-                  type="date"
-                  value={resDate}
-                  onChange={(e) => setResDate(e.target.value)}
-                  style={{ width: '100%', padding: '12px 16px', borderRadius: 8, border: '1px solid var(--cream-dark)', outline: 'none' }}
-                  required
-                />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="hp-reserve-notes" style={{ fontWeight: 600, fontSize: '0.9rem', marginBottom: 6, display: 'block' }}>Special Requests (Optional)</label>
-                <textarea
-                  id="hp-reserve-notes"
-                  value={resNotes}
-                  onChange={(e) => setResNotes(e.target.value)}
-                  placeholder="e.g. Birthday setup, corner table, wheelchair accessible space..."
-                  rows={3}
-                  style={{ width: '100%', padding: '12px 16px', borderRadius: 8, border: '1px solid var(--cream-dark)', fontFamily: 'inherit', outline: 'none', resize: 'vertical' }}
-                />
-              </div>
-
-              <button className="btn-primary" type="submit" style={{ padding: '14px', fontSize: '1rem', fontWeight: 700, borderRadius: 8, marginTop: 8 }}>
-                📅 Confirm Reservation Request
-              </button>
-            </form>
-          )}
+          <button 
+            onClick={openReserve} 
+            className="btn-primary" 
+            style={{ 
+              display: 'inline-block', 
+              padding: '14px 36px', 
+              textDecoration: 'none', 
+              color: '#0f3d3e', 
+              background: '#fbbf24',
+              fontWeight: 800,
+              borderRadius: 8,
+              border: 'none',
+              cursor: 'pointer',
+              boxShadow: '0 4px 14px rgba(251, 191, 36, 0.3)'
+            }}
+          >
+            Reserve Table Now
+          </button>
         </div>
       </section>
 
-      {/* GOOGLE MAPS EMBED */}
-      <section className="section" style={{ padding: 0, position: 'relative', height: 400, background: 'var(--cream-light)' }}>
-        <iframe
-          title="Google Map embed location of Brews & Memories Cafe at B M Patil Circle Vijayapura"
-          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3821.5583151834246!2d75.70057147597148!3d16.823621218768007!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bc5da002e21ca6b%3A0x5e0f7227d8db546!2sBrews%20%26%20Memories!5e0!3m2!1sen!2sin!4v1717000000000"
-          width="100%"
-          height="100%"
-          style={{ border: 0, display: 'block' }}
-          allowFullScreen=""
-          loading="lazy"
-          referrerPolicy="no-referrer-when-downgrade"
-        />
+      {/* LOCATION & TIMINGS BLOCK */}
+      <section className="section" style={{ background: 'var(--cream-light)', padding: '60px 20px', borderTop: '1px solid var(--cream-dark)' }}>
+        <div className="grid-2" style={{ maxWidth: 1000, margin: '0 auto', gap: 40, alignItems: 'center' }}>
+          <div style={{ textAlign: 'left', display: 'flex', flexDirection: 'column', gap: 14 }}>
+            <span style={{ color: 'var(--green)', textTransform: 'uppercase', letterSpacing: 2, fontSize: '0.85rem', fontWeight: 800 }}>Visit Our Cafe</span>
+            <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: '2.2rem', color: 'var(--green)', margin: 0 }}>Come Visit Us</h2>
+            <div style={{ width: 40, height: 3, background: 'var(--green)' }} />
+            <p style={{ color: 'var(--text-light)', lineHeight: 1.6, fontSize: '0.98rem', margin: 0 }}>
+              Stop by for a freshly brewed cup and your favorite bites. We are located at a prime, easily accessible location in Vijayapura with comfortable indoor & garden seating.
+            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, fontSize: '0.92rem', color: 'var(--text-dark)', marginTop: 8 }}>
+              <div>📍 <strong>Address:</strong> B.M. Patil Circle, Vijayapura, Karnataka 586102</div>
+              <div>🕒 <strong>Hours:</strong> Open Daily · 10:00 AM – 10:30 PM</div>
+              <div>📞 <strong>Contact:</strong> +91 99454 46137</div>
+            </div>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 14, alignItems: 'center' }}>
+            <div style={{ background: '#fff', border: '1px solid var(--cream-dark)', padding: '28px', borderRadius: 16, width: '100%', maxWidth: 360, textAlign: 'center', boxShadow: 'var(--shadow)' }}>
+              <span style={{ fontSize: '2.5rem', display: 'block', marginBottom: 12 }} aria-hidden="true">🗺️</span>
+              <h3 style={{ fontSize: '1.2rem', color: 'var(--green)', margin: '0 0 10px' }}>Need Directions?</h3>
+              <p style={{ fontSize: '0.88rem', color: 'var(--text-light)', lineHeight: 1.5, margin: '0 0 20px' }}>
+                Open Google Maps to get real-time navigation directions to our cafe right away.
+              </p>
+              <a 
+                href="https://maps.app.goo.gl/2fYwvrLgfTP9ytBW7"
+                target="_blank"
+                rel="noreferrer"
+                className="btn-primary"
+                style={{ display: 'inline-block', padding: '12px 28px', textDecoration: 'none', background: '#fbbf24', color: '#0f3d3e', fontWeight: 800, borderRadius: 8 }}
+              >
+                🗺️ Get Directions on Maps
+              </a>
+            </div>
+          </div>
+        </div>
       </section>
 
       {/* FAQ SECTION */}
