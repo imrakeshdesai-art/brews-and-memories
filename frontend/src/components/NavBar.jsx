@@ -35,6 +35,9 @@ function NavBar({ cartCount, onCartClick }) {
         <NavLink to="/reserve" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
           Book Table
         </NavLink>
+        <NavLink to="/admin" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
+          Admin
+        </NavLink>
       </nav>
 
       <div className="nav-actions">
@@ -72,6 +75,9 @@ function NavBar({ cartCount, onCartClick }) {
         </NavLink>
         <NavLink to="/reserve" className="nav-link" onClick={() => setMenuOpen(false)}>
           📅 Book Table
+        </NavLink>
+        <NavLink to="/admin" className="nav-link" onClick={() => setMenuOpen(false)}>
+          🔐 Admin
         </NavLink>
       </div>
     </header>
