@@ -59,14 +59,14 @@ const INSTAGRAM_POSTS = [
     postUrl: 'https://www.instagram.com/reels/DQ05-lUDzup/'
   },
   {
-    username: 'priya_sharma',
-    initials: 'PS',
-    image: '/images/instagram/chocolate_safari.webp',
-    caption: 'Sunday dates at my favorite spot! Loaded Chocolate Safari sundae is a must-try at @brews_and_memories_ 🍨🍫✨',
+    username: 'behind_ourlens_06',
+    initials: 'BO',
+    image: '/images/instagram/behind_ourlens_06.jpeg',
+    caption: '🌸🎀💕🫧#explorepage #cafe #reelsindia #girlgang #cafedate',
     likes: 245,
     comments: 34,
     date: 'May 18, 2026',
-    postUrl: 'https://www.instagram.com/reel/DQssSCUibgo/?igsh=MXkwN3Ewb3luY29tbg=='
+    postUrl: 'https://www.instagram.com/reels/DXb9UdHj9jh/'
   },
   {
     username: 'aditya_k',
@@ -79,14 +79,14 @@ const INSTAGRAM_POSTS = [
     postUrl: 'https://www.instagram.com/p/DSHhXKkDakg/?igsh=ZXNkZnRqbjkxanFi'
   },
   {
-    username: 'sneha_patil',
-    initials: 'SP',
-    image: '/images/instagram/sandwich.webp',
-    caption: 'Perfect evening snack. Crispy grilled veg club sandwich and cozy vibes at @brews_and_memories_ 🥪🍃',
+    username: 'priya_sharma',
+    initials: 'PS',
+    image: '/images/instagram/chocolate_safari.webp',
+    caption: 'Sunday dates at my favorite spot! Loaded Chocolate Safari sundae is a must-try at @brews_and_memories_ 🍨🍫✨',
     likes: 156,
     comments: 18,
     date: 'Apr 28, 2026',
-    postUrl: 'https://www.instagram.com/reel/DXb9UdHj9jh/?igsh=ZmZ2b3ZyNnU4eXM2'
+    postUrl: 'https://www.instagram.com/reel/DQssSCUibgo/?igsh=MXkwN3Ewb3luY29tbg=='
   },
   {
     username: 'mohammed_a',
