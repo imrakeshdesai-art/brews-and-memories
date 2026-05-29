@@ -9,6 +9,7 @@ function ReservationModal({ open, onClose }) {
   const [notes, setNotes] = useState('');
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (open) {
@@ -20,6 +21,7 @@ function ReservationModal({ open, onClose }) {
       setNotes('');
       setSuccess(false);
       setError('');
+      setIsSubmitting(false);
     }
   }, [open]);
 
@@ -41,9 +43,14 @@ function ReservationModal({ open, onClose }) {
       return;
     }
 
-    // Simulate success
-    setSuccess(true);
+    setIsSubmitting(true);
     setError('');
+
+    // Simulate async submission feedback (e.g. 1000ms delay) to prevent double clicks and visual CLS
+    setTimeout(() => {
+      setIsSubmitting(false);
+      setSuccess(true);
+    }, 1000);
   };
 
   if (!open) return null;
@@ -167,8 +174,37 @@ function ReservationModal({ open, onClose }) {
                 />
               </div>
 
-              <button className="btn-primary" type="submit" style={{ marginTop: 8 }}>
-                📅 Submit Reservation Request
+              <button 
+                className="btn-primary" 
+                type="submit" 
+                disabled={isSubmitting}
+                style={{ 
+                  marginTop: 8, 
+                  opacity: isSubmitting ? 0.7 : 1, 
+                  cursor: isSubmitting ? 'not-allowed' : 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 8,
+                  width: '100%',
+                  padding: '14px'
+                }}
+              >
+                {isSubmitting ? (
+                  <>
+                    <span className="spinner" style={{
+                      width: 18,
+                      height: 18,
+                      border: '2px solid rgba(255,255,255,0.3)',
+                      borderTop: '2px solid #fff',
+                      borderRadius: '50%',
+                      animation: 'spin 0.8s linear infinite'
+                    }} />
+                    Processing Reservation...
+                  </>
+                ) : (
+                  "📅 Submit Reservation Request"
+                )}
               </button>
             </form>
           )}

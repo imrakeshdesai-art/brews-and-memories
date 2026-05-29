@@ -9,6 +9,7 @@ function Reserve() {
   const [notes, setNotes] = useState('');
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -23,8 +24,14 @@ function Reserve() {
       return;
     }
 
-    setSuccess(true);
+    setIsSubmitting(true);
     setError('');
+
+    // Simulate async submission feedback (e.g. 1000ms delay) to prevent double clicks and visual CLS
+    setTimeout(() => {
+      setIsSubmitting(false);
+      setSuccess(true);
+    }, 1000);
   };
 
   return (
@@ -161,8 +168,37 @@ function Reserve() {
               />
             </div>
 
-            <button className="btn-primary" type="submit" style={{ padding: '16px', fontSize: '1rem', marginTop: 8 }}>
-              📅 Confirm Reservation Booking
+            <button 
+              className="btn-primary" 
+              type="submit" 
+              disabled={isSubmitting}
+              style={{ 
+                padding: '16px', 
+                fontSize: '1rem', 
+                marginTop: 8, 
+                opacity: isSubmitting ? 0.7 : 1, 
+                cursor: isSubmitting ? 'not-allowed' : 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 8
+              }}
+            >
+              {isSubmitting ? (
+                <>
+                  <span className="spinner" style={{
+                    width: 18,
+                    height: 18,
+                    border: '2px solid rgba(255,255,255,0.3)',
+                    borderTop: '2px solid #fff',
+                    borderRadius: '50%',
+                    animation: 'spin 0.8s linear infinite'
+                  }} />
+                  Processing Reservation...
+                </>
+              ) : (
+                "📅 Confirm Reservation Booking"
+              )}
             </button>
           </form>
         )}
