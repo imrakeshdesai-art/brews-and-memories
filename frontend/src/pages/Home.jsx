@@ -236,7 +236,7 @@ function Home({ addToCart, openReserve }) {
 
           <div className="hero-media">
             <img 
-              src="/hero_cafe_ambience.png" 
+              src="/ambiance.webp" 
               alt="Cozy ambient coffee house interiors of Brews & Memories Vijayapura"
               style={{ width: '100%', height: '100%', objectFit: 'cover' }}
             />
@@ -534,7 +534,7 @@ function Home({ addToCart, openReserve }) {
       {/* MOCK INSTAGRAM FEED */}
       <section className="section" style={{ background: 'var(--cream-light)', padding: '80px 20px' }}>
         <div className="section-header" style={{ marginBottom: 40, textAlign: 'center' }}>
-          <span className="section-label" style={{ color: 'var(--green)', textTransform: 'uppercase', letterSpacing: 2, fontSize: '0.85rem', fontWeight: 700 }}>Follow Us @brewsandmemories</span>
+          <span className="section-label" style={{ color: 'var(--green)', textTransform: 'uppercase', letterSpacing: 2, fontSize: '0.85rem', fontWeight: 700 }}>Follow Us @brews_and_memories_</span>
           <h2 className="section-title" style={{ fontFamily: "'Playfair Display', serif", fontSize: '2.2rem', color: 'var(--green)', margin: '8px 0 0' }}>Share Your <em>Moments</em></h2>
           <div className="section-divider" style={{ width: 60, height: 3, background: 'var(--green)', margin: '16px auto 0' }} />
         </div>
@@ -543,7 +543,7 @@ function Home({ addToCart, openReserve }) {
           {INSTAGRAM_MOCKS.map((post, idx) => (
             <a 
               key={idx} 
-              href="https://instagram.com" 
+              href="https://www.instagram.com/brews_and_memories_/" 
               target="_blank" 
               rel="noreferrer" 
               className="instagram-item"

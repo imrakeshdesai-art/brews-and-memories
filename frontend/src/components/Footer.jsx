@@ -74,7 +74,7 @@ function Footer({ onReserveClick }) {
           &copy; {new Date().getFullYear()} Brews & Memories. All rights reserved.
         </div>
         <div className="social-links">
-          <a href="https://instagram.com" target="_blank" rel="noreferrer" className="social-btn" aria-label="Instagram page">📸</a>
+          <a href="https://www.instagram.com/brews_and_memories_/" target="_blank" rel="noreferrer" className="social-btn" aria-label="Instagram page">📸</a>
           <a href="https://facebook.com" target="_blank" rel="noreferrer" className="social-btn" aria-label="Facebook page">👥</a>
           <a href="tel:+919945446137" className="social-btn" aria-label="Call Phone">📞</a>
         </div>

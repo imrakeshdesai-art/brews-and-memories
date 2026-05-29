@@ -1,193 +1,571 @@
 export const menuData = {
+  'Beverages': [
+    {
+      name: 'Masala Tea',
+      price: 30,
+      emoji: '🍵',
+      desc: 'Warm and soothing masala tea'
+    },
+    {
+      name: 'Boost',
+      price: 30,
+      emoji: '☕',
+      desc: 'Warm and soothing boost'
+    },
+    {
+      name: 'Bournvita',
+      price: 30,
+      emoji: '☕',
+      desc: 'Warm and soothing bournvita'
+    },
+    {
+      name: 'Ginger Tea',
+      price: 40,
+      emoji: '🍵',
+      desc: 'Warm and soothing ginger tea'
+    },
+    {
+      name: 'Ginger Lemon Tea',
+      price: 50,
+      emoji: '🍵',
+      desc: 'Warm and soothing ginger lemon tea'
+    },
+    {
+      name: 'Green Tea',
+      price: 40,
+      emoji: '🍵',
+      desc: 'Warm and soothing green tea'
+    },
+    {
+      name: 'Normal Hot Coffee',
+      price: 30,
+      emoji: '☕',
+      desc: 'Warm and soothing normal hot coffee'
+    },
+  ],
   'Cold Beverages': [
-    { name: 'Cold Coffee', price: 89, emoji: '☕', desc: 'Classic chilled coffee blend' },
-    { name: 'Chocolate Cold Coffee', price: 99, emoji: '🍫', desc: 'Rich chocolate cold coffee' },
-    { name: 'Hazelnut Cold Coffee', price: 99, emoji: '🌰', desc: 'Smooth hazelnut cold coffee' },
-    { name: 'Double Short Cold Coffee', price: 109, emoji: '☕', desc: 'Double shot cold coffee' },
-    { name: 'Cold Coffee with Vanilla Ice Cream', price: 129, emoji: '🍦', desc: 'Cold coffee topped with vanilla ice cream' },
-    { name: 'Mint Mojito', price: 79, emoji: '🍃', desc: 'Refreshing mint mojito' },
-    { name: 'Blue Lagoon', price: 79, emoji: '💙', desc: 'Cool blue refreshing drink' },
-    { name: 'Lemon Soda', price: 60, emoji: '🍋', desc: 'Zesty lemon soda' },
-    { name: 'Butterscotch Mojito', price: 99, emoji: '🧁', desc: 'Sweet butterscotch mojito' },
+    {
+      name: 'Cold Coffee',
+      price: 99,
+      emoji: '🥤',
+      desc: 'Chilled and refreshing cold coffee'
+    },
+    {
+      name: 'Chocolate Cold Coffee',
+      price: 109,
+      emoji: '🥤',
+      desc: 'Chilled and refreshing chocolate cold coffee'
+    },
+    {
+      name: 'Hazelnut Cold Coffee',
+      price: 109,
+      emoji: '🥤',
+      desc: 'Chilled and refreshing hazelnut cold coffee'
+    },
+    {
+      name: 'Cold Coffee With Vanilla Ice Cream',
+      price: 139,
+      emoji: '🥤',
+      desc: 'Chilled and refreshing cold coffee with vanilla ice cream'
+    },
+    {
+      name: 'Mint Mojito',
+      price: 89,
+      emoji: '🍹',
+      desc: 'Chilled and refreshing mint mojito'
+    },
+    {
+      name: 'Blue Lagoon',
+      price: 99,
+      emoji: '🍹',
+      desc: 'Chilled and refreshing blue lagoon'
+    },
+    {
+      name: 'Lemon Soda',
+      price: 69,
+      emoji: '🍹',
+      desc: 'Chilled and refreshing lemon soda'
+    },
+    {
+      name: 'Butterscotch Mojito',
+      price: 99,
+      emoji: '🍹',
+      desc: 'Chilled and refreshing butterscotch mojito'
+    },
   ],
   'Milk Shakes': [
-    { name: 'Vanilla Milk Shake', price: 99, emoji: '🥛', desc: 'Classic creamy vanilla shake' },
-    { name: 'Strawberry Milkshake', price: 109, emoji: '🍓', desc: 'Fresh strawberry blend' },
-    { name: 'Butter Scotch Milk Shaker', price: 109, emoji: '🧁', desc: 'Rich butterscotch milk shaker' },
-    { name: 'Mango Milk Shake', price: 109, emoji: '🥭', desc: 'Seasonal mango delight' },
-    { name: 'Chocolate Milk Shake', price: 129, emoji: '🍫', desc: 'Rich chocolate milk shake' },
-    { name: 'Banana Milk Shake', price: 109, emoji: '🍌', desc: 'Smooth banana cream shake' },
-    { name: 'Oreo Milk Shake', price: 99, emoji: '🍪', desc: 'Cookie crumble milk shake' },
-    { name: 'Kit Kat Milk Shake', price: 99, emoji: '🍫', desc: 'Wafer chocolate milk shake' },
+    {
+      name: 'Vanilla Milk Shake',
+      price: 109,
+      emoji: '🥛',
+      desc: 'Creamy and thick vanilla milk shake'
+    },
+    {
+      name: 'Strawberry Milkshake',
+      price: 119,
+      emoji: '🍓',
+      desc: 'Creamy and thick strawberry milkshake'
+    },
+    {
+      name: 'Batterscos Milk Shaker',
+      price: 119,
+      emoji: '🥛',
+      desc: 'Creamy and thick batterscos milk shaker'
+    },
+    {
+      name: 'Mango Milk Shake',
+      price: 119,
+      emoji: '🥭',
+      desc: 'Creamy and thick mango milk shake'
+    },
+    {
+      name: 'Chocolate Milk Shake',
+      price: 139,
+      emoji: '🍫',
+      desc: 'Creamy and thick chocolate milk shake'
+    },
+    {
+      name: 'Orange Milk Shake',
+      price: 119,
+      emoji: '🍊',
+      desc: 'Creamy and thick orange milk shake'
+    },
+    {
+      name: 'Banana Milk Shake',
+      price: 119,
+      emoji: '🍌',
+      desc: 'Creamy and thick banana milk shake'
+    },
+    {
+      name: 'Oreo Milk Shake',
+      price: 119,
+      emoji: '🍪',
+      desc: 'Creamy and thick oreo milk shake'
+    },
+    {
+      name: 'Kit Kat Milk Shake',
+      price: 119,
+      emoji: '🥛',
+      desc: 'Creamy and thick kit kat milk shake'
+    },
   ],
   'Pizza': [
-    { name: 'Just Cheese Pizza', priceS: 99, priceM: 149, priceL: 199, emoji: '🍕', desc: 'Simple melted cheese pizza', multi: true },
-    { name: 'Double Decker', priceS: 99, priceM: 179, priceL: 249, emoji: '🍕', desc: 'Double layered pizza', multi: true },
-    { name: 'Peri Peri Paneer Pizza', priceS: 99, priceM: 149, priceL: 249, emoji: '🍕', desc: 'Spicy peri peri paneer pizza', multi: true },
-    { name: 'Tandoori Paneer Pizza', priceS: 99, priceM: 139, priceL: 219, emoji: '🍕', desc: 'Tandoori paneer pizza', multi: true },
-    { name: 'American Veggies Hot Pizza', priceS: 99, priceM: 169, priceL: 239, emoji: '🍕', desc: 'American veggies pizza', multi: true },
-    { name: 'Corn Pizza', priceS: 69, priceM: 129, priceL: 199, emoji: '🍕', desc: 'Corn topped pizza', multi: true },
-    { name: 'Mumbai Nirwana Pizza', priceS: 79, priceM: 149, priceL: 199, emoji: '🍕', desc: 'Mumbai Nirwana pizza', multi: true },
-    { name: 'Angry Pizza', priceS: 79, priceM: 129, priceL: 200, emoji: '🍕', desc: 'Spicy Angry pizza', multi: true },
-    { name: 'Fantasy Pizza', priceS: 99, priceM: 149, priceL: 220, emoji: '🍕', desc: 'Fantasy pizza', multi: true },
-    { name: 'BBQ Paneer Pizza', priceS: 99, priceM: 149, priceL: 220, emoji: '🍕', desc: 'BBQ paneer pizza', multi: true },
-    { name: 'Manali Pizza', priceS: 109, priceM: 189, priceL: 279, emoji: '🍕', desc: 'Manali pizza', multi: true },
+    {
+      name: 'Just Cheese Pizza',
+      priceS: 99,
+      priceM: 159,
+      priceL: 199,
+      multi: true,
+      emoji: '🍕',
+      desc: 'Simple melted cheese pizza on a fresh crust'
+    },
+    {
+      name: 'Peri Peri Paneer Pizza',
+      priceS: 99,
+      priceM: 179,
+      priceL: 249,
+      multi: true,
+      emoji: '🌶️',
+      desc: 'Spicy peri peri paneer with capsicum and onion'
+    },
+    {
+      name: 'Tandoori Paneer Pizza',
+      priceS: 99,
+      priceM: 159,
+      priceL: 219,
+      multi: true,
+      emoji: '🍕',
+      desc: 'Spicy tandoori paneer with capsicum and onion'
+    },
+    {
+      name: 'American Veggies Hot Pizza',
+      priceS: 99,
+      priceM: 189,
+      priceL: 239,
+      multi: true,
+      emoji: '🍕',
+      desc: 'Loaded with red, yellow, and green bell peppers'
+    },
+    {
+      name: 'Corn Pizza',
+      priceS: 99,
+      priceM: 159,
+      priceL: 209,
+      multi: true,
+      emoji: '🌽',
+      desc: 'Golden sweet corn with mozzarella cheese'
+    },
+    {
+      name: 'King Of Margherita',
+      priceS: 99,
+      priceM: 159,
+      priceL: 209,
+      multi: true,
+      emoji: '🍕',
+      desc: 'Double mozzarella cheese and juicy tomato slices'
+    },
+    {
+      name: 'Peppy Paneer Pizza',
+      priceS: 109,
+      priceM: 199,
+      priceL: 229,
+      multi: true,
+      emoji: '🍕',
+      desc: 'Paneer, capsicum, and red paprika'
+    },
+    {
+      name: 'Veg Super Pizza',
+      priceS: 109,
+      priceM: 189,
+      priceL: 229,
+      multi: true,
+      emoji: '🌽',
+      desc: 'Capsicum, onion, baby corn, and sweet corn'
+    },
+    {
+      name: 'Paneer Tikka Pizza',
+      priceS: 109,
+      priceM: 179,
+      priceL: 199,
+      multi: true,
+      emoji: '🍕',
+      desc: 'Paneer tikka pieces with capsicum and onion'
+    },
+    {
+      name: 'Veg Delight Pizza',
+      priceS: 109,
+      priceM: 199,
+      priceL: 239,
+      multi: true,
+      emoji: '🍕',
+      desc: 'Onion, capsicum, tomato, and mushroom'
+    },
+    {
+      name: 'Italian Treat Pizza',
+      priceS: 109,
+      priceM: 189,
+      priceL: 229,
+      multi: true,
+      emoji: '🍕',
+      desc: 'Onion, tandoori paneer, jalapeno, and green chillies'
+    },
+    {
+      name: "Doctor's Pizza",
+      priceS: 200,
+      priceM: 250,
+      priceL: 250,
+      multi: true,
+      emoji: '🌽',
+      desc: 'Green peas, tomato, chilly, jalapeno, baby corn, capsicum, onion, and olives'
+    },
+    {
+      name: 'Spanish Veggies Pizza',
+      priceS: 200,
+      priceM: 250,
+      priceL: 250,
+      multi: true,
+      emoji: '🌽',
+      desc: 'Onion, capsicum, baby corn, sweet corn, tomato, paneer, olives, and mushrooms'
+    },
+    {
+      name: 'Mexican Pizza',
+      priceS: 199,
+      priceM: 249,
+      priceL: 249,
+      multi: true,
+      emoji: '🌽',
+      desc: 'Chilli, sweet corn, tomato, and black olives'
+    },
+    {
+      name: 'BBQ Paneer Pizza',
+      priceS: 99,
+      priceM: 169,
+      priceL: 220,
+      multi: true,
+      emoji: '🍕',
+      desc: 'Capsicum, onion, and BBQ paneer'
+    },
   ],
   'Burgers': [
-    { name: 'Veg Burger', price: 70, emoji: '🍔', desc: 'Crispy veg burger' },
-    { name: 'Paneer Burger', price: 129, emoji: '🍔', desc: 'Grilled paneer burger' },
-    { name: 'Tandoori Paneer Burger', price: 99, emoji: '🍔', desc: 'Tandoori paneer burger' },
-    { name: 'Corn Burger', price: 99, emoji: '🍔', desc: 'Crispy corn burger' },
-    { name: 'Beyond Burger', price: 109, emoji: '🍔', desc: 'Beyond burger' },
-    { name: 'Bombay Burger', price: 119, emoji: '🍔', desc: 'Bombay burger' },
-    { name: 'Veg Cheese Burger', price: 99, emoji: '🧀', desc: 'Veg cheese burger' },
-    { name: 'Veg Classic Burger', price: 99, emoji: '🍔', desc: 'Veg classic burger' },
-    { name: 'Barbeque Paneer Burger', price: 109, emoji: '🍔', desc: 'Barbeque paneer burger' },
-  ],
-  'Garlic Bread': [
-    { name: 'Cheese Garlic Bread', price: 129, emoji: '🥖', desc: 'Cheese garlic bread' },
-    { name: 'Chilli and Corn', price: 149, emoji: '🌽', desc: 'Chilli and corn garlic bread' },
-    { name: 'Cheese Chilli Toast', price: 149, emoji: '🧀', desc: 'Cheese chilli toast' },
-  ],
-  'Salads': [
-    { name: 'Greek Salad', price: 99, emoji: '🥗', desc: 'Greek salad' },
-    { name: 'Russian Salad', price: 99, emoji: '🥗', desc: 'Russian salad' },
-    { name: 'Caesar Salad', price: 99, emoji: '🥗', desc: 'Caesar salad' },
-    { name: 'Mediterranean Salad', price: 99, emoji: '🥗', desc: 'Mediterranean salad' },
-  ],
-  'Momos': [
-    { name: 'Paneer Momos Fried', price: 99, emoji: '🥟', desc: 'Fried paneer momos' },
-    { name: 'Veg Momo Fried', price: 79, emoji: '🥟', desc: 'Fried veg momos' },
-    { name: 'Pan Fried Momo', price: 149, emoji: '🥟', desc: 'Pan fried momos' },
-  ],
-  'Soups': [
-    { name: 'Manchow', price: 99, emoji: '🍲', desc: 'Manchow soup' },
-    { name: 'Tomato', price: 79, emoji: '🍅', desc: 'Tomato soup' },
-    { name: 'Lemon Coriander', price: 99, emoji: '🍋', desc: 'Lemon coriander soup' },
-    { name: 'Noodles Soup', price: 99, emoji: '🍜', desc: 'Noodles soup' },
-    { name: 'Sweet Corn Soup', price: 99, emoji: '🌽', desc: 'Sweet corn soup' },
-  ],
-  'Noodles': [
-    { name: 'Hakka Noodles', price: 129, emoji: '🍜', desc: 'Hakka noodles' },
-    { name: 'Schezwan Noodles', price: 139, emoji: '🌶️', desc: 'Schezwan noodles' },
-    { name: 'Mix Veggies Noodles', price: 149, emoji: '🥦', desc: 'Mix veggies noodles' },
-    { name: 'Maggi', price: 49, emoji: '🍜', desc: 'Maggi' },
-    { name: 'Veg Maggi', price: 49, emoji: '🍜', desc: 'Veg Maggi' },
-    { name: 'Cheese Maggi', price: 79, emoji: '🧀', desc: 'Cheese Maggi' },
-    { name: 'Peri Peri Maggi', price: 69, emoji: '🌶️', desc: 'Peri Peri Maggi' },
-    { name: 'Our Special Maggi', price: 99, emoji: '⭐', desc: 'Our Special Maggi' },
+    {
+      name: 'Veg Burger',
+      price: 79,
+      emoji: '🍔',
+      desc: 'Crispy patty in soft buns with fresh veggies'
+    },
+    {
+      name: 'Paneer Burger',
+      price: 139,
+      emoji: '🍔',
+      desc: 'Crispy patty in soft buns with fresh veggies'
+    },
+    {
+      name: 'Tandoori Paneer Burger',
+      price: 109,
+      emoji: '🍔',
+      desc: 'Crispy patty in soft buns with fresh veggies'
+    },
+    {
+      name: 'Corn Burger',
+      price: 109,
+      emoji: '🌽',
+      desc: 'Crispy patty in soft buns with fresh veggies'
+    },
+    {
+      name: 'Veg Cheesee Burger',
+      price: 109,
+      emoji: '🧀',
+      desc: 'Crispy patty in soft buns with fresh veggies'
+    },
+    {
+      name: 'Veg Classic Burger',
+      price: 109,
+      emoji: '🍔',
+      desc: 'Crispy patty in soft buns with fresh veggies'
+    },
+    {
+      name: 'Barbeque Paneer Burger',
+      price: 119,
+      emoji: '🍔',
+      desc: 'Crispy patty in soft buns with fresh veggies'
+    },
   ],
   'Sandwiches': [
-    { name: 'Veg Sandwich', price: 49, emoji: '🥪', desc: 'Veg Sandwich' },
-    { name: 'Veg Club Sandwich', price: 109, emoji: '🥪', desc: 'Veg Club Sandwich' },
-    { name: 'Veg Cheese Sandwich', price: 109, emoji: '🧀', desc: 'Veg Cheese Sandwich' },
-    { name: 'Peri Peri Paneer Sandwich', price: 129, emoji: '🥪', desc: 'Peri Peri Paneer Sandwich' },
-    { name: 'Tandoori Paneer Sandwich', price: 119, emoji: '🥪', desc: 'Tandoori Paneer Sandwich' },
-    { name: 'Burn Garlic Mushroom Sandwich', price: 149, emoji: '🍄', desc: 'Burn Garlic Mushroom Sandwich' },
-    { name: 'Masala Corn Sandwich', price: 129, emoji: '🌽', desc: 'Masala Corn Sandwich' },
-    { name: 'Pizza Sandwich', price: 199, emoji: '🍕', desc: 'Pizza Sandwich' },
-    { name: 'Surender Sandwich', price: 99, emoji: '🥪', desc: 'Surender Sandwich' },
-    { name: 'BBQ Paneer Sandwich', price: 109, emoji: '🥪', desc: 'BBQ Paneer Sandwich' },
-    { name: 'Chocolate Sandwich', price: 99, emoji: '🍫', desc: 'Chocolate Sandwich' },
-  ],
-  'Chats': [
-    { name: 'Pani Puri', price: 30, emoji: '🫙', desc: 'Pani Puri' },
-    { name: 'Bhel Puri', price: 40, emoji: '🫙', desc: 'Bhel Puri' },
-    { name: 'Shev Puri', price: 50, emoji: '🫙', desc: 'Shev Puri' },
-    { name: 'Dhai Puri', price: 60, emoji: '🫙', desc: 'Dhai Puri' },
-    { name: 'Corn Dhai Puri', price: 60, emoji: '🌽', desc: 'Corn Dhai Puri' },
-    { name: 'Chinese Bhel', price: 99, emoji: '🥢', desc: 'Chinese Bhel' },
+    {
+      name: 'Veg Sandwich',
+      price: 99,
+      emoji: '🥪',
+      desc: 'Freshly toasted sandwich with butter and toppings'
+    },
+    {
+      name: 'Veg Club Sandwich',
+      price: 109,
+      emoji: '🥪',
+      desc: 'Freshly toasted sandwich with butter and toppings'
+    },
+    {
+      name: 'Veg Cheesee Sandwich',
+      price: 109,
+      emoji: '🧀',
+      desc: 'Freshly toasted sandwich with butter and toppings'
+    },
+    {
+      name: 'Peri Peri Paneer Sandwich',
+      price: 129,
+      emoji: '🌶️',
+      desc: 'Freshly toasted sandwich with butter and toppings'
+    },
+    {
+      name: 'Tandoori Paneer Sandwich',
+      price: 119,
+      emoji: '🥪',
+      desc: 'Freshly toasted sandwich with butter and toppings'
+    },
+    {
+      name: 'Burn Garlic Mushroom Sandwich',
+      price: 149,
+      emoji: '🧄',
+      desc: 'Freshly toasted sandwich with butter and toppings'
+    },
+    {
+      name: 'Masala Corn Sandwich',
+      price: 129,
+      emoji: '🌽',
+      desc: 'Freshly toasted sandwich with butter and toppings'
+    },
+    {
+      name: 'Pizza Sandwich',
+      price: 199,
+      emoji: '🥪',
+      desc: 'Freshly toasted sandwich with butter and toppings'
+    },
+    {
+      name: 'Surender Sandwich',
+      price: 99,
+      emoji: '🥪',
+      desc: 'Freshly toasted sandwich with butter and toppings'
+    },
+    {
+      name: 'Bbq Paneer Sandwich',
+      price: 109,
+      emoji: '🥪',
+      desc: 'Freshly toasted sandwich with butter and toppings'
+    },
+    {
+      name: 'Chocolate Sandwich',
+      price: 99,
+      emoji: '🍫',
+      desc: 'Freshly toasted sandwich with butter and toppings'
+    },
   ],
   'Fries': [
-    { name: 'Salted Fries', price: 99, emoji: '🍟', desc: 'Salted Fries' },
-    { name: 'Peri Peri Fries', price: 119, emoji: '🌶️', desc: 'Peri Peri Fries' },
-    { name: 'Schezwan Fries', price: 129, emoji: '🍟', desc: 'Schezwan Fries' },
-    { name: 'Potato Wedges', price: 119, emoji: '🥔', desc: 'Potato Wedges' },
-    { name: 'Garlic Pops', price: 99, emoji: '🧄', desc: 'Garlic Pops' },
-    { name: 'Corn Cheese Ball', price: 149, emoji: '🌽', desc: 'Corn Cheese Ball' },
-    { name: 'Nachos', price: 99, emoji: '🌮', desc: 'Nachos' },
-    { name: 'Sloppy Nachos', price: 149, emoji: '🌮', desc: 'Sloppy Nachos' },
+    {
+      name: 'Salted Fries',
+      price: 109,
+      emoji: '🍟',
+      desc: 'Freshly prepared salted fries'
+    },
+    {
+      name: 'Peri Peri Fries',
+      price: 119,
+      emoji: '🌶️',
+      desc: 'Freshly prepared peri peri fries'
+    },
+    {
+      name: 'Schezwan Fries',
+      price: 129,
+      emoji: '🍟',
+      desc: 'Freshly prepared schezwan fries'
+    },
+    {
+      name: 'Potato Wedges',
+      price: 119,
+      emoji: '🍟',
+      desc: 'Freshly prepared potato wedges'
+    },
+    {
+      name: 'Garlic Pops',
+      price: 99,
+      emoji: '🧄',
+      desc: 'Freshly prepared garlic pops'
+    },
+    {
+      name: 'Ring Onion',
+      price: 99,
+      emoji: '🍟',
+      desc: 'Freshly prepared ring onion'
+    },
+    {
+      name: 'Smily',
+      price: 99,
+      emoji: '🍟',
+      desc: 'Freshly prepared smily'
+    },
   ],
   'Rolls': [
-    { name: 'Paneer Tikka Roll', price: 99, emoji: '🌯', desc: 'Paneer Tikka Roll' },
-    { name: 'Paneer Chilli Roll', price: 99, emoji: '🌯', desc: 'Paneer Chilli Roll' },
-    { name: 'Rajwadi Paneer Tikka Roll', price: 99, emoji: '🌯', desc: 'Rajwadi Paneer Tikka Roll' },
-    { name: 'Mexican Roll', price: 99, emoji: '🌯', desc: 'Mexican Roll' },
-    { name: 'Salad Roll', price: 99, emoji: '🌯', desc: 'Salad Roll' },
+    {
+      name: 'Paneer Tikka Roll',
+      price: 109,
+      emoji: '🌯',
+      desc: 'Freshly prepared paneer tikka roll'
+    },
+    {
+      name: 'Paneer Chilli Roll',
+      price: 109,
+      emoji: '🌶️',
+      desc: 'Freshly prepared paneer chilli roll'
+    },
+    {
+      name: 'Mexican Roll',
+      price: 109,
+      emoji: '🌯',
+      desc: 'Freshly prepared mexican roll'
+    },
+    {
+      name: 'Veg Roll',
+      price: 109,
+      emoji: '🌯',
+      desc: 'Freshly prepared veg roll'
+    },
   ],
-  'Rice': [
-    { name: 'Veg Fried Rice', price: 99, emoji: '🍚', desc: 'Veg Fried Rice' },
-    { name: 'Schezwan Fried Rice', price: 129, emoji: '🌶️', desc: 'Schezwan Fried Rice' },
-    { name: 'Paneer Fried Rice', price: 149, emoji: '🍚', desc: 'Paneer Fried Rice' },
-    { name: 'Mix Fried Rice', price: 169, emoji: '🍚', desc: 'Mix Fried Rice' },
-    { name: 'Mexican Rice', price: 99, emoji: '🍚', desc: 'Mexican Rice' },
+  'Momos': [
+    {
+      name: 'Paneer Momos Fried',
+      price: 99,
+      emoji: '🥟',
+      desc: 'Freshly prepared paneer momos fried'
+    },
+    {
+      name: 'Veg Momo Fried',
+      price: 89,
+      emoji: '🥟',
+      desc: 'Freshly prepared veg momo fried'
+    },
+    {
+      name: 'Corn Momo Fries',
+      price: 89,
+      emoji: '🌽',
+      desc: 'Freshly prepared corn momo fries'
+    },
   ],
-  'Chinese': [
-    { name: 'Gobi 65', price: 99, emoji: '🥦', desc: 'Gobi 65' },
-    { name: 'Gobi Manchurian', price: 109, emoji: '🥦', desc: 'Gobi Manchurian' },
-    { name: 'Gobi Chilli', price: 129, emoji: '🌶️', desc: 'Gobi Chilli' },
-    { name: 'Honey Chilli Potato', price: 149, emoji: '🍯', desc: 'Honey Chilli Potato' },
-    { name: 'Paneer Manchurian', price: 149, emoji: '🧀', desc: 'Paneer Manchurian' },
-    { name: 'Paneer Chilli', price: 149, emoji: '🌶️', desc: 'Paneer Chilli' },
-    { name: 'Veg Crispy', price: 139, emoji: '🥢', desc: 'Veg Crispy' },
-    { name: 'Paneer Hongkong', price: 149, emoji: '🥢', desc: 'Paneer Hongkong' },
-    { name: 'Paneer BBQ', price: 149, emoji: '🍖', desc: 'Paneer BBQ' },
-    { name: 'Paneer 65', price: 129, emoji: '🧀', desc: 'Paneer 65' },
-    { name: 'Paneer Chilli Dry', price: 199, emoji: '🌶️', desc: 'Paneer Chilli Dry' },
-    { name: 'Veg Manchurian', price: 149, emoji: '🥢', desc: 'Veg Manchurian' },
-    { name: 'Pav Bhaji', price: 50, emoji: '🍞', desc: 'Pav Bhaji' },
-    { name: 'Cheese Pav Bhaji', price: 60, emoji: '🧀', desc: 'Cheese Pav Bhaji' },
-    { name: 'Masala Pav', price: 40, emoji: '🍞', desc: 'Masala Pav' },
-    { name: 'Special Pav Bhaji', price: 70, emoji: '⭐', desc: 'Special Pav Bhaji' },
+  'Maggi': [
+    {
+      name: 'Veg Maggi',
+      price: 59,
+      emoji: '🍜',
+      desc: 'Freshly prepared veg maggi'
+    },
+    {
+      name: 'Cheesee Maggi',
+      price: 99,
+      emoji: '🧀',
+      desc: 'Freshly prepared cheesee maggi'
+    },
+    {
+      name: 'Peri Peri Maggi',
+      price: 79,
+      emoji: '🌶️',
+      desc: 'Freshly prepared peri peri maggi'
+    },
+    {
+      name: 'Our Special Maggi',
+      price: 99,
+      emoji: '🍜',
+      desc: 'Freshly prepared our special maggi'
+    },
   ],
-  'Pasta': [
-    { name: 'Alfredo Pasta', price: 199, emoji: '🍝', desc: 'Alfredo Pasta' },
-    { name: 'Arrabitta Pasta', price: 199, emoji: '🍝', desc: 'Arrabitta Pasta' },
-    { name: 'Pink Pasta', price: 219, emoji: '🍝', desc: 'Pink Pasta' },
-    { name: 'Cheese Corn Pasta', price: 249, emoji: '🍝', desc: 'Cheese Corn Pasta' },
+  'Garlic Bread': [
+    {
+      name: 'Cheesee Garlic Bread',
+      price: 109,
+      emoji: '🧀',
+      desc: 'Baked with garlic butter and herbs'
+    },
+    {
+      name: 'Chilli And Corn',
+      price: 149,
+      emoji: '🌽',
+      desc: 'Baked with garlic butter and herbs'
+    },
+    {
+      name: 'Premium Garlic Bread Capsicum,Onion',
+      price: 129,
+      emoji: '🧄',
+      desc: 'Topped with fresh capsicum and onions'
+    },
+    {
+      name: 'Supreme Garlic Bread',
+      price: 149,
+      emoji: '🧄',
+      desc: 'Topped with green chillies, sweet corn, and onions'
+    },
   ],
-  'Hot Dogs': [
-    { name: 'Cheese Hot Dog', price: 130, emoji: '🌭', desc: 'Cheese Hot Dog' },
-    { name: 'Paneer Hot Dog', price: 140, emoji: '🌭', desc: 'Paneer Hot Dog' },
-    { name: 'Schezwan Hot Dog', price: 150, emoji: '🌭', desc: 'Schezwan Hot Dog' },
-    { name: 'Peri Peri Hot Dog', price: 109, emoji: '🌭', desc: 'Peri Peri Hot Dog' },
-  ],
-  'Desserts': [
-    { name: 'Chocolate Safari', price: 149, emoji: '🍫', desc: 'Chocolate Safari' },
-    { name: 'Lover Nest', price: 149, emoji: '🍮', desc: 'Lover Nest' },
-    { name: 'Banana Spit', price: 199, emoji: '🍌', desc: 'Banana Spit' },
-    { name: 'Birts Best', price: 199, emoji: '🍨', desc: 'Birts Best' },
-    { name: 'Walnut Brownie', price: 99, emoji: '🍫', desc: 'Walnut Brownie' },
-    { name: 'Sizzling Brownie', price: 149, emoji: '🔥', desc: 'Sizzling Brownie' },
-    { name: 'Oreo Sizzling Brownie', price: 169, emoji: '🍪', desc: 'Oreo Sizzling Brownie' },
-  ],
-  'Juices': [
-    { name: 'Apple Juice', price: 89, emoji: '🍎', desc: 'Apple Juice' },
-    { name: 'Pineapple Juice', price: 79, emoji: '🍍', desc: 'Pineapple Juice' },
-    { name: 'Watermelon Juice', price: 69, emoji: '🍉', desc: 'Watermelon Juice' },
-    { name: 'Musk Milan Juice', price: 59, emoji: '🍈', desc: 'Musk Milan Juice' },
-    { name: 'Orange Juice', price: 99, emoji: '🍊', desc: 'Orange Juice' },
-  ],
-  'Beverages': [
-    { name: 'Espresso', price: 59, emoji: '☕', desc: 'Espresso' },
-    { name: 'Americano', price: 49, emoji: '☕', desc: 'Americano' },
-    { name: 'Cappuccino', price: 79, emoji: '☕', desc: 'Cappuccino' },
-    { name: 'Double Short Cappuccino', price: 99, emoji: '☕', desc: 'Double Short Cappuccino' },
-    { name: 'Latte', price: 79, emoji: '☕', desc: 'Latte' },
-    { name: 'Mocha', price: 79, emoji: '☕', desc: 'Mocha' },
-    { name: 'Hot Chocolate', price: 109, emoji: '🍫', desc: 'Hot Chocolate' },
-    { name: 'Vanilla Cappuccino', price: 99, emoji: '☕', desc: 'Vanilla Cappuccino' },
-    { name: 'Hazelnut Cappuccino', price: 99, emoji: '☕', desc: 'Hazelnut Cappuccino' },
-    { name: 'Vanilla Latte', price: 99, emoji: '☕', desc: 'Vanilla Latte' },
-    { name: 'Hazelnut Latte', price: 99, emoji: '☕', desc: 'Hazelnut Latte' },
-    { name: 'Masla Tea', price: 30, emoji: '🍵', desc: 'Masla Tea' },
-    { name: 'Boost', price: 30, emoji: '☕', desc: 'Boost' },
-    { name: 'Ginger Tea', price: 40, emoji: '🍵', desc: 'Ginger Tea' },
-    { name: 'Ginger Lemon Tea', price: 50, emoji: '🍋', desc: 'Ginger Lemon Tea' },
-    { name: 'Green Tea', price: 40, emoji: '🍵', desc: 'Green Tea' },
-    { name: 'Normal Hot Coffee', price: 30, emoji: '☕', desc: 'Normal Hot Coffee' },
+  'Combos': [
+    {
+      name: 'Pizza & Coffee Combo',
+      price: 300,
+      emoji: '🥤',
+      desc: '4-Slice Pizza, golden fries, and a classic cold coffee'
+    },
+    {
+      name: 'Double Pizza Feast',
+      price: 459,
+      emoji: '🍱',
+      desc: 'Any 2 Large pizzas of your choice'
+    },
+    {
+      name: 'Classic Burger Meal',
+      price: 258,
+      emoji: '🍱',
+      desc: 'Veg burger, golden fries, and a chilled beverage'
+    },
+    {
+      name: 'Sandwich & Rings Combo',
+      price: 238,
+      emoji: '🍱',
+      desc: 'Toasted sandwich, onion rings, and a chilled beverage'
+    },
   ],
 };
-
 
 export const menuCategories = Object.keys(menuData);
