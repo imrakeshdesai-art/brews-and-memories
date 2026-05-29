@@ -9,9 +9,9 @@ function Reviews() {
         <div className="section-divider" />
       </div>
       <div className="rating-summary">
-        <div className="big-rating">4.2</div>
-        <div className="rating-stars-big">★★★★☆</div>
-        <div className="rating-meta">Based on 200+ Google Reviews</div>
+        <div className="big-rating">4.8</div>
+        <div className="rating-stars-big">★★★★★</div>
+        <div className="rating-meta">Based on 500+ Google Reviews</div>
       </div>
       <div className="reviews-grid">
         {reviewsData.map((review) => (

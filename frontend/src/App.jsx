@@ -13,6 +13,11 @@ const Menu = lazy(() => import('./pages/Menu'));
 const Reviews = lazy(() => import('./pages/Reviews'));
 const Contact = lazy(() => import('./pages/Contact'));
 const Admin = lazy(() => import('./pages/Admin'));
+const Reserve = lazy(() => import('./pages/Reserve'));
+
+import Footer from './components/Footer';
+import FloatingActions from './components/FloatingActions';
+import ReservationModal from './components/ReservationModal';
 
 const defaultCart = [];
 
@@ -20,6 +25,7 @@ function App() {
   const [cart, setCart] = useState(defaultCart);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+  const [isReserveOpen, setIsReserveOpen] = useState(false);
   const [selectedPayment, setSelectedPayment] = useState('counter');
   const location = useLocation();
 
@@ -102,6 +108,7 @@ function App() {
     selectedPayment,
     setSelectedPayment,
     clearCart,
+    openReserve: () => setIsReserveOpen(true),
   };
 
   return (
@@ -111,16 +118,19 @@ function App() {
         <main className="page-shell">
           <Suspense fallback={<div className="page-loader">Loading page…</div>}>
             <Routes>
-              <Route path="/" element={<Home />} />
+              <Route path="/" element={<Home {...pageProps} />} />
               <Route path="/about" element={<About />} />
               <Route path="/menu" element={<Menu {...pageProps} />} />
               <Route path="/reviews" element={<Reviews />} />
               <Route path="/contact" element={<Contact />} />
+              <Route path="/reserve" element={<Reserve />} />
               <Route path="/admin" element={<Admin />} />
-              <Route path="*" element={<Home />} />
+              <Route path="*" element={<Home {...pageProps} />} />
             </Routes>
           </Suspense>
         </main>
+        <Footer onReserveClick={() => setIsReserveOpen(true)} />
+        <FloatingActions />
         <CartDrawer
           open={isCartOpen}
           cart={cart}
@@ -138,6 +148,10 @@ function App() {
           setPayment={setSelectedPayment}
           onClose={handleCheckoutClose}
           onClearCart={clearCart}
+        />
+        <ReservationModal
+          open={isReserveOpen}
+          onClose={() => setIsReserveOpen(false)}
         />
       </div>
     </ToastProvider>

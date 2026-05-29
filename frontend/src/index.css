@@ -1222,3 +1222,361 @@ button {
     grid-template-columns: 1fr;
   }
 }
+
+/* ==================== HERO SPLIT LAYOUT ==================== */
+.hero-container {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 48px;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  text-align: left;
+}
+
+.hero-media {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+  border: 3px solid rgba(245, 230, 200, 0.35);
+  aspect-ratio: 4/3;
+  transition: var(--transition);
+}
+
+.hero-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.hero-media:hover img {
+  transform: scale(1.04);
+}
+
+@media (max-width: 900px) {
+  .hero-container {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+  .hero-media {
+    display: none;
+  }
+}
+
+/* ==================== GALLERY GRID ==================== */
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.gallery-item {
+  position: relative;
+  border-radius: var(--radius);
+  overflow: hidden;
+  aspect-ratio: 4/3;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  transition: var(--transition);
+}
+
+.gallery-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: var(--transition);
+}
+
+.gallery-item:hover img {
+  transform: scale(1.06);
+}
+
+.gallery-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 61, 62, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: var(--transition);
+  color: #fff;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.gallery-item:hover .gallery-overlay {
+  opacity: 1;
+}
+
+@media (max-width: 768px) {
+  .gallery-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .gallery-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ==================== LIGHTBOX MODAL ==================== */
+.lightbox-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.9);
+  z-index: 5000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.lightbox-content {
+  position: relative;
+  max-width: 90vw;
+  max-height: 80vh;
+}
+
+.lightbox-content img {
+  max-width: 100%;
+  max-height: 80vh;
+  border-radius: var(--radius);
+  box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+}
+
+.lightbox-close {
+  position: absolute;
+  top: -45px;
+  right: 0;
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 2.2rem;
+  cursor: pointer;
+}
+
+.lightbox-caption {
+  color: #fff;
+  text-align: center;
+  margin-top: 12px;
+  font-size: 1.1rem;
+  font-family: 'Playfair Display', serif;
+}
+
+/* ==================== INSTAGRAM FEED ==================== */
+.instagram-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.instagram-item {
+  position: relative;
+  aspect-ratio: 1/1;
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  cursor: pointer;
+}
+
+.instagram-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: var(--transition);
+}
+
+.instagram-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.65);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  opacity: 0;
+  transition: var(--transition);
+  font-size: 1rem;
+  gap: 6px;
+}
+
+.instagram-item:hover img {
+  transform: scale(1.04);
+}
+
+.instagram-item:hover .instagram-overlay {
+  opacity: 1;
+}
+
+@media (max-width: 768px) {
+  .instagram-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ==================== FAQ ACCORDION ==================== */
+.faq-container {
+  max-width: 800px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.faq-item {
+  background: #fff;
+  border: 1px solid var(--cream-dark);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  transition: var(--transition);
+}
+
+.faq-question {
+  width: 100%;
+  padding: 18px 24px;
+  text-align: left;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 700;
+  color: var(--green);
+  font-size: 1.05rem;
+  cursor: pointer;
+  background: none;
+  border: none;
+}
+
+.faq-question:focus-visible {
+  outline: 2px solid var(--green);
+}
+
+.faq-icon {
+  font-size: 1.2rem;
+  transition: transform 0.3s ease;
+}
+
+.faq-item.open .faq-icon {
+  transform: rotate(45deg);
+}
+
+.faq-answer {
+  padding: 0 24px 20px;
+  line-height: 1.75;
+  color: var(--text-light);
+  font-size: 0.95rem;
+}
+
+/* ==================== RESERVATION LAYOUT ==================== */
+.reservation-form-container {
+  max-width: 600px;
+  margin: 0 auto;
+  background: #fff;
+  padding: 40px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--cream-dark);
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+@media (max-width: 600px) {
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+  .reservation-form-container {
+    padding: 24px;
+  }
+}
+
+/* ==================== FLOATING ACTIONS ==================== */
+.floating-actions-desktop {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 4000;
+}
+
+.float-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.25);
+  transition: var(--transition);
+  font-size: 1.4rem;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.float-btn:hover {
+  transform: scale(1.08);
+}
+
+.float-btn.whatsapp { background-color: #25d366; }
+.float-btn.call { background-color: #0f3d3e; }
+.float-btn.directions { background-color: #fbbf24; color: #2c1810; }
+
+.floating-actions-mobile {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #fff;
+  box-shadow: 0 -4px 15px rgba(0,0,0,0.12);
+  z-index: 4000;
+  grid-template-columns: repeat(3, 1fr);
+  border-top: 1px solid var(--cream-dark);
+}
+
+.mobile-action-link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 0;
+  text-decoration: none;
+  color: var(--green);
+  font-weight: 700;
+  font-size: 0.75rem;
+  gap: 4px;
+  border: none;
+  background: none;
+}
+
+.mobile-action-link.whatsapp { color: #25d366; border-left: 1px solid var(--cream-dark); border-right: 1px solid var(--cream-dark); }
+.mobile-action-link.directions { color: #b45309; }
+
+@media (max-width: 768px) {
+  .floating-actions-desktop {
+    display: none;
+  }
+  .floating-actions-mobile {
+    display: grid;
+  }
+  .app-shell {
+    padding-bottom: 64px;
+  }
+}
+
