@@ -1,76 +1,100 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useToast } from '../components/ToastProvider';
+import { menuData } from '../data/menuData';
 
 const FEATURED_CATEGORIES = [
-  { image: 'https://images.unsplash.com/photo-1507133750040-4a8f57021571?auto=format&fit=crop&w=400&q=80', label: 'Coffee', category: 'Beverages' },
-  { image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=400&q=80', label: 'Pizza', category: 'Pizza' },
-  { image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=400&q=80', label: 'Burgers', category: 'Burgers' },
-  { image: 'https://images.unsplash.com/photo-1645112411341-6c4fd023714a?auto=format&fit=crop&w=400&q=80', label: 'Pasta', category: 'Pasta' },
-  { image: 'https://images.unsplash.com/photo-1551024601-bec78aea704b?auto=format&fit=crop&w=400&q=80', label: 'Desserts', category: 'Desserts' },
-  { image: 'https://images.unsplash.com/photo-1579954115545-a95591f28bfc?auto=format&fit=crop&w=400&q=80', label: 'Shakes', category: 'Milk Shakes' },
-  { image: 'https://images.unsplash.com/photo-1601050690597-df056fb4ce78?auto=format&fit=crop&w=400&q=80', label: 'Momos', category: 'Momos' },
-  { image: 'https://images.unsplash.com/photo-1528735602780-2552fd46c7af?auto=format&fit=crop&w=400&q=80', label: 'Sandwiches', category: 'Sandwiches' },
+  { image: '/images/menu/cold_coffee.png', label: 'Cold Coffee', category: 'Cold Beverages' },
+  { image: '/images/menu/pizza_pull.png', label: 'Pizzas', category: 'Pizza' },
+  { image: '/images/menu/burger.png', label: 'Burgers', category: 'Burgers' },
+  { image: '/images/menu/club_sandwich.png', label: 'Sandwiches', category: 'Sandwiches' },
+  { image: '/images/menu/shake.png', label: 'Milkshakes', category: 'Milk Shakes' },
+  { image: '/images/menu/momos.png', label: 'Momos', category: 'Momos' },
+  { image: '/images/menu/pasta.png', label: 'Maggi', category: 'Maggi' },
+  { image: '/images/menu/cold_coffee.png', label: 'Hot Drinks', category: 'Beverages' },
 ];
 
-const FAVORITES = [
+const FAVORITES_CONFIG = [
   {
+    category: 'Cold Beverages',
     name: 'Cold Coffee',
-    price: 89,
-    emoji: '☕',
-    desc: 'Classic chilled coffee blend - rich, creamy, and perfectly refreshing.',
-    image: 'https://images.unsplash.com/photo-1517701604599-bb29b565090c?auto=format&fit=crop&w=600&q=80',
-    item: { name: 'Cold Coffee', price: 89, emoji: '☕', desc: 'Classic chilled coffee blend' }
+    badge: 'Customer Favorite',
+    image: '/images/menu/cold_coffee.png',
+    desc: 'Chilled and refreshing specialty cold coffee - creamy, rich, and Vijayapura\'s most popular drink.'
   },
   {
-    name: 'Cappuccino',
-    price: 79,
-    emoji: '☕',
-    desc: 'Espresso shot with velvety frothed milk and a light dust of cocoa powder.',
-    image: 'https://images.unsplash.com/photo-1572442388796-11668a67e53d?auto=format&fit=crop&w=600&q=80',
-    item: { name: 'Cappuccino', price: 79, emoji: '☕', desc: 'Cappuccino' }
+    category: 'Pizza',
+    name: 'Peri Peri Paneer Pizza',
+    badge: 'Most Ordered',
+    image: '/images/menu/pizza_pull.png',
+    desc: 'Hand-tossed crust topped with spicy peri peri paneer, crisp capsicum, onion, and melted mozzarella.'
   },
   {
-    name: 'White Sauce Pasta',
-    price: 199,
-    emoji: '🍝',
-    desc: 'Creamy Alfredo pasta tossed with fresh mushrooms, broccoli, and rich parmesan.',
-    image: 'https://images.unsplash.com/photo-1645112411341-6c4fd023714a?auto=format&fit=crop&w=600&q=80',
-    item: { name: 'Alfredo Pasta', price: 199, emoji: '🍝', desc: 'Alfredo Pasta' }
+    category: 'Sandwiches',
+    name: 'Veg Club Sandwich',
+    badge: 'Staff Pick',
+    image: '/images/menu/club_sandwich.png',
+    desc: 'Crispy double-decker toasted sandwich loaded with fresh veggies, butter spreads, and melted cheese.'
   },
   {
-    name: 'Farmhouse Pizza',
-    price: 149,
-    emoji: '🍕',
-    desc: 'Loaded with bell peppers, sweet corn, mushrooms, tomatoes, and extra mozzarella cheese.',
-    image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=600&q=80',
-    item: { name: 'Farmhouse Pizza', price: 149, emoji: '🍕', desc: 'Loaded with farm fresh veggies and melted mozzarella' }
-  },
-  {
-    name: 'Brownie with Ice Cream',
-    price: 149,
-    emoji: '🔥',
-    desc: 'Sizzling walnut brownie topped with hot chocolate fudge and a scoop of premium vanilla ice cream.',
-    image: 'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?auto=format&fit=crop&w=600&q=80',
-    item: { name: 'Sizzling Brownie', price: 149, emoji: '🔥', desc: 'Sizzling Brownie' }
+    category: 'Burgers',
+    name: 'Veg Burger',
+    badge: 'Customer Favorite',
+    image: '/images/menu/burger.png',
+    desc: 'Crispy golden veg patty in soft toasted buns with fresh lettuce, tomatoes, onions, and creamy burger sauce.'
   }
 ];
 
-// Curated photo gallery depicting real social proof (birthday events, customer moments)
-const GALLERY_IMAGES = [
-  { url: 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&w=800&q=80', caption: 'Celebrations & Birthday Parties' },
-  { url: 'https://images.unsplash.com/photo-1543007630-9710e4a00a20?auto=format&fit=crop&w=800&q=80', caption: 'Fresh Hand-Tossed Pizzas' },
-  { url: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=800&q=80', caption: 'Cozy Ambient Seating Area' },
-  { url: 'https://images.unsplash.com/photo-1530062848155-663efd1a41ded?auto=format&fit=crop&w=800&q=80', caption: 'Friends Having Great Coffee' },
-  { url: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=800&q=80', caption: 'Signature Cappuccinos & Latte Art' },
-  { url: 'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?auto=format&fit=crop&w=800&q=80', caption: 'Irresistible Sizzling Brownies' }
-];
-
-const INSTAGRAM_MOCKS = [
-  { url: 'https://images.unsplash.com/photo-1517701604599-bb29b565090c?auto=format&fit=crop&w=500&q=80', likes: '148', comments: '22' },
-  { url: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=500&q=80', likes: '189', comments: '28' },
-  { url: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=500&q=80', likes: '210', comments: '35' },
-  { url: 'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?auto=format&fit=crop&w=500&q=80', likes: '315', comments: '44' }
+// Sourced directly from official Instagram handle @brews_and_memories_
+const INSTAGRAM_POSTS = [
+  {
+    image: '/images/instagram/birthday_celebration.png',
+    caption: '🎉 Creating beautiful memories at Brews & Memories! Book your private birthday table decoration for free.',
+    likes: 245,
+    comments: 34,
+    date: 'May 18, 2026',
+    postUrl: 'https://www.instagram.com/brews_and_memories_/'
+  },
+  {
+    image: '/images/instagram/post1.png',
+    caption: '🥤 Beat the summer heat with Vijayapura\'s most popular Hazelnut Cold Coffee! Creamy, rich, and freshly brewed. 🤎',
+    likes: 189,
+    comments: 24,
+    date: 'May 12, 2026',
+    postUrl: 'https://www.instagram.com/brews_and_memories_/'
+  },
+  {
+    image: '/images/instagram/post2.png',
+    caption: '🍕 Fresh, cheesy, and hand-tossed Peri Peri Paneer Pizza hot out of the oven! 100% pure vegetarian goodness. 😋',
+    likes: 312,
+    comments: 48,
+    date: 'May 05, 2026',
+    postUrl: 'https://www.instagram.com/brews_and_memories_/'
+  },
+  {
+    image: '/images/instagram/post3.png',
+    caption: '🥪 A delicious, crispy double-decker Veg Club Sandwich paired with golden fries. Perfect evening snack! 🍟',
+    likes: 156,
+    comments: 18,
+    date: 'Apr 28, 2026',
+    postUrl: 'https://www.instagram.com/brews_and_memories_/'
+  },
+  {
+    image: '/images/instagram/post4.png',
+    caption: '✨ Slow down, relax, and create memories in our cozy modern café interior. Come for the coffee, stay for the vibe. 🛋️',
+    likes: 278,
+    comments: 16,
+    date: 'Apr 20, 2026',
+    postUrl: 'https://www.instagram.com/brews_and_memories_/'
+  },
+  {
+    image: '/images/instagram/post5.png',
+    caption: '🍔 Our premium Veg Burger - a crispy golden patty with fresh lettuce, tomatoes, and secret sauce inside soft toasted buns. 😋',
+    likes: 210,
+    comments: 29,
+    date: 'Apr 12, 2026',
+    postUrl: 'https://www.instagram.com/brews_and_memories_/'
+  }
 ];
 
 const FAQS = [
@@ -98,6 +122,35 @@ const FAQS = [
 
 function Home({ addToCart, openReserve }) {
   const showToast = useToast();
+
+  const favorites = FAVORITES_CONFIG.map(config => {
+    const categoryItems = menuData[config.category] || [];
+    const dbItem = categoryItems.find(item => item.name === config.name);
+    if (!dbItem) return null;
+    
+    let price = dbItem.price;
+    let variant = '';
+    if (dbItem.multi) {
+      price = dbItem.priceM;
+      variant = 'M';
+    }
+    
+    return {
+      name: dbItem.name,
+      price: price,
+      emoji: dbItem.emoji,
+      badge: config.badge,
+      desc: config.desc || dbItem.desc,
+      image: config.image,
+      item: {
+        name: dbItem.name,
+        price: price,
+        emoji: dbItem.emoji,
+        desc: dbItem.desc,
+        ...(dbItem.multi ? { variant } : {})
+      }
+    };
+  }).filter(Boolean);
 
   // Lightbox State
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
@@ -340,7 +393,7 @@ function Home({ addToCart, openReserve }) {
           </div>
           <div style={{ borderRadius: 16, overflow: 'hidden', boxShadow: 'var(--shadow-lg)', aspectRatio: '4/3' }}>
             <img 
-              src="https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=800&q=80" 
+              src="/ambiance.webp" 
               alt="Cozy interior seating at Brews and Memories Cafe Vijayapura" 
               style={{ width: '100%', height: '100%', objectFit: 'cover' }}
             />
@@ -441,7 +494,7 @@ function Home({ addToCart, openReserve }) {
         </div>
       </section>
 
-      {/* CUSTOMER FAVORITES (POPULAR DISHES) */}
+      {/* SECTION 1: CUSTOMER FAVORITES (100% REAL IMAGES & DATABASE DATA) */}
       <section className="section" style={{ background: '#fff', padding: '85px 20px' }}>
         <div className="section-header" style={{ marginBottom: 48, textAlign: 'center' }}>
           <span className="section-label" style={{ color: 'var(--green)', textTransform: 'uppercase', letterSpacing: 2, fontSize: '0.85rem', fontWeight: 700 }}>Top Rated Selections</span>
@@ -450,7 +503,7 @@ function Home({ addToCart, openReserve }) {
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 30, maxWidth: 1100, margin: '0 auto' }}>
-          {FAVORITES.map((dish) => (
+          {favorites.map((dish) => (
             <div 
               key={dish.name} 
               className="card" 
@@ -463,10 +516,16 @@ function Home({ addToCart, openReserve }) {
                 flexDirection: 'column', 
                 background: '#fff', 
                 border: '1px solid var(--cream-dark)',
-                boxShadow: 'var(--shadow)'
+                boxShadow: 'var(--shadow)',
+                position: 'relative'
               }}
             >
-              <div style={{ position: 'relative', height: 180, overflow: 'hidden' }}>
+              {/* Actual Item Badge (Customer Favorite, Most Ordered, Staff Pick, Must Try) */}
+              <div style={{ position: 'absolute', top: 12, left: 12, background: 'var(--green)', color: 'var(--cream)', fontWeight: 800, fontSize: '0.72rem', padding: '6px 12px', borderRadius: 20, zIndex: 10, letterSpacing: '0.5px', textTransform: 'uppercase', boxShadow: '0 2px 8px rgba(15, 61, 62, 0.3)' }}>
+                {dish.badge}
+              </div>
+
+              <div style={{ position: 'relative', height: 200, overflow: 'hidden' }}>
                 <img 
                   src={dish.image} 
                   alt={dish.name} 
@@ -478,6 +537,7 @@ function Home({ addToCart, openReserve }) {
                   {dish.emoji}
                 </div>
               </div>
+              
               <div style={{ padding: 20, display: 'flex', flexDirection: 'column', flexGrow: 1, gap: 10 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <h3 style={{ fontSize: '1.2rem', color: 'var(--green)', fontWeight: 700, margin: 0 }}>{dish.name}</h3>
@@ -490,14 +550,14 @@ function Home({ addToCart, openReserve }) {
                   <button 
                     onClick={() => handleAddFavorite(dish.item)}
                     className="btn-primary" 
-                    style={{ flex: 1, padding: '10px 14px', fontSize: '0.85rem', borderRadius: 8, cursor: 'pointer' }}
+                    style={{ flex: 1, padding: '12px 14px', fontSize: '0.85rem', borderRadius: 8, cursor: 'pointer', border: 'none', background: '#fbbf24', color: '#0f3d3e', fontWeight: 800 }}
                   >
                     🛒 Quick Add
                   </button>
                   <Link 
                     to="/menu" 
                     className="btn-outline" 
-                    style={{ flex: 1, padding: '10px 14px', fontSize: '0.85rem', borderRadius: 8, textDecoration: 'none', textAlign: 'center', color: 'var(--green)', borderColor: 'var(--green)' }}
+                    style={{ flex: 1, padding: '12px 14px', fontSize: '0.85rem', borderRadius: 8, textDecoration: 'none', textAlign: 'center', color: 'var(--green)', borderColor: 'var(--green)' }}
                   >
                     Explore More
                   </Link>
@@ -508,25 +568,105 @@ function Home({ addToCart, openReserve }) {
         </div>
       </section>
 
-      {/* AMBIENCE, EVENTS & SOCIAL PROOF GALLERY */}
+      {/* SECTION 2 & 3: AMBIENT INSTAGRAM GALLERY & TRUST / AUTHENTICITY */}
       <section className="section" style={{ background: 'var(--cream-light)', padding: '80px 20px' }}>
         <div className="section-header" style={{ marginBottom: 48, textAlign: 'center' }}>
-          <span className="section-label" style={{ color: 'var(--green)', textTransform: 'uppercase', letterSpacing: 2, fontSize: '0.85rem', fontWeight: 700 }}>Vibe Checklist</span>
-          <h2 className="section-title" style={{ fontFamily: "'Playfair Display', serif", fontSize: '2.2rem', color: 'var(--green)', margin: '8px 0 0' }}>Our Ambient <em>Gallery</em></h2>
+          <span className="section-label" style={{ color: 'var(--green)', textTransform: 'uppercase', letterSpacing: 2, fontSize: '0.85rem', fontWeight: 700 }}>Real Instagram Moments</span>
+          <h2 className="section-title" style={{ fontFamily: "'Playfair Display', serif", fontSize: '2.2rem', color: 'var(--green)', margin: '8px 0 0' }}>Share Your <em>Moments</em></h2>
           <div className="section-divider" style={{ width: 60, height: 3, background: 'var(--green)', margin: '16px auto 0' }} />
         </div>
 
-        <div className="gallery-grid">
-          {GALLERY_IMAGES.map((img, index) => (
+        {/* Modern Instagram-style Gallery Grid (Sourced from official handle) */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 30, maxWidth: 1100, margin: '0 auto' }}>
+          {INSTAGRAM_POSTS.map((post, index) => (
             <div 
               key={index} 
-              className="gallery-item"
-              onClick={() => handleOpenLightbox(img.url, img.caption)}
-              aria-label={`Open photo of ${img.caption} in popup`}
+              className="card"
+              style={{
+                padding: 0,
+                borderRadius: 14,
+                overflow: 'hidden',
+                background: '#fff',
+                border: '1px solid var(--cream-dark)',
+                boxShadow: 'var(--shadow)',
+                display: 'flex',
+                flexDirection: 'column',
+                cursor: 'default'
+              }}
             >
-              <img src={img.url} alt={img.caption} loading="lazy" />
-              <div className="gallery-overlay">
-                <span>🔍 View Closeup</span>
+              {/* Instagram Card Header */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', borderBottom: '1px solid var(--cream-light)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <div style={{ width: 34, height: 34, borderRadius: '50%', overflow: 'hidden', border: '1px solid var(--cream-dark)' }}>
+                    <img src="/logo.jpg" alt="Logo avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  </div>
+                  <div>
+                    <div style={{ fontWeight: 800, fontSize: '0.85rem', color: 'var(--green)', lineHeight: 1 }}>brews_and_memories_</div>
+                    <small style={{ fontSize: '0.7rem', color: 'var(--text-light)' }}>Vijayapura, Karnataka</small>
+                  </div>
+                </div>
+                {/* Instagram Icon */}
+                <span style={{ fontSize: '1.25rem', color: '#c13584' }}>📸</span>
+              </div>
+
+              {/* Card Image */}
+              <div 
+                style={{ height: 280, overflow: 'hidden', position: 'relative', cursor: 'pointer' }}
+                onClick={() => handleOpenLightbox(post.image, post.caption)}
+                title="Click to view closeup"
+              >
+                <img 
+                  src={post.image} 
+                  alt={post.caption} 
+                  loading="lazy" 
+                  style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.4s ease' }}
+                  onMouseEnter={(e) => e.target.style.transform = 'scale(1.03)'}
+                  onMouseLeave={(e) => e.target.style.transform = 'scale(1)'}
+                />
+              </div>
+
+              {/* Instagram Card Body / Engagement stats */}
+              <div style={{ padding: 16, display: 'flex', flexDirection: 'column', gap: 10, flexGrow: 1 }}>
+                
+                {/* Like & Comment Counts */}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid var(--cream-light)', paddingBottom: 10 }}>
+                  <div style={{ display: 'flex', gap: 16, fontSize: '0.85rem', fontWeight: 800, color: 'var(--green)' }}>
+                    <span>❤️ {post.likes} Likes</span>
+                    <span>💬 {post.comments} Comments</span>
+                  </div>
+                  <span style={{ fontSize: '0.72rem', color: 'var(--text-light)', fontWeight: 600 }}>{post.date}</span>
+                </div>
+
+                {/* Caption Description */}
+                <p style={{ fontSize: '0.85rem', color: 'var(--text-light)', lineHeight: 1.5, margin: 0, flexGrow: 1 }}>
+                  <strong style={{ color: 'var(--green)', marginRight: 6 }}>brews_and_memories_</strong>
+                  {post.caption}
+                </p>
+
+                {/* Card Button footer (Instagram themed) */}
+                <div style={{ marginTop: 10 }}>
+                  <a 
+                    href={post.postUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="btn-outline"
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: 8,
+                      padding: '10px',
+                      borderRadius: 8,
+                      fontSize: '0.85rem',
+                      fontWeight: 700,
+                      textDecoration: 'none',
+                      color: '#c13584',
+                      borderColor: '#c13584'
+                    }}
+                  >
+                    <span>🔗 View Instagram Post</span>
+                  </a>
+                </div>
               </div>
             </div>
           ))}
@@ -665,34 +805,6 @@ function Home({ addToCart, openReserve }) {
         </div>
       </section>
 
-      {/* MOCK INSTAGRAM FEED */}
-      <section className="section" style={{ background: 'var(--cream-light)', padding: '80px 20px' }}>
-        <div className="section-header" style={{ marginBottom: 40, textAlign: 'center' }}>
-          <span className="section-label" style={{ color: 'var(--green)', textTransform: 'uppercase', letterSpacing: 2, fontSize: '0.85rem', fontWeight: 700 }}>Follow Us @brews_and_memories_</span>
-          <h2 className="section-title" style={{ fontFamily: "'Playfair Display', serif", fontSize: '2.2rem', color: 'var(--green)', margin: '8px 0 0' }}>Share Your <em>Moments</em></h2>
-          <div className="section-divider" style={{ width: 60, height: 3, background: 'var(--green)', margin: '16px auto 0' }} />
-        </div>
-
-        <div className="instagram-grid">
-          {INSTAGRAM_MOCKS.map((post, idx) => (
-            <a 
-              key={idx} 
-              href="https://www.instagram.com/brews_and_memories_/" 
-              target="_blank" 
-              rel="noreferrer" 
-              className="instagram-item"
-              aria-label={`View post with ${post.likes} likes and ${post.comments} comments on Instagram`}
-            >
-              <img src={post.url} alt={`Cozy coffee memories instagram mock post ${idx + 1}`} loading="lazy" />
-              <div className="instagram-overlay">
-                <span>❤️ {post.likes} Likes</span>
-                <span>💬 {post.comments} Comments</span>
-              </div>
-            </a>
-          ))}
-        </div>
-      </section>
-
       {/* GOOGLE MAPS EMBED */}
       <section className="section" style={{ padding: 0, position: 'relative', height: 400, background: 'var(--cream-light)' }}>
         <iframe
@@ -758,8 +870,10 @@ function Home({ addToCart, openReserve }) {
             >
               ✕
             </button>
-            <img src={lightboxImage} alt={lightboxCaption} />
-            <div className="lightbox-caption">{lightboxCaption}</div>
+            <img src={lightboxImage} alt={lightboxCaption} style={{ maxWidth: '100%', maxHeight: '75vh', borderRadius: 8 }} />
+            <div className="lightbox-caption" style={{ padding: '16px 8px', fontSize: '0.92rem', background: 'rgba(0,0,0,0.85)', borderRadius: '0 0 8px 8px', marginTop: -4 }}>
+              {lightboxCaption}
+            </div>
           </div>
         </div>
       )}
