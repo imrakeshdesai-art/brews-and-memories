@@ -48,6 +48,17 @@ const FAVORITES_CONFIG = [
 // User-generated content from real customers tagging @brews_and_memories_
 const INSTAGRAM_POSTS = [
   {
+    username: 'hightide.sagar',
+    collaborators: 'and 2 others',
+    initials: 'HS',
+    image: '/images/instagram/hightide_sagar.jpeg',
+    caption: '☕️Brews & Memories✨ #newcafe in ❤️🔥VIJAYAPUR ♥️\n\nLocation - Infront of the Udayshree sports academy Solapur road vijayapur\n\nThank you♥️ @guruprasad_27 for helping me in the shoot📸\n\n#hightidesagar #bijapur #bijapurmerijaan #karnataka #vijayapur #kannada #india #cafe #newcafe #food #bijapurfoodwalks #Bijapurfood #bijapurcafes',
+    likes: 412,
+    comments: 63,
+    date: 'May 20, 2026',
+    postUrl: 'https://www.instagram.com/reels/DQ05-lUDzup/'
+  },
+  {
     username: 'priya_sharma',
     initials: 'PS',
     image: '/images/instagram/chocolate_safari.webp',
@@ -56,16 +67,6 @@ const INSTAGRAM_POSTS = [
     comments: 34,
     date: 'May 18, 2026',
     postUrl: 'https://www.instagram.com/reel/DQssSCUibgo/?igsh=MXkwN3Ewb3luY29tbg=='
-  },
-  {
-    username: 'rahul_m',
-    initials: 'RM',
-    image: '/images/instagram/cold_coffee.webp',
-    caption: 'Beat the Vijayapura heat with the best cold coffee in town! Creamy, rich, and highly addictive 🥤🤎 @brews_and_memories_',
-    likes: 189,
-    comments: 24,
-    date: 'May 12, 2026',
-    postUrl: 'https://www.instagram.com/reel/DQ05-lUDzup/?igsh=cHVycW40ZW90NHNv'
   },
   {
     username: 'aditya_k',
@@ -593,7 +594,14 @@ function Home({ addToCart, openReserve }) {
                     {post.initials}
                   </div>
                   <div>
-                    <div style={{ fontWeight: 800, fontSize: '0.85rem', color: 'var(--green)', lineHeight: 1 }}>{post.username}</div>
+                    <div style={{ fontWeight: 800, fontSize: '0.85rem', color: 'var(--green)', lineHeight: 1, display: 'flex', alignItems: 'baseline', gap: 4 }}>
+                      {post.username}
+                      {post.collaborators && (
+                        <span style={{ fontWeight: 400, color: 'var(--text-light)', fontSize: '0.72rem' }}>
+                          {post.collaborators}
+                        </span>
+                      )}
+                    </div>
                     <small style={{ fontSize: '0.7rem', color: 'var(--text-light)' }}>Vijayapura, Karnataka</small>
                   </div>
                 </div>
