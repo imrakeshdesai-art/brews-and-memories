@@ -1,6 +1,6 @@
 import { Fragment } from 'react';
 
-function CartDrawer({ open, cart, total, onClose, onUpdateQty, onRemove, onCheckout }) {
+function CartDrawer({ open, cart, total, onClose, onUpdateQty, onRemove, onCheckout, activeTable }) {
   return (
     <div>
       <div className={`drawer-overlay ${open ? 'open' : ''}`} onClick={onClose} aria-hidden={!open}></div>
@@ -11,6 +11,23 @@ function CartDrawer({ open, cart, total, onClose, onUpdateQty, onRemove, onCheck
             ✕
           </button>
         </div>
+        {activeTable && (
+          <div style={{
+            background: 'var(--cream-light)',
+            borderBottom: '1px solid var(--cream-dark)',
+            padding: '10px 16px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            fontSize: '0.85rem',
+            fontWeight: 800,
+            color: 'var(--green)',
+            textTransform: 'uppercase',
+            letterSpacing: 0.5
+          }}>
+            <span style={{ color: '#10b981' }}>●</span> Ordering from: {activeTable}
+          </div>
+        )}
         <div className="drawer-body">
           {cart.length === 0 ? (
             <div className="cart-empty">

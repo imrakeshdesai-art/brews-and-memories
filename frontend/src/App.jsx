@@ -14,6 +14,7 @@ const Reviews = lazy(() => import('./pages/Reviews'));
 const Contact = lazy(() => import('./pages/Contact'));
 const Admin = lazy(() => import('./pages/Admin'));
 const Reserve = lazy(() => import('./pages/Reserve'));
+const TableOrder = lazy(() => import('./pages/TableOrder'));
 
 import Footer from './components/Footer';
 import FloatingActions from './components/FloatingActions';
@@ -27,6 +28,8 @@ function App() {
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [isReserveOpen, setIsReserveOpen] = useState(false);
   const [selectedPayment, setSelectedPayment] = useState('counter');
+  const [activeTable, setActiveTable] = useState(null);
+  const [tableSessionExpiry, setTableSessionExpiry] = useState(null);
   const location = useLocation();
 
   useEffect(() => {
@@ -37,6 +40,37 @@ function App() {
   useEffect(() => {
     saveCart(cart);
   }, [cart]);
+
+  // Load and validate table session on mount
+  useEffect(() => {
+    const storedTable = localStorage.getItem('activeTable');
+    const storedExpiry = localStorage.getItem('tableSessionExpiry');
+    
+    if (storedTable && storedExpiry) {
+      if (Date.now() < Number(storedExpiry)) {
+        setActiveTable(storedTable);
+        setTableSessionExpiry(Number(storedExpiry));
+      } else {
+        localStorage.removeItem('activeTable');
+        localStorage.removeItem('tableSessionExpiry');
+        setCart([]); // Clear cart
+      }
+    }
+  }, []);
+
+  // Validate session on route change
+  useEffect(() => {
+    const storedExpiry = localStorage.getItem('tableSessionExpiry');
+    if (storedExpiry && Date.now() > Number(storedExpiry)) {
+      localStorage.removeItem('activeTable');
+      localStorage.removeItem('tableSessionExpiry');
+      setActiveTable(null);
+      setTableSessionExpiry(null);
+      setCart([]);
+      setIsCartOpen(false);
+      setIsCheckoutOpen(false);
+    }
+  }, [location.pathname]);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -53,6 +87,12 @@ function App() {
   );
 
   const addToCart = (item) => {
+    // Prevent adding to cart if session is expired
+    if (tableSessionExpiry && Date.now() > tableSessionExpiry) {
+      handleClearSession();
+      alert('Your table ordering session has expired. Please scan the QR code on your table again to continue ordering.');
+      return;
+    }
     setCart((current) => {
       const existing = current.find((entry) => entry.name === item.name && entry.variant === item.variant);
       if (existing) {
@@ -67,6 +107,11 @@ function App() {
   };
 
   const updateCartQty = (id, qty) => {
+    if (tableSessionExpiry && Date.now() > tableSessionExpiry) {
+      handleClearSession();
+      alert('Your table ordering session has expired. Please scan the QR code on your table again to continue ordering.');
+      return;
+    }
     setCart((current) =>
       current
         .map((item) => (item.id === id ? { ...item, qty: Math.max(0, item.qty + qty) } : item))
@@ -83,6 +128,11 @@ function App() {
   };
 
   const handleCheckoutOpen = () => {
+    if (tableSessionExpiry && Date.now() > tableSessionExpiry) {
+      handleClearSession();
+      alert('Your table ordering session has expired. Please scan the QR code on your table again to continue ordering.');
+      return;
+    }
     if (cart.length === 0) {
       setIsCartOpen(true);
       return;
@@ -92,6 +142,39 @@ function App() {
 
   const handleCheckoutClose = () => {
     setIsCheckoutOpen(false);
+  };
+
+  const endTableSession = () => {
+    const confirmed = window.confirm(
+      'Are you sure you want to end your table session? You will need to scan the QR code on your table again to place orders.'
+    );
+    if (confirmed) {
+      handleClearSession();
+    }
+  };
+
+  const handleClearSession = () => {
+    localStorage.removeItem('activeTable');
+    localStorage.removeItem('tableSessionExpiry');
+    setActiveTable(null);
+    setTableSessionExpiry(null);
+    setCart([]);
+    setIsCartOpen(false);
+    setIsCheckoutOpen(false);
+  };
+
+  const handleSessionStart = (tableId) => {
+    // Clear old cart and checkout states immediately to prevent bleeding data
+    setCart([]);
+    setIsCartOpen(false);
+    setIsCheckoutOpen(false);
+    
+    setActiveTable(tableId);
+    const expiry = Date.now() + 60 * 60 * 1000; // 60 minutes
+    setTableSessionExpiry(expiry);
+    
+    localStorage.setItem('activeTable', tableId);
+    localStorage.setItem('tableSessionExpiry', String(expiry));
   };
 
   const pageProps = {
@@ -109,12 +192,20 @@ function App() {
     setSelectedPayment,
     clearCart,
     openReserve: () => setIsReserveOpen(true),
+    activeTable,
+    tableSessionExpiry,
+    endTableSession,
+    onClearSession: handleClearSession,
   };
 
   return (
     <ToastProvider>
       <div className="app-shell">
-        <NavBar cartCount={cartCount} onCartClick={() => setIsCartOpen(true)} />
+        <NavBar 
+          cartCount={cartCount} 
+          onCartClick={() => setIsCartOpen(true)} 
+          activeTable={activeTable} 
+        />
         <main className="page-shell">
           <Suspense fallback={<div className="page-loader">Loading page…</div>}>
             <Routes>
@@ -124,6 +215,8 @@ function App() {
               <Route path="/reviews" element={<Reviews />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/reserve" element={<Reserve />} />
+              <Route path="/order" element={<TableOrder />} />
+              <Route path="/order/:tableId" element={<TableOrder onSessionStart={handleSessionStart} />} />
               <Route path="/admin" element={<Admin />} />
               <Route path="*" element={<Home {...pageProps} />} />
             </Routes>
@@ -139,6 +232,7 @@ function App() {
           onUpdateQty={updateCartQty}
           onRemove={removeFromCart}
           onCheckout={handleCheckoutOpen}
+          activeTable={activeTable}
         />
         <CheckoutModal
           open={isCheckoutOpen}
@@ -148,6 +242,9 @@ function App() {
           setPayment={setSelectedPayment}
           onClose={handleCheckoutClose}
           onClearCart={clearCart}
+          activeTable={activeTable}
+          tableSessionExpiry={tableSessionExpiry}
+          onClearSession={handleClearSession}
         />
         <ReservationModal
           open={isReserveOpen}

@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import api from '../services/api';
 import { useToast } from './ToastProvider';
 
-function CheckoutModal({ open, cart, total, payment, setPayment, onClose, onClearCart }) {
+function CheckoutModal({ open, cart, total, payment, setPayment, onClose, onClearCart, activeTable, tableSessionExpiry, onClearSession }) {
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
@@ -17,10 +17,17 @@ function CheckoutModal({ open, cart, total, payment, setPayment, onClose, onClea
       setName('');
       setPhone('');
       setEmail('');
-      setAddress('');
       setIsLoading(false);
     }
   }, [open]);
+
+  useEffect(() => {
+    if (activeTable) {
+      setAddress(activeTable);
+    } else {
+      setAddress('');
+    }
+  }, [activeTable, open]);
 
   const summaryItems = useMemo(
     () =>
@@ -34,6 +41,19 @@ function CheckoutModal({ open, cart, total, payment, setPayment, onClose, onClea
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+
+    if (!activeTable) {
+      toast('A table ordering session is required. Please scan a table QR code.');
+      return;
+    }
+
+    if (tableSessionExpiry && Date.now() > tableSessionExpiry) {
+      if (onClearSession) onClearSession();
+      alert('Your table ordering session has expired. Please scan the QR code on your table again to continue ordering.');
+      onClose();
+      return;
+    }
+
     if (!name.trim() || !phone.trim() || !address.trim()) {
       toast('Please complete all fields before placing your order');
       return;
@@ -132,7 +152,19 @@ function CheckoutModal({ open, cart, total, payment, setPayment, onClose, onClea
               </div>
               <div className="form-group">
                 <label htmlFor="order-address">Table Number *</label>
-                <input id="order-address" value={address} onChange={(event) => setAddress(event.target.value)} placeholder="Table Number" />
+                <input 
+                  id="order-address" 
+                  value={address} 
+                  onChange={(event) => setAddress(event.target.value)} 
+                  placeholder="Table Number" 
+                  readOnly={!!activeTable}
+                  style={activeTable ? { backgroundColor: '#f3f4f6', cursor: 'not-allowed', color: '#374151', fontWeight: 'bold' } : {}}
+                />
+                {activeTable && (
+                  <span style={{ fontSize: '0.8rem', color: '#047857', marginTop: 4, display: 'inline-block' }}>
+                    🟢 Ordering from {activeTable} (Locked)
+                  </span>
+                )}
               </div>
               <div className="form-group">
                 <label>Payment Method</label>

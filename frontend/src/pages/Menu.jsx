@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { menuData, menuCategories } from '../data/menuData';
 
-function Menu({ addToCart }) {
+function Menu({ addToCart, activeTable, endTableSession }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const [activeCategory, setActiveCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
@@ -83,6 +83,65 @@ function Menu({ addToCart }) {
         <h2 className="section-title">Crafted with <em>Love</em></h2>
         <div className="section-divider" />
       </div>
+
+      {activeTable ? (
+        <div className="table-banner" style={{
+          maxWidth: 900,
+          margin: '0 auto 24px',
+          background: '#ecfdf5',
+          border: '1px solid #a7f3d0',
+          borderRadius: 12,
+          padding: '16px 20px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          boxShadow: 'var(--shadow-sm)'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <span style={{ fontSize: '1.2rem', color: '#10b981' }}>🟢</span>
+            <div style={{ textAlign: 'left' }}>
+              <strong style={{ color: '#065f46', display: 'block', fontSize: '0.95rem' }}>Ordering from {activeTable}</strong>
+              <small style={{ color: '#047857', fontSize: '0.85rem' }}>Your digital session is active. Delivery will be brought directly to your table.</small>
+            </div>
+          </div>
+          {endTableSession && (
+            <button 
+              onClick={endTableSession}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: '#b91c1c',
+                fontWeight: '700',
+                fontSize: '0.85rem',
+                cursor: 'pointer',
+                textDecoration: 'underline',
+                padding: '4px 8px'
+              }}
+            >
+              Exit Session
+            </button>
+          )}
+        </div>
+      ) : (
+        <div className="table-banner-info" style={{
+          maxWidth: 900,
+          margin: '0 auto 24px',
+          background: 'var(--cream-light)',
+          border: '1px solid var(--cream-dark)',
+          borderRadius: 12,
+          padding: '16px 20px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 12,
+          boxShadow: 'var(--shadow-sm)'
+        }}>
+          <span style={{ fontSize: '1.5rem' }}>📱</span>
+          <div style={{ textAlign: 'left' }}>
+            <strong style={{ color: 'var(--green)', display: 'block', fontSize: '0.95rem' }}>Browse-Only Mode</strong>
+            <small style={{ color: 'var(--text-light)', fontSize: '0.85rem' }}>To order from your table, please scan the QR code located on your table.</small>
+          </div>
+        </div>
+      )}
 
       <div className="menu-controls" style={{ display: 'flex', flexWrap: 'wrap', gap: 16, justifyContent: 'space-between', alignItems: 'center', maxWidth: 900, margin: '0 auto 24px' }}>
         <div className="menu-search" style={{ flexGrow: 1, maxWidth: 500 }}>
@@ -166,9 +225,11 @@ function Menu({ addToCart }) {
                     ) : null}
                     <div className="menu-card-foot">
                       <span className="menu-price">₹{getDisplayPrice(item)}</span>
-                      <button className="btn-add" type="button" onClick={() => handleAdd(item)} aria-label={`Add ${item.name} to cart`}>
-                        +
-                      </button>
+                      {activeTable && (
+                        <button className="btn-add" type="button" onClick={() => handleAdd(item)} aria-label={`Add ${item.name} to cart`}>
+                          +
+                        </button>
+                      )}
                     </div>
                   </div>
                 </article>

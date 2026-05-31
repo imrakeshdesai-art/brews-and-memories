@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 
-function NavBar({ cartCount, onCartClick }) {
+function NavBar({ cartCount, onCartClick, activeTable }) {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
@@ -40,11 +40,31 @@ function NavBar({ cartCount, onCartClick }) {
         </NavLink>
       </nav>
 
-      <div className="nav-actions">
-        <button className="btn-cart" type="button" onClick={onCartClick} aria-label="Open cart">
-          🛒 Cart
-          <span className="cart-badge" aria-live="polite">{cartCount}</span>
-        </button>
+      <div className="nav-actions" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        {activeTable && (
+          <span className="table-badge-nav" style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 6,
+            background: 'var(--cream-light)',
+            color: 'var(--green)',
+            padding: '6px 12px',
+            borderRadius: '20px',
+            fontSize: '0.8rem',
+            fontWeight: 800,
+            border: '1px solid var(--cream-dark)',
+            textTransform: 'uppercase',
+            letterSpacing: 0.5
+          }}>
+            <span style={{ color: '#10b981', display: 'inline-block', transform: 'scale(0.8)' }}>●</span> {activeTable}
+          </span>
+        )}
+        {activeTable && (
+          <button className="btn-cart" type="button" onClick={onCartClick} aria-label="Open cart">
+            🛒 Cart
+            <span className="cart-badge" aria-live="polite">{cartCount}</span>
+          </button>
+        )}
         <button
           className={`mobile-toggle ${menuOpen ? 'open' : ''}`}
           type="button"
