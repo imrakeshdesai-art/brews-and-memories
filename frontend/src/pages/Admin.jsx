@@ -13,6 +13,7 @@ function Admin() {
 
   const [user, setUser] = useState('');
   const [pass, setPass] = useState('');
+  const [activeTab, setActiveTab] = useState('orders');
 
   // IMPORTANT
   const [token, setToken] = useState(getAdminToken());
@@ -371,7 +372,42 @@ function Admin() {
 
         </div>
 
-        <div className="admin-stats">
+        <div style={{ display: 'flex', gap: 16, borderBottom: '2px solid var(--cream-dark)', marginBottom: 24, paddingBottom: 4 }}>
+          <button 
+            onClick={() => setActiveTab('orders')}
+            style={{
+              background: 'none',
+              border: 'none',
+              padding: '8px 16px',
+              fontSize: '1rem',
+              fontWeight: 700,
+              color: activeTab === 'orders' ? 'var(--green)' : 'var(--text-light)',
+              borderBottom: activeTab === 'orders' ? '3px solid var(--green)' : 'none',
+              cursor: 'pointer'
+            }}
+          >
+            📋 Orders Management
+          </button>
+          <button 
+            onClick={() => setActiveTab('qrs')}
+            style={{
+              background: 'none',
+              border: 'none',
+              padding: '8px 16px',
+              fontSize: '1rem',
+              fontWeight: 700,
+              color: activeTab === 'qrs' ? 'var(--green)' : 'var(--text-light)',
+              borderBottom: activeTab === 'qrs' ? '3px solid var(--green)' : 'none',
+              cursor: 'pointer'
+            }}
+          >
+            📱 Table QR Codes
+          </button>
+        </div>
+
+        {activeTab === 'orders' ? (
+          <>
+            <div className="admin-stats">
 
           <div className="admin-stat">
             <div className="admin-stat-num">
@@ -717,6 +753,102 @@ function Admin() {
           </table>
 
         </div>
+        </>
+        ) : (
+          <div className="qr-generator-section" style={{ background: '#fff', border: '1px solid var(--cream-dark)', borderRadius: 12, padding: '24px 20px', textAlign: 'left' }}>
+            <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: '1.5rem', color: 'var(--green)', marginBottom: 12 }}>Table QR Codes Generator</h3>
+            <p style={{ color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: 24 }}>
+              Below are the digital ordering QR codes configured for your café tables. 
+              You can print these cards or copy the links to generate your own custom layout. 
+              Customers scanning these codes will be logged into the respective table session.
+            </p>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 24 }}>
+              {Array.from({ length: Number(import.meta.env.VITE_TOTAL_TABLES) || 5 }, (_, i) => {
+                const tableNum = i + 1;
+                const tableUrl = `${window.location.origin}/order/table-${tableNum}`;
+                const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(tableUrl)}`;
+                
+                return (
+                  <div key={tableNum} className="qr-card" style={{ border: '2px solid var(--cream-dark)', borderRadius: 12, padding: 20, textAlign: 'center', background: 'var(--cream-light)', boxShadow: 'var(--shadow-sm)' }}>
+                    <div style={{ fontWeight: 800, fontSize: '1.25rem', color: 'var(--green)', marginBottom: 12 }}>Table {tableNum}</div>
+                    
+                    <div style={{ background: '#fff', padding: 16, borderRadius: 8, display: 'inline-block', border: '1px solid var(--cream-dark)', marginBottom: 12 }}>
+                      <img 
+                        src={qrImageUrl} 
+                        alt={`QR Code for Table ${tableNum}`} 
+                        style={{ width: 180, height: 180, display: 'block' }} 
+                      />
+                    </div>
+                    
+                    <div style={{ fontSize: '0.75rem', color: 'var(--text-light)', wordBreak: 'break-all', marginBottom: 16, padding: '0 8px' }}>
+                      {tableUrl}
+                    </div>
+                    
+                    <div style={{ display: 'flex', gap: 8, justifyContent: 'center' }}>
+                      <button 
+                        className="btn-outline" 
+                        type="button"
+                        onClick={() => {
+                          navigator.clipboard.writeText(tableUrl);
+                          toast(`Link for Table ${tableNum} copied!`);
+                        }}
+                        style={{ fontSize: '0.8rem', padding: '8px 12px', flexGrow: 1 }}
+                      >
+                        📋 Copy Link
+                      </button>
+                      <button 
+                        className="btn-primary" 
+                        type="button"
+                        onClick={() => {
+                          const printWindow = window.open('', '_blank');
+                          printWindow.document.write(`
+                            <html>
+                              <head>
+                                <title>Print Table ${tableNum} QR Code</title>
+                                <style>
+                                  body { font-family: sans-serif; text-align: center; padding: 40px; margin: 0; background: #fff; }
+                                  .card { border: 6px double #0f3d3e; border-radius: 20px; padding: 40px; max-width: 320px; margin: 50px auto; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+                                  h1 { color: #0f3d3e; font-size: 1.8rem; margin: 0 0 5px; text-transform: uppercase; letter-spacing: 1px; }
+                                  h2 { color: #fbbf24; font-size: 2.2rem; margin: 15px 0; font-family: serif; background: #0f3d3e; padding: 10px; border-radius: 8px; }
+                                  .qr { padding: 15px; display: inline-block; background: #fff; border: 1px solid #ddd; border-radius: 12px; margin: 15px 0; }
+                                  p { color: #333; font-size: 1rem; margin: 8px 0; }
+                                  .small { color: #888; font-size: 0.75rem; word-break: break-all; margin-top: 15px; }
+                                </style>
+                              </head>
+                              <body>
+                                <div class="card">
+                                  <h1>Brews & Memories</h1>
+                                  <p style="letter-spacing: 3px; font-size: 0.8rem; font-weight: bold; color: #666; margin-bottom: 20px;">CAFÉ</p>
+                                  <div class="qr">
+                                    <img src="${qrImageUrl}" style="width: 200px; height: 200px;" />
+                                  </div>
+                                  <h2>Table ${tableNum}</h2>
+                                  <p><strong>Scan QR Code to Order</strong></p>
+                                  <p style="color: #666; font-size: 0.9rem;">Your food will be delivered directly here.</p>
+                                  <div class="small">${tableUrl}</div>
+                                </div>
+                                <script>
+                                  window.onload = function() {
+                                    window.print();
+                                    setTimeout(() => window.close(), 500);
+                                  }
+                                </script>
+                              </body>
+                            </html>
+                          `);
+                          printWindow.document.close();
+                        }}
+                        style={{ fontSize: '0.8rem', padding: '8px 12px', background: '#fbbf24', color: '#0f3d3e', border: 'none', flexGrow: 1 }}
+                      >
+                        🖨️ Print
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
       </div>
 
