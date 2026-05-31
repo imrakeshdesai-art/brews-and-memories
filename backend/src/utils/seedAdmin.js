@@ -1,8 +1,13 @@
 const User = require('../models/User');
 
 async function seedAdmin() {
-  const email = process.env.ADMIN_EMAIL || 'brewsandmemoriescafe@gmail.com';
-  const password = process.env.ADMIN_PASSWORD || 'Brews&MemoriesCafe!@2025';
+  const email = process.env.ADMIN_EMAIL;
+  const password = process.env.ADMIN_PASSWORD;
+
+  if (!email || !password) {
+    console.warn('⚠️ WARNING: ADMIN_EMAIL or ADMIN_PASSWORD environment variables are not configured. Seeding skipped.');
+    return;
+  }
 
   const normalizedEmail = email.toLowerCase().trim();
 
