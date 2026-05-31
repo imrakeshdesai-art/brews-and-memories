@@ -1,13 +1,11 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useToast } from '../components/ToastProvider';
 
-const VALID_TABLES = [
-  'table-1',
-  'table-2',
-  'table-3',
-  'table-4',
-  'table-5'
-];
+const TOTAL_TABLES = Number(import.meta.env.VITE_TOTAL_TABLES) || 5;
+const VALID_TABLES = Array.from(
+  { length: TOTAL_TABLES },
+  (_, i) => `table-${i + 1}`
+);
 
 function TableOrder({ onSessionStart }) {
   const { tableId } = useParams();

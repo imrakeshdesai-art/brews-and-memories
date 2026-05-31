@@ -17,6 +17,16 @@ router.post('/', async (req, res) => {
       return res.status(400).json({ message: 'Missing required fields' });
     }
 
+    // Validate table number structure (e.g. "Table 1" to "Table X")
+    const totalTables = Number(process.env.TOTAL_TABLES) || 5;
+    const allowedTables = Array.from(
+      { length: totalTables },
+      (_, i) => `Table ${i + 1}`
+    );
+    if (!allowedTables.includes(address.trim())) {
+      return res.status(400).json({ message: 'Invalid Table Number' });
+    }
+
     // Normalize phone number: remove all non-digits, strip India country code if 12 digits
     const cleanPhone = String(phone).replace(/\D/g, '');
     const normalizedPhone = (cleanPhone.length === 12 && cleanPhone.startsWith('91'))
