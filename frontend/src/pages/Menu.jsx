@@ -197,11 +197,40 @@ function Menu({ addToCart, activeTable, endTableSession }) {
             <div className="menu-grid">
               {items.map((item) => (
                 <article key={item.name} className="menu-card">
-                  <div className="menu-card-img">
+                  <div className="menu-card-img" style={{ overflow: 'hidden', position: 'relative' }}>
                     {item.image ? (
-                      <img src={item.image} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      <img 
+                        src={item.image} 
+                        alt={item.name} 
+                        style={{ 
+                          width: '100%', 
+                          height: '100%', 
+                          objectFit: 'cover',
+                          transform: 'scale(1.28)', /* Crop closer by scaling up 28% */
+                          transition: 'transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)'
+                        }} 
+                        className="menu-card-img-el"
+                      />
                     ) : (
                       item.emoji
+                    )}
+                    {item.name === 'Paneer Tikka Roll' && (
+                      <span style={{
+                        position: 'absolute',
+                        top: 8,
+                        left: 8,
+                        background: '#fbbf24',
+                        color: '#0f3d3e',
+                        fontWeight: 800,
+                        fontSize: '0.72rem',
+                        padding: '3px 8px',
+                        borderRadius: 4,
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.5px',
+                        boxShadow: '0 2px 6px rgba(0,0,0,0.15)'
+                      }}>
+                        ⭐ Popular
+                      </span>
                     )}
                     <div className="menu-veg-badge" />
                   </div>

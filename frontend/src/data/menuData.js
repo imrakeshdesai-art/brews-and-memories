@@ -454,28 +454,28 @@ export const menuData = {
       price: 109,
       emoji: '🌯',
       image: '/images/menu/items/Paneer Tikka Roll.png',
-      desc: 'Freshly prepared paneer tikka roll'
+      desc: 'Grilled paneer tikka with onions & mint mayo'
     },
     {
       name: 'Paneer Chilli Roll',
       price: 109,
       emoji: '🌶️',
       image: '/images/menu/items/Paneer Chilli Roll.png',
-      desc: 'Freshly prepared paneer chilli roll'
+      desc: 'Spicy chilli paneer with capsicum & onions'
     },
     {
       name: 'Mexican Roll',
       price: 109,
       emoji: '🌯',
       image: '/images/menu/items/Mexican Roll.png',
-      desc: 'Freshly prepared mexican roll'
+      desc: 'Mexican-style vegetables, corn & cheese'
     },
     {
       name: 'Veg Roll',
       price: 109,
       emoji: '🌯',
       image: '/images/menu/items/Veg Roll.png',
-      desc: 'Freshly prepared veg roll'
+      desc: 'Fresh mixed vegetables with house sauce'
     },
   ],
   'Momos': [

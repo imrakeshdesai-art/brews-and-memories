@@ -601,6 +601,10 @@ button {
   transform: translateY(-4px);
 }
 
+.menu-card:hover .menu-card-img-el {
+  transform: scale(1.36) !important; /* Zoom in slightly more on hover */
+}
+
 .menu-card-img {
   height: 130px;
   background: linear-gradient(135deg, var(--cream), var(--cream-dark));
