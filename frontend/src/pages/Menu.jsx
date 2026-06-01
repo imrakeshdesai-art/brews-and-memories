@@ -197,7 +197,14 @@ function Menu({ addToCart, activeTable, endTableSession }) {
             <div className="menu-grid">
               {items.map((item) => (
                 <article key={item.name} className="menu-card">
-                  <div className="menu-card-img">{item.emoji}<div className="menu-veg-badge" /></div>
+                  <div className="menu-card-img">
+                    {item.image ? (
+                      <img src={item.image} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    ) : (
+                      item.emoji
+                    )}
+                    <div className="menu-veg-badge" />
+                  </div>
                   <div className="menu-card-body">
                     <div className="menu-item-name">{item.name}</div>
                     <div className="menu-item-desc">{item.desc}</div>

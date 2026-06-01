@@ -525,24 +525,28 @@ export const menuData = {
       name: 'Cheese Garlic Bread',
       price: 109,
       emoji: '🧀',
+      image: '/images/menu/items/Cheese garlic bread.png',
       desc: 'Baked with garlic butter and herbs'
     },
     {
       name: 'Chilli And Corn',
       price: 149,
       emoji: '🌽',
+      image: '/images/menu/items/Chilli and corn garlic bread.png',
       desc: 'Baked with garlic butter and herbs'
     },
     {
       name: 'Premium Garlic Bread (Capsicum & Onion)',
       price: 129,
       emoji: '🧄',
+      image: '/images/menu/items/Premium Garlic Bread (Capsicum & Onion).png',
       desc: 'Topped with fresh capsicum and onions'
     },
     {
       name: 'Supreme Garlic Bread',
       price: 149,
       emoji: '🧄',
+      image: '/images/menu/items/Supreme Garlic Bread (Chilli, Corn & Onion).png',
       desc: 'Topped with green chillies, sweet corn, and onions'
     },
   ],
