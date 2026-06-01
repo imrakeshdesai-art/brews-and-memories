@@ -225,47 +225,109 @@ function Home({ addToCart, openReserve }) {
 
   return (
     <div>
-      {/* COMPACT & BALANCED PREMIUM HERO */}
-      <section className="hero-section" style={{ background: 'var(--green)', color: 'var(--cream)', padding: '105px 20px 48px', minHeight: 'auto' }}>
+      {/* COMPACT & BALANCED PREMIUM HERO WITH REAL CAFE IMAGE OVERLAY */}
+      <section className="hero-section" style={{ 
+        backgroundImage: 'linear-gradient(rgba(15, 61, 62, 0.93), rgba(15, 61, 62, 0.96)), url("/ambiance.webp")',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        color: 'var(--cream)', 
+        padding: '115px 20px 52px', 
+        minHeight: 'auto' 
+      }}>
         <div className="hero-container" style={{ gap: 32 }}>
           
           {/* Left Column: Copy & Actions */}
           <div className="hero-content" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            
+            {/* Top row badges row (Location, Google Rating, timings) */}
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px 12px', alignItems: 'center', marginBottom: 4 }}>
+              <span style={{
+                background: 'rgba(251, 191, 36, 0.15)',
+                color: '#fbbf24',
+                padding: '6px 12px',
+                borderRadius: '20px',
+                fontSize: '0.8rem',
+                fontWeight: 800,
+                letterSpacing: '0.5px',
+                textTransform: 'uppercase',
+                border: '1px solid rgba(251, 191, 36, 0.3)',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 4
+              }}>
+                📍 B.M. Patil Circle, Vijayapura
+              </span>
+              <a 
+                href="https://maps.app.goo.gl/2fYwvrLgfTP9ytBW7" 
+                target="_blank" 
+                rel="noreferrer"
+                style={{
+                  background: 'rgba(251, 191, 36, 0.15)',
+                  color: '#fbbf24',
+                  padding: '6px 12px',
+                  borderRadius: '20px',
+                  fontSize: '0.8rem',
+                  fontWeight: 800,
+                  letterSpacing: '0.5px',
+                  border: '1px solid rgba(251, 191, 36, 0.3)',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 4,
+                  textDecoration: 'none'
+                }}
+              >
+                ⭐ 4.8 Rating (500+ Reviews)
+              </a>
+              <span style={{
+                background: 'rgba(255, 255, 255, 0.1)',
+                color: 'rgba(245, 230, 200, 0.95)',
+                padding: '6px 12px',
+                borderRadius: '20px',
+                fontSize: '0.8rem',
+                fontWeight: 700,
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 4
+              }}>
+                🕒 Open Daily • 10 AM–10:30 PM
+              </span>
+            </div>
             
             <h1 className="hero-title" style={{ fontSize: 'clamp(2.4rem, 4.5vw, 3.8rem)', lineHeight: 1.12, color: 'var(--cream)', fontWeight: 800, margin: 0 }}>
               Brews &amp;<br />
               <span style={{ color: '#fbbf24', fontFamily: "'Dancing Script', cursive" }}>Memories</span>
             </h1>
 
-            {/* Social Proof Rating Badge directly under the title */}
-            <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '6px 12px', color: '#fbbf24', fontWeight: 700, fontSize: 'clamp(0.85rem, 1.8vw, 1.05rem)' }}>
-              <span>⭐⭐⭐⭐⭐</span>
-              <span style={{ color: 'var(--cream)' }}>4.8/5 Rating</span>
-              <span style={{ color: 'rgba(245, 230, 200, 0.4)', fontWeight: 400 }}>|</span>
-              <a 
-                href="https://maps.app.goo.gl/2fYwvrLgfTP9ytBW7" 
-                target="_blank" 
-                rel="noreferrer" 
-                style={{ color: '#fbbf24', textDecoration: 'underline', cursor: 'pointer' }}
-              >
-                500+ Google Reviews
-              </a>
+            {/* Subtitle Tags & Operational Descriptor */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10, margin: '4px 0 8px' }}>
+              <div style={{ 
+                color: '#fbbf24', 
+                fontSize: 'clamp(0.95rem, 2vw, 1.15rem)', 
+                fontWeight: 800, 
+                letterSpacing: '2px', 
+                textTransform: 'uppercase',
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: '4px 10px',
+                alignItems: 'center'
+              }}>
+                <span>Coffee</span>
+                <span style={{ opacity: 0.5 }}>•</span>
+                <span>Burgers</span>
+                <span style={{ opacity: 0.5 }}>•</span>
+                <span>Pasta</span>
+                <span style={{ opacity: 0.5 }}>•</span>
+                <span>Desserts</span>
+              </div>
+              <p className="hero-subtitle" style={{ fontSize: 'clamp(0.95rem, 1.8vw, 1.15rem)', color: 'rgba(245, 230, 200, 0.85)', margin: 0, lineHeight: 1.5, fontWeight: 500, maxWidth: 620, textAlign: 'left' }}>
+                Where great food meets memorable moments. Premium Pure Veg Café in Vijayapura serving fresh brews, pizzas, pastas, burgers, and desserts in a cozy garden ambiance.
+              </p>
             </div>
 
-            {/* Tagline explaining what the business is and why it's special */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, margin: '4px 0 8px' }}>
-              <p className="hero-tagline" style={{ fontSize: 'clamp(1.2rem, 2.5vw, 1.65rem)', color: '#fbbf24', margin: 0, fontWeight: 800, lineHeight: 1.3 }}>
-                Premium Coffee &amp; Pure Veg Café in Vijayapura
-              </p>
-              <p className="hero-subtitle" style={{ fontSize: 'clamp(0.95rem, 1.8vw, 1.15rem)', color: 'rgba(245, 230, 200, 0.85)', margin: 0, lineHeight: 1.45, fontWeight: 500 }}>
-                Fresh brews, delicious food, and a cozy atmosphere.
-              </p>
-            </div>
-
-            {/* Simplified CTA buttons with clear hierarchy (2 buttons maximum) */}
-            <div className="hero-btns" style={{ display: 'flex', flexWrap: 'wrap', gap: 14 }}>
-              <button 
-                onClick={openReserve} 
+            {/* Simplified CTA buttons with clear operational hierarchy */}
+            <div className="hero-btns" style={{ display: 'flex', flexWrap: 'wrap', gap: 14, marginTop: 4 }}>
+              <Link 
+                to="/menu" 
                 className="btn-primary" 
                 style={{ 
                   background: '#fbbf24', 
@@ -274,18 +336,42 @@ function Home({ addToCart, openReserve }) {
                   fontSize: '1.02rem', 
                   fontWeight: 800, 
                   borderRadius: 8, 
-                  minWidth: 190, 
+                  minWidth: 160, 
                   textAlign: 'center', 
                   border: 'none', 
                   cursor: 'pointer',
+                  textDecoration: 'none',
                   boxShadow: '0 4px 14px rgba(251, 191, 36, 0.3)' 
                 }}
-                aria-label="Book a table now"
               >
-                📅 Reserve A Table
-              </button>
-              <Link 
-                to="/menu" 
+                📖 Explore Menu
+              </Link>
+              <a 
+                href="https://wa.me/919945446137?text=Hello%20Brews%20%26%20Memories%2C%20I%20would%20like%20to%20inquire!"
+                target="_blank" 
+                rel="noreferrer"
+                className="btn-primary"
+                style={{ 
+                  background: '#25d366', 
+                  color: '#fff', 
+                  padding: '14px 32px', 
+                  fontSize: '1.02rem', 
+                  fontWeight: 800, 
+                  borderRadius: 8, 
+                  minWidth: 160, 
+                  textAlign: 'center', 
+                  border: 'none', 
+                  cursor: 'pointer',
+                  textDecoration: 'none',
+                  boxShadow: '0 4px 14px rgba(37, 211, 102, 0.35)' 
+                }}
+              >
+                💬 Chat on WhatsApp
+              </a>
+              <a 
+                href="https://maps.app.goo.gl/2fYwvrLgfTP9ytBW7"
+                target="_blank" 
+                rel="noreferrer"
                 className="btn-outline" 
                 style={{ 
                   padding: '14px 32px', 
@@ -300,8 +386,8 @@ function Home({ addToCart, openReserve }) {
                   textDecoration: 'none'
                 }}
               >
-                Explore Menu
-              </Link>
+                📍 Get Directions
+              </a>
             </div>
           </div>
 
