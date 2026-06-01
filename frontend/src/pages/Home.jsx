@@ -8,7 +8,7 @@ const FEATURED_CATEGORIES = [
   { image: '/images/menu/hot_coffee.png', label: 'Hot Coffee', category: 'Beverages' },
   { image: '/images/menu/shake.png', label: 'Milkshakes', category: 'Milk Shakes' },
   { image: '/images/menu/tea.png', label: 'Tea & Beverages', category: 'Beverages' },
-  { image: '/images/instagram/brews_pizza.webp', label: 'Pizzas', category: 'Pizza' },
+  { image: '/Tandoori Paneer Pizza.png', label: 'Pizzas', category: 'Pizza' },
   { image: '/images/menu/burger.png', label: 'Burgers', category: 'Burgers' },
   { image: '/images/instagram/sandwich.webp', label: 'Sandwiches', category: 'Sandwiches' },
   { image: '/images/menu/maggi.png', label: 'Maggi', category: 'Maggi' },
@@ -26,10 +26,10 @@ const FAVORITES_CONFIG = [
   },
   {
     category: 'Pizza',
-    name: 'Peri Peri Paneer Pizza',
+    name: 'Tandoori Paneer Pizza',
     badge: 'Most Ordered',
-    image: '/images/menu/pizza_pull.png',
-    desc: 'Hand-tossed crust topped with spicy peri peri paneer, crisp capsicum, onion, and melted mozzarella.'
+    image: '/Tandoori Paneer Pizza.png',
+    desc: 'Indian tandoori spiced paneer cubes topped with crisp capsicum, onions, and fresh melted mozzarella.'
   },
   {
     category: 'Sandwiches',
