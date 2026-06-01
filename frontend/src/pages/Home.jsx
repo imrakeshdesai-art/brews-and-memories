@@ -4,7 +4,7 @@ import { useToast } from '../components/ToastProvider';
 import { menuData } from '../data/menuData';
 
 const FEATURED_CATEGORIES = [
-  { image: '/images/instagram/brews_cold_coffee.webp', label: 'Cold Coffee', category: 'Cold Beverages' },
+  { image: '/ColdCoffee.png', label: 'Cold Coffee', category: 'Cold Beverages' },
   { image: '/images/menu/hot_coffee.png', label: 'Hot Coffee', category: 'Beverages' },
   { image: '/images/menu/shake.png', label: 'Milkshakes', category: 'Milk Shakes' },
   { image: '/images/menu/tea.png', label: 'Tea & Beverages', category: 'Beverages' },
@@ -21,7 +21,7 @@ const FAVORITES_CONFIG = [
     category: 'Cold Beverages',
     name: 'Cold Coffee',
     badge: 'Customer Favorite',
-    image: '/images/menu/cold_coffee.png',
+    image: '/ColdCoffee.png',
     desc: 'Chilled and refreshing specialty cold coffee - creamy, rich, and Vijayapura\'s most popular drink.'
   },
   {
