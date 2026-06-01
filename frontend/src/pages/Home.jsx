@@ -7,13 +7,13 @@ const FEATURED_CATEGORIES = [
   { image: '/ColdCoffee.png', label: 'Cold Coffee', category: 'Cold Beverages' },
   { image: '/HotCoffee.png', label: 'Hot Coffee', category: 'Beverages' },
   { image: '/Milkshake.png', label: 'Milkshakes', category: 'Milk Shakes' },
-  { image: '/images/menu/tea.png', label: 'Tea & Beverages', category: 'Beverages' },
+  { image: '/Tea & Beverages.png', label: 'Tea & Beverages', category: 'Beverages' },
   { image: '/Tandoori Paneer Pizza.png', label: 'Pizzas', category: 'Pizza' },
   { image: '/images/menu/burger.png', label: 'Burgers', category: 'Burgers' },
   { image: '/Veg Club Sandwich.png', label: 'Sandwiches', category: 'Sandwiches' },
-  { image: '/images/menu/maggi.png', label: 'Maggi', category: 'Maggi' },
-  { image: '/images/menu/momos.png', label: 'Momos', category: 'Momos' },
-  { image: '/images/instagram/fries.webp', label: 'Fries & Snacks', category: 'Fries' },
+  { image: '/Maggie.png', label: 'Maggi', category: 'Maggi' },
+  { image: '/momos.png', label: 'Momos', category: 'Momos' },
+  { image: '/Fries & Snacks.png', label: 'Fries & Snacks', category: 'Fries' },
 ];
 
 const FAVORITES_CONFIG = [
