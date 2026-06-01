@@ -525,7 +525,7 @@ function Home({ addToCart, openReserve }) {
                 onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-4px)'}
                 onMouseLeave={(e) => e.currentTarget.style.transform = 'none'}
               >
-                <div style={{ height: 100, overflow: 'hidden', position: 'relative' }}>
+                <div style={{ height: 150, overflow: 'hidden', position: 'relative' }}>
                   <img src={cat.image} alt={cat.label} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 </div>
                 <div style={{ fontWeight: 800, fontSize: '0.92rem', color: 'var(--green)', padding: '12px 6px' }}>{cat.label}</div>
