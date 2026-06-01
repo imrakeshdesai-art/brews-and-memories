@@ -4,14 +4,16 @@ import { useToast } from '../components/ToastProvider';
 import { menuData } from '../data/menuData';
 
 const FEATURED_CATEGORIES = [
-  { image: '/images/menu/cold_coffee.png', label: 'Cold Coffee', category: 'Cold Beverages' },
-  { image: '/images/menu/pizza_pull.png', label: 'Pizzas', category: 'Pizza' },
-  { image: '/images/menu/burger.png', label: 'Burgers', category: 'Burgers' },
-  { image: '/images/menu/club_sandwich.png', label: 'Sandwiches', category: 'Sandwiches' },
+  { image: '/images/instagram/brews_cold_coffee.webp', label: 'Cold Coffee', category: 'Cold Beverages' },
+  { image: '/images/menu/hot_coffee.png', label: 'Hot Coffee', category: 'Beverages' },
   { image: '/images/menu/shake.png', label: 'Milkshakes', category: 'Milk Shakes' },
+  { image: '/images/menu/tea.png', label: 'Tea & Beverages', category: 'Beverages' },
+  { image: '/images/instagram/brews_pizza.webp', label: 'Pizzas', category: 'Pizza' },
+  { image: '/images/menu/burger.png', label: 'Burgers', category: 'Burgers' },
+  { image: '/images/instagram/sandwich.webp', label: 'Sandwiches', category: 'Sandwiches' },
+  { image: '/images/menu/maggi.png', label: 'Maggi', category: 'Maggi' },
   { image: '/images/menu/momos.png', label: 'Momos', category: 'Momos' },
-  { image: '/images/menu/pasta.png', label: 'Maggi', category: 'Maggi' },
-  { image: '/images/menu/cold_coffee.png', label: 'Hot Drinks', category: 'Beverages' },
+  { image: '/images/instagram/fries.webp', label: 'Fries & Snacks', category: 'Fries' },
 ];
 
 const FAVORITES_CONFIG = [
@@ -501,7 +503,7 @@ function Home({ addToCart, openReserve }) {
           <h2 className="section-title" style={{ fontFamily: "'Playfair Display', serif", fontSize: '2.2rem', color: 'var(--green)', margin: '8px 0 0' }}>Explore What We <em>Serve</em></h2>
           <div className="section-divider" style={{ width: 60, height: 3, background: 'var(--green)', margin: '16px auto 0' }} />
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: 20, maxWidth: 1100, margin: '0 auto' }}>
+        <div className="categories-grid">
           {FEATURED_CATEGORIES.map((cat) => (
             <Link
               key={cat.label}
