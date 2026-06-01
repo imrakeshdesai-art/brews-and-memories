@@ -6,7 +6,7 @@ import { menuData } from '../data/menuData';
 const FEATURED_CATEGORIES = [
   { image: '/ColdCoffee.png', label: 'Cold Coffee', category: 'Cold Beverages' },
   { image: '/HotCoffee.png', label: 'Hot Coffee', category: 'Beverages' },
-  { image: '/images/menu/shake.png', label: 'Milkshakes', category: 'Milk Shakes' },
+  { image: '/Milkshake.png', label: 'Milkshakes', category: 'Milk Shakes' },
   { image: '/images/menu/tea.png', label: 'Tea & Beverages', category: 'Beverages' },
   { image: '/Tandoori Paneer Pizza.png', label: 'Pizzas', category: 'Pizza' },
   { image: '/images/menu/burger.png', label: 'Burgers', category: 'Burgers' },
@@ -39,11 +39,11 @@ const FAVORITES_CONFIG = [
     desc: 'Crispy double-decker toasted sandwich loaded with fresh veggies, butter spreads, and melted cheese.'
   },
   {
-    category: 'Burgers',
-    name: 'Veg Burger',
+    category: 'Fries',
+    name: 'Honey Chilli Potato',
     badge: 'Customer Favorite',
-    image: '/images/menu/burger.png',
-    desc: 'Crispy golden veg patty in soft toasted buns with fresh lettuce, tomatoes, onions, and creamy burger sauce.'
+    image: '/Honey Chilli Potato.png',
+    desc: 'Crispy deep-fried potato fingers tossed in a sweet, spicy, and tangy honey chilli sauce.'
   }
 ];
 

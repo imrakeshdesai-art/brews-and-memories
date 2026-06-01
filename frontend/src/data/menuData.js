@@ -441,6 +441,12 @@ export const menuData = {
       emoji: '🍟',
       desc: 'Freshly prepared smileys'
     },
+    {
+      name: 'Honey Chilli Potato',
+      price: 129,
+      emoji: '🥔',
+      desc: 'Crispy deep-fried potato fingers tossed in a sweet, spicy, and tangy honey chilli sauce.'
+    },
   ],
   'Rolls': [
     {
