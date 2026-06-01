@@ -5,7 +5,7 @@ import { menuData } from '../data/menuData';
 
 const FEATURED_CATEGORIES = [
   { image: '/ColdCoffee.png', label: 'Cold Coffee', category: 'Cold Beverages' },
-  { image: '/images/menu/hot_coffee.png', label: 'Hot Coffee', category: 'Beverages' },
+  { image: '/HotCoffee.png', label: 'Hot Coffee', category: 'Beverages' },
   { image: '/images/menu/shake.png', label: 'Milkshakes', category: 'Milk Shakes' },
   { image: '/images/menu/tea.png', label: 'Tea & Beverages', category: 'Beverages' },
   { image: '/Tandoori Paneer Pizza.png', label: 'Pizzas', category: 'Pizza' },
