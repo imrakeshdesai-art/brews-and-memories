@@ -214,7 +214,7 @@ function Menu({ addToCart, activeTable, endTableSession }) {
                     ) : (
                       item.emoji
                     )}
-                    {item.name === 'Paneer Tikka Roll' && (
+                    {(item.name === 'Paneer Tikka Roll' || item.name === 'Our Special Maggi') && (
                       <span style={{
                         position: 'absolute',
                         top: 8,

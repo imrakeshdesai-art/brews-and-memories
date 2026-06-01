@@ -503,25 +503,29 @@ export const menuData = {
       name: 'Veg Maggi',
       price: 59,
       emoji: '🍜',
-      desc: 'Freshly prepared veg maggi'
+      image: '/images/menu/items/Veg Maggi.png',
+      desc: 'Classic Maggi noodles tossed with fresh mixed vegetables & Indian spices'
     },
     {
       name: 'Cheese Maggi',
       price: 99,
       emoji: '🧀',
-      desc: 'Freshly prepared cheese maggi'
+      image: '/images/menu/items/Cheese Maggi.png',
+      desc: 'Hot Maggi noodles topped with a rich layer of melted cheese'
     },
     {
       name: 'Peri Peri Maggi',
       price: 79,
       emoji: '🌶️',
-      desc: 'Freshly prepared peri peri maggi'
+      image: '/images/menu/items/Peri Peri Maggi.png',
+      desc: 'Spicy Maggi noodles tossed with hot peri peri seasoning & capsicum'
     },
     {
       name: 'Our Special Maggi',
       price: 99,
       emoji: '🍜',
-      desc: 'Freshly prepared our special maggi'
+      image: '/images/menu/items/Our Special Maggi.png',
+      desc: 'Our signature masala Maggi loaded with vegetables, cheese, and special herbs'
     },
   ],
   'Garlic Bread': [
