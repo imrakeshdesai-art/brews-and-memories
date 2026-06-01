@@ -403,13 +403,15 @@ export const menuData = {
       name: 'Salted Fries',
       price: 109,
       emoji: '🍟',
-      desc: 'Freshly prepared salted fries'
+      image: '/images/menu/items/Salted Fries.png',
+      desc: 'Crispy golden French fries tossed with a pinch of sea salt'
     },
     {
       name: 'Peri Peri Fries',
       price: 119,
       emoji: '🌶️',
-      desc: 'Freshly prepared peri peri fries'
+      image: '/images/menu/items/Peri Peri Fries.png',
+      desc: 'Crispy French fries tossed in a spicy, flavorful peri peri seasoning'
     },
     {
       name: 'Schezwan Fries',
