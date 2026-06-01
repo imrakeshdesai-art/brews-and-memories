@@ -10,7 +10,7 @@ const FEATURED_CATEGORIES = [
   { image: '/images/menu/tea.png', label: 'Tea & Beverages', category: 'Beverages' },
   { image: '/Tandoori Paneer Pizza.png', label: 'Pizzas', category: 'Pizza' },
   { image: '/images/menu/burger.png', label: 'Burgers', category: 'Burgers' },
-  { image: '/images/instagram/sandwich.webp', label: 'Sandwiches', category: 'Sandwiches' },
+  { image: '/Veg Club Sandwich.png', label: 'Sandwiches', category: 'Sandwiches' },
   { image: '/images/menu/maggi.png', label: 'Maggi', category: 'Maggi' },
   { image: '/images/menu/momos.png', label: 'Momos', category: 'Momos' },
   { image: '/images/instagram/fries.webp', label: 'Fries & Snacks', category: 'Fries' },
@@ -35,7 +35,7 @@ const FAVORITES_CONFIG = [
     category: 'Sandwiches',
     name: 'Veg Club Sandwich',
     badge: 'Staff Pick',
-    image: '/images/menu/club_sandwich.png',
+    image: '/Veg Club Sandwich.png',
     desc: 'Crispy double-decker toasted sandwich loaded with fresh veggies, butter spreads, and melted cheese.'
   },
   {
