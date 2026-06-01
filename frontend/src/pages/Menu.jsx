@@ -1,6 +1,38 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { menuData, menuCategories } from '../data/menuData';
+import { reviewsData } from '../data/reviewsData';
+
+const INSTAGRAM_FEED = [
+  {
+    username: 'hightide.sagar',
+    image: '/images/instagram/hightide_sagar.jpeg',
+    likes: 412,
+    comments: 63,
+    postUrl: 'https://www.instagram.com/reels/DQ05-lUDzup/'
+  },
+  {
+    username: 'behind_ourlens_06',
+    image: '/images/instagram/behind_ourlens_06.jpeg',
+    likes: 245,
+    comments: 34,
+    postUrl: 'https://www.instagram.com/reels/DXb9UdHj9jh/'
+  },
+  {
+    username: 'manju.duddagi',
+    image: '/images/instagram/manju_duddagi.jpeg',
+    likes: 356,
+    comments: 52,
+    postUrl: 'https://www.instagram.com/reels/DQssSCUibgo/'
+  },
+  {
+    username: 'mahantesh_loni',
+    image: '/images/instagram/mahantesh_loni.jpeg',
+    likes: 294,
+    comments: 21,
+    postUrl: 'https://www.instagram.com/reel/DXlAGMzkX4g/?igsh=aXhkN3NlOWlxMXVo'
+  }
+];
 
 function Menu({ addToCart, activeTable, endTableSession }) {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -212,34 +244,25 @@ function Menu({ addToCart, activeTable, endTableSession }) {
                         className="menu-card-img-el"
                       />
                     ) : (
-                      item.emoji
+                      <span style={{ fontSize: '3rem' }}>{item.emoji}</span>
                     )}
-                    {(item.name === 'Paneer Tikka Roll' || item.name === 'Our Special Maggi') && (
-                      <span style={{
-                        position: 'absolute',
-                        top: 8,
-                        left: 8,
-                        background: '#fbbf24',
-                        color: '#0f3d3e',
-                        fontWeight: 800,
-                        fontSize: '0.72rem',
-                        padding: '3px 8px',
-                        borderRadius: 4,
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.5px',
-                        boxShadow: '0 2px 6px rgba(0,0,0,0.15)'
-                      }}>
-                        ⭐ Popular
+                    {item.badge && (
+                      <span className="menu-card-badge">
+                        ⭐ {item.badge}
                       </span>
                     )}
                     <div className="menu-veg-badge" />
                   </div>
-                  <div className="menu-card-body">
+                  <div className="menu-card-body" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
                     <div className="menu-item-name">{item.name}</div>
-                    <div className="menu-item-desc">{item.desc}</div>
+                    <div className="menu-item-meta" style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8, flexWrap: 'wrap' }}>
+                      <span className="menu-price">₹{getDisplayPrice(item)}</span>
+                      <span className="menu-prep-time">⏱️ {item.prepTime || '10-12 mins'}</span>
+                    </div>
+                    <div className="menu-item-desc" style={{ marginBottom: 12 }}>{item.desc}</div>
                     {item.multi ? (
-                      <div className="price-variants">
-                        <label htmlFor={`size-${item.name}`} style={{ display: 'block', marginBottom: 6 }}>
+                      <div className="price-variants" style={{ marginTop: 'auto', marginBottom: 12 }}>
+                        <label htmlFor={`size-${item.name}`} style={{ display: 'block', marginBottom: 6, fontSize: '0.75rem', fontWeight: 600 }}>
                           Size
                         </label>
                         <select
@@ -251,6 +274,7 @@ function Menu({ addToCart, activeTable, endTableSession }) {
                               [item.name]: event.target.value,
                             }))
                           }
+                          style={{ width: '100%', padding: '6px 8px', borderRadius: 6, border: '1px solid var(--cream-dark)', fontSize: '0.8rem' }}
                         >
                           <option value="S">Small — ₹{item.priceS}</option>
                           <option value="M">Medium — ₹{item.priceM}</option>
@@ -258,12 +282,16 @@ function Menu({ addToCart, activeTable, endTableSession }) {
                         </select>
                       </div>
                     ) : null}
-                    <div className="menu-card-foot">
-                      <span className="menu-price">₹{getDisplayPrice(item)}</span>
-                      {activeTable && (
-                        <button className="btn-add" type="button" onClick={() => handleAdd(item)} aria-label={`Add ${item.name} to cart`}>
-                          +
-                        </button>
+                    <div className="menu-card-foot" style={{ marginTop: item.multi ? '0' : 'auto', display: 'flex', justifyContent: activeTable ? 'space-between' : 'flex-end', alignItems: 'center', paddingTop: 8, borderTop: '1px dashed var(--cream-dark)' }}>
+                      {activeTable ? (
+                        <>
+                          <span style={{ fontSize: '0.8rem', color: 'var(--text-light)', fontWeight: 600 }}>Add to order</span>
+                          <button className="btn-add" type="button" onClick={() => handleAdd(item)} aria-label={`Add ${item.name} to cart`}>
+                            +
+                          </button>
+                        </>
+                      ) : (
+                        <span style={{ fontSize: '0.72rem', color: 'var(--green-light)', fontWeight: 700, letterSpacing: '0.5px', textTransform: 'uppercase' }}>🟢 Pure Veg</span>
                       )}
                     </div>
                   </div>
@@ -273,6 +301,96 @@ function Menu({ addToCart, activeTable, endTableSession }) {
           </div>
         );
       })}
+
+      {/* Bottom Content Wrapper (Freshness Promise, Guest Love, Instagram Spotlight) */}
+      <div className="menu-bottom-wrapper">
+        
+        {/* 1. Freshness Promise */}
+        <div className="promise-section">
+          <div className="section-header">
+            <span className="section-label">Our Values</span>
+            <h2 className="section-title" style={{ fontSize: '1.8rem' }}>The Brews &amp; Memories <em>Promise</em></h2>
+            <div className="section-divider" style={{ margin: '12px auto' }} />
+          </div>
+          <div className="promise-grid">
+            <div className="promise-card">
+              <span className="promise-icon">🍳</span>
+              <div className="promise-title">Prepared Fresh After Order</div>
+              <div className="promise-desc">Every dish is cooked fresh from scratch upon ordering. No pre-cooked noodles or stale bases.</div>
+            </div>
+            <div className="promise-card">
+              <span className="promise-icon">🧅</span>
+              <div className="promise-title">Jain Preparation Available</div>
+              <div className="promise-desc">Need it without onion and garlic? Let our team know and we will prepare it custom Jain-style.</div>
+            </div>
+            <div className="promise-card">
+              <span className="promise-icon">🧀</span>
+              <div className="promise-title">Extra Cheese &amp; Add-ons</div>
+              <div className="promise-desc">Want it extra loaded or spicy? Tell our servers to customize cheese or peri-peri seasoning levels.</div>
+            </div>
+            <div className="promise-card">
+              <span className="promise-icon">🎓</span>
+              <div className="promise-title">Student Friendly Pricing</div>
+              <div className="promise-desc">We offer delicious, pocket-friendly meals perfect for student groups and families alike.</div>
+            </div>
+          </div>
+        </div>
+
+        {/* 2. Real Customer Reviews */}
+        <div className="menu-reviews-section">
+          <div className="section-header">
+            <span className="section-label">Google Reviews</span>
+            <h2 className="section-title" style={{ fontSize: '1.8rem' }}>Loved by the <em>Community</em></h2>
+            <div className="section-divider" style={{ margin: '12px auto' }} />
+          </div>
+          <div className="menu-reviews-grid">
+            {reviewsData.slice(0, 3).map((review) => (
+              <article key={review.name} className="review-card">
+                <div className="review-header">
+                  <div className="avatar">{review.initials}</div>
+                  <div>
+                    <strong>{review.name}</strong>
+                    <div className="footer-note">{review.date}</div>
+                  </div>
+                </div>
+                <div className="review-stars">{'★'.repeat(review.rating) + '☆'.repeat(5 - review.rating)}</div>
+                <p className="review-text" style={{ fontSize: '0.82rem', lineHeight: '1.4' }}>{review.text}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+
+        {/* 3. Real Instagram Spotlights */}
+        <div className="menu-insta-section">
+          <div className="section-header">
+            <span className="section-label">Social Proof</span>
+            <h2 className="section-title" style={{ fontSize: '1.8rem' }}>Latest from <em>@brews_and_memories_</em></h2>
+            <div className="section-divider" style={{ margin: '12px auto' }} />
+          </div>
+          <div className="menu-insta-grid">
+            {INSTAGRAM_FEED.map((post) => (
+              <a 
+                key={post.username} 
+                href={post.postUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="menu-insta-card"
+                aria-label={`View Instagram post by ${post.username}`}
+              >
+                <img src={post.image} alt={`Instagram capture by ${post.username}`} className="menu-insta-img" />
+                <div className="menu-insta-overlay">
+                  <div className="menu-insta-username">@{post.username}</div>
+                  <div className="menu-insta-stats">
+                    <span>❤️ {post.likes}</span>
+                    <span>💬 {post.comments}</span>
+                  </div>
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+
+      </div>
     </section>
   );
 }

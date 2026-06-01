@@ -547,6 +547,7 @@ button {
   gap: 8px;
   flex-wrap: wrap;
   justify-content: center;
+  margin-bottom: 24px;
 }
 
 .filter-btn {
@@ -558,6 +559,8 @@ button {
   font-size: 0.82rem;
   font-weight: 700;
   text-transform: uppercase;
+  cursor: pointer;
+  transition: var(--transition);
 }
 
 .filter-btn.active,
@@ -565,6 +568,27 @@ button {
   background: var(--green);
   border-color: var(--green);
   color: #fff;
+}
+
+@media (max-width: 768px) {
+  .cat-filters {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    justify-content: flex-start;
+    padding: 8px 16px;
+    margin-left: -4%;
+    margin-right: -4%;
+    width: calc(100% + 8%);
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    gap: 10px;
+  }
+  .cat-filters::-webkit-scrollbar {
+    display: none;
+  }
+  .filter-btn {
+    flex-shrink: 0;
+  }
 }
 
 .menu-category {
@@ -619,10 +643,24 @@ button {
   position: absolute;
   top: 8px;
   right: 8px;
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   border-radius: 2px;
   border: 2px solid #22c55e;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+  z-index: 10;
+}
+
+.menu-veg-badge::after {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #22c55e;
 }
 
 .menu-card-body {
@@ -651,10 +689,10 @@ button {
 }
 
 .menu-price {
-  font-family: 'Playfair Display', serif;
-  font-weight: 700;
-  font-size: 1rem;
-  color: var(--green);
+  font-family: 'Inter', sans-serif;
+  font-weight: 800;
+  font-size: 1.15rem;
+  color: var(--red);
 }
 
 .btn-add {
@@ -1827,6 +1865,164 @@ button {
   .categories-grid {
     grid-template-columns: repeat(2, 1fr);
   }
+}
+
+/* Menu Card Badges & Prep Time Styling */
+.menu-card-badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: #fbbf24;
+  color: #0f3d3e;
+  font-weight: 800;
+  font-size: 0.72rem;
+  padding: 4px 8px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  z-index: 10;
+}
+
+.menu-prep-time {
+  font-size: 0.78rem;
+  color: var(--text-light);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Bottom Section Styles on Menu Page */
+.menu-bottom-wrapper {
+  margin-top: 60px;
+  border-top: 1px dashed var(--cream-dark);
+  padding-top: 60px;
+}
+
+.promise-section {
+  margin-bottom: 60px;
+  text-align: center;
+}
+
+.promise-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 24px;
+  margin-top: 30px;
+}
+
+.promise-card {
+  background: var(--cream-light);
+  border: 1px solid var(--cream-dark);
+  border-radius: 12px;
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
+}
+
+.promise-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow);
+}
+
+.promise-icon {
+  font-size: 2.2rem;
+  margin-bottom: 12px;
+}
+
+.promise-title {
+  font-weight: 700;
+  font-size: 0.98rem;
+  color: var(--green);
+  margin-bottom: 8px;
+}
+
+.promise-desc {
+  font-size: 0.8rem;
+  color: var(--text-light);
+  line-height: 1.4;
+}
+
+.menu-reviews-section {
+  margin-bottom: 60px;
+  text-align: center;
+}
+
+.menu-reviews-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+  margin-top: 30px;
+  text-align: left;
+}
+
+.menu-insta-section {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.menu-insta-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  margin-top: 30px;
+}
+
+.menu-insta-card {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  aspect-ratio: 1;
+  box-shadow: var(--shadow-sm);
+  display: block;
+}
+
+.menu-insta-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.menu-insta-card:hover .menu-insta-img {
+  transform: scale(1.08);
+}
+
+.menu-insta-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 61, 62, 0.85);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  color: #fff;
+  padding: 12px;
+  font-size: 0.85rem;
+}
+
+.menu-insta-card:hover .menu-insta-overlay {
+  opacity: 1;
+}
+
+.menu-insta-username {
+  font-weight: 700;
+  margin-bottom: 6px;
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+}
+
+.menu-insta-stats {
+  display: flex;
+  gap: 12px;
+  font-size: 0.8rem;
 }
 
 

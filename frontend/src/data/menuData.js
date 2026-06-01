@@ -140,7 +140,8 @@ export const menuData = {
       name: 'Oreo Milk Shake',
       price: 119,
       emoji: '🍪',
-      desc: 'Creamy and thick oreo milk shake'
+      desc: 'Creamy and thick oreo milk shake',
+      badge: 'CUSTOMER FAVORITE'
     },
     {
       name: 'Kit Kat Milk Shake',
@@ -291,7 +292,8 @@ export const menuData = {
       name: 'Veg Burger',
       price: 79,
       emoji: '🍔',
-      desc: 'Crispy patty in soft buns with fresh veggies'
+      desc: 'Crispy patty in soft buns with fresh veggies',
+      badge: 'CUSTOMER FAVORITE'
     },
     {
       name: 'Paneer Burger',
@@ -411,7 +413,8 @@ export const menuData = {
       price: 119,
       emoji: '🌶️',
       image: '/images/menu/items/Peri Peri Fries.png',
-      desc: 'Crispy French fries tossed in a spicy, flavorful peri peri seasoning'
+      desc: 'Crispy French fries tossed in a spicy, flavorful peri peri seasoning',
+      badge: 'BEST SELLER'
     },
     {
       name: 'Schezwan Fries',
@@ -505,29 +508,30 @@ export const menuData = {
       name: 'Veg Maggi',
       price: 59,
       emoji: '🍜',
-      image: '/images/menu/items/Veg Maggi.png',
+      image: '/images/menu/items/Veg Maggi.webp',
       desc: 'Classic Maggi noodles tossed with fresh mixed vegetables & Indian spices'
     },
     {
       name: 'Cheese Maggi',
       price: 99,
       emoji: '🧀',
-      image: '/images/menu/items/Cheese Maggi.png',
+      image: '/images/menu/items/Cheese Maggi.webp',
       desc: 'Hot Maggi noodles topped with a rich layer of melted cheese'
     },
     {
       name: 'Peri Peri Maggi',
       price: 79,
       emoji: '🌶️',
-      image: '/images/menu/items/Peri Peri Maggi.png',
+      image: '/images/menu/items/Peri Peri Maggi.webp',
       desc: 'Spicy Maggi noodles tossed with hot peri peri seasoning & capsicum'
     },
     {
-      name: 'Our Special Maggi',
+      name: 'B&M Signature Maggi',
       price: 99,
       emoji: '🍜',
-      image: '/images/menu/items/Our Special Maggi.png',
-      desc: 'Our signature masala Maggi loaded with vegetables, cheese, and special herbs'
+      image: '/images/menu/items/B&M Signature Maggi.webp',
+      desc: 'Our signature masala Maggi loaded with sweet corn, green peas, carrots, herbs and naturally melted cheese',
+      badge: 'BEST SELLER'
     },
   ],
   'Garlic Bread': [
