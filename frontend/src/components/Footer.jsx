@@ -69,14 +69,33 @@ function Footer({ onReserveClick }) {
         </div>
       </div>
 
-      <div className="footer-bottom">
-        <div style={{ fontSize: '0.85rem' }}>
-          &copy; {new Date().getFullYear()} Brews & Memories. All rights reserved.
+      <div className="footer-bottom" style={{ flexDirection: 'column', gap: 8 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', flexWrap: 'wrap', gap: 12 }}>
+          <div style={{ fontSize: '0.85rem' }}>
+            &copy; {new Date().getFullYear()} Brews &amp; Memories. All rights reserved.
+          </div>
+          <div className="social-links">
+            <a href="https://www.instagram.com/brews_and_memories_/" target="_blank" rel="noreferrer" className="social-btn" aria-label="Instagram page">📸</a>
+            <a href="https://facebook.com" target="_blank" rel="noreferrer" className="social-btn" aria-label="Facebook page">👥</a>
+            <a href="tel:+919945446137" className="social-btn" aria-label="Call Phone">📞</a>
+          </div>
         </div>
-        <div className="social-links">
-          <a href="https://www.instagram.com/brews_and_memories_/" target="_blank" rel="noreferrer" className="social-btn" aria-label="Instagram page">📸</a>
-          <a href="https://facebook.com" target="_blank" rel="noreferrer" className="social-btn" aria-label="Facebook page">👥</a>
-          <a href="tel:+919945446137" className="social-btn" aria-label="Call Phone">📞</a>
+        <div style={{ textAlign: 'center', width: '100%' }}>
+          <Link
+            to="/admin"
+            style={{
+              color: 'rgba(245, 230, 200, 0.3)',
+              fontSize: '0.7rem',
+              textDecoration: 'none',
+              letterSpacing: '0.5px',
+              transition: 'color 0.2s ease'
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.color = 'rgba(245, 230, 200, 0.6)'}
+            onMouseLeave={(e) => e.currentTarget.style.color = 'rgba(245, 230, 200, 0.3)'}
+            aria-label="Staff login portal"
+          >
+            Staff Login
+          </Link>
         </div>
       </div>
     </footer>

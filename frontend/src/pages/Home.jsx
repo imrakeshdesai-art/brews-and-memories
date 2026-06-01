@@ -229,7 +229,7 @@ function Home({ addToCart, openReserve }) {
     <div>
       {/* COMPACT & BALANCED PREMIUM HERO WITH REAL CAFE IMAGE OVERLAY */}
       <section className="hero-section" style={{ 
-        backgroundImage: 'linear-gradient(rgba(15, 61, 62, 0.93), rgba(15, 61, 62, 0.96)), url("/ambiance.webp")',
+        backgroundImage: 'linear-gradient(rgba(15, 61, 62, 0.75), rgba(15, 61, 62, 0.82)), url("/ambiance.webp")',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         color: 'var(--cream)', 
@@ -278,7 +278,7 @@ function Home({ addToCart, openReserve }) {
                   textDecoration: 'none'
                 }}
               >
-                ⭐ 4.8 Rating (500+ Reviews)
+                ⭐ Rated 4.8 on Google
               </a>
               <span style={{
                 background: 'rgba(255, 255, 255, 0.1)',
@@ -430,6 +430,37 @@ function Home({ addToCart, openReserve }) {
                 <div style={{ fontSize: '0.75rem', color: 'var(--text-light)' }}>{item.sub}</div>
               </div>
             </div>
+          ))}
+        </div>
+      </section>
+
+      {/* FEATURE STRIP — KEY SELLING POINTS */}
+      <section style={{ background: 'var(--green)', padding: '14px 20px', overflow: 'hidden' }}>
+        <div style={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          justifyContent: 'center',
+          gap: '10px 32px',
+          maxWidth: 1100,
+          margin: '0 auto',
+        }}>
+          {[
+            '✓ Pure Veg',
+            '✓ Family Friendly',
+            '✓ Student Favorite',
+            '✓ Outdoor Seating',
+            '✓ Free Wi-Fi',
+            '✓ Free Parking',
+          ].map((item) => (
+            <span key={item} style={{
+              color: '#fbbf24',
+              fontSize: '0.85rem',
+              fontWeight: 700,
+              letterSpacing: '0.5px',
+              whiteSpace: 'nowrap',
+            }}>
+              {item}
+            </span>
           ))}
         </div>
       </section>
@@ -831,7 +862,7 @@ function Home({ addToCart, openReserve }) {
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8, fontSize: '0.92rem', color: 'var(--text-dark)', marginTop: 8 }}>
               <div>📍 <strong>Address:</strong> B.M. Patil Circle, Vijayapura, Karnataka 586102</div>
               <div>🕒 <strong>Hours:</strong> Open Daily · 10:00 AM – 10:30 PM</div>
-              <div>📞 <strong>Contact:</strong> +91 99454 46137</div>
+              <div>📞 <strong>Contact:</strong> <a href="tel:+919945446137" style={{ color: 'var(--green)', fontWeight: 700, textDecoration: 'none' }}>+91 99454 46137</a></div>
             </div>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 14, alignItems: 'center' }}>
