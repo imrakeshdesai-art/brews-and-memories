@@ -159,13 +159,12 @@ function Menu({ addToCart, activeTable, endTableSession }) {
           />
         </div>
         <a 
-          href="/menu.pdf" 
-          target="_blank" 
-          rel="noreferrer" 
+          href="/New Menu 2026.xlsx" 
+          download
           className="btn-primary"
           style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '12px 24px', fontSize: '0.9rem', borderRadius: 8, textDecoration: 'none', cursor: 'pointer' }}
         >
-          📥 Download Menu PDF
+          📊 Download Menu Excel
         </a>
       </div>
 
