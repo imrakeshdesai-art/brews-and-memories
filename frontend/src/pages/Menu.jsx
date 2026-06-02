@@ -238,7 +238,7 @@ function Menu({ addToCart, activeTable, endTableSession }) {
             <div className="menu-category-title">{category}</div>
             <div className="menu-grid">
               {items.map((item) => (
-                <article key={item.name} className="menu-card">
+                <article key={item.name} className="menu-card" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
                   <div className="menu-card-img" style={{ overflow: 'hidden', position: 'relative' }}>
                     {item.image ? (
                       <img 
@@ -263,7 +263,7 @@ function Menu({ addToCart, activeTable, endTableSession }) {
                     )}
                     <div className="menu-veg-badge" />
                   </div>
-                  <div className="menu-card-body" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+                  <div className="menu-card-body" style={{ display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
                     <div className="menu-item-name">{item.name}</div>
                     <div className="menu-item-meta" style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8, flexWrap: 'wrap' }}>
                       <span className="menu-price">₹{getDisplayPrice(item)}</span>
