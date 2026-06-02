@@ -1346,8 +1346,20 @@ button {
     grid-template-columns: 1fr;
     text-align: center;
   }
-  .hero-media {
+  .hero-media-wrapper {
     display: none;
+  }
+  .hero-content {
+    align-items: center !important;
+    text-align: center !important;
+  }
+  .hero-badges,
+  .hero-tags,
+  .hero-btns {
+    justify-content: center !important;
+  }
+  .hero-subtitle {
+    text-align: center !important;
   }
 }
 

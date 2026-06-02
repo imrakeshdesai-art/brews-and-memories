@@ -242,7 +242,7 @@ function Home({ addToCart, openReserve }) {
           <div className="hero-content" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             
             {/* Top row badges row (Location, Google Rating, timings) */}
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px 12px', alignItems: 'center', marginBottom: 4 }}>
+            <div className="hero-badges" style={{ display: 'flex', flexWrap: 'wrap', gap: '8px 12px', alignItems: 'center', marginBottom: 4 }}>
               <span style={{
                 background: 'rgba(251, 191, 36, 0.15)',
                 color: '#fbbf24',
@@ -302,7 +302,7 @@ function Home({ addToCart, openReserve }) {
 
             {/* Subtitle Tags & Operational Descriptor */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10, margin: '4px 0 8px' }}>
-              <div style={{ 
+              <div className="hero-tags" style={{ 
                 color: '#fbbf24', 
                 fontSize: 'clamp(0.95rem, 2vw, 1.15rem)', 
                 fontWeight: 800, 
