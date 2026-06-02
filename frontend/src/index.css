@@ -2037,4 +2037,32 @@ button {
   font-size: 0.8rem;
 }
 
+/* ==================== GLOBAL MOBILE RESPONSIVENESS OVERRIDES ==================== */
+@media (max-width: 768px) {
+  /* Stack grid layouts to full-width single-column on mobile */
+  .grid-2,
+  .grid-3,
+  .grid-4 {
+    grid-template-columns: 1fr !important;
+    gap: 28px !important;
+  }
 
+  /* Tighten excessive spacing/whitespace on mobile */
+  .section {
+    padding: 40px 20px !important;
+  }
+  .section-header {
+    margin-bottom: 28px !important;
+  }
+
+  /* Make headings responsive and readable on mobile without breaking words */
+  h2 {
+    font-size: 1.65rem !important;
+    line-height: 1.25 !important;
+  }
+
+  /* Prevent bottom floating actions overlay from hiding page content */
+  body {
+    padding-bottom: 80px !important;
+  }
+}
