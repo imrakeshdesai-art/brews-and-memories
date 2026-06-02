@@ -99,77 +99,7 @@ router.post('/', async (req, res) => {
 });
 
 
-// ==================== TEST EMAIL PROXY ====================
-router.get('/test-proxy', async (req, res) => {
-  try {
-    const cleanVar = (val) => {
-      if (!val) return '';
-      let c = val.trim();
-      if (c.startsWith('"') && c.endsWith('"')) c = c.substring(1, c.length - 1);
-      if (c.startsWith("'") && c.endsWith("'")) c = c.substring(1, c.length - 1);
-      return c.trim();
-    };
 
-    const GMAIL_PROXY_URL = cleanVar(process.env.GMAIL_PROXY_URL || process.env.GMAIL_PROXY_URI);
-    const GMAIL_PROXY_TOKEN = cleanVar(process.env.GMAIL_PROXY_TOKEN || 'brews-memories-secret');
-    
-    const configDiagnostic = {
-      proxyUrlExists: !!GMAIL_PROXY_URL,
-      proxyUrlValue: GMAIL_PROXY_URL ? GMAIL_PROXY_URL.substring(0, 55) + '...' : 'NOT_SET',
-      proxyUrlIsMacrosUrl: GMAIL_PROXY_URL ? GMAIL_PROXY_URL.includes('/macros/s/') : false,
-      proxyUrlIsProjectUrl: GMAIL_PROXY_URL ? GMAIL_PROXY_URL.includes('/projects/') : false,
-      proxyTokenUsed: GMAIL_PROXY_TOKEN,
-      gmailUserExists: !!process.env.GMAIL_USER,
-      gmailUserValue: process.env.GMAIL_USER ? cleanVar(process.env.GMAIL_USER) : 'NOT_SET',
-      nodeEnv: process.env.NODE_ENV || 'not_set'
-    };
-
-    // If query ?send=true is not set, just return the configuration instantly
-    if (req.query.send !== 'true') {
-      return res.json({
-        success: true,
-        message: 'Proxy configuration fetched. To test sending, call with /test-proxy?send=true',
-        config: configDiagnostic
-      });
-    }
-
-    if (!GMAIL_PROXY_URL) {
-      return res.status(400).json({ 
-        error: 'GMAIL_PROXY_URL is not configured in Render environment variables.',
-        config: configDiagnostic
-      });
-    }
-
-    const { sendOrderEmail } = require('../utils/email');
-    const testOrder = {
-      name: 'Diagnostic Test',
-      email: 'rakeshdesai2909@gmail.com',
-      orderId: '65f01234567890abcdef1234',
-      address: 'Table 1',
-      items: [{ name: 'Test Drink', qty: 1, price: 100 }],
-      total: 100,
-      payment: 'counter'
-    };
-
-    console.log('[Diagnostic] Invoking sendOrderEmail from test-proxy route...');
-    const result = await sendOrderEmail(testOrder);
-    
-    res.json({
-      success: result.success,
-      message: result.success ? 'Proxy send completed successfully!' : 'Proxy send failed.',
-      config: configDiagnostic,
-      result: result
-    });
-  } catch (error) {
-    console.error('[Diagnostic] Proxy test failed:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Proxy test failed',
-      error: error.message,
-      stack: error.stack
-    });
-  }
-});
 
 // ==================== GET ALL ORDERS ====================
 router.get('/', auth, async (req, res) => {
