@@ -139,30 +139,54 @@ function buildCustomerEmailHTML({ name, items, total, payment, address, orderId 
         </table>
       </div>
 
-      <!-- Info Grid Table -->
-      <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:28px;border-collapse:collapse">
+      <!-- Info Cards — Stacked Vertical Layout -->
+      <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:28px;border-collapse:separate;border-spacing:0 10px">
+        <!-- Payment Row -->
         <tr>
-          <!-- Column 1: Payment -->
-          <td width="31%" valign="top" style="background:#f0fdf4;border-radius:12px;padding:16px 12px;border:1px solid #bbf7d0;text-align:center">
-            <div style="font-size:26px;margin-bottom:4px">💳</div>
-            <div style="font-size:11px;color:#047857;margin:4px 0 2px;text-transform:uppercase;letter-spacing:1.5px;font-weight:700">Payment</div>
-            <div style="font-size:14px;font-weight:800;color:#065f46">${payment.toUpperCase()}</div>
+          <td style="background:#f0fdf4;border-radius:14px;padding:18px 24px;border:1px solid #bbf7d0">
+            <table width="100%" cellpadding="0" cellspacing="0">
+              <tr>
+                <td width="48" valign="middle" style="padding-right:16px">
+                  <div style="width:48px;height:48px;background:#dcfce7;border-radius:12px;text-align:center;line-height:48px;font-size:24px">💳</div>
+                </td>
+                <td valign="middle">
+                  <div style="font-size:11px;color:#047857;text-transform:uppercase;letter-spacing:2px;font-weight:700;margin-bottom:2px">Payment Method</div>
+                  <div style="font-size:17px;font-weight:800;color:#065f46">${payment.toUpperCase()}</div>
+                </td>
+              </tr>
+            </table>
           </td>
-          <!-- Spacing -->
-          <td width="3.5%">&nbsp;</td>
-          <!-- Column 2: Table -->
-          <td width="31%" valign="top" style="background:#fff7ed;border-radius:12px;padding:16px 12px;border:1px solid #fed7aa;text-align:center">
-            <div style="font-size:26px;margin-bottom:4px">🪑</div>
-            <div style="font-size:11px;color:#c2410c;margin:4px 0 2px;text-transform:uppercase;letter-spacing:1.5px;font-weight:700">Table</div>
-            <div style="font-size:14px;font-weight:800;color:#9a3412">${address}</div>
+        </tr>
+        <!-- Table Row -->
+        <tr>
+          <td style="background:#fff7ed;border-radius:14px;padding:18px 24px;border:1px solid #fed7aa">
+            <table width="100%" cellpadding="0" cellspacing="0">
+              <tr>
+                <td width="48" valign="middle" style="padding-right:16px">
+                  <div style="width:48px;height:48px;background:#ffedd5;border-radius:12px;text-align:center;line-height:48px;font-size:24px">🪑</div>
+                </td>
+                <td valign="middle">
+                  <div style="font-size:11px;color:#c2410c;text-transform:uppercase;letter-spacing:2px;font-weight:700;margin-bottom:2px">Seated At</div>
+                  <div style="font-size:17px;font-weight:800;color:#9a3412">${address}</div>
+                </td>
+              </tr>
+            </table>
           </td>
-          <!-- Spacing -->
-          <td width="3.5%">&nbsp;</td>
-          <!-- Column 3: Hours -->
-          <td width="31%" valign="top" style="background:#fdf4ff;border-radius:12px;padding:16px 12px;border:1px solid #e9d5ff;text-align:center">
-            <div style="font-size:26px;margin-bottom:4px">🕐</div>
-            <div style="font-size:11px;color:#7e22ce;margin:4px 0 2px;text-transform:uppercase;letter-spacing:1.5px;font-weight:700">Hours</div>
-            <div style="font-size:14px;font-weight:800;color:#6b21a8">10AM–10:30PM</div>
+        </tr>
+        <!-- Hours Row -->
+        <tr>
+          <td style="background:#fdf4ff;border-radius:14px;padding:18px 24px;border:1px solid #e9d5ff">
+            <table width="100%" cellpadding="0" cellspacing="0">
+              <tr>
+                <td width="48" valign="middle" style="padding-right:16px">
+                  <div style="width:48px;height:48px;background:#f3e8ff;border-radius:12px;text-align:center;line-height:48px;font-size:24px">🕐</div>
+                </td>
+                <td valign="middle">
+                  <div style="font-size:11px;color:#7e22ce;text-transform:uppercase;letter-spacing:2px;font-weight:700;margin-bottom:2px">Café Hours</div>
+                  <div style="font-size:17px;font-weight:800;color:#6b21a8">10 AM – 10:30 PM</div>
+                </td>
+              </tr>
+            </table>
           </td>
         </tr>
       </table>
