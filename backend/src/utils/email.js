@@ -32,8 +32,8 @@ function sendPostRequest(url, data, maxRedirects = 5) {
           path: urlObj.pathname + urlObj.search,
           method: isPost ? 'POST' : 'GET',
           headers: isPost ? {
-            'Content-Type': 'application/json',
-            'Content-Length': Buffer.byteLength(postData)
+            'Content-Type': 'application/json; charset=utf-8',
+            'Content-Length': Buffer.byteLength(postData, 'utf8')
           } : {},
           timeout: 15000 // 15 seconds max for Google Apps Script
         };
@@ -68,7 +68,7 @@ function sendPostRequest(url, data, maxRedirects = 5) {
           reject(new Error('Proxy connection timed out (15s)'));
         });
         
-        if (postData) req.write(postData);
+        if (postData) req.write(postData, 'utf8');
         req.end();
       } catch (err) {
         reject(err);
