@@ -397,16 +397,16 @@ function Home({ addToCart, openReserve }) {
           <div className="hero-media-wrapper" style={{ width: '100%' }}>
             <div className="hero-food-collage" aria-label="Brews & Memories Signature Food Collage">
               {/* Main Pizza Card */}
-              <div className="collage-item pizza" title="Wood-Fired Peri Peri Paneer Pizza">
-                <img src="/images/instagram/brews_pizza.webp" alt="Freshly baked Peri Peri Paneer Pizza" />
+              <div className="collage-item pizza" title="Wood-Fired Tandoori Paneer Pizza">
+                <img src="/images/instagram/hero_pizza.webp" alt="Freshly baked Tandoori Paneer Pizza" />
               </div>
               {/* Coffee Card (Overlapping) */}
               <div className="collage-item coffee" title="Creamy Cold Coffee">
-                <img src="/images/instagram/brews_cold_coffee.webp" alt="Signature Hazelnut Cold Coffee" />
+                <img src="/images/instagram/hero_cold_coffee.webp" alt="Signature Hazelnut Cold Coffee" />
               </div>
               {/* Ambiance Card (Small Overlapping) */}
               <div className="collage-item ambiance" title="Cozy Outdoor Seating">
-                <img src="/images/instagram/nightambience.jpeg.png" alt="Cozy outdoor garden seating ambiance at night" />
+                <img src="/images/instagram/hero_nightambience.webp" alt="Cozy outdoor garden seating ambiance at night" />
               </div>
             </div>
           </div>
