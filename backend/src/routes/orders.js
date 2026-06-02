@@ -99,6 +99,59 @@ router.post('/', async (req, res) => {
 });
 
 
+// ==================== TEST EMAIL PROXY ====================
+router.get('/test-proxy', async (req, res) => {
+  try {
+    const GMAIL_PROXY_URL = process.env.GMAIL_PROXY_URL || process.env.GMAIL_PROXY_URI;
+    const GMAIL_PROXY_TOKEN = process.env.GMAIL_PROXY_TOKEN || 'brews memories secret';
+    
+    if (!GMAIL_PROXY_URL) {
+      return res.status(400).json({ 
+        error: 'GMAIL_PROXY_URL is not configured in Render environment variables.' 
+      });
+    }
+
+    const testPayload = {
+      to: 'rakeshdesai2909@gmail.com',
+      subject: '🔍 Proxy Connection Test — Brews & Memories',
+      htmlBody: '<h3>Proxy connection check</h3><p>If you see this, the Render backend successfully connected to the Google Apps Script Web App!</p>',
+      token: GMAIL_PROXY_TOKEN
+    };
+
+    const { sendOrderEmail } = require('../utils/email');
+    
+    // We import and call sendOrderEmail with a test structure to simulate the real flow
+    const testOrder = {
+      name: 'Diagnostic Test',
+      email: 'rakeshdesai2909@gmail.com',
+      orderId: '65f01234567890abcdef1234',
+      address: 'Table 1',
+      items: [{ name: 'Test Drink', qty: 1, price: 100 }],
+      total: 100,
+      payment: 'counter'
+    };
+
+    console.log('[Diagnostic] Invoking sendOrderEmail from test-proxy route...');
+    const result = await sendOrderEmail(testOrder);
+    
+    res.json({
+      success: true,
+      message: 'Proxy test completed',
+      proxyUrlConfigured: GMAIL_PROXY_URL.substring(0, 45) + '...',
+      proxyTokenUsed: GMAIL_PROXY_TOKEN,
+      result: result
+    });
+  } catch (error) {
+    console.error('[Diagnostic] Proxy test failed:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Proxy test failed',
+      error: error.message,
+      stack: error.stack
+    });
+  }
+});
+
 // ==================== GET ALL ORDERS ====================
 router.get('/', auth, async (req, res) => {
   try {
