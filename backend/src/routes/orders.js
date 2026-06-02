@@ -155,8 +155,8 @@ router.get('/test-proxy', async (req, res) => {
     const result = await sendOrderEmail(testOrder);
     
     res.json({
-      success: true,
-      message: 'Proxy send completed',
+      success: result.success,
+      message: result.success ? 'Proxy send completed successfully!' : 'Proxy send failed.',
       config: configDiagnostic,
       result: result
     });

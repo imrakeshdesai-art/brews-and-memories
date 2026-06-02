@@ -256,11 +256,12 @@ function buildCustomerEmailHTML({ name, items, total, payment, address, orderId 
 async function sendOrderEmail(orderData) {
   if (!orderData.email) {
     console.log('[Email] No customer email provided — skipping.');
-    return;
+    return { success: false, error: 'No customer email provided' };
   }
 
   const subject = `✅ Order Confirmed — Brews & Memories (#${String(orderData.orderId).slice(-6)})`;
   const htmlContent = buildCustomerEmailHTML(orderData);
+  const errors = [];
 
   // 1️⃣ Try sending via Google HTTP Proxy if configured (Bypasses Render free tier SMTP blocks)
   if (GMAIL_PROXY_URL) {
@@ -275,20 +276,24 @@ async function sendOrderEmail(orderData) {
       
       if (result && result.success) {
         console.log(`[Email] Confirmation sent via HTTP Proxy → ${orderData.email}`);
-        return result;
+        return { success: true, method: 'proxy', result };
       } else {
         throw new Error((result && result.error) || 'Proxy execution failed');
       }
     } catch (err) {
+      errors.push(`Proxy Error: ${err.message}`);
       console.error('[Email] HTTP Proxy send failed:', err.message);
       console.log('[Email] Falling back to direct SMTP...');
     }
+  } else {
+    errors.push('Proxy URL not configured');
   }
 
   // 2️⃣ Direct SMTP Fallback (Will fail on Render Free tier due to port blocks, but works locally/paid tier)
   if (!GMAIL_USER || !GMAIL_PASS) {
+    errors.push('SMTP credentials not configured');
     console.warn('[Email] Direct SMTP credentials not set — skipping fallback.');
-    return;
+    return { success: false, errors };
   }
 
   const transporter = createTransporter();
@@ -300,10 +305,13 @@ async function sendOrderEmail(orderData) {
       html: htmlContent,
     });
     console.log(`[Email] Confirmation sent via SMTP → ${orderData.email} | MessageID: ${info.messageId}`);
-    return info;
+    return { success: true, method: 'smtp', info };
   } catch (err) {
+    errors.push(`SMTP Error: ${err.message}`);
     console.error('[Email] Direct SMTP send failed:', err.message);
   }
+
+  return { success: false, errors };
 }
 
 module.exports = { sendOrderEmail };
