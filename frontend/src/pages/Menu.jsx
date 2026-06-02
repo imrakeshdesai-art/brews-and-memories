@@ -391,7 +391,7 @@ function Menu({ addToCart, activeTable, endTableSession, cart = [], updateCartQt
         );
       })}
 
-      {/* Bottom Content Wrapper (Freshness Promise, Guest Love, Instagram Spotlight) */}
+      {/* Bottom Content Wrapper (Freshness Promise) */}
       <div className="menu-bottom-wrapper">
         
         {/* 1. Freshness Promise */}
@@ -422,60 +422,6 @@ function Menu({ addToCart, activeTable, endTableSession, cart = [], updateCartQt
               <div className="promise-title">Student Friendly Pricing</div>
               <div className="promise-desc">We offer delicious, pocket-friendly meals perfect for student groups and families alike.</div>
             </div>
-          </div>
-        </div>
-
-        {/* 2. Real Customer Reviews */}
-        <div className="menu-reviews-section">
-          <div className="section-header">
-            <span className="section-label">Google Reviews</span>
-            <h2 className="section-title" style={{ fontSize: '1.8rem' }}>Loved by the <em>Community</em></h2>
-            <div className="section-divider" style={{ margin: '12px auto' }} />
-          </div>
-          <div className="menu-reviews-grid">
-            {reviewsData.slice(0, 3).map((review) => (
-              <article key={review.name} className="review-card">
-                <div className="review-header">
-                  <div className="avatar">{review.initials}</div>
-                  <div>
-                    <strong>{review.name}</strong>
-                    <div className="footer-note">{review.date}</div>
-                  </div>
-                </div>
-                <div className="review-stars">{'★'.repeat(review.rating) + '☆'.repeat(5 - review.rating)}</div>
-                <p className="review-text" style={{ fontSize: '0.82rem', lineHeight: '1.4' }}>{review.text}</p>
-              </article>
-            ))}
-          </div>
-        </div>
-
-        {/* 3. Real Instagram Spotlights */}
-        <div className="menu-insta-section">
-          <div className="section-header">
-            <span className="section-label">Social Proof</span>
-            <h2 className="section-title" style={{ fontSize: '1.8rem' }}>Latest from <em>@brews_and_memories_</em></h2>
-            <div className="section-divider" style={{ margin: '12px auto' }} />
-          </div>
-          <div className="menu-insta-grid">
-            {INSTAGRAM_FEED.map((post) => (
-              <a 
-                key={post.username} 
-                href={post.postUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="menu-insta-card"
-                aria-label={`View Instagram post by ${post.username}`}
-              >
-                <img src={post.image} alt={`Instagram capture by ${post.username}`} className="menu-insta-img" />
-                <div className="menu-insta-overlay">
-                  <div className="menu-insta-username">@{post.username}</div>
-                  <div className="menu-insta-stats">
-                    <span>❤️ {post.likes}</span>
-                    <span>💬 {post.comments}</span>
-                  </div>
-                </div>
-              </a>
-            ))}
           </div>
         </div>
 
