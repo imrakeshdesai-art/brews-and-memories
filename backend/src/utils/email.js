@@ -5,7 +5,7 @@ const https = require('https');
 const GMAIL_USER = process.env.GMAIL_USER;   // e.g. brewsandmemories@gmail.com
 const GMAIL_PASS = process.env.GMAIL_APP_PASS; // Gmail App Password (16 chars)
 const GMAIL_PROXY_URL = process.env.GMAIL_PROXY_URL || process.env.GMAIL_PROXY_URI; // Google Apps Script URL
-const GMAIL_PROXY_TOKEN = process.env.GMAIL_PROXY_TOKEN || 'brews memories secret';
+const GMAIL_PROXY_TOKEN = process.env.GMAIL_PROXY_TOKEN || 'brews-memories-secret';
 
 // ── HTTPS Helper for Proxy (follows redirects) ──────────────────────────────
 function sendPostRequest(url, data, maxRedirects = 5) {

@@ -103,7 +103,7 @@ router.post('/', async (req, res) => {
 router.get('/test-proxy', async (req, res) => {
   try {
     const GMAIL_PROXY_URL = process.env.GMAIL_PROXY_URL || process.env.GMAIL_PROXY_URI;
-    const GMAIL_PROXY_TOKEN = process.env.GMAIL_PROXY_TOKEN || 'brews memories secret';
+    const GMAIL_PROXY_TOKEN = process.env.GMAIL_PROXY_TOKEN || 'brews-memories-secret';
     
     if (!GMAIL_PROXY_URL) {
       return res.status(400).json({ 
