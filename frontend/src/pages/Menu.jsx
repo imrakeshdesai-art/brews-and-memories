@@ -35,8 +35,30 @@ const INSTAGRAM_FEED = [
   }
 ];
 
-function Menu({ addToCart, activeTable, endTableSession }) {
+function Menu({ addToCart, activeTable, endTableSession, cart = [], updateCartQty }) {
   const showToast = useToast();
+
+  const getCartItem = (item) => {
+    const selected = item.multi ? (selectedVariants[item.name] || 'M') : '';
+    const cartId = `${item.name}-${selected || 'default'}`;
+    return cart ? cart.find((entry) => entry.id === cartId) : null;
+  };
+
+  const handleDecrease = (item) => {
+    const cartItem = getCartItem(item);
+    if (cartItem) {
+      updateCartQty(cartItem.id, -1);
+      showToast(`Removed 1 ${item.name} from cart`);
+    }
+  };
+
+  const handleIncrease = (item) => {
+    const cartItem = getCartItem(item);
+    if (cartItem) {
+      updateCartQty(cartItem.id, 1);
+      showToast(`Added 1 ${item.name} to cart`);
+    }
+  };
   const [searchParams, setSearchParams] = useSearchParams();
   const [activeCategory, setActiveCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
@@ -293,12 +315,70 @@ function Menu({ addToCart, activeTable, endTableSession }) {
                     ) : null}
                     <div className="menu-card-foot" style={{ marginTop: item.multi ? '0' : 'auto', display: 'flex', justifyContent: activeTable ? 'space-between' : 'flex-end', alignItems: 'center', paddingTop: 8, borderTop: '1px dashed var(--cream-dark)' }}>
                       {activeTable ? (
-                        <>
-                          <span style={{ fontSize: '0.8rem', color: 'var(--text-light)', fontWeight: 600 }}>Add to order</span>
-                          <button className="btn-add" type="button" onClick={() => handleAdd(item)} aria-label={`Add ${item.name} to cart`}>
-                            +
-                          </button>
-                        </>
+                        (() => {
+                          const cartItem = getCartItem(item);
+                          const qty = cartItem ? cartItem.qty : 0;
+                          if (qty > 0) {
+                            return (
+                              <>
+                                <span style={{ fontSize: '0.8rem', color: 'var(--text-light)', fontWeight: 600 }}>In Cart</span>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: 12, background: 'var(--cream-light)', padding: '4px 10px', borderRadius: 20, border: '1px solid var(--cream-dark)' }}>
+                                  <button 
+                                    type="button" 
+                                    onClick={() => handleDecrease(item)} 
+                                    aria-label={`Decrease ${item.name} quantity`}
+                                    style={{
+                                      background: 'none',
+                                      border: 'none',
+                                      color: 'var(--green)',
+                                      fontWeight: '800',
+                                      fontSize: '1.2rem',
+                                      cursor: 'pointer',
+                                      padding: '0 4px',
+                                      lineHeight: 1,
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      justifyContent: 'center'
+                                    }}
+                                  >
+                                    -
+                                  </button>
+                                  <span style={{ fontSize: '0.85rem', fontWeight: '800', color: 'var(--green)', minWidth: 16, textAlign: 'center' }}>
+                                    {qty}
+                                  </span>
+                                  <button 
+                                    type="button" 
+                                    onClick={() => handleIncrease(item)} 
+                                    aria-label={`Increase ${item.name} quantity`}
+                                    style={{
+                                      background: 'none',
+                                      border: 'none',
+                                      color: 'var(--green)',
+                                      fontWeight: '800',
+                                      fontSize: '1.2rem',
+                                      cursor: 'pointer',
+                                      padding: '0 4px',
+                                      lineHeight: 1,
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      justifyContent: 'center'
+                                    }}
+                                  >
+                                    +
+                                  </button>
+                                </div>
+                              </>
+                            );
+                          }
+                          return (
+                            <>
+                              <span style={{ fontSize: '0.8rem', color: 'var(--text-light)', fontWeight: 600 }}>Add to order</span>
+                              <button className="btn-add" type="button" onClick={() => handleAdd(item)} aria-label={`Add ${item.name} to cart`}>
+                                +
+                              </button>
+                            </>
+                          );
+                        })()
                       ) : (
                         <span style={{ fontSize: '0.72rem', color: 'var(--green-light)', fontWeight: 700, letterSpacing: '0.5px', textTransform: 'uppercase' }}>🟢 Pure Veg</span>
                       )}
