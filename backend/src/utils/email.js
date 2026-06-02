@@ -1,7 +1,5 @@
 const nodemailer = require('nodemailer');
 const https = require('https');
-const fs = require('fs');
-const path = require('path');
 
 // ── Config ───────────────────────────────────────────────────────────────────
 const GMAIL_USER = process.env.GMAIL_USER;   // e.g. brewsandmemories@gmail.com
@@ -9,74 +7,47 @@ const GMAIL_PASS = process.env.GMAIL_APP_PASS; // Gmail App Password (16 chars)
 const GMAIL_PROXY_URL = process.env.GMAIL_PROXY_URL || process.env.GMAIL_PROXY_URI; // Google Apps Script URL
 const GMAIL_PROXY_TOKEN = process.env.GMAIL_PROXY_TOKEN || 'brews-memories-secret';
 
-// ── Logo (for inline email embedding) ─────────────────────────────────────────
-const LOGO_PATH = path.join(__dirname, '..', 'assets', 'logo.jpg');
-let LOGO_BASE64 = '';
-try {
-  LOGO_BASE64 = fs.readFileSync(LOGO_PATH).toString('base64');
-  console.log(`[Email] Logo loaded from ${LOGO_PATH} (${Math.round(LOGO_BASE64.length / 1024)}KB base64)`);
-} catch (err) {
-  console.warn('[Email] Could not load logo file:', err.message);
-}
-const LOGO_FALLBACK_URL = 'https://raw.githubusercontent.com/imrakeshdesai-art/brews-and-memories/main/frontend/public/logo.jpg';
-
-// ── HTTPS Helper for Proxy (follows redirects) ──────────────────────────────
-function sendPostRequest(url, data, maxRedirects = 5) {
+// ── HTTPS Helper for Proxy ────────────────────────────────────────────────────
+function sendPostRequest(url, data) {
   return new Promise((resolve, reject) => {
-    function doRequest(requestUrl, postData, redirectsLeft) {
-      try {
-        const urlObj = new URL(requestUrl);
-        const isPost = !!postData;
-        
-        const options = {
-          hostname: urlObj.hostname,
-          path: urlObj.pathname + urlObj.search,
-          method: isPost ? 'POST' : 'GET',
-          headers: isPost ? {
-            'Content-Type': 'application/json',
-            'Content-Length': Buffer.byteLength(postData)
-          } : {},
-          timeout: 30000 // 30 seconds for Render cold starts
-        };
-        
-        const req = https.request(options, (res) => {
-          // Handle redirects (302, 307, 301, 303)
-          if ([301, 302, 303, 307].includes(res.statusCode) && res.headers.location) {
-            if (redirectsLeft <= 0) {
-              return reject(new Error('Too many redirects'));
-            }
-            console.log(`[Email] Proxy redirect ${res.statusCode} → ${res.headers.location}`);
-            // 302/303 redirects change POST to GET (per HTTP spec)
-            const nextData = (res.statusCode === 307) ? postData : null;
-            return doRequest(res.headers.location, nextData, redirectsLeft - 1);
+    try {
+      const urlObj = new URL(url);
+      const postData = JSON.stringify(data);
+      
+      const options = {
+        hostname: urlObj.hostname,
+        path: urlObj.pathname + urlObj.search,
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Content-Length': Buffer.byteLength(postData)
+        },
+        timeout: 10000 // 10 seconds timeout
+      };
+      
+      const req = https.request(options, (res) => {
+        let body = '';
+        res.on('data', (chunk) => body += chunk);
+        res.on('end', () => {
+          try {
+            resolve(JSON.parse(body));
+          } catch (e) {
+            reject(new Error('Invalid JSON response from proxy'));
           }
-          
-          let body = '';
-          res.on('data', (chunk) => body += chunk);
-          res.on('end', () => {
-            console.log(`[Email] Proxy response status=${res.statusCode} body=${body.substring(0, 200)}`);
-            try {
-              resolve(JSON.parse(body));
-            } catch (e) {
-              reject(new Error(`Invalid JSON from proxy (status ${res.statusCode}): ${body.substring(0, 100)}`));
-            }
-          });
         });
-        
-        req.on('error', (e) => reject(e));
-        req.on('timeout', () => {
-          req.destroy();
-          reject(new Error('Proxy connection timed out (30s)'));
-        });
-        
-        if (postData) req.write(postData);
-        req.end();
-      } catch (err) {
-        reject(err);
-      }
+      });
+      
+      req.on('error', (e) => reject(e));
+      req.on('timeout', () => {
+        req.destroy();
+        reject(new Error('Proxy connection timed out'));
+      });
+      
+      req.write(postData);
+      req.end();
+    } catch (err) {
+      reject(err);
     }
-    
-    doRequest(url, JSON.stringify(data), maxRedirects);
   });
 }
 
@@ -108,8 +79,7 @@ function buildItemRows(items) {
 }
 
 // ── HTML Email Template ───────────────────────────────────────────────────────
-function buildCustomerEmailHTML({ name, items, total, payment, address, orderId }, logoSrc) {
-  const imgSrc = logoSrc || LOGO_FALLBACK_URL;
+function buildCustomerEmailHTML({ name, items, total, payment, address, orderId }) {
   return `
 <!DOCTYPE html>
 <html>
@@ -131,9 +101,9 @@ function buildCustomerEmailHTML({ name, items, total, payment, address, orderId 
     <!-- Header -->
     <div style="background:linear-gradient(135deg,#0f3d3e 0%,#185c5d 100%);padding:40px 32px;text-align:center;border-bottom:3px solid #fbbf24">
       <div style="margin-bottom:16px">
-        <img src="${imgSrc}" alt="Brews and Memories" width="90" height="90" style="width:90px;height:90px;border:3px solid #fbbf24;box-shadow:0 4px 12px rgba(0,0,0,0.2);display:inline-block;border-radius:50%" />
+        <img src="https://brews-and-memories.vercel.app/logo.jpg" alt="Brews & Memories Logo" style="width:75px;height:75px;border-radius:50%;border:3px solid #fbbf24;box-shadow:0 4px 10px rgba(0,0,0,0.15);display:inline-block;object-fit:cover" />
       </div>
-      <div style="color:#fbbf24;font-size:13px;letter-spacing:4px;text-transform:uppercase;font-weight:800;margin-bottom:8px">Brews &amp; Memories</div>
+      <div style="color:#fbbf24;font-size:13px;letter-spacing:4px;text-transform:uppercase;font-weight:800;margin-bottom:8px">Brews & Memories</div>
       <h1 style="color:#fff;margin:0;font-size:28px;font-weight:800;font-family:'Playfair Display', Georgia, serif;letter-spacing:-0.5px">Order Confirmed! 🎉</h1>
       <p style="color:rgba(255,255,255,0.85);margin:10px 0 0;font-size:14px;font-style:italic;font-family:'Playfair Display', Georgia, serif">Vijayapura's Premium Cozy Café</p>
     </div>
@@ -259,19 +229,18 @@ async function sendOrderEmail(orderData) {
   }
 
   const subject = `✅ Order Confirmed — Brews & Memories (#${String(orderData.orderId).slice(-6)})`;
+  const htmlContent = buildCustomerEmailHTML(orderData);
 
   // 1️⃣ Try sending via Google HTTP Proxy if configured (Bypasses Render free tier SMTP blocks)
   if (GMAIL_PROXY_URL) {
     try {
       console.log(`[Email] Attempting HTTP Proxy send to ${orderData.email}...`);
-      // For proxy: use URL for the logo image in the HTML
-      const proxyPayload = {
+      const result = await sendPostRequest(GMAIL_PROXY_URL, {
         to: orderData.email,
         subject: subject,
-        htmlBody: buildCustomerEmailHTML(orderData, LOGO_FALLBACK_URL),
+        htmlBody: htmlContent,
         token: GMAIL_PROXY_TOKEN
-      };
-      const result = await sendPostRequest(GMAIL_PROXY_URL, proxyPayload);
+      });
       
       if (result && result.success) {
         console.log(`[Email] Confirmation sent via HTTP Proxy → ${orderData.email}`);
@@ -293,23 +262,12 @@ async function sendOrderEmail(orderData) {
 
   const transporter = createTransporter();
   try {
-    // For SMTP: embed logo as CID inline attachment (most reliable)
-    const smtpHtml = buildCustomerEmailHTML(orderData, LOGO_BASE64 ? 'cid:cafeLogo' : LOGO_FALLBACK_URL);
-    const mailOptions = {
+    const info = await transporter.sendMail({
       from: `"Brews & Memories Café" <${GMAIL_USER}>`,
       to: orderData.email,
       subject: subject,
-      html: smtpHtml,
-    };
-    // Attach logo as inline image if available
-    if (fs.existsSync(LOGO_PATH)) {
-      mailOptions.attachments = [{
-        filename: 'logo.jpg',
-        path: LOGO_PATH,
-        cid: 'cafeLogo'
-      }];
-    }
-    const info = await transporter.sendMail(mailOptions);
+      html: htmlContent,
+    });
     console.log(`[Email] Confirmation sent via SMTP → ${orderData.email} | MessageID: ${info.messageId}`);
     return info;
   } catch (err) {
