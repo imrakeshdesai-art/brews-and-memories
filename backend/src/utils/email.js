@@ -1,11 +1,24 @@
 const nodemailer = require('nodemailer');
 const https = require('https');
+const fs = require('fs');
+const path = require('path');
 
 // ── Config ───────────────────────────────────────────────────────────────────
 const GMAIL_USER = process.env.GMAIL_USER;   // e.g. brewsandmemories@gmail.com
 const GMAIL_PASS = process.env.GMAIL_APP_PASS; // Gmail App Password (16 chars)
 const GMAIL_PROXY_URL = process.env.GMAIL_PROXY_URL || process.env.GMAIL_PROXY_URI; // Google Apps Script URL
 const GMAIL_PROXY_TOKEN = process.env.GMAIL_PROXY_TOKEN || 'brews-memories-secret';
+
+// ── Logo (for inline email embedding) ─────────────────────────────────────────
+const LOGO_PATH = path.join(__dirname, '..', 'assets', 'logo.jpg');
+let LOGO_BASE64 = '';
+try {
+  LOGO_BASE64 = fs.readFileSync(LOGO_PATH).toString('base64');
+  console.log(`[Email] Logo loaded from ${LOGO_PATH} (${Math.round(LOGO_BASE64.length / 1024)}KB base64)`);
+} catch (err) {
+  console.warn('[Email] Could not load logo file:', err.message);
+}
+const LOGO_FALLBACK_URL = 'https://raw.githubusercontent.com/imrakeshdesai-art/brews-and-memories/main/frontend/public/logo.jpg';
 
 // ── HTTPS Helper for Proxy ────────────────────────────────────────────────────
 function sendPostRequest(url, data) {
@@ -79,7 +92,8 @@ function buildItemRows(items) {
 }
 
 // ── HTML Email Template ───────────────────────────────────────────────────────
-function buildCustomerEmailHTML({ name, items, total, payment, address, orderId }) {
+function buildCustomerEmailHTML({ name, items, total, payment, address, orderId }, logoSrc) {
+  const imgSrc = logoSrc || LOGO_FALLBACK_URL;
   return `
 <!DOCTYPE html>
 <html>
@@ -101,7 +115,7 @@ function buildCustomerEmailHTML({ name, items, total, payment, address, orderId 
     <!-- Header -->
     <div style="background:linear-gradient(135deg,#0f3d3e 0%,#185c5d 100%);padding:40px 32px;text-align:center;border-bottom:3px solid #fbbf24">
       <div style="margin-bottom:16px">
-        <img src="https://raw.githubusercontent.com/imrakeshdesai-art/brews-and-memories/main/frontend/public/logo.jpg" alt="Brews and Memories" width="90" height="90" style="width:90px;height:90px;border:3px solid #fbbf24;box-shadow:0 4px 12px rgba(0,0,0,0.2);display:inline-block;border-radius:50%" />
+        <img src="${imgSrc}" alt="Brews and Memories" width="90" height="90" style="width:90px;height:90px;border:3px solid #fbbf24;box-shadow:0 4px 12px rgba(0,0,0,0.2);display:inline-block;border-radius:50%" />
       </div>
       <div style="color:#fbbf24;font-size:13px;letter-spacing:4px;text-transform:uppercase;font-weight:800;margin-bottom:8px">Brews &amp; Memories</div>
       <h1 style="color:#fff;margin:0;font-size:28px;font-weight:800;font-family:'Playfair Display', Georgia, serif;letter-spacing:-0.5px">Order Confirmed! 🎉</h1>
@@ -229,18 +243,25 @@ async function sendOrderEmail(orderData) {
   }
 
   const subject = `✅ Order Confirmed — Brews & Memories (#${String(orderData.orderId).slice(-6)})`;
-  const htmlContent = buildCustomerEmailHTML(orderData);
 
   // 1️⃣ Try sending via Google HTTP Proxy if configured (Bypasses Render free tier SMTP blocks)
   if (GMAIL_PROXY_URL) {
     try {
       console.log(`[Email] Attempting HTTP Proxy send to ${orderData.email}...`);
-      const result = await sendPostRequest(GMAIL_PROXY_URL, {
+      // For proxy: use URL for the logo (Apps Script CID support requires script update)
+      const proxyPayload = {
         to: orderData.email,
         subject: subject,
-        htmlBody: htmlContent,
+        htmlBody: buildCustomerEmailHTML(orderData, LOGO_FALLBACK_URL),
         token: GMAIL_PROXY_TOKEN
-      });
+      };
+      // Also send logo base64 so the proxy CAN embed as inline image if the script supports it
+      if (LOGO_BASE64) {
+        proxyPayload.logoBase64 = LOGO_BASE64;
+        proxyPayload.logoMimeType = 'image/jpeg';
+        proxyPayload.logoCid = 'cafeLogo';
+      }
+      const result = await sendPostRequest(GMAIL_PROXY_URL, proxyPayload);
       
       if (result && result.success) {
         console.log(`[Email] Confirmation sent via HTTP Proxy → ${orderData.email}`);
@@ -262,12 +283,23 @@ async function sendOrderEmail(orderData) {
 
   const transporter = createTransporter();
   try {
-    const info = await transporter.sendMail({
+    // For SMTP: embed logo as CID inline attachment (most reliable)
+    const smtpHtml = buildCustomerEmailHTML(orderData, LOGO_BASE64 ? 'cid:cafeLogo' : LOGO_FALLBACK_URL);
+    const mailOptions = {
       from: `"Brews & Memories Café" <${GMAIL_USER}>`,
       to: orderData.email,
       subject: subject,
-      html: htmlContent,
-    });
+      html: smtpHtml,
+    };
+    // Attach logo as inline image if available
+    if (fs.existsSync(LOGO_PATH)) {
+      mailOptions.attachments = [{
+        filename: 'logo.jpg',
+        path: LOGO_PATH,
+        cid: 'cafeLogo'
+      }];
+    }
+    const info = await transporter.sendMail(mailOptions);
     console.log(`[Email] Confirmation sent via SMTP → ${orderData.email} | MessageID: ${info.messageId}`);
     return info;
   } catch (err) {
