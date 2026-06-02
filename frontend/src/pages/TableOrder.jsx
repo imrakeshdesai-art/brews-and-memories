@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useToast } from '../components/ToastProvider';
 
@@ -12,8 +13,25 @@ function TableOrder({ onSessionStart }) {
   const navigate = useNavigate();
   const toast = useToast();
 
-  const handleStartOrdering = (normalizedTable) => {
-    onSessionStart(normalizedTable);
+  const lowerTableId = tableId ? tableId.trim().toLowerCase() : '';
+  const isValid = VALID_TABLES.includes(lowerTableId);
+
+  // Normalize (e.g. table-1 => Table 1)
+  const normalizedTable = isValid
+    ? lowerTableId
+        .split('-')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ')
+    : '';
+
+  // Automatically activate table session on mount if valid
+  useEffect(() => {
+    if (isValid && onSessionStart && normalizedTable) {
+      onSessionStart(normalizedTable);
+    }
+  }, [isValid, normalizedTable, onSessionStart]);
+
+  const handleStartOrdering = () => {
     toast(`🟢 Table session activated for ${normalizedTable}!`);
     navigate('/menu');
   };
@@ -42,9 +60,6 @@ function TableOrder({ onSessionStart }) {
   }
 
   // 2. Validate allowed table IDs
-  const lowerTableId = tableId.trim().toLowerCase();
-  const isValid = VALID_TABLES.includes(lowerTableId);
-
   if (!isValid) {
     return (
       <section className="section" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh', padding: '120px 20px 80px' }}>
@@ -67,12 +82,6 @@ function TableOrder({ onSessionStart }) {
     );
   }
 
-  // Normalize (e.g. table-1 => Table 1)
-  const normalizedTable = lowerTableId
-    .split('-')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
-
   return (
     <section className="section" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh', padding: '120px 20px 80px', background: 'var(--cream-light)' }}>
       <div className="card" style={{ maxWidth: 450, width: '100%', textAlign: 'center', background: '#fff', border: '2px solid var(--cream-dark)', borderRadius: 16, padding: '40px 30px', boxShadow: 'var(--shadow-lg)' }}>
@@ -87,7 +96,7 @@ function TableOrder({ onSessionStart }) {
         </p>
         <button 
           className="btn-primary" 
-          onClick={() => handleStartOrdering(normalizedTable)}
+          onClick={handleStartOrdering}
           style={{ width: '100%', padding: '14px', borderRadius: 8, background: '#fbbf24', color: '#0f3d3e', fontWeight: 800, border: 'none', cursor: 'pointer', boxShadow: '0 4px 14px rgba(251,191,36,0.3)' }}
         >
           📖 Start Ordering

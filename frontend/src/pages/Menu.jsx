@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { menuData, menuCategories } from '../data/menuData';
 import { reviewsData } from '../data/reviewsData';
+import { useToast } from '../components/ToastProvider';
 
 const INSTAGRAM_FEED = [
   {
@@ -35,6 +36,7 @@ const INSTAGRAM_FEED = [
 ];
 
 function Menu({ addToCart, activeTable, endTableSession }) {
+  const showToast = useToast();
   const [searchParams, setSearchParams] = useSearchParams();
   const [activeCategory, setActiveCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
@@ -102,6 +104,10 @@ function Menu({ addToCart, activeTable, endTableSession }) {
       desc: item.desc,
       variant: item.multi ? selected : '',
     });
+    showToast(`🛒 ${item.name} added to cart!`);
+    if (window.trackEvent) {
+      window.trackEvent('quick_add', { item_name: item.name, price: variantPrice });
+    }
   };
 
   const getDisplayPrice = (item) => {
