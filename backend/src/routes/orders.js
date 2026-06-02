@@ -102,8 +102,16 @@ router.post('/', async (req, res) => {
 // ==================== TEST EMAIL PROXY ====================
 router.get('/test-proxy', async (req, res) => {
   try {
-    const GMAIL_PROXY_URL = process.env.GMAIL_PROXY_URL || process.env.GMAIL_PROXY_URI;
-    const GMAIL_PROXY_TOKEN = process.env.GMAIL_PROXY_TOKEN || 'brews-memories-secret';
+    const cleanVar = (val) => {
+      if (!val) return '';
+      let c = val.trim();
+      if (c.startsWith('"') && c.endsWith('"')) c = c.substring(1, c.length - 1);
+      if (c.startsWith("'") && c.endsWith("'")) c = c.substring(1, c.length - 1);
+      return c.trim();
+    };
+
+    const GMAIL_PROXY_URL = cleanVar(process.env.GMAIL_PROXY_URL || process.env.GMAIL_PROXY_URI);
+    const GMAIL_PROXY_TOKEN = cleanVar(process.env.GMAIL_PROXY_TOKEN || 'brews-memories-secret');
     
     const configDiagnostic = {
       proxyUrlExists: !!GMAIL_PROXY_URL,
@@ -112,7 +120,7 @@ router.get('/test-proxy', async (req, res) => {
       proxyUrlIsProjectUrl: GMAIL_PROXY_URL ? GMAIL_PROXY_URL.includes('/projects/') : false,
       proxyTokenUsed: GMAIL_PROXY_TOKEN,
       gmailUserExists: !!process.env.GMAIL_USER,
-      gmailUserValue: process.env.GMAIL_USER ? process.env.GMAIL_USER : 'NOT_SET',
+      gmailUserValue: process.env.GMAIL_USER ? cleanVar(process.env.GMAIL_USER) : 'NOT_SET',
       nodeEnv: process.env.NODE_ENV || 'not_set'
     };
 

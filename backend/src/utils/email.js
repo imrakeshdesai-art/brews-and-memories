@@ -1,11 +1,23 @@
 const nodemailer = require('nodemailer');
 const https = require('https');
 
+function cleanEnvVar(val) {
+  if (!val) return '';
+  let cleaned = val.trim();
+  if (cleaned.startsWith('"') && cleaned.endsWith('"')) {
+    cleaned = cleaned.substring(1, cleaned.length - 1);
+  }
+  if (cleaned.startsWith("'") && cleaned.endsWith("'")) {
+    cleaned = cleaned.substring(1, cleaned.length - 1);
+  }
+  return cleaned.trim();
+}
+
 // ── Config ───────────────────────────────────────────────────────────────────
-const GMAIL_USER = process.env.GMAIL_USER;   // e.g. brewsandmemories@gmail.com
-const GMAIL_PASS = process.env.GMAIL_APP_PASS; // Gmail App Password (16 chars)
-const GMAIL_PROXY_URL = process.env.GMAIL_PROXY_URL || process.env.GMAIL_PROXY_URI; // Google Apps Script URL
-const GMAIL_PROXY_TOKEN = process.env.GMAIL_PROXY_TOKEN || 'brews-memories-secret';
+const GMAIL_USER = cleanEnvVar(process.env.GMAIL_USER);   // e.g. brewsandmemories@gmail.com
+const GMAIL_PASS = cleanEnvVar(process.env.GMAIL_APP_PASS); // Gmail App Password (16 chars)
+const GMAIL_PROXY_URL = cleanEnvVar(process.env.GMAIL_PROXY_URL || process.env.GMAIL_PROXY_URI); // Google Apps Script URL
+const GMAIL_PROXY_TOKEN = cleanEnvVar(process.env.GMAIL_PROXY_TOKEN || 'brews-memories-secret');
 
 // ── HTTPS Helper for Proxy (follows redirects) ──────────────────────────────
 function sendPostRequest(url, data, maxRedirects = 5) {
