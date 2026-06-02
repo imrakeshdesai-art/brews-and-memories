@@ -404,9 +404,9 @@ function Home({ addToCart, openReserve }) {
               <div className="collage-item coffee" title="Creamy Cold Coffee">
                 <img src="/images/instagram/hero_cold_coffee.webp" alt="Signature Hazelnut Cold Coffee" />
               </div>
-              {/* Ambiance Card (Small Overlapping) */}
-              <div className="collage-item ambiance" title="Cozy Outdoor Seating">
-                <img src="/images/instagram/hero_nightambience.webp" alt="Cozy outdoor garden seating ambiance at night" />
+              {/* Sandwich Card (Small Overlapping) */}
+              <div className="collage-item sandwich" title="Veg Club Sandwich">
+                <img src="/images/instagram/hero_sandwich.webp" alt="Signature Veg Club Sandwich" />
               </div>
             </div>
           </div>
