@@ -28,6 +28,24 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&family=Lato:ital,wght@0,100..900;1,100..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
 
+    <!-- Google Analytics (GA4) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-XXXXXXXXXX');
+
+      // Global safety wrapper to prevent code errors if GA is blocked
+      window.trackEvent = function(eventName, eventParams) {
+        if (window.gtag) {
+          window.gtag('event', eventName, eventParams || {});
+        } else {
+          console.log('[GA Debug Event (Blocked/Local)]:', eventName, eventParams || {});
+        }
+      };
+    </script>
+
     <!-- Schema Markup -->
     <script type="application/ld+json">
     {

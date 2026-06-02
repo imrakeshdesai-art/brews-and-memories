@@ -1,4 +1,4 @@
-import { Suspense, lazy, useEffect, useMemo, useState } from 'react';
+import { Suspense, lazy, useCallback, useEffect, useMemo, useState } from 'react';
 import { Route, Routes, useLocation } from 'react-router-dom';
 import NavBar from './components/NavBar';
 import CartDrawer from './components/CartDrawer';
@@ -177,6 +177,11 @@ function App() {
     localStorage.setItem('tableSessionExpiry', String(expiry));
   };
 
+  const handleOpenReserve = useCallback(() => {
+    setIsReserveOpen(true);
+    if (window.trackEvent) window.trackEvent('reserve_open');
+  }, []);
+
   const pageProps = {
     cart,
     addToCart,
@@ -191,7 +196,7 @@ function App() {
     selectedPayment,
     setSelectedPayment,
     clearCart,
-    openReserve: () => setIsReserveOpen(true),
+    openReserve: handleOpenReserve,
     activeTable,
     tableSessionExpiry,
     endTableSession,
@@ -205,6 +210,7 @@ function App() {
           cartCount={cartCount} 
           onCartClick={() => setIsCartOpen(true)} 
           activeTable={activeTable} 
+          onReserveClick={handleOpenReserve}
         />
         <main className="page-shell">
           <Suspense fallback={<div className="page-loader">Loading page…</div>}>

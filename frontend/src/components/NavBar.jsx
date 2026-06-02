@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 
-function NavBar({ cartCount, onCartClick, activeTable }) {
+function NavBar({ cartCount, onCartClick, activeTable, onReserveClick }) {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
@@ -32,9 +32,14 @@ function NavBar({ cartCount, onCartClick, activeTable }) {
         <NavLink to="/contact" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
           Contact
         </NavLink>
-        <NavLink to="/reserve" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
+        <button 
+          type="button" 
+          onClick={onReserveClick} 
+          className="nav-btn-reserve" 
+          aria-label="Book a reservation table"
+        >
           Book Table
-        </NavLink>
+        </button>
       </nav>
 
       <div className="nav-actions" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -90,9 +95,18 @@ function NavBar({ cartCount, onCartClick, activeTable }) {
         <NavLink to="/contact" className="nav-link" onClick={() => setMenuOpen(false)}>
           📍 Contact
         </NavLink>
-        <NavLink to="/reserve" className="nav-link" onClick={() => setMenuOpen(false)}>
+        <button 
+          type="button" 
+          className="nav-link" 
+          style={{ width: '100%', textAlign: 'left', background: 'none', border: 'none', padding: '12px 20px', fontFamily: 'inherit', fontSize: 'inherit', fontWeight: 'inherit', color: 'inherit', cursor: 'pointer' }}
+          onClick={() => {
+            setMenuOpen(false);
+            onReserveClick();
+          }}
+          aria-label="Book a reservation table"
+        >
           📅 Book Table
-        </NavLink>
+        </button>
       </div>
     </header>
   );

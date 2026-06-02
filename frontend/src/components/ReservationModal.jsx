@@ -25,6 +25,60 @@ function ReservationModal({ open, onClose }) {
     }
   }, [open]);
 
+  // Accessibility: Focus trap & Escape key close
+  useEffect(() => {
+    if (!open) return;
+
+    const previousActiveElement = document.activeElement;
+    
+    // Slight delay to allow DOM to render before targeting focusable elements
+    const timer = setTimeout(() => {
+      const modalElement = document.querySelector('.modal-card');
+      if (!modalElement) return;
+
+      const focusableElementsString = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+      const focusableElements = Array.from(modalElement.querySelectorAll(focusableElementsString));
+      
+      if (focusableElements.length === 0) return;
+
+      const firstFocusableElement = focusableElements[0];
+      const lastFocusableElement = focusableElements[focusableElements.length - 1];
+
+      firstFocusableElement.focus();
+
+      const handleKeyDown = (e) => {
+        if (e.key === 'Tab') {
+          if (e.shiftKey) {
+            if (document.activeElement === firstFocusableElement) {
+              lastFocusableElement.focus();
+              e.preventDefault();
+            }
+          } else {
+            if (document.activeElement === lastFocusableElement) {
+              firstFocusableElement.focus();
+              e.preventDefault();
+            }
+          }
+        } else if (e.key === 'Escape') {
+          onClose();
+        }
+      };
+
+      window.addEventListener('keydown', handleKeyDown);
+
+      return () => {
+        window.removeEventListener('keydown', handleKeyDown);
+      };
+    }, 50);
+
+    return () => {
+      clearTimeout(timer);
+      if (previousActiveElement && typeof previousActiveElement.focus === 'function') {
+        previousActiveElement.focus();
+      }
+    };
+  }, [open, onClose]);
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!name.trim() || !phone.trim() || !date || !time) {
@@ -50,6 +104,9 @@ function ReservationModal({ open, onClose }) {
     setTimeout(() => {
       setIsSubmitting(false);
       setSuccess(true);
+      if (window.trackEvent) {
+        window.trackEvent('reserve_submit', { guests: guests, date: date, time: time });
+      }
     }, 1000);
   };
 

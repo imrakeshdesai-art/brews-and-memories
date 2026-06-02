@@ -44,6 +44,20 @@ const FAVORITES_CONFIG = [
     badge: 'Customer Favorite',
     image: '/Honey Chilli Potato.png',
     desc: 'Crispy deep-fried potato fingers tossed in a sweet, spicy, and tangy honey chilli sauce.'
+  },
+  {
+    category: 'Burgers',
+    name: 'Paneer Burger',
+    badge: 'Must Try',
+    image: '/images/menu/burger.png',
+    desc: 'Crispy paneer patty with fresh lettuce, onions, sliced tomatoes, and creamy signature burger sauces.'
+  },
+  {
+    category: 'Maggi',
+    name: 'B&M Signature Maggi',
+    badge: 'Best Seller',
+    image: '/images/menu/items/B&M Signature Maggi.webp',
+    desc: 'Our signature masala Maggi loaded with sweet corn, green peas, carrots, herbs and naturally melted cheese.'
   }
 ];
 
@@ -180,6 +194,9 @@ function Home({ addToCart, openReserve }) {
   const handleAddFavorite = (item) => {
     addToCart(item);
     showToast(`🛒 ${item.name} added to cart!`);
+    if (window.trackEvent) {
+      window.trackEvent('quick_add', { item_name: item.name, price: item.price });
+    }
   };
 
   const handleOpenLightbox = (url, caption) => {
@@ -306,30 +323,24 @@ function Home({ addToCart, openReserve }) {
                 color: '#fbbf24', 
                 fontSize: 'clamp(0.95rem, 2vw, 1.15rem)', 
                 fontWeight: 800, 
-                letterSpacing: '2px', 
+                letterSpacing: '1.5px', 
                 textTransform: 'uppercase',
                 display: 'flex',
                 flexWrap: 'wrap',
                 gap: '4px 10px',
                 alignItems: 'center'
               }}>
-                <span>Coffee</span>
-                <span style={{ opacity: 0.5 }}>•</span>
-                <span>Burgers</span>
-                <span style={{ opacity: 0.5 }}>•</span>
-                <span>Pasta</span>
-                <span style={{ opacity: 0.5 }}>•</span>
-                <span>Desserts</span>
+                <span>Premium Pure-Veg Cafe — Coffee, Pizza, Memories</span>
               </div>
               <p className="hero-subtitle" style={{ fontSize: 'clamp(0.95rem, 1.8vw, 1.15rem)', color: 'rgba(245, 230, 200, 0.85)', margin: 0, lineHeight: 1.5, fontWeight: 500, maxWidth: 620, textAlign: 'left' }}>
-                Where great food meets memorable moments. Premium Pure Veg Café in Vijayapura serving fresh brews, pizzas, pastas, burgers, and desserts in a cozy garden ambiance.
+                Where great food meets memorable moments. Premium Pure Veg Café in Vijayapura serving fresh brews, wood-fired pizzas, burgers, and signature desserts in a cozy garden ambiance.
               </p>
             </div>
 
-            {/* Simplified CTA buttons with clear operational hierarchy */}
+            {/* Two primary bold CTAs */}
             <div className="hero-btns" style={{ display: 'flex', flexWrap: 'wrap', gap: 14, marginTop: 4 }}>
-              <Link 
-                to="/menu" 
+              <button 
+                onClick={openReserve}
                 className="btn-primary" 
                 style={{ 
                   background: '#fbbf24', 
@@ -338,49 +349,25 @@ function Home({ addToCart, openReserve }) {
                   fontSize: '1.02rem', 
                   fontWeight: 800, 
                   borderRadius: 8, 
-                  minWidth: 160, 
+                  minWidth: 180, 
                   textAlign: 'center', 
                   border: 'none', 
                   cursor: 'pointer',
-                  textDecoration: 'none',
                   boxShadow: '0 4px 14px rgba(251, 191, 36, 0.3)' 
                 }}
+                aria-label="Reserve table now"
               >
-                📖 Explore Menu
-              </Link>
-              <a 
-                href="https://wa.me/919945446137?text=Hello%20Brews%20%26%20Memories%2C%20I%20would%20like%20to%20inquire!"
-                target="_blank" 
-                rel="noreferrer"
-                className="btn-primary"
-                style={{ 
-                  background: '#25d366', 
-                  color: '#fff', 
-                  padding: '14px 32px', 
-                  fontSize: '1.02rem', 
-                  fontWeight: 800, 
-                  borderRadius: 8, 
-                  minWidth: 160, 
-                  textAlign: 'center', 
-                  border: 'none', 
-                  cursor: 'pointer',
-                  textDecoration: 'none',
-                  boxShadow: '0 4px 14px rgba(37, 211, 102, 0.35)' 
-                }}
-              >
-                💬 Chat on WhatsApp
-              </a>
-              <a 
-                href="https://maps.app.goo.gl/2fYwvrLgfTP9ytBW7"
-                target="_blank" 
-                rel="noreferrer"
+                📅 Reserve Table
+              </button>
+              <Link 
+                to="/menu" 
                 className="btn-outline" 
                 style={{ 
                   padding: '14px 32px', 
                   fontSize: '1.02rem', 
                   fontWeight: 700, 
                   borderRadius: 8, 
-                  minWidth: 160, 
+                  minWidth: 180, 
                   textAlign: 'center', 
                   background: 'transparent', 
                   border: '2px solid #fbbf24', 
@@ -388,8 +375,8 @@ function Home({ addToCart, openReserve }) {
                   textDecoration: 'none'
                 }}
               >
-                📍 Get Directions
-              </a>
+                Explore Menu
+              </Link>
             </div>
           </div>
 
@@ -668,6 +655,42 @@ function Home({ addToCart, openReserve }) {
             </div>
           ))}
         </div>
+
+        <div style={{ textAlign: 'center', marginTop: 40, display: 'flex', justifyContent: 'center', gap: 16, flexWrap: 'wrap' }}>
+          <a 
+            href="/menu.pdf" 
+            target="_blank" 
+            rel="noreferrer"
+            className="btn-primary"
+            style={{ 
+              padding: '12px 28px', 
+              fontSize: '0.92rem', 
+              borderRadius: 8, 
+              textDecoration: 'none', 
+              color: '#0f3d3e', 
+              background: '#fbbf24', 
+              fontWeight: 800,
+              boxShadow: 'var(--shadow)'
+            }}
+          >
+            📄 View Full Menu (PDF)
+          </a>
+          <Link 
+            to="/menu" 
+            className="btn-outline" 
+            style={{ 
+              padding: '12px 28px', 
+              fontSize: '0.92rem', 
+              borderRadius: 8, 
+              textDecoration: 'none', 
+              color: 'var(--green)', 
+              borderColor: 'var(--green)',
+              fontWeight: 700 
+            }}
+          >
+            🔍 Search &amp; Order Online
+          </Link>
+        </div>
       </section>
 
       {/* SECTION 2 & 3: AMBIENT INSTAGRAM GALLERY & TRUST / AUTHENTICITY */}
@@ -794,14 +817,70 @@ function Home({ addToCart, openReserve }) {
         </div>
       </section>
 
-      {/* GOOGLE REVIEWS SUMMARY BANNER */}
+      {/* GUEST REVIEWS / TESTIMONIALS SECTION */}
       <section className="section" style={{ background: '#fff', padding: '60px 20px' }}>
-        <div style={{ maxWidth: 850, margin: '0 auto', textAlign: 'center', background: 'var(--cream-light)', padding: '40px 30px', borderRadius: 16, border: '1px solid var(--cream-dark)', boxShadow: 'var(--shadow)' }}>
-          <span style={{ fontSize: '2.5rem', display: 'block', marginBottom: 12 }} aria-hidden="true">⭐️</span>
-          <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: '2.2rem', color: 'var(--green)', margin: '0 0 12px' }}>Loved by Local Foodies</h2>
-          <p style={{ color: 'var(--text-light)', fontSize: '1.05rem', lineHeight: 1.6, margin: '0 0 24px', fontStyle: 'italic' }}>
-            "Rated 4.8/5 stars based on 500+ Google Reviews. Our guests love the signature cold coffee, fresh pizzas, and cozy garden vibe!"
-          </p>
+        <div style={{ maxWidth: 1100, margin: '0 auto', textAlign: 'center' }}>
+          <span style={{ color: 'var(--green)', textTransform: 'uppercase', letterSpacing: 2, fontSize: '0.85rem', fontWeight: 800 }}>Guest Testimonials</span>
+          <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: 'clamp(1.7rem, 4vw, 2.2rem)', color: 'var(--green)', margin: '8px 0 12px', fontWeight: 700 }}>
+            4.8★ · 500+ happy guests — What they say
+          </h2>
+          <div style={{ width: 60, height: 3, background: 'var(--green)', margin: '12px auto 36px' }} />
+
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', 
+            gap: 24, 
+            textAlign: 'left',
+            marginBottom: 36
+          }}>
+            {[
+              { name: 'Rahul M.', initials: 'RM', rating: 5, date: '2 weeks ago', text: 'Great ambiance, tasty brews, and chill vibes. Perfect spot to hang out with friends. The cold coffee is absolutely amazing!' },
+              { name: 'Priya S.', initials: 'PS', rating: 5, date: '1 month ago', text: 'Food is very delicious and highly recommended. The paneer pizza was absolutely loaded with toppings. Will definitely come back!' },
+              { name: 'Sneha P.', initials: 'SP', rating: 5, date: '2 months ago', text: 'Best café in Vijayapura! The ambiance is so cozy and the food is consistently good. I come here almost every weekend.' }
+            ].map((review) => (
+              <div 
+                key={review.name} 
+                className="card"
+                style={{ 
+                  padding: 24, 
+                  background: 'var(--cream-light)', 
+                  border: '1px solid var(--cream-dark)', 
+                  borderRadius: 14,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 12
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <div style={{ 
+                    width: 40, 
+                    height: 40, 
+                    borderRadius: '50%', 
+                    background: 'var(--green)', 
+                    color: 'var(--cream)', 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center', 
+                    fontWeight: 700,
+                    fontSize: '0.9rem' 
+                  }}>
+                    {review.initials}
+                  </div>
+                  <div>
+                    <strong style={{ color: 'var(--green)', fontSize: '0.95rem' }}>{review.name}</strong>
+                    <div style={{ fontSize: '0.75rem', color: 'var(--text-light)', marginTop: 2 }}>{review.date}</div>
+                  </div>
+                </div>
+                <div style={{ color: '#fbbf24', fontSize: '1rem', letterSpacing: 1 }}>
+                  {'★'.repeat(review.rating) + '☆'.repeat(5 - review.rating)}
+                </div>
+                <p style={{ color: 'var(--text-dark)', fontSize: '0.88rem', lineHeight: 1.5, margin: 0, fontStyle: 'italic' }}>
+                  "{review.text}"
+                </p>
+              </div>
+            ))}
+          </div>
+
           <Link 
             to="/reviews" 
             className="btn-primary" 
@@ -815,7 +894,7 @@ function Home({ addToCart, openReserve }) {
               borderRadius: 8
             }}
           >
-            ⭐ Read Guest Reviews
+            ⭐ Read More Guest Reviews
           </Link>
         </div>
       </section>

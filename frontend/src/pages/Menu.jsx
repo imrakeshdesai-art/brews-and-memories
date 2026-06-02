@@ -49,6 +49,10 @@ function Menu({ addToCart, activeTable, endTableSession }) {
   }, [searchParams]);
 
   useEffect(() => {
+    if (window.trackEvent) window.trackEvent('menu_view');
+  }, []);
+
+  useEffect(() => {
     const query = searchQuery.trim().toLowerCase();
     if (!query && activeCategory === 'All') {
       setMenuItems(menuData);

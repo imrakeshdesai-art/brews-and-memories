@@ -213,6 +213,34 @@ button {
   background: rgba(245, 230, 200, 0.15);
 }
 
+.nav-btn-reserve {
+  background: #fbbf24;
+  color: #0f3d3e !important;
+  padding: 8px 18px !important;
+  border-radius: 6px;
+  font-weight: 800;
+  font-size: 0.88rem;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 2px 8px rgba(251, 191, 36, 0.25);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav-btn-reserve:hover {
+  background: #f59e0b !important;
+  color: #0f3d3e !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(251, 191, 36, 0.4);
+}
+
+.nav-btn-reserve:active {
+  transform: translateY(0);
+}
+
 .nav-actions {
   display: flex;
   align-items: center;
