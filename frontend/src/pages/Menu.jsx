@@ -257,7 +257,6 @@ function Menu({ addToCart, activeTable, endTableSession }) {
                     <div className="menu-item-name">{item.name}</div>
                     <div className="menu-item-meta" style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8, flexWrap: 'wrap' }}>
                       <span className="menu-price">₹{getDisplayPrice(item)}</span>
-                      <span className="menu-prep-time">⏱️ {item.prepTime || '10-12 mins'}</span>
                     </div>
                     <div className="menu-item-desc" style={{ marginBottom: 12 }}>{item.desc}</div>
                     {item.multi ? (
