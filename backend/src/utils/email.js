@@ -248,19 +248,13 @@ async function sendOrderEmail(orderData) {
   if (GMAIL_PROXY_URL) {
     try {
       console.log(`[Email] Attempting HTTP Proxy send to ${orderData.email}...`);
-      // For proxy: use URL for the logo (Apps Script CID support requires script update)
+      // For proxy: use URL for the logo image in the HTML
       const proxyPayload = {
         to: orderData.email,
         subject: subject,
         htmlBody: buildCustomerEmailHTML(orderData, LOGO_FALLBACK_URL),
         token: GMAIL_PROXY_TOKEN
       };
-      // Also send logo base64 so the proxy CAN embed as inline image if the script supports it
-      if (LOGO_BASE64) {
-        proxyPayload.logoBase64 = LOGO_BASE64;
-        proxyPayload.logoMimeType = 'image/jpeg';
-        proxyPayload.logoCid = 'cafeLogo';
-      }
       const result = await sendPostRequest(GMAIL_PROXY_URL, proxyPayload);
       
       if (result && result.success) {
