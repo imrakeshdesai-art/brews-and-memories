@@ -5,49 +5,65 @@ const https = require('https');
 const GMAIL_USER = process.env.GMAIL_USER;   // e.g. brewsandmemories@gmail.com
 const GMAIL_PASS = process.env.GMAIL_APP_PASS; // Gmail App Password (16 chars)
 const GMAIL_PROXY_URL = process.env.GMAIL_PROXY_URL || process.env.GMAIL_PROXY_URI; // Google Apps Script URL
-const GMAIL_PROXY_TOKEN = process.env.GMAIL_PROXY_TOKEN || 'brews-memories-secret';
+const GMAIL_PROXY_TOKEN = process.env.GMAIL_PROXY_TOKEN || 'brews memories secret';
 
-// ── HTTPS Helper for Proxy ────────────────────────────────────────────────────
-function sendPostRequest(url, data) {
+// ── HTTPS Helper for Proxy (follows redirects) ──────────────────────────────
+function sendPostRequest(url, data, maxRedirects = 5) {
   return new Promise((resolve, reject) => {
-    try {
-      const urlObj = new URL(url);
-      const postData = JSON.stringify(data);
-      
-      const options = {
-        hostname: urlObj.hostname,
-        path: urlObj.pathname + urlObj.search,
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Content-Length': Buffer.byteLength(postData)
-        },
-        timeout: 10000 // 10 seconds timeout
-      };
-      
-      const req = https.request(options, (res) => {
-        let body = '';
-        res.on('data', (chunk) => body += chunk);
-        res.on('end', () => {
-          try {
-            resolve(JSON.parse(body));
-          } catch (e) {
-            reject(new Error('Invalid JSON response from proxy'));
+    function doRequest(requestUrl, postData, redirectsLeft) {
+      try {
+        const urlObj = new URL(requestUrl);
+        const isPost = !!postData;
+        
+        const options = {
+          hostname: urlObj.hostname,
+          path: urlObj.pathname + urlObj.search,
+          method: isPost ? 'POST' : 'GET',
+          headers: isPost ? {
+            'Content-Type': 'application/json',
+            'Content-Length': Buffer.byteLength(postData)
+          } : {},
+          timeout: 30000 // 30 seconds for Render cold starts
+        };
+        
+        const req = https.request(options, (res) => {
+          // Handle redirects (302, 307, 301, 303)
+          if ([301, 302, 303, 307].includes(res.statusCode) && res.headers.location) {
+            if (redirectsLeft <= 0) {
+              return reject(new Error('Too many redirects'));
+            }
+            console.log(`[Email] Proxy redirect ${res.statusCode} → ${res.headers.location}`);
+            // 302/303 redirects change POST to GET (per HTTP spec)
+            const nextData = (res.statusCode === 307) ? postData : null;
+            return doRequest(res.headers.location, nextData, redirectsLeft - 1);
           }
+          
+          let body = '';
+          res.on('data', (chunk) => body += chunk);
+          res.on('end', () => {
+            console.log(`[Email] Proxy response status=${res.statusCode} body=${body.substring(0, 200)}`);
+            try {
+              resolve(JSON.parse(body));
+            } catch (e) {
+              reject(new Error(`Invalid JSON from proxy (status ${res.statusCode}): ${body.substring(0, 100)}`));
+            }
+          });
         });
-      });
-      
-      req.on('error', (e) => reject(e));
-      req.on('timeout', () => {
-        req.destroy();
-        reject(new Error('Proxy connection timed out'));
-      });
-      
-      req.write(postData);
-      req.end();
-    } catch (err) {
-      reject(err);
+        
+        req.on('error', (e) => reject(e));
+        req.on('timeout', () => {
+          req.destroy();
+          reject(new Error('Proxy connection timed out (30s)'));
+        });
+        
+        if (postData) req.write(postData);
+        req.end();
+      } catch (err) {
+        reject(err);
+      }
     }
+    
+    doRequest(url, JSON.stringify(data), maxRedirects);
   });
 }
 
