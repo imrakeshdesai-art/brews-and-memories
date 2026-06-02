@@ -66,7 +66,7 @@ app.use('/api/auth', authLimiter, authRoutes);
 app.use('/api/orders', orderRoutes);
 
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', mode: 'mongo', version: 'v-dynamic-labels-3' });
+  res.json({ status: 'ok', mode: 'mongo', version: 'v-dynamic-labels-4' });
 });
 
 app.use((req, res) => {

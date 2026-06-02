@@ -19,6 +19,13 @@ const GMAIL_PASS = cleanEnvVar(process.env.GMAIL_APP_PASS); // Gmail App Passwor
 const GMAIL_PROXY_URL = cleanEnvVar(process.env.GMAIL_PROXY_URL || process.env.GMAIL_PROXY_URI); // Google Apps Script URL
 const GMAIL_PROXY_TOKEN = cleanEnvVar(process.env.GMAIL_PROXY_TOKEN || 'brews-memories-secret');
 
+// ── Unicode Escape Helper for safe transmission ──────────────────────────────
+function escapeUnicode(str) {
+  return str.replace(/[^\x00-\x7F]/g, (char) => {
+    return '\\u' + ('0000' + char.charCodeAt(0).toString(16)).slice(-4);
+  });
+}
+
 // ── HTTPS Helper for Proxy (follows redirects) ──────────────────────────────
 function sendPostRequest(url, data, maxRedirects = 5) {
   return new Promise((resolve, reject) => {
@@ -75,7 +82,8 @@ function sendPostRequest(url, data, maxRedirects = 5) {
       }
     }
     
-    doRequest(url, JSON.stringify(data), maxRedirects);
+    const payload = escapeUnicode(JSON.stringify(data));
+    doRequest(url, payload, maxRedirects);
   });
 }
 
