@@ -105,22 +105,34 @@ router.get('/test-proxy', async (req, res) => {
     const GMAIL_PROXY_URL = process.env.GMAIL_PROXY_URL || process.env.GMAIL_PROXY_URI;
     const GMAIL_PROXY_TOKEN = process.env.GMAIL_PROXY_TOKEN || 'brews-memories-secret';
     
-    if (!GMAIL_PROXY_URL) {
-      return res.status(400).json({ 
-        error: 'GMAIL_PROXY_URL is not configured in Render environment variables.' 
+    const configDiagnostic = {
+      proxyUrlExists: !!GMAIL_PROXY_URL,
+      proxyUrlValue: GMAIL_PROXY_URL ? GMAIL_PROXY_URL.substring(0, 55) + '...' : 'NOT_SET',
+      proxyUrlIsMacrosUrl: GMAIL_PROXY_URL ? GMAIL_PROXY_URL.includes('/macros/s/') : false,
+      proxyUrlIsProjectUrl: GMAIL_PROXY_URL ? GMAIL_PROXY_URL.includes('/projects/') : false,
+      proxyTokenUsed: GMAIL_PROXY_TOKEN,
+      gmailUserExists: !!process.env.GMAIL_USER,
+      gmailUserValue: process.env.GMAIL_USER ? process.env.GMAIL_USER : 'NOT_SET',
+      nodeEnv: process.env.NODE_ENV || 'not_set'
+    };
+
+    // If query ?send=true is not set, just return the configuration instantly
+    if (req.query.send !== 'true') {
+      return res.json({
+        success: true,
+        message: 'Proxy configuration fetched. To test sending, call with /test-proxy?send=true',
+        config: configDiagnostic
       });
     }
 
-    const testPayload = {
-      to: 'rakeshdesai2909@gmail.com',
-      subject: '🔍 Proxy Connection Test — Brews & Memories',
-      htmlBody: '<h3>Proxy connection check</h3><p>If you see this, the Render backend successfully connected to the Google Apps Script Web App!</p>',
-      token: GMAIL_PROXY_TOKEN
-    };
+    if (!GMAIL_PROXY_URL) {
+      return res.status(400).json({ 
+        error: 'GMAIL_PROXY_URL is not configured in Render environment variables.',
+        config: configDiagnostic
+      });
+    }
 
     const { sendOrderEmail } = require('../utils/email');
-    
-    // We import and call sendOrderEmail with a test structure to simulate the real flow
     const testOrder = {
       name: 'Diagnostic Test',
       email: 'rakeshdesai2909@gmail.com',
@@ -136,9 +148,8 @@ router.get('/test-proxy', async (req, res) => {
     
     res.json({
       success: true,
-      message: 'Proxy test completed',
-      proxyUrlConfigured: GMAIL_PROXY_URL.substring(0, 45) + '...',
-      proxyTokenUsed: GMAIL_PROXY_TOKEN,
+      message: 'Proxy send completed',
+      config: configDiagnostic,
       result: result
     });
   } catch (error) {
