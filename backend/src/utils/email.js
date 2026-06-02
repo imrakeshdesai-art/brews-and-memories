@@ -101,9 +101,9 @@ function buildCustomerEmailHTML({ name, items, total, payment, address, orderId 
     <!-- Header -->
     <div style="background:linear-gradient(135deg,#0f3d3e 0%,#185c5d 100%);padding:40px 32px;text-align:center;border-bottom:3px solid #fbbf24">
       <div style="margin-bottom:16px">
-        <img src="https://brews-and-memories.vercel.app/logo.jpg" alt="Brews & Memories Logo" style="width:75px;height:75px;border-radius:50%;border:3px solid #fbbf24;box-shadow:0 4px 10px rgba(0,0,0,0.15);display:inline-block;object-fit:cover" />
+        <img src="https://raw.githubusercontent.com/imrakeshdesai-art/brews-and-memories/main/frontend/public/logo.jpg" alt="Brews and Memories" width="90" height="90" style="width:90px;height:90px;border:3px solid #fbbf24;box-shadow:0 4px 12px rgba(0,0,0,0.2);display:inline-block;border-radius:50%" />
       </div>
-      <div style="color:#fbbf24;font-size:13px;letter-spacing:4px;text-transform:uppercase;font-weight:800;margin-bottom:8px">Brews & Memories</div>
+      <div style="color:#fbbf24;font-size:13px;letter-spacing:4px;text-transform:uppercase;font-weight:800;margin-bottom:8px">Brews &amp; Memories</div>
       <h1 style="color:#fff;margin:0;font-size:28px;font-weight:800;font-family:'Playfair Display', Georgia, serif;letter-spacing:-0.5px">Order Confirmed! 🎉</h1>
       <p style="color:rgba(255,255,255,0.85);margin:10px 0 0;font-size:14px;font-style:italic;font-family:'Playfair Display', Georgia, serif">Vijayapura's Premium Cozy Café</p>
     </div>
