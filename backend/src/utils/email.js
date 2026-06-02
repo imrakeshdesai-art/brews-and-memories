@@ -111,6 +111,8 @@ function buildItemRows(items) {
 
 // ── HTML Email Template ───────────────────────────────────────────────────────
 function buildCustomerEmailHTML({ name, items, total, payment, address, orderId }) {
+  const isPaid = payment && payment.toLowerCase() === 'online';
+  const totalLabel = isPaid ? 'Total Paid' : 'Total to Pay';
   return `
 <!DOCTYPE html>
 <html>
@@ -161,7 +163,7 @@ function buildCustomerEmailHTML({ name, items, total, payment, address, orderId 
               <table width="100%" cellpadding="0" cellspacing="0">
                 ${buildItemRows(items)}
                 <tr>
-                  <td style="padding:18px 0 0;font-size:16px;font-weight:800;color:#0f3d3e;border-top:2px solid #e8e2d2">Total Paid</td>
+                  <td style="padding:18px 0 0;font-size:16px;font-weight:800;color:#0f3d3e;border-top:2px solid #e8e2d2">${totalLabel}</td>
                   <td style="padding:18px 0 0;text-align:right;font-size:22px;font-weight:900;color:#0f3d3e;border-top:2px solid #e8e2d2">₹${total}</td>
                 </tr>
               </table>
