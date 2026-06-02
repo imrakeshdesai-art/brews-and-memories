@@ -23,7 +23,7 @@ function sendPostRequest(url, data, maxRedirects = 5) {
             'Content-Type': 'application/json',
             'Content-Length': Buffer.byteLength(postData)
           } : {},
-          timeout: 30000 // 30 seconds for Render cold starts
+          timeout: 15000 // 15 seconds max for Google Apps Script
         };
         
         const req = https.request(options, (res) => {
@@ -53,7 +53,7 @@ function sendPostRequest(url, data, maxRedirects = 5) {
         req.on('error', (e) => reject(e));
         req.on('timeout', () => {
           req.destroy();
-          reject(new Error('Proxy connection timed out (30s)'));
+          reject(new Error('Proxy connection timed out (15s)'));
         });
         
         if (postData) req.write(postData);
@@ -75,6 +75,9 @@ function createTransporter() {
       user: GMAIL_USER,
       pass: GMAIL_PASS,
     },
+    connectionTimeout: 3000, // 3 seconds timeout
+    greetingTimeout: 3000,   // 3 seconds timeout
+    socketTimeout: 5000      // 5 seconds timeout
   });
 }
 
