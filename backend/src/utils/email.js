@@ -263,7 +263,7 @@ async function sendOrderEmail(orderData) {
   const transporter = createTransporter();
   try {
     const info = await transporter.sendMail({
-      from: `"Brews & Memories ☕" <${GMAIL_USER}>`,
+      from: `"Brews & Memories Café" <${GMAIL_USER}>`,
       to: orderData.email,
       subject: subject,
       html: htmlContent,
