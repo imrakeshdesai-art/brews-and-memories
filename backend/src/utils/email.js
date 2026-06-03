@@ -313,6 +313,7 @@ async function sendOrderEmail(orderData) {
       to: orderData.email,
       subject: subject,
       html: htmlContent,
+      textEncoding: 'base64',
     });
     console.log(`[Email] Confirmation sent via SMTP → ${orderData.email} | MessageID: ${info.messageId}`);
     return { success: true, method: 'smtp', info };
