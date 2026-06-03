@@ -145,7 +145,7 @@ function buildCustomerEmailHTML({ name, items, total, payment, address, orderId 
         <img src="https://brews-and-memories.vercel.app/logo.jpg" alt="Brews & Memories Logo" style="width:75px;height:75px;border-radius:50%;border:3px solid #fbbf24;box-shadow:0 4px 10px rgba(0,0,0,0.15);display:inline-block;object-fit:cover" />
       </div>
       <div style="color:#fbbf24;font-size:13px;letter-spacing:4px;text-transform:uppercase;font-weight:800;margin-bottom:8px">Brews & Memories</div>
-      <h1 style="color:#fff;margin:0;font-size:28px;font-weight:800;font-family:'Playfair Display', Georgia, serif;letter-spacing:-0.5px">Order Confirmed! 🎉</h1>
+      <h1 style="color:#fff;margin:0;font-size:28px;font-weight:800;font-family:'Playfair Display', Georgia, serif;letter-spacing:-0.5px">Order Confirmed! &#x1F389;</h1>
       <p style="color:rgba(255,255,255,0.85);margin:10px 0 0;font-size:14px;font-style:italic;font-family:'Playfair Display', Georgia, serif">Vijayapura's Premium Cozy Café</p>
     </div>
 
@@ -153,7 +153,7 @@ function buildCustomerEmailHTML({ name, items, total, payment, address, orderId 
     <div style="padding:32px">
 
       <p style="color:#2d2d2d;font-size:16px;line-height:1.6;margin:0 0 24px;font-family:'Plus Jakarta Sans', Arial, sans-serif">
-        Hi <strong>${name}</strong>! 👋<br/><br/>
+        Hi <strong>${name}</strong>! &#x1F44B;<br/><br/>
         Your order has been confirmed! Our kitchen crew is already preparing your items fresh and piping hot. Here is a summary of your cafe ticket:
       </p>
 
@@ -188,7 +188,7 @@ function buildCustomerEmailHTML({ name, items, total, payment, address, orderId 
             <table width="100%" cellpadding="0" cellspacing="0">
               <tr>
                 <td width="48" valign="middle" style="padding-right:16px">
-                  <div style="width:48px;height:48px;background:#dcfce7;border-radius:12px;text-align:center;line-height:48px;font-size:24px">💳</div>
+                  <div style="width:48px;height:48px;background:#dcfce7;border-radius:12px;text-align:center;line-height:48px;font-size:24px">&#x1F4B3;</div>
                 </td>
                 <td valign="middle">
                   <div style="font-size:11px;color:#047857;text-transform:uppercase;letter-spacing:2px;font-weight:700;margin-bottom:2px">Payment Method</div>
@@ -204,7 +204,7 @@ function buildCustomerEmailHTML({ name, items, total, payment, address, orderId 
             <table width="100%" cellpadding="0" cellspacing="0">
               <tr>
                 <td width="48" valign="middle" style="padding-right:16px">
-                  <div style="width:48px;height:48px;background:#ffedd5;border-radius:12px;text-align:center;line-height:48px;font-size:24px">🪑</div>
+                  <div style="width:48px;height:48px;background:#ffedd5;border-radius:12px;text-align:center;line-height:48px;font-size:24px">&#x1FA91;</div>
                 </td>
                 <td valign="middle">
                   <div style="font-size:11px;color:#c2410c;text-transform:uppercase;letter-spacing:2px;font-weight:700;margin-bottom:2px">Seated At</div>
@@ -220,7 +220,7 @@ function buildCustomerEmailHTML({ name, items, total, payment, address, orderId 
             <table width="100%" cellpadding="0" cellspacing="0">
               <tr>
                 <td width="48" valign="middle" style="padding-right:16px">
-                  <div style="width:48px;height:48px;background:#f3e8ff;border-radius:12px;text-align:center;line-height:48px;font-size:24px">🕐</div>
+                  <div style="width:48px;height:48px;background:#f3e8ff;border-radius:12px;text-align:center;line-height:48px;font-size:24px">&#x1F550;</div>
                 </td>
                 <td valign="middle">
                   <div style="font-size:11px;color:#7e22ce;text-transform:uppercase;letter-spacing:2px;font-weight:700;margin-bottom:2px">Café Hours</div>
@@ -236,15 +236,15 @@ function buildCustomerEmailHTML({ name, items, total, payment, address, orderId 
       <div style="text-align:center;margin-bottom:32px">
         <a href="https://brews-and-memories.vercel.app" 
            style="display:inline-block;background:linear-gradient(135deg,#0f3d3e,#185c5d);color:#fff;text-decoration:none;padding:16px 36px;border-radius:50px;font-weight:800;font-size:15px;letter-spacing:1.5px;box-shadow:0 4px 12px rgba(15,61,62,0.25);border:2px solid #fbbf24">
-          🍕 Order Again
+          &#x1F355; Order Again
         </a>
       </div>
 
       <!-- Contact Info Box -->
       <div style="background:#faf8f5;border-radius:12px;padding:18px;text-align:center;border:1px solid #e8e2d2;margin-bottom:8px">
         <p style="color:#5e5a50;font-size:13px;line-height:1.6;margin:0">
-          📍 Find us at: <strong>B.M. Patil Circle, Vijayapura, Karnataka</strong><br/>
-          📞 Questions? Ping us on WhatsApp: <a href="https://wa.me/919945446137" style="color:#0f3d3e;font-weight:800;text-decoration:underline">+91 99454 46137</a>
+          &#x1F4CD; Find us at: <strong>B.M. Patil Circle, Vijayapura, Karnataka</strong><br/>
+          &#x1F4DE; Questions? Ping us on WhatsApp: <a href="https://wa.me/919945446137" style="color:#0f3d3e;font-weight:800;text-decoration:underline">+91 99454 46137</a>
         </p>
       </div>
     </div>
