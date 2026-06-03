@@ -108,10 +108,10 @@ function buildItemRows(items) {
     return `
       <tr>
         <td style="padding:12px 0;border-bottom:1px solid #e8e2d2;font-size:15px;color:#2d2d2d;font-weight:500">
-          ${item.name}${variant} <span style="color:#777;font-size:14px;font-weight:normal">× ${item.qty}</span>
+          ${item.name}${variant} <span style="color:#777;font-size:14px;font-weight:normal">&times; ${item.qty}</span>
         </td>
         <td style="padding:12px 0;border-bottom:1px solid #e8e2d2;text-align:right;font-weight:700;color:#0f3d3e;font-size:15px">
-          ₹${item.price * item.qty}
+          &#x20B9;${item.price * item.qty}
         </td>
       </tr>`;
   }).join('');
@@ -127,7 +127,7 @@ function buildCustomerEmailHTML({ name, items, total, payment, address, orderId 
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Order Confirmed — Brews & Memories</title>
+  <title>Order Confirmed &mdash; Brews & Memories</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
     
@@ -146,7 +146,7 @@ function buildCustomerEmailHTML({ name, items, total, payment, address, orderId 
       </div>
       <div style="color:#fbbf24;font-size:13px;letter-spacing:4px;text-transform:uppercase;font-weight:800;margin-bottom:8px">Brews & Memories</div>
       <h1 style="color:#fff;margin:0;font-size:28px;font-weight:800;font-family:'Playfair Display', Georgia, serif;letter-spacing:-0.5px">Order Confirmed! &#x1F389;</h1>
-      <p style="color:rgba(255,255,255,0.85);margin:10px 0 0;font-size:14px;font-style:italic;font-family:'Playfair Display', Georgia, serif">Vijayapura's Premium Cozy Café</p>
+      <p style="color:rgba(255,255,255,0.85);margin:10px 0 0;font-size:14px;font-style:italic;font-family:'Playfair Display', Georgia, serif">Vijayapura's Premium Cozy Caf&eacute;</p>
     </div>
 
     <!-- Body -->
@@ -172,7 +172,7 @@ function buildCustomerEmailHTML({ name, items, total, payment, address, orderId 
                 ${buildItemRows(items)}
                 <tr>
                   <td style="padding:18px 0 0;font-size:16px;font-weight:800;color:#0f3d3e;border-top:2px solid #e8e2d2">${totalLabel}</td>
-                  <td style="padding:18px 0 0;text-align:right;font-size:22px;font-weight:900;color:#0f3d3e;border-top:2px solid #e8e2d2">₹${total}</td>
+                  <td style="padding:18px 0 0;text-align:right;font-size:22px;font-weight:900;color:#0f3d3e;border-top:2px solid #e8e2d2">&#x20B9;${total}</td>
                 </tr>
               </table>
             </td>
@@ -180,7 +180,7 @@ function buildCustomerEmailHTML({ name, items, total, payment, address, orderId 
         </table>
       </div>
 
-      <!-- Info Cards — Stacked Vertical Layout -->
+      <!-- Info Cards - Stacked Vertical Layout -->
       <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:28px;border-collapse:separate;border-spacing:0 10px">
         <!-- Payment Row -->
         <tr>
@@ -223,8 +223,8 @@ function buildCustomerEmailHTML({ name, items, total, payment, address, orderId 
                   <div style="width:48px;height:48px;background:#f3e8ff;border-radius:12px;text-align:center;line-height:48px;font-size:24px">&#x1F550;</div>
                 </td>
                 <td valign="middle">
-                  <div style="font-size:11px;color:#7e22ce;text-transform:uppercase;letter-spacing:2px;font-weight:700;margin-bottom:2px">Café Hours</div>
-                  <div style="font-size:17px;font-weight:800;color:#6b21a8">10 AM – 10:30 PM</div>
+                  <div style="font-size:11px;color:#7e22ce;text-transform:uppercase;letter-spacing:2px;font-weight:700;margin-bottom:2px">Caf&eacute; Hours</div>
+                  <div style="font-size:17px;font-weight:800;color:#6b21a8">10 AM &ndash; 10:30 PM</div>
                 </td>
               </tr>
             </table>
@@ -252,7 +252,7 @@ function buildCustomerEmailHTML({ name, items, total, payment, address, orderId 
     <!-- Footer -->
     <div style="background:#0f3d3e;padding:24px 32px;text-align:center;border-top:3px solid #fbbf24">
       <p style="margin:0;font-size:12px;color:rgba(255,255,255,0.7);line-height:1.6">
-        © 2026 Brews & Memories Café · Vijayapura<br/>
+        &copy; 2026 Brews & Memories Caf&eacute; &middot; Vijayapura<br/>
         Follow our memories on Instagram 
         <a href="https://www.instagram.com/brews_and_memories_/" style="color:#fbbf24;font-weight:700;text-decoration:none">@brews_and_memories_</a>
       </p>
@@ -269,7 +269,7 @@ async function sendOrderEmail(orderData) {
     return { success: false, error: 'No customer email provided' };
   }
 
-  const subject = `✅ Order Confirmed — Brews & Memories (#${String(orderData.orderId).slice(-6)})`;
+  const subject = `✅ Order Confirmed - Brews & Memories (#${String(orderData.orderId).slice(-6)})`;
   const htmlContent = buildCustomerEmailHTML(orderData);
   const errors = [];
 
