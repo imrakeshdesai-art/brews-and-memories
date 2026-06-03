@@ -143,5 +143,18 @@ router.patch('/:id', auth, async (req, res) => {
 });
 
 
+
+// ==================== DELETE ALL ORDERS ====================
+router.delete('/clean-all-tests', auth, async (req, res) => {
+  try {
+    const result = await Order.deleteMany({});
+    res.json({ message: 'All test orders deleted successfully', count: result.deletedCount });
+  } catch (error) {
+    console.error('Clean orders error:', error);
+    res.status(500).json({ message: 'Could not delete test orders', error: error.message });
+  }
+});
+
+
 // ==================== EXPORT ====================
 module.exports = router;
