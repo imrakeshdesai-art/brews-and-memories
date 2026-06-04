@@ -660,6 +660,7 @@ button {
 /* Minimal hover scale-up for cold beverages so they remain completely visible */
 .menu-card:hover .cold-bev-img {
   transform: scale(1.05) !important;
+  transform-origin: top center !important;
 }
 
 .menu-card-img {
