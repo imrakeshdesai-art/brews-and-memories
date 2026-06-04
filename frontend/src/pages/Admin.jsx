@@ -553,6 +553,10 @@ function Admin() {
                 </th>
 
                 <th style={{ padding: '12px 14px', textAlign: 'left' }}>
+                  Table
+                </th>
+
+                <th style={{ padding: '12px 14px', textAlign: 'left' }}>
                   Items
                 </th>
 
@@ -578,7 +582,7 @@ function Admin() {
 
                 <tr>
                   <td
-                    colSpan="7"
+                    colSpan="8"
                     style={{
                       padding: 32,
                       textAlign: 'center',
@@ -593,7 +597,7 @@ function Admin() {
 
                 <tr>
                   <td
-                    colSpan="7"
+                    colSpan="8"
                     style={{
                       padding: 32,
                       textAlign: 'center',
@@ -642,6 +646,16 @@ function Admin() {
 
                     <td style={{ padding: '12px 14px' }}>
                       {o.phone}
+                    </td>
+
+                    <td
+                      style={{
+                        padding: '12px 14px',
+                        fontWeight: 700,
+                        color: 'var(--green)',
+                      }}
+                    >
+                      {o.address || 'N/A'}
                     </td>
 
                     <td
