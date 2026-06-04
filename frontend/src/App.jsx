@@ -51,9 +51,7 @@ function App() {
         setActiveTable(storedTable);
         setTableSessionExpiry(Number(storedExpiry));
       } else {
-        localStorage.removeItem('activeTable');
-        localStorage.removeItem('tableSessionExpiry');
-        setCart([]); // Clear cart
+        handleClearSession();
       }
     }
   }, []);
@@ -62,13 +60,7 @@ function App() {
   useEffect(() => {
     const storedExpiry = localStorage.getItem('tableSessionExpiry');
     if (storedExpiry && Date.now() > Number(storedExpiry)) {
-      localStorage.removeItem('activeTable');
-      localStorage.removeItem('tableSessionExpiry');
-      setActiveTable(null);
-      setTableSessionExpiry(null);
-      setCart([]);
-      setIsCartOpen(false);
-      setIsCheckoutOpen(false);
+      handleClearSession();
     }
   }, [location.pathname]);
 
@@ -171,7 +163,7 @@ function App() {
     setIsCheckoutOpen(false);
     
     setActiveTable(tableId);
-    const expiry = Date.now() + 60 * 60 * 1000; // 60 minutes
+    const expiry = Date.now() + 20 * 60 * 1000; // 20 minutes
     setTableSessionExpiry(expiry);
     
     localStorage.setItem('activeTable', tableId);
