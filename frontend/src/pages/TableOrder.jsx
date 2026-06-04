@@ -139,7 +139,9 @@ function TableOrder({ onSessionStart }) {
   return (
     <section className="section" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh', padding: '120px 20px 80px', background: 'var(--cream-light)' }}>
       <div className="card" style={{ maxWidth: 450, width: '100%', textAlign: 'center', background: '#fff', border: '2px solid var(--cream-dark)', borderRadius: 16, padding: '40px 30px', boxShadow: 'var(--shadow-lg)' }}>
-        <div style={{ fontSize: '4rem', marginBottom: 12 }}>☕</div>
+        <div style={{ width: 80, height: 80, borderRadius: '50%', background: 'var(--cream)', overflow: 'hidden', margin: '0 auto 16px', border: '2px solid var(--cream-dark)', boxShadow: '0 4px 10px rgba(0,0,0,0.05)' }}>
+          <img src="/logo.jpg" alt="Brews & Memories Logo" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+        </div>
         <span style={{ textTransform: 'uppercase', letterSpacing: 2, fontSize: '0.8rem', fontWeight: 800, color: 'var(--green)' }}>Brews &amp; Memories</span>
         <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: '2.2rem', color: 'var(--green)', margin: '8px 0 16px' }}>
           Welcome to <span style={{ color: '#fbbf24' }}>{normalizedTable}</span>
