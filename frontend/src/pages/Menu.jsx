@@ -261,19 +261,36 @@ function Menu({ addToCart, activeTable, endTableSession, cart = [], updateCartQt
             <div className="menu-grid">
               {items.map((item) => (
                 <article key={item.name} className="menu-card" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-                  <div className="menu-card-img" style={{ overflow: 'hidden', position: 'relative' }}>
+                  <div 
+                    className="menu-card-img" 
+                    style={category === 'Cold Beverages' ? { 
+                      overflow: 'hidden', 
+                      position: 'relative',
+                      background: '#ffffff' /* Crisp clean background to blend with card */
+                    } : { 
+                      overflow: 'hidden', 
+                      position: 'relative' 
+                    }}
+                  >
                     {item.image ? (
                       <img 
                         src={item.image} 
                         alt={item.name} 
-                        style={{ 
+                        style={category === 'Cold Beverages' ? { 
+                          width: '100%', 
+                          height: '100%', 
+                          objectFit: 'contain',
+                          padding: '10px', /* Ensure drink occupies ~80% of image height to prevent cropping */
+                          transform: 'scale(1)',
+                          transition: 'transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)'
+                        } : { 
                           width: '100%', 
                           height: '100%', 
                           objectFit: 'cover',
                           transform: 'scale(1.28)', /* Crop closer by scaling up 28% */
                           transition: 'transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)'
                         }} 
-                        className="menu-card-img-el"
+                        className={category === 'Cold Beverages' ? 'menu-card-img-el cold-bev-img' : 'menu-card-img-el'}
                       />
                     ) : (
                       <span style={{ fontSize: '3rem' }}>{item.emoji}</span>

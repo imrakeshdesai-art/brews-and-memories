@@ -657,6 +657,11 @@ button {
   transform: scale(1.36) !important; /* Zoom in slightly more on hover */
 }
 
+/* Minimal hover scale-up for cold beverages so they remain completely visible */
+.menu-card:hover .cold-bev-img {
+  transform: scale(1.05) !important;
+}
+
 .menu-card-img {
   height: 130px;
   background: linear-gradient(135deg, var(--cream), var(--cream-dark));
