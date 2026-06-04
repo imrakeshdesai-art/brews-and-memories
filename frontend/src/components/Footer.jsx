@@ -80,9 +80,13 @@ function Footer({ onReserveClick }) {
         </div>
       </div>
 
-      <div className="footer-bottom">
+      <div className="footer-bottom" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
         <div style={{ fontSize: '0.85rem' }}>
           &copy; {new Date().getFullYear()} Brews &amp; Memories. All rights reserved.
+          <span style={{ margin: '0 8px', opacity: 0.3 }}>|</span>
+          <Link to="/privacy" style={{ color: 'rgba(245,230,200,0.7)', textDecoration: 'underline' }} onMouseEnter={(e) => e.currentTarget.style.color = '#fbbf24'} onMouseLeave={(e) => e.currentTarget.style.color = 'rgba(245,230,200,0.7)'}>Privacy Policy</Link>
+          <span style={{ margin: '0 8px', opacity: 0.3 }}>|</span>
+          <Link to="/terms" style={{ color: 'rgba(245,230,200,0.7)', textDecoration: 'underline' }} onMouseEnter={(e) => e.currentTarget.style.color = '#fbbf24'} onMouseLeave={(e) => e.currentTarget.style.color = 'rgba(245,230,200,0.7)'}>Terms of Service</Link>
         </div>
         <div className="social-links">
           <a href="https://www.instagram.com/brews_and_memories_/" target="_blank" rel="noreferrer" className="social-btn" aria-label="Instagram page">📸</a>

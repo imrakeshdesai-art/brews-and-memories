@@ -15,6 +15,8 @@ const Contact = lazy(() => import('./pages/Contact'));
 const Admin = lazy(() => import('./pages/Admin'));
 const Reserve = lazy(() => import('./pages/Reserve'));
 const TableOrder = lazy(() => import('./pages/TableOrder'));
+const Privacy = lazy(() => import('./pages/Privacy'));
+const Terms = lazy(() => import('./pages/Terms'));
 
 import Footer from './components/Footer';
 import FloatingActions from './components/FloatingActions';
@@ -220,6 +222,8 @@ function App() {
               <Route path="/order" element={<TableOrder />} />
               <Route path="/order/:tableId" element={<TableOrder onSessionStart={handleSessionStart} />} />
               <Route path="/admin" element={<Admin />} />
+              <Route path="/privacy" element={<Privacy />} />
+              <Route path="/terms" element={<Terms />} />
               <Route path="*" element={<Home {...pageProps} />} />
             </Routes>
           </Suspense>
