@@ -69,7 +69,7 @@ app.get('/api/health', (req, res) => {
   res.json({
     status: 'ok',
     mode: 'mongo',
-    version: 'v-dynamic-labels-10',
+    version: 'v-dynamic-labels-11',
     serverTime: new Date().toISOString(),
     envCheck: {
       hasGmailUser: !!process.env.GMAIL_USER,

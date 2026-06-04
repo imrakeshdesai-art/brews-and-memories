@@ -94,18 +94,6 @@ router.post('/', async (req, res) => {
       }).catch((err) => console.error('[Email Customer] Unexpected error:', err.message));
     }
 
-    // 📧 Fire email notification to Cafe Admin/Staff
-    const adminEmail = process.env.ADMIN_EMAIL || 'brewsandmemoriescafe@gmail.com';
-    sendOrderEmail({
-      name:    'Cafe Staff',
-      email:   adminEmail,
-      orderId: newOrder._id,
-      address: newOrder.address,
-      items:   newOrder.items,
-      total:   newOrder.total,
-      payment: newOrder.payment,
-    }).catch((err) => console.error('[Email Admin] Unexpected error:', err.message));
-
   } catch (error) {
     console.error('Order creation error:', error);
     res.status(500).json({ message: 'Could not create order' });
