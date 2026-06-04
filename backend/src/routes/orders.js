@@ -81,16 +81,30 @@ router.post('/', async (req, res) => {
       payment: newOrder.payment,
     }).catch((err) => console.error('[WhatsApp] Unexpected error:', err.message));
 
-    // 📧 Fire email confirmation (non-blocking — never fails the order)
+    // 📧 Fire email confirmation to customer (if provided)
+    if (newOrder.email && newOrder.email.trim()) {
+      sendOrderEmail({
+        name:    newOrder.name,
+        email:   newOrder.email.trim(),
+        orderId: newOrder._id,
+        address: newOrder.address,
+        items:   newOrder.items,
+        total:   newOrder.total,
+        payment: newOrder.payment,
+      }).catch((err) => console.error('[Email Customer] Unexpected error:', err.message));
+    }
+
+    // 📧 Fire email notification to Cafe Admin/Staff
+    const adminEmail = process.env.ADMIN_EMAIL || 'brewsandmemoriescafe@gmail.com';
     sendOrderEmail({
-      name:    newOrder.name,
-      email:   newOrder.email,
+      name:    'Cafe Staff',
+      email:   adminEmail,
       orderId: newOrder._id,
       address: newOrder.address,
       items:   newOrder.items,
       total:   newOrder.total,
       payment: newOrder.payment,
-    }).catch((err) => console.error('[Email] Unexpected error:', err.message));
+    }).catch((err) => console.error('[Email Admin] Unexpected error:', err.message));
 
   } catch (error) {
     console.error('Order creation error:', error);
