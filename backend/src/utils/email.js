@@ -134,10 +134,24 @@ function buildCustomerEmailHTML({ name, items, total, payment, address, orderId 
     body {
       font-family: 'Plus Jakarta Sans', 'Segoe UI', -apple-system, BlinkMacSystemFont, Arial, sans-serif;
     }
+    
+    @media only screen and (max-width: 480px) {
+      .email-wrapper {
+        margin: 10px auto !important;
+        border-radius: 8px !important;
+        width: 100% !important;
+      }
+      .email-body {
+        padding: 16px !important;
+      }
+      .details-box {
+        padding: 16px !important;
+      }
+    }
   </style>
 </head>
 <body style="margin:0;padding:0;background:#f5f0e8;font-family:'Plus Jakarta Sans','Segoe UI',Arial,sans-serif">
-  <div style="max-width:560px;margin:32px auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.10);border:1px solid #e8e2d2">
+  <div class="email-wrapper" style="width:100%;max-width:560px;margin:32px auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.10);border:1px solid #e8e2d2">
 
     <!-- Header -->
     <div style="background:linear-gradient(135deg,#0f3d3e 0%,#185c5d 100%);padding:40px 32px;text-align:center;border-bottom:3px solid #fbbf24">
@@ -150,7 +164,7 @@ function buildCustomerEmailHTML({ name, items, total, payment, address, orderId 
     </div>
 
     <!-- Body -->
-    <div style="padding:32px">
+    <div class="email-body" style="padding:32px">
 
       <p style="color:#2d2d2d;font-size:16px;line-height:1.6;margin:0 0 24px;font-family:'Plus Jakarta Sans', Arial, sans-serif">
         Hi <strong>${name}</strong>! &#x1F44B;<br/><br/>
@@ -158,17 +172,17 @@ function buildCustomerEmailHTML({ name, items, total, payment, address, orderId 
       </p>
 
       <!-- Order Details Box -->
-      <div style="background:#faf8f5;border-radius:14px;padding:24px;margin-bottom:28px;border:1px solid #e8e2d2;box-shadow:inset 0 1px 3px rgba(0,0,0,0.02)">
-        <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse">
+      <div class="details-box" style="background:#faf8f5;border-radius:14px;padding:24px;margin-bottom:28px;border:1px solid #e8e2d2;box-shadow:inset 0 1px 3px rgba(0,0,0,0.02)">
+        <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;table-layout:fixed;width:100%">
           <tr>
-            <td style="padding-bottom:16px;border-bottom:2px dashed #e8e2d2">
+            <td style="padding-bottom:16px;border-bottom:2px dashed #e8e2d2;word-break:break-all;overflow-wrap:break-word">
               <div style="font-size:11px;color:#8e8a7e;letter-spacing:2px;text-transform:uppercase;font-weight:700;margin-bottom:4px">Order Reference</div>
-              <div style="font-size:15px;color:#0f3d3e;font-weight:800;font-family:monospace">${orderId}</div>
+              <div style="font-size:15px;color:#0f3d3e;font-weight:800;font-family:monospace;word-break:break-all;overflow-wrap:break-word">${orderId}</div>
             </td>
           </tr>
           <tr>
             <td style="padding-top:12px">
-              <table width="100%" cellpadding="0" cellspacing="0">
+              <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;table-layout:fixed;width:100%">
                 ${buildItemRows(items)}
                 <tr>
                   <td width="70%" style="padding:18px 0 0;font-size:16px;font-weight:800;color:#0f3d3e;border-top:2px solid #e8e2d2;width:70%">${totalLabel}</td>
