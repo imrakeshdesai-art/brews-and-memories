@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import { useToast } from './ToastProvider';
 
@@ -9,7 +10,38 @@ function CheckoutModal({ open, cart, total, payment, setPayment, onClose, onClea
   const [address, setAddress] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [orderSuccess, setOrderSuccess] = useState(null);
+  const [countdown, setCountdown] = useState(5);
   const toast = useToast();
+  const navigate = useNavigate();
+
+  const handleClose = () => {
+    onClose();
+    if (orderSuccess) {
+      if (onClearSession) onClearSession();
+      navigate('/');
+    }
+  };
+
+  // Handle countdown on order success
+  useEffect(() => {
+    let timer;
+    if (orderSuccess) {
+      setCountdown(5);
+      timer = setInterval(() => {
+        setCountdown((prev) => {
+          if (prev <= 1) {
+            clearInterval(timer);
+            handleClose();
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+    return () => {
+      if (timer) clearInterval(timer);
+    };
+  }, [orderSuccess]);
 
   useEffect(() => {
     if (!open) {
@@ -86,9 +118,6 @@ function CheckoutModal({ open, cart, total, payment, setPayment, onClose, onClea
     }
   };
 
-  const handleClose = () => {
-    onClose();
-  };
 
   if (!open) return null;
 
@@ -106,10 +135,13 @@ function CheckoutModal({ open, cart, total, payment, setPayment, onClose, onClea
             <div className="order-success">
               <div className="success-icon">✅</div>
               <div className="success-title">Thank you, {orderSuccess.name}!</div>
-              <p style={{ color: 'var(--text-light)', lineHeight: 1.7, marginBottom: 20 }}>
-                Your order has been received and is now in the kitchen. Track it from admin dashboard after login.
+              <p style={{ color: 'var(--text-light)', lineHeight: 1.7, marginBottom: 16 }}>
+                Your order has been received and is now in the kitchen.
               </p>
-              <div className="order-card">
+              <div style={{ margin: '15px 0', padding: '12px', background: '#ecfdf5', color: '#047857', borderRadius: '8px', fontWeight: 'bold', fontSize: '0.9rem', textAlign: 'center', border: '1px solid #a7f3d0' }}>
+                🔄 Deactivating table session and returning to homepage in {countdown}s...
+              </div>
+              <div className="order-card" style={{ marginBottom: 20 }}>
                 <div>
                   <strong>Order ID:</strong> {orderSuccess._id}
                 </div>
@@ -124,7 +156,7 @@ function CheckoutModal({ open, cart, total, payment, setPayment, onClose, onClea
                 </div>
               </div>
               <button className="btn-primary" type="button" onClick={handleClose}>
-                Close
+                Go to Homepage
               </button>
             </div>
           ) : (

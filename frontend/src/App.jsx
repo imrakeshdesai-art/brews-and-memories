@@ -156,6 +156,7 @@ function App() {
   const handleClearSession = () => {
     localStorage.removeItem('activeTable');
     localStorage.removeItem('tableSessionExpiry');
+    localStorage.removeItem('tableSessionToken');
     setActiveTable(null);
     setTableSessionExpiry(null);
     setCart([]);
@@ -163,7 +164,7 @@ function App() {
     setIsCheckoutOpen(false);
   };
 
-  const handleSessionStart = (tableId) => {
+  const handleSessionStart = (tableId, token) => {
     // Clear old cart and checkout states immediately to prevent bleeding data
     setCart([]);
     setIsCartOpen(false);
@@ -175,6 +176,9 @@ function App() {
     
     localStorage.setItem('activeTable', tableId);
     localStorage.setItem('tableSessionExpiry', String(expiry));
+    if (token) {
+      localStorage.setItem('tableSessionToken', token);
+    }
   };
 
   const handleOpenReserve = useCallback(() => {

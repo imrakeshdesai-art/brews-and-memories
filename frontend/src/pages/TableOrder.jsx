@@ -1,5 +1,5 @@
-import { useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useToast } from '../components/ToastProvider';
 
 const TOTAL_TABLES = Number(import.meta.env.VITE_TOTAL_TABLES) || 5;
@@ -11,7 +11,11 @@ const VALID_TABLES = Array.from(
 function TableOrder({ onSessionStart }) {
   const { tableId } = useParams();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const toast = useToast();
+
+  const queryToken = searchParams.get('token');
+  const [isSessionBlocked, setIsSessionBlocked] = useState(false);
 
   const lowerTableId = tableId ? tableId.trim().toLowerCase() : '';
   const isValid = VALID_TABLES.includes(lowerTableId);
@@ -24,12 +28,36 @@ function TableOrder({ onSessionStart }) {
         .join(' ')
     : '';
 
-  // Automatically activate table session on mount if valid
+  // Handle device session binding validation
   useEffect(() => {
-    if (isValid && onSessionStart && normalizedTable) {
-      onSessionStart(normalizedTable);
+    if (!isValid || !normalizedTable) return;
+
+    const storedTable = localStorage.getItem('activeTable');
+    const storedToken = localStorage.getItem('tableSessionToken');
+    const storedExpiry = localStorage.getItem('tableSessionExpiry');
+    const isExpired = storedExpiry ? Date.now() > Number(storedExpiry) : true;
+
+    if (queryToken) {
+      // Check if token in URL matches the browser's stored token for this table
+      const isMatch = storedToken === queryToken && storedTable === normalizedTable && !isExpired;
+      if (!isMatch) {
+        setIsSessionBlocked(true);
+      } else {
+        setIsSessionBlocked(false);
+        if (onSessionStart) {
+          onSessionStart(normalizedTable, queryToken);
+        }
+      }
+    } else {
+      // Fresh scan: generate new token and replace history with tokenized URL
+      const freshToken = Math.random().toString(36).substring(2, 15) + Date.now().toString(36);
+      if (onSessionStart) {
+        onSessionStart(normalizedTable, freshToken);
+      }
+      setIsSessionBlocked(false);
+      navigate(`/order/${lowerTableId}?token=${freshToken}`, { replace: true });
     }
-  }, [isValid, normalizedTable, onSessionStart]);
+  }, [isValid, normalizedTable, queryToken, lowerTableId, navigate, onSessionStart]);
 
   const handleStartOrdering = () => {
     toast(`🟢 Table session activated for ${normalizedTable}!`);
@@ -76,6 +104,32 @@ function TableOrder({ onSessionStart }) {
             style={{ width: '100%', padding: '14px', borderRadius: 8, borderColor: 'var(--red)', color: 'var(--red)' }}
           >
             🏠 Back to Home Page
+          </button>
+        </div>
+      </section>
+    );
+  }
+
+  // 3. Block screen for shared links
+  if (isSessionBlocked) {
+    return (
+      <section className="section" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh', padding: '120px 20px 80px', background: 'var(--cream-light)' }}>
+        <div className="card" style={{ maxWidth: 450, width: '100%', textAlign: 'center', background: '#fff', border: '2px solid var(--red)', borderRadius: 16, padding: '40px 30px', boxShadow: 'var(--shadow-lg)' }}>
+          <div style={{ fontSize: '4rem', marginBottom: 20 }}>🔒</div>
+          <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: '2rem', color: 'var(--red)', margin: '0 0 16px' }}>Shared Link Blocked</h2>
+          <div style={{ width: 60, height: 3, background: 'var(--red)', margin: '0 auto 20px' }} />
+          <p style={{ color: 'var(--text-light)', lineHeight: 1.7, fontSize: '0.95rem', marginBottom: 20 }}>
+            For security and to prevent remote ordering, this session is bound to the specific device that physically scanned the QR code.
+          </p>
+          <p style={{ color: 'var(--text-light)', lineHeight: 1.7, fontSize: '0.95rem', marginBottom: 24, fontWeight: 'bold' }}>
+            Please scan the physical QR code directly at your table to start ordering.
+          </p>
+          <button 
+            className="btn-outline" 
+            onClick={() => navigate('/')}
+            style={{ width: '100%', padding: '14px', borderRadius: 8, borderColor: 'var(--red)', color: 'var(--red)', fontWeight: 'bold' }}
+          >
+            🏠 Go to Homepage
           </button>
         </div>
       </section>
