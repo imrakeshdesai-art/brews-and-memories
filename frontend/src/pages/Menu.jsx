@@ -261,7 +261,17 @@ function Menu({ addToCart, activeTable, endTableSession, cart = [], updateCartQt
             <div className="menu-grid">
               {items.map((item) => (
                 <article key={item.name} className="menu-card" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-                  <div className="menu-card-img" style={{ overflow: 'hidden', position: 'relative' }}>
+                  <div 
+                    className="menu-card-img" 
+                    style={category === 'Cold Beverages' ? { 
+                      overflow: 'hidden', 
+                      position: 'relative',
+                      height: '200px'
+                    } : { 
+                      overflow: 'hidden', 
+                      position: 'relative' 
+                    }}
+                  >
                     {item.image ? (
                       <img 
                         src={item.image} 
@@ -270,9 +280,9 @@ function Menu({ addToCart, activeTable, endTableSession, cart = [], updateCartQt
                           width: '100%', 
                           height: '100%', 
                           objectFit: 'cover',
-                          objectPosition: 'top',
+                          objectPosition: 'center 40%',
                           transform: 'scale(1)',
-                          transformOrigin: 'top center',
+                          transformOrigin: 'center center',
                           transition: 'transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)'
                         } : { 
                           width: '100%', 
