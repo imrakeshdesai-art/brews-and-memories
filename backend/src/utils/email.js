@@ -107,10 +107,10 @@ function buildItemRows(items) {
     const variant = item.variant ? ` <span style="color:#777;font-size:13px;font-weight:normal">(${item.variant})</span>` : '';
     return `
       <tr>
-        <td style="padding:12px 0;border-bottom:1px solid #e8e2d2;font-size:15px;color:#2d2d2d;font-weight:500">
+        <td width="70%" style="padding:12px 0;border-bottom:1px solid #e8e2d2;font-size:15px;color:#2d2d2d;font-weight:500;width:70%">
           ${item.name}${variant} <span style="color:#777;font-size:14px;font-weight:normal">&times; ${item.qty}</span>
         </td>
-        <td style="padding:12px 0;border-bottom:1px solid #e8e2d2;text-align:right;font-weight:700;color:#0f3d3e;font-size:15px">
+        <td width="30%" style="padding:12px 0;border-bottom:1px solid #e8e2d2;text-align:right;font-weight:700;color:#0f3d3e;font-size:15px;width:30%;white-space:nowrap">
           &#x20B9;${item.price * item.qty}
         </td>
       </tr>`;
@@ -171,8 +171,8 @@ function buildCustomerEmailHTML({ name, items, total, payment, address, orderId 
               <table width="100%" cellpadding="0" cellspacing="0">
                 ${buildItemRows(items)}
                 <tr>
-                  <td style="padding:18px 0 0;font-size:16px;font-weight:800;color:#0f3d3e;border-top:2px solid #e8e2d2">${totalLabel}</td>
-                  <td style="padding:18px 0 0;text-align:right;font-size:22px;font-weight:900;color:#0f3d3e;border-top:2px solid #e8e2d2">&#x20B9;${total}</td>
+                  <td width="70%" style="padding:18px 0 0;font-size:16px;font-weight:800;color:#0f3d3e;border-top:2px solid #e8e2d2;width:70%">${totalLabel}</td>
+                  <td width="30%" style="padding:18px 0 0;text-align:right;font-size:22px;font-weight:900;color:#0f3d3e;border-top:2px solid #e8e2d2;width:30%;white-space:nowrap">&#x20B9;${total}</td>
                 </tr>
               </table>
             </td>
