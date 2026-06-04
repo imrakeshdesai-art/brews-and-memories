@@ -51,7 +51,8 @@ function sendOpenWAMessage(url, apiKey, sessionId, toPhone, text) {
         headers: {
           'Content-Type': 'application/json',
           'Content-Length': Buffer.byteLength(postData),
-          'X-API-Key': apiKey
+          'X-API-Key': apiKey,
+          'bypass-tunnel-reminder': 'true'
         },
         timeout: 10000 // 10 seconds
       };
