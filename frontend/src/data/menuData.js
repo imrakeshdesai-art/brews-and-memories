@@ -55,49 +55,57 @@ export const menuData = {
       name: 'Cold Coffee',
       price: 99,
       emoji: '🥤',
-      desc: 'Chilled and refreshing cold coffee'
+      desc: 'Chilled and refreshing cold coffee',
+      image: '/images/menu/items/Cold Coffee.webp'
     },
     {
       name: 'Chocolate Cold Coffee',
       price: 109,
       emoji: '🥤',
-      desc: 'Chilled and refreshing chocolate cold coffee'
+      desc: 'Chilled and refreshing chocolate cold coffee',
+      image: '/images/menu/items/Chocolate Cold Coffee.png'
     },
     {
       name: 'Hazelnut Cold Coffee',
       price: 109,
       emoji: '🥤',
-      desc: 'Chilled and refreshing hazelnut cold coffee'
+      desc: 'Chilled and refreshing hazelnut cold coffee',
+      image: '/images/menu/items/Hazelnut Cold Coffee.png'
     },
     {
       name: 'Cold Coffee With Vanilla Ice Cream',
       price: 139,
       emoji: '🥤',
-      desc: 'Chilled and refreshing cold coffee with vanilla ice cream'
+      desc: 'Chilled and refreshing cold coffee with vanilla ice cream',
+      image: '/images/menu/items/Cold Coffee With Vanilla Ice Cream.png'
     },
     {
       name: 'Mint Mojito',
       price: 89,
       emoji: '🍹',
-      desc: 'Chilled and refreshing mint mojito'
+      desc: 'Chilled and refreshing mint mojito',
+      image: '/images/menu/items/Mint Mojito.png'
     },
     {
       name: 'Blue Lagoon',
       price: 99,
       emoji: '🍹',
-      desc: 'Chilled and refreshing blue lagoon'
+      desc: 'Chilled and refreshing blue lagoon',
+      image: '/images/menu/items/Blue Lagoon.png'
     },
     {
       name: 'Lemon Soda',
       price: 69,
       emoji: '🍹',
-      desc: 'Chilled and refreshing lemon soda'
+      desc: 'Chilled and refreshing lemon soda',
+      image: '/images/menu/items/Lemon Soda.png'
     },
     {
       name: 'Butterscotch Mojito',
       price: 99,
       emoji: '🍹',
-      desc: 'Chilled and refreshing butterscotch mojito'
+      desc: 'Chilled and refreshing butterscotch mojito',
+      image: '/images/menu/items/Butterscotch Mojito.png'
     },
   ],
   'Milk Shakes': [
