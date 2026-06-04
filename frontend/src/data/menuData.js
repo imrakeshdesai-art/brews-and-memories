@@ -4,43 +4,50 @@ export const menuData = {
       name: 'Masala Tea',
       price: 30,
       emoji: '🍵',
-      desc: 'Warm and soothing masala tea'
+      desc: 'Warm and soothing masala tea',
+      image: '/images/menu/items/Masala Tea.png'
     },
     {
       name: 'Boost',
       price: 30,
       emoji: '☕',
-      desc: 'Warm and soothing boost'
+      desc: 'Warm and soothing boost',
+      image: '/images/menu/items/Boost.png'
     },
     {
       name: 'Bournvita',
       price: 30,
       emoji: '☕',
-      desc: 'Warm and soothing bournvita'
+      desc: 'Warm and soothing bournvita',
+      image: '/images/menu/items/Bournvita.png'
     },
     {
       name: 'Ginger Tea',
       price: 40,
       emoji: '🍵',
-      desc: 'Warm and soothing ginger tea'
+      desc: 'Warm and soothing ginger tea',
+      image: '/images/menu/items/Ginger Tea.png'
     },
     {
       name: 'Ginger Lemon Tea',
       price: 50,
       emoji: '🍵',
-      desc: 'Warm and soothing ginger lemon tea'
+      desc: 'Warm and soothing ginger lemon tea',
+      image: '/images/menu/items/Ginger lemon tea.jpg'
     },
     {
       name: 'Green Tea',
       price: 40,
       emoji: '🍵',
-      desc: 'Warm and soothing green tea'
+      desc: 'Warm and soothing green tea',
+      image: '/images/menu/items/Green Tea.png'
     },
     {
       name: 'Normal Hot Coffee',
       price: 30,
       emoji: '☕',
-      desc: 'Warm and soothing normal hot coffee'
+      desc: 'Warm and soothing normal hot coffee',
+      image: '/images/menu/items/Normal Hot Coffee.png'
     },
   ],
   'Cold Beverages': [
