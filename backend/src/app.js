@@ -69,13 +69,16 @@ app.get('/api/health', (req, res) => {
   res.json({
     status: 'ok',
     mode: 'mongo',
-    version: 'v-dynamic-labels-11',
+    version: 'v-dynamic-labels-12',
     serverTime: new Date().toISOString(),
     envCheck: {
       hasGmailUser: !!process.env.GMAIL_USER,
       hasGmailPass: !!process.env.GMAIL_APP_PASS,
       hasGmailProxyUrl: !!(process.env.GMAIL_PROXY_URL || process.env.GMAIL_PROXY_URI),
       hasAdminEmail: !!process.env.ADMIN_EMAIL,
+      hasOpenWaUrl: !!process.env.OPENWA_URL,
+      hasOpenWaKey: !!process.env.OPENWA_API_KEY,
+      hasOpenWaSessionId: !!process.env.OPENWA_SESSION_ID,
     }
   });
 });
