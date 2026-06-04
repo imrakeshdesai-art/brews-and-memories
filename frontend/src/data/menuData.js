@@ -33,7 +33,7 @@ export const menuData = {
       price: 50,
       emoji: '🍵',
       desc: 'Warm and soothing ginger lemon tea',
-      image: '/images/menu/items/Ginger lemon tea.jpg'
+      image: '/images/menu/items/Ginger lemon tea.png'
     },
     {
       name: 'Green Tea',
