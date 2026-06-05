@@ -263,7 +263,7 @@ function Menu({ addToCart, activeTable, endTableSession, cart = [], updateCartQt
                 <article key={item.name} className="menu-card" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
                   <div 
                     className="menu-card-img" 
-                    style={category === 'Cold Beverages' ? { 
+                    style={(category === 'Cold Beverages' || category === 'Milk Shakes') ? { 
                       overflow: 'hidden', 
                       position: 'relative',
                       height: '200px'
@@ -276,7 +276,7 @@ function Menu({ addToCart, activeTable, endTableSession, cart = [], updateCartQt
                       <img 
                         src={item.image} 
                         alt={item.name} 
-                        style={category === 'Cold Beverages' ? { 
+                        style={(category === 'Cold Beverages' || category === 'Milk Shakes') ? { 
                           width: '100%', 
                           height: '100%', 
                           objectFit: 'cover',
@@ -291,7 +291,7 @@ function Menu({ addToCart, activeTable, endTableSession, cart = [], updateCartQt
                           transform: 'scale(1.28)', /* Crop closer by scaling up 28% */
                           transition: 'transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)'
                         }} 
-                        className={category === 'Cold Beverages' ? 'menu-card-img-el cold-bev-img' : 'menu-card-img-el'}
+                        className={(category === 'Cold Beverages' || category === 'Milk Shakes') ? 'menu-card-img-el cold-bev-img' : 'menu-card-img-el'}
                       />
                     ) : (
                       <span style={{ fontSize: '3rem' }}>{item.emoji}</span>

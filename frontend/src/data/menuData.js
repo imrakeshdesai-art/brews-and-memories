@@ -113,56 +113,65 @@ export const menuData = {
       name: 'Vanilla Milk Shake',
       price: 109,
       emoji: '🥛',
-      desc: 'Creamy and thick vanilla milk shake'
+      desc: 'Creamy and thick vanilla milk shake',
+      image: '/images/menu/items/Vanilla Milk Shake.png'
     },
     {
       name: 'Strawberry Milkshake',
       price: 119,
       emoji: '🍓',
-      desc: 'Creamy and thick strawberry milkshake'
+      desc: 'Creamy and thick strawberry milkshake',
+      image: '/images/menu/items/Strawberry Milkshake.png'
     },
     {
       name: 'Butterscotch Milkshake',
       price: 119,
       emoji: '🥛',
-      desc: 'Creamy and thick butterscotch milkshake'
+      desc: 'Creamy and thick butterscotch milkshake',
+      image: '/images/menu/items/Butterscotch Milkshake.png'
     },
     {
       name: 'Mango Milk Shake',
       price: 119,
       emoji: '🥭',
-      desc: 'Creamy and thick mango milk shake'
+      desc: 'Creamy and thick mango milk shake',
+      image: '/images/menu/items/Mango Milk Shake.png'
     },
     {
       name: 'Chocolate Milk Shake',
       price: 139,
       emoji: '🍫',
-      desc: 'Creamy and thick chocolate milk shake'
+      desc: 'Creamy and thick chocolate milk shake',
+      image: '/images/menu/items/Chocolate Milk Shake.png'
     },
     {
       name: 'Orange Milk Shake',
       price: 119,
       emoji: '🍊',
-      desc: 'Creamy and thick orange milk shake'
+      desc: 'Creamy and thick orange milk shake',
+      image: '/images/menu/items/Orange Milk Shake.png'
     },
     {
       name: 'Banana Milk Shake',
       price: 119,
       emoji: '🍌',
-      desc: 'Creamy and thick banana milk shake'
+      desc: 'Creamy and thick banana milk shake',
+      image: '/images/menu/items/Banana Milk Shake.png'
     },
     {
       name: 'Oreo Milk Shake',
       price: 119,
       emoji: '🍪',
       desc: 'Creamy and thick oreo milk shake',
-      badge: 'CUSTOMER FAVORITE'
+      badge: 'CUSTOMER FAVORITE',
+      image: '/images/menu/items/Oreo Milk Shake.png'
     },
     {
       name: 'Kit Kat Milk Shake',
       price: 119,
       emoji: '🥛',
-      desc: 'Creamy and thick kit kat milk shake'
+      desc: 'Creamy and thick kit kat milk shake',
+      image: '/images/menu/items/Kit Kat Milk Shake.png'
     },
   ],
   'Pizza': [
