@@ -32,6 +32,9 @@ function NavBar({ cartCount, onCartClick, activeTable, onReserveClick }) {
         <NavLink to="/contact" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
           Contact
         </NavLink>
+        <NavLink to="/admin" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
+          Staff Login
+        </NavLink>
         <button 
           type="button" 
           onClick={onReserveClick} 
@@ -94,6 +97,9 @@ function NavBar({ cartCount, onCartClick, activeTable, onReserveClick }) {
         </NavLink>
         <NavLink to="/contact" className="nav-link" onClick={() => setMenuOpen(false)}>
           📍 Contact
+        </NavLink>
+        <NavLink to="/admin" className="nav-link" onClick={() => setMenuOpen(false)}>
+          🔐 Staff Login
         </NavLink>
         <button 
           type="button" 

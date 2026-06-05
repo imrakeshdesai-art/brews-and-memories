@@ -8,7 +8,7 @@ const FEATURED_CATEGORIES = [
   { image: '/HotCoffee.png', label: 'Hot Coffee', category: 'Beverages' },
   { image: '/Milkshake.png', label: 'Milkshakes', category: 'Milk Shakes' },
   { image: '/Tea & Beverages.png', label: 'Tea & Beverages', category: 'Beverages' },
-  { image: '/Tandoori Paneer Pizza.png', label: 'Pizzas', category: 'Pizza' },
+  { image: '/Tandoori Paneer Pizza.png', label: 'Pizzas', category: 'Wood-Fired Pizzas' },
   { image: '/images/menu/burger.png', label: 'Burgers', category: 'Burgers' },
   { image: '/Veg Club Sandwich.png', label: 'Sandwiches', category: 'Sandwiches' },
   { image: '/Maggie.png', label: 'Maggi', category: 'Maggi' },
@@ -25,7 +25,7 @@ const FAVORITES_CONFIG = [
     desc: 'Chilled and refreshing specialty cold coffee - creamy, rich, and Vijayapura\'s most popular drink.'
   },
   {
-    category: 'Pizza',
+    category: 'Wood-Fired Pizzas',
     name: 'Tandoori Paneer Pizza',
     badge: 'Most Ordered',
     image: '/Tandoori Paneer Pizza.png',
@@ -836,6 +836,9 @@ function Home({ addToCart, openReserve }) {
             {[
               { name: 'Rahul M.', initials: 'RM', rating: 5, date: '2 weeks ago', text: 'Great ambiance, tasty brews, and chill vibes. Perfect spot to hang out with friends. The cold coffee is absolutely amazing!' },
               { name: 'Priya S.', initials: 'PS', rating: 5, date: '1 month ago', text: 'Food is very delicious and highly recommended. The paneer pizza was absolutely loaded with toppings. Will definitely come back!' },
+              { name: 'Govindraj P.', initials: 'GP', rating: 5, date: '4 months ago', text: 'Best place... the spot! 😊 Great ambiance, tasty brews, and chill vibes. You and your squad will have a blast there!' },
+              { name: 'Prajwal M.', initials: 'PM', rating: 5, date: '4 months ago', text: 'The food here is very delicious and I highly recommend to visit and enjoy food.' },
+              { name: 'Sagar L.', initials: 'SL', rating: 5, date: '22 hours ago', text: 'Good taste and nice atmosphere. Cozy place to dine in!' },
               { name: 'Sneha P.', initials: 'SP', rating: 5, date: '2 months ago', text: 'Best café in Vijayapura! The ambiance is so cozy and the food is consistently good. I come here almost every weekend.' }
             ].map((review) => (
               <div 

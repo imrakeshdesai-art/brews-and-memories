@@ -1666,6 +1666,7 @@ button {
 }
 
 .float-btn.whatsapp { background-color: #25d366; }
+.float-btn.instagram { background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%) !important; }
 .float-btn.call { background-color: #0f3d3e; }
 .float-btn.directions { background-color: #fbbf24; color: #2c1810; }
 
@@ -1702,7 +1703,18 @@ button {
 
 @media (max-width: 768px) {
   .floating-actions-desktop {
-    display: none;
+    display: flex !important;
+    bottom: 84px !important;
+    right: 16px !important;
+    gap: 8px !important;
+  }
+  .floating-actions-desktop .float-btn {
+    width: 42px !important;
+    height: 42px !important;
+  }
+  .floating-actions-desktop .float-btn svg {
+    width: 18px !important;
+    height: 18px !important;
   }
   .floating-actions-mobile {
     display: grid;

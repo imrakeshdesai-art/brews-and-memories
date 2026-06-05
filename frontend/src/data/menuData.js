@@ -174,7 +174,7 @@ export const menuData = {
       image: '/images/menu/items/Kit Kat Milk Shake.png'
     },
   ],
-  'Pizza': [
+  'Wood-Fired Pizzas': [
     {
       name: 'Just Cheese Pizza',
       priceS: 99,
@@ -182,7 +182,7 @@ export const menuData = {
       priceL: 199,
       multi: true,
       emoji: '🍕',
-      desc: 'Simple melted cheese pizza on a fresh crust'
+      desc: 'Simple melted mozzarella cheese on our signature fresh wood-fired crust'
     },
     {
       name: 'Peri Peri Paneer Pizza',
@@ -191,7 +191,7 @@ export const menuData = {
       priceL: 249,
       multi: true,
       emoji: '🌶️',
-      desc: 'Spicy peri peri paneer with capsicum and onion'
+      desc: 'Spicy peri-peri paneer with capsicum and onion on a hot wood-fired base'
     },
     {
       name: 'Tandoori Paneer Pizza',
@@ -200,7 +200,7 @@ export const menuData = {
       priceL: 219,
       multi: true,
       emoji: '🍕',
-      desc: 'Spicy tandoori paneer with capsicum and onion'
+      desc: 'Spicy tandoori paneer with capsicum and onion baked in a wood-fired oven'
     },
     {
       name: 'American Veggies Hot Pizza',
@@ -209,7 +209,7 @@ export const menuData = {
       priceL: 239,
       multi: true,
       emoji: '🍕',
-      desc: 'Loaded with red, yellow, and green bell peppers'
+      desc: 'Loaded with bell peppers, onions, and jalapenos on a rustic wood-fired base'
     },
     {
       name: 'Corn Pizza',
@@ -218,7 +218,7 @@ export const menuData = {
       priceL: 209,
       multi: true,
       emoji: '🌽',
-      desc: 'Golden sweet corn with mozzarella cheese'
+      desc: 'Sweet golden corn and bubbling mozzarella cheese baked in a wood-fired oven'
     },
     {
       name: 'King Of Margherita',
@@ -227,7 +227,7 @@ export const menuData = {
       priceL: 209,
       multi: true,
       emoji: '🍕',
-      desc: 'Double mozzarella cheese and juicy tomato slices'
+      desc: 'Double mozzarella cheese and fresh tomato slices on a wood-fired crust'
     },
     {
       name: 'Peppy Paneer Pizza',
@@ -236,7 +236,7 @@ export const menuData = {
       priceL: 229,
       multi: true,
       emoji: '🍕',
-      desc: 'Paneer, capsicum, and red paprika'
+      desc: 'Paneer cubes, fresh capsicum, and red paprika on a crispy wood-fired crust'
     },
     {
       name: 'Veg Super Pizza',
@@ -245,7 +245,7 @@ export const menuData = {
       priceL: 229,
       multi: true,
       emoji: '🌽',
-      desc: 'Capsicum, onion, baby corn, and sweet corn'
+      desc: 'Capsicum, onion, baby corn, and sweet corn baked to a crisp in a wood-fired oven'
     },
     {
       name: 'Paneer Tikka Pizza',
@@ -254,7 +254,7 @@ export const menuData = {
       priceL: 199,
       multi: true,
       emoji: '🍕',
-      desc: 'Paneer tikka pieces with capsicum and onion'
+      desc: 'Authentic paneer tikka pieces with capsicum and onion on a fresh wood-fired base'
     },
     {
       name: 'Veg Delight Pizza',
@@ -263,7 +263,7 @@ export const menuData = {
       priceL: 239,
       multi: true,
       emoji: '🍕',
-      desc: 'Onion, capsicum, tomato, and mushroom'
+      desc: 'Onion, capsicum, tomato, and fresh mushroom on our signature wood-fired base'
     },
     {
       name: 'Italian Treat Pizza',
@@ -272,7 +272,7 @@ export const menuData = {
       priceL: 229,
       multi: true,
       emoji: '🍕',
-      desc: 'Onion, tandoori paneer, jalapeno, and green chillies'
+      desc: 'Onion, tandoori paneer, spicy jalapeno, and green chillies on a wood-fired crust'
     },
     {
       name: "Doctor's Pizza",
@@ -281,7 +281,7 @@ export const menuData = {
       priceL: 250,
       multi: true,
       emoji: '🌽',
-      desc: 'Green peas, tomato, chilly, jalapeno, baby corn, capsicum, onion, and olives'
+      desc: 'Green peas, tomato, chilly, jalapeno, baby corn, capsicum, onion, and olives on a wood-fired base'
     },
     {
       name: 'Spanish Veggies Pizza',
@@ -290,7 +290,7 @@ export const menuData = {
       priceL: 250,
       multi: true,
       emoji: '🌽',
-      desc: 'Onion, capsicum, baby corn, sweet corn, tomato, paneer, olives, and mushrooms'
+      desc: 'Onion, capsicum, baby corn, sweet corn, paneer, olives, and mushrooms on a wood-fired crust'
     },
     {
       name: 'Mexican Pizza',
@@ -299,7 +299,7 @@ export const menuData = {
       priceL: 249,
       multi: true,
       emoji: '🌽',
-      desc: 'Chilli, sweet corn, tomato, and black olives'
+      desc: 'Chilli, sweet corn, tomato, and black olives baked in a rustic wood-fired oven'
     },
     {
       name: 'BBQ Paneer Pizza',
@@ -308,7 +308,7 @@ export const menuData = {
       priceL: 220,
       multi: true,
       emoji: '🍕',
-      desc: 'Capsicum, onion, and BBQ paneer'
+      desc: 'Smoky BBQ paneer, crisp capsicum, and onions on a rustic wood-fired crust'
     },
   ],
   'Burgers': [
