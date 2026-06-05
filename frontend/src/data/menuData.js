@@ -462,37 +462,43 @@ export const menuData = {
       name: 'Schezwan Fries',
       price: 129,
       emoji: '🍟',
-      desc: 'Freshly prepared schezwan fries'
+      desc: 'Freshly prepared schezwan fries',
+      image: '/images/menu/items/Schezwan Fries.png'
     },
     {
       name: 'Potato Wedges',
       price: 119,
       emoji: '🍟',
-      desc: 'Freshly prepared potato wedges'
+      desc: 'Freshly prepared potato wedges',
+      image: '/images/menu/items/Potato Wedges.png'
     },
     {
       name: 'Garlic Pops',
       price: 99,
       emoji: '🧄',
-      desc: 'Freshly prepared garlic pops'
+      desc: 'Freshly prepared garlic pops',
+      image: '/images/menu/items/Garlic Pops.png'
     },
     {
       name: 'Onion Rings',
       price: 99,
       emoji: '🍟',
-      desc: 'Freshly prepared onion rings'
+      desc: 'Freshly prepared onion rings',
+      image: '/images/menu/items/Onion Rings.png'
     },
     {
       name: 'Smileys',
       price: 99,
       emoji: '🍟',
-      desc: 'Freshly prepared smileys'
+      desc: 'Freshly prepared smileys',
+      image: '/images/menu/items/Smileys.png'
     },
     {
       name: 'Honey Chilli Potato',
       price: 129,
       emoji: '🥔',
-      desc: 'Crispy deep-fried potato fingers tossed in a sweet, spicy, and tangy honey chilli sauce.'
+      desc: 'Crispy deep-fried potato fingers tossed in a sweet, spicy, and tangy honey chilli sauce.',
+      image: '/images/menu/items/Honey Chilli Potato.png'
     },
   ],
   'Rolls': [
