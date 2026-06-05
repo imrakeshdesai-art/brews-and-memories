@@ -1,7 +1,7 @@
 function Contact() {
   const phone = '+919945446137';
   const whatsappUrl = 'https://wa.me/919945446137?text=Hello%20Brews%20%26%20Memories%2C%20I%20would%20like%20to%20inquire!';
-  const directionsUrl = 'https://maps.app.goo.gl/2fYwvrLgfTP9ytBW7?g_st=ac';
+  const directionsUrl = 'https://www.google.com/maps/place/Brews+and+Memories+cafe/@16.8637369,75.7133426,17z/data=!3m1!4b1!4m6!3m5!1s0x3bc65571521cbf25:0x8c034c8193bdc099!8m2!3d16.8637369!4d75.7159176';
 
   return (
     <section className="section" id="contact" style={{ padding: '80px 20px' }}>
@@ -19,9 +19,9 @@ function Contact() {
           <div>
             <div className="contact-label" style={{ fontWeight: 700, fontSize: '1.1rem', color: 'var(--green)', marginBottom: 6 }}>Address</div>
             <div className="contact-value" style={{ color: 'var(--text-light)', lineHeight: 1.6, fontSize: '0.92rem' }}>
-              B M Patil Circle, Ring Rd,<br />
-              Solapur Bypass, Vijayapura,<br />
-              Karnataka 586102, India
+              Brews & Memories cafe<br />
+              B M Patil circle, Ring Rd, Adarsh Nagar,<br />
+              solapur road, Vijayapura, Karnataka 586102
             </div>
             <div style={{ marginTop: 14 }}>
               <a 
@@ -98,7 +98,7 @@ function Contact() {
         <div className="map-frame" style={{ borderRadius: 14, overflow: 'hidden', border: '2px solid var(--cream-dark)', boxShadow: 'var(--shadow)', marginBottom: 24 }}>
           <iframe
             title="Brews & Memories Café Location B M Patil Circle Vijayapura"
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3821.5583151834246!2d75.70057147597148!3d16.823621218768007!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bc5da002e21ca6b%3A0x5e0f7227d8db546!2sBrews%20%26%20Memories!5e0!3m2!1sen!2sin!4v1717000000000"
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3818.245682380596!2d75.71334267461603!3d16.863736917680278!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bc65571521cbf25%3A0x8c034c8193bdc099!2sBrews%20and%20Memories%20cafe!5e0!3m2!1sen!2sus!4v1780667200850!5m2!1sen!2sus"
             width="100%"
             height="350"
             style={{ border: 0, display: 'block' }}

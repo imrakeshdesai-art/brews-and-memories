@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import api from '../services/api';
 
 function Reserve() {
   const [name, setName] = useState('');
@@ -11,7 +12,7 @@ function Reserve() {
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!name.trim() || !phone.trim() || !date || !time) {
       setError('Please fill in all required fields.');
@@ -27,11 +28,21 @@ function Reserve() {
     setIsSubmitting(true);
     setError('');
 
-    // Simulate async submission feedback (e.g. 1000ms delay) to prevent double clicks and visual CLS
-    setTimeout(() => {
+    try {
+      await api.post('/reservations', {
+        name: name.trim(),
+        phone: cleanedPhone,
+        guests: Number(guests),
+        date,
+        time,
+        notes
+      });
       setIsSubmitting(false);
       setSuccess(true);
-    }, 1000);
+    } catch (err) {
+      setIsSubmitting(false);
+      setError(err.response?.data?.message || 'Could not submit reservation. Please try again.');
+    }
   };
 
   return (

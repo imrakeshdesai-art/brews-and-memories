@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import api from '../services/api';
 
 function ReservationModal({ open, onClose }) {
   const [name, setName] = useState('');
@@ -79,7 +80,7 @@ function ReservationModal({ open, onClose }) {
     };
   }, [open, onClose]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!name.trim() || !phone.trim() || !date || !time) {
       setError('Please fill in all required fields.');
@@ -100,14 +101,24 @@ function ReservationModal({ open, onClose }) {
     setIsSubmitting(true);
     setError('');
 
-    // Simulate async submission feedback (e.g. 1000ms delay) to prevent double clicks and visual CLS
-    setTimeout(() => {
+    try {
+      await api.post('/reservations', {
+        name: name.trim(),
+        phone: cleanedPhone,
+        guests: Number(guests),
+        date,
+        time,
+        notes
+      });
       setIsSubmitting(false);
       setSuccess(true);
       if (window.trackEvent) {
         window.trackEvent('reserve_submit', { guests: guests, date: date, time: time });
       }
-    }, 1000);
+    } catch (err) {
+      setIsSubmitting(false);
+      setError(err.response?.data?.message || 'Could not submit reservation. Please try again.');
+    }
   };
 
   if (!open) return null;

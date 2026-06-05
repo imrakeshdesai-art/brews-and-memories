@@ -405,7 +405,7 @@ function Home({ addToCart, openReserve }) {
         <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '30px 48px', maxWidth: 1100, margin: '0 auto' }}>
           {[
             { badge: '🏆', title: '500+ Google Reviews', sub: 'Rated 4.8 Stars' },
-            { badge: '☕', title: 'Specialty Coffee', sub: '100% Arabica Brews' },
+            { badge: '☕', title: 'Specialty Coffee', sub: 'Freshly Ground & Brewed' },
             { badge: '🥗', title: 'Pure Vegetarian', sub: 'Fresh & Hygienic' },
             { badge: '📍', title: 'Prime Location', sub: 'B.M. Patil Circle' },
             { badge: '🕒', title: 'Open Daily', sub: '10 AM – 10:30 PM' }
@@ -939,7 +939,7 @@ function Home({ addToCart, openReserve }) {
               Stop by for a freshly brewed cup and your favorite bites. We are located at a prime, easily accessible location in Vijayapura with comfortable indoor & garden seating.
             </p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8, fontSize: '0.92rem', color: 'var(--text-dark)', marginTop: 8 }}>
-              <div>📍 <strong>Address:</strong> B.M. Patil Circle, Vijayapura, Karnataka 586102</div>
+              <div>📍 <strong>Address:</strong> Brews and Memories cafe, B M Patil circle, Ring Rd, Adarsh Nagar, solapur road, Vijayapura, Karnataka 586102</div>
               <div>🕒 <strong>Hours:</strong> Open Daily · 10:00 AM – 10:30 PM</div>
               <div>📞 <strong>Contact:</strong> <a href="tel:+919945446137" style={{ color: 'var(--green)', fontWeight: 700, textDecoration: 'none' }}>+91 99454 46137</a></div>
             </div>
@@ -952,7 +952,7 @@ function Home({ addToCart, openReserve }) {
                 Open Google Maps to get real-time navigation directions to our cafe right away.
               </p>
               <a 
-                href="https://maps.app.goo.gl/2fYwvrLgfTP9ytBW7"
+                href="https://www.google.com/maps/place/Brews+and+Memories+cafe/@16.8637369,75.7133426,17z/data=!3m1!4b1!4m6!3m5!1s0x3bc65571521cbf25:0x8c034c8193bdc099!8m2!3d16.8637369!4d75.7159176"
                 target="_blank"
                 rel="noreferrer"
                 className="btn-primary"

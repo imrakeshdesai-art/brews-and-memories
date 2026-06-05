@@ -66,7 +66,7 @@ function Footer({ onReserveClick }) {
               <span>📍</span>
               <div>
                 <strong>Address:</strong>
-                <div style={{ marginTop: 2, color: 'rgba(245,230,200,0.7)' }}>B M Patil Circle, Ring Rd, Vijayapura, Karnataka 586102</div>
+                <div style={{ marginTop: 2, color: 'rgba(245,230,200,0.7)' }}>Brews & Memories Café, B M Patil Circle, Ring Rd, Adarsh Nagar, Vijayapura, KA 586102</div>
               </div>
             </li>
             <li style={{ display: 'flex', gap: 8, fontSize: '0.88rem', color: 'rgba(245,230,200,0.85)' }}>

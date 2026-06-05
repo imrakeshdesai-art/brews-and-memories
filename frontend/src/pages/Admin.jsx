@@ -21,6 +21,7 @@ function Admin() {
   const [authChecked, setAuthChecked] = useState(false);
 
   const [orders, setOrders] = useState([]);
+  const [reservations, setReservations] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -72,36 +73,35 @@ function Admin() {
       );
 
     } finally {
-
       setLoading(false);
-
     }
   };
 
-  // ================= AUTH + LOAD ORDERS =================
+  // ================= FETCH RESERVATIONS =================
+  const fetchReservations = async () => {
+    try {
+      const res = await api.get('/reservations');
+      setReservations(res.data);
+    } catch (err) {
+      console.error('FETCH RESERVATIONS ERROR:', err);
+    }
+  };
+
+  // ================= AUTH + LOAD DATA =================
   useEffect(() => {
-
-    // No token → show login
     if (!token) {
-
       setAuthChecked(true);
-
       return;
     }
 
-    const loadOrders = async () => {
-
-      await fetchOrders();
-
+    const loadData = async () => {
+      await Promise.all([fetchOrders(), fetchReservations()]);
       setAuthChecked(true);
     };
 
-    loadOrders();
-
-    const interval = setInterval(loadOrders, 20000);
-
+    loadData();
+    const interval = setInterval(loadData, 20000);
     return () => clearInterval(interval);
-
   }, [token]);
 
   // ================= LOGIN =================
@@ -175,7 +175,28 @@ function Admin() {
       toast(`Status updated to: ${status}`);
 
     } catch (err) {
+      toast(
+        err.response?.data?.message ||
+        'Update failed'
+      );
+    }
+  };
 
+  // ================= UPDATE RESERVATION STATUS =================
+  const updateReservationStatus = async (id, status) => {
+    try {
+      await api.patch(`/reservations/${id}`, {
+        status,
+      });
+      setReservations((prev) =>
+        prev.map((r) =>
+          r._id === id
+            ? { ...r, status }
+            : r
+        )
+      );
+      toast(`Reservation status updated to: ${status}`);
+    } catch (err) {
       toast(
         err.response?.data?.message ||
         'Update failed'
@@ -389,6 +410,21 @@ function Admin() {
             📋 Orders Management
           </button>
           <button 
+            onClick={() => setActiveTab('reservations')}
+            style={{
+              background: 'none',
+              border: 'none',
+              padding: '8px 16px',
+              fontSize: '1rem',
+              fontWeight: 700,
+              color: activeTab === 'reservations' ? 'var(--green)' : 'var(--text-light)',
+              borderBottom: activeTab === 'reservations' ? '3px solid var(--green)' : 'none',
+              cursor: 'pointer'
+            }}
+          >
+            📅 Table Reservations
+          </button>
+          <button 
             onClick={() => setActiveTab('qrs')}
             style={{
               background: 'none',
@@ -405,7 +441,7 @@ function Admin() {
           </button>
         </div>
 
-        {activeTab === 'orders' ? (
+        {activeTab === 'orders' && (
           <>
             <div className="admin-stats">
 
@@ -767,8 +803,10 @@ function Admin() {
           </table>
 
         </div>
-        </>
-        ) : (
+          </>
+        )}
+
+        {activeTab === 'qrs' && (
           <div className="qr-generator-section" style={{ background: '#fff', border: '1px solid var(--cream-dark)', borderRadius: 12, padding: '24px 20px', textAlign: 'left' }}>
             <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: '1.5rem', color: 'var(--green)', marginBottom: 12 }}>Table QR Codes Generator</h3>
             <p style={{ color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: 24 }}>
@@ -824,6 +862,109 @@ function Admin() {
                   </div>
                 );
               })}
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'reservations' && (
+          <div className="admin-table-wrap" style={{ background: '#fff', border: '1px solid var(--cream-dark)', borderRadius: 12, padding: '24px 20px', textAlign: 'left' }}>
+            <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: '1.5rem', color: 'var(--green)', marginBottom: 12 }}>Table Reservations</h3>
+            <p style={{ color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: 24 }}>
+              Below is the list of customer table reservation requests. You can confirm or cancel requests here.
+            </p>
+            <div style={{ overflowX: 'auto' }}>
+              <table
+                style={{
+                  width: '100%',
+                  borderCollapse: 'collapse',
+                  fontSize: '0.9rem',
+                }}
+              >
+                <thead>
+                  <tr
+                    style={{
+                      background: 'var(--green)',
+                      color: 'var(--cream)',
+                    }}
+                  >
+                    <th style={{ padding: '12px 14px', textAlign: 'left' }}>ID</th>
+                    <th style={{ padding: '12px 14px', textAlign: 'left' }}>Name</th>
+                    <th style={{ padding: '12px 14px', textAlign: 'left' }}>Phone</th>
+                    <th style={{ padding: '12px 14px', textAlign: 'center' }}>Guests</th>
+                    <th style={{ padding: '12px 14px', textAlign: 'left' }}>Date</th>
+                    <th style={{ padding: '12px 14px', textAlign: 'left' }}>Time Slot</th>
+                    <th style={{ padding: '12px 14px', textAlign: 'left' }}>Special Requests</th>
+                    <th style={{ padding: '12px 14px', textAlign: 'left' }}>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {loading ? (
+                    <tr>
+                      <td colSpan="8" style={{ padding: 32, textAlign: 'center', color: 'var(--text-light)' }}>
+                        Loading reservations…
+                      </td>
+                    </tr>
+                  ) : reservations.length === 0 ? (
+                    <tr>
+                      <td colSpan="8" style={{ padding: 32, textAlign: 'center', color: 'var(--text-light)' }}>
+                        No reservations yet
+                      </td>
+                    </tr>
+                  ) : (
+                    reservations.map((r, idx) => (
+                      <tr
+                        key={r._id}
+                        style={{
+                          background: idx % 2 === 0 ? '#fff' : 'var(--cream-light)',
+                          borderBottom: '1px solid var(--cream-dark)',
+                        }}
+                      >
+                        <td style={{ padding: '12px 14px', fontFamily: 'monospace', fontSize: '0.8rem' }}>
+                          #{r._id.slice(-6).toUpperCase()}
+                        </td>
+                        <td style={{ padding: '12px 14px', fontWeight: 700 }}>{r.name}</td>
+                        <td style={{ padding: '12px 14px' }}>{r.phone}</td>
+                        <td style={{ padding: '12px 14px', textAlign: 'center', fontWeight: 700 }}>{r.guests}</td>
+                        <td style={{ padding: '12px 14px' }}>{r.date}</td>
+                        <td style={{ padding: '12px 14px', fontWeight: 700, color: 'var(--green)' }}>{r.time}</td>
+                        <td style={{ padding: '12px 14px', maxWidth: 200, color: 'var(--text-light)', fontSize: '0.82rem' }}>
+                          {r.notes || '—'}
+                        </td>
+                        <td style={{ padding: '12px 14px' }}>
+                          <select
+                            className="status-select"
+                            value={r.status}
+                            onChange={(e) => updateReservationStatus(r._id, e.target.value)}
+                            style={{
+                              background:
+                                r.status === 'pending'
+                                  ? '#fef3c7'
+                                  : r.status === 'confirmed'
+                                  ? '#d1fae5'
+                                  : '#fee2e2',
+                              color:
+                                r.status === 'pending'
+                                  ? '#92400e'
+                                  : r.status === 'confirmed'
+                                  ? '#065f46'
+                                  : '#991b1b',
+                              fontWeight: 700,
+                              border: 'none',
+                              borderRadius: 8,
+                              padding: '6px 10px',
+                              cursor: 'pointer',
+                            }}
+                          >
+                            <option value="pending">⏳ Pending</option>
+                            <option value="confirmed">✅ Confirmed</option>
+                            <option value="cancelled">❌ Cancelled</option>
+                          </select>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
             </div>
           </div>
         )}
