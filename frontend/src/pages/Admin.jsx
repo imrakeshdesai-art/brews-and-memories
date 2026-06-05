@@ -1211,18 +1211,17 @@ function Admin() {
                                         <div class="step-row">
                                           <div class="step-num-wrap"><span class="step-num">4</span></div>
                                           <div class="step-content">
-                                            <div class="step-title">Confirm Your Order</div>
-                                            <div class="step-desc">Confirm & pay securely in seconds</div>
+                                            <div class="step-title" style="padding-top: 5px;">Confirm Your Order</div>
                                           </div>
                                           <span class="step-icon-right">✅</span>
                                         </div>
                                         <div class="step-row">
                                           <div class="step-num-wrap"><span class="step-num">5</span></div>
                                           <div class="step-content">
-                                            <div class="step-title">Relax & Enjoy</div>
-                                            <div class="step-desc">We'll bring it fresh to your table</div>
+                                            <div class="step-title">Pay at Your Counter</div>
+                                            <div class="step-desc">pay at your counter</div>
                                           </div>
-                                          <span class="step-icon-right">😊</span>
+                                          <span class="step-icon-right">💳</span>
                                         </div>
                                       </div>
 
