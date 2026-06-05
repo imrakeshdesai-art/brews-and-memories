@@ -8,7 +8,7 @@ const FEATURED_CATEGORIES = [
   { image: '/HotCoffee.png', label: 'Hot Coffee', category: 'Beverages' },
   { image: '/Milkshake.png', label: 'Milkshakes', category: 'Milk Shakes' },
   { image: '/Tea & Beverages.png', label: 'Tea & Beverages', category: 'Beverages' },
-  { image: '/Tandoori Paneer Pizza.png', label: 'Pizzas', category: 'Wood-Fired Pizzas' },
+  { image: '/Tandoori Paneer Pizza.png', label: 'Pizzas', category: 'Pizza' },
   { image: '/images/menu/burger.png', label: 'Burgers', category: 'Burgers' },
   { image: '/Veg Club Sandwich.png', label: 'Sandwiches', category: 'Sandwiches' },
   { image: '/Maggie.png', label: 'Maggi', category: 'Maggi' },
@@ -25,7 +25,7 @@ const FAVORITES_CONFIG = [
     desc: 'Chilled and refreshing specialty cold coffee - creamy, rich, and Vijayapura\'s most popular drink.'
   },
   {
-    category: 'Wood-Fired Pizzas',
+    category: 'Pizza',
     name: 'Tandoori Paneer Pizza',
     badge: 'Most Ordered',
     image: '/Tandoori Paneer Pizza.png',
@@ -333,7 +333,7 @@ function Home({ addToCart, openReserve }) {
                 <span>Premium Pure-Veg Cafe — Coffee, Pizza, Memories</span>
               </div>
               <p className="hero-subtitle" style={{ fontSize: 'clamp(0.95rem, 1.8vw, 1.15rem)', color: 'rgba(245, 230, 200, 0.85)', margin: 0, lineHeight: 1.5, fontWeight: 500, maxWidth: 620, textAlign: 'left' }}>
-                Where great food meets memorable moments. Premium Pure Veg Café in Vijayapura serving fresh brews, wood-fired pizzas, burgers, and signature desserts in a cozy garden ambiance.
+                Where great food meets memorable moments. Premium Pure Veg Café in Vijayapura serving fresh brews, freshly baked pizzas, burgers, and signature desserts in a cozy garden ambiance.
               </p>
             </div>
 
@@ -384,7 +384,7 @@ function Home({ addToCart, openReserve }) {
           <div className="hero-media-wrapper" style={{ width: '100%' }}>
             <div className="hero-food-collage" aria-label="Brews & Memories Signature Food Collage">
               {/* Main Pizza Card */}
-              <div className="collage-item pizza" title="Wood-Fired Tandoori Paneer Pizza">
+              <div className="collage-item pizza" title="Tandoori Paneer Pizza">
                 <img src="/images/instagram/hero_pizza.webp" alt="Freshly baked Tandoori Paneer Pizza" />
               </div>
               {/* Coffee Card (Overlapping) */}
@@ -501,7 +501,7 @@ function Home({ addToCart, openReserve }) {
         <div className="grid-4" style={{ maxWidth: 1100, margin: '0 auto', gap: 24 }}>
           {[
             { icon: '☕', title: 'Freshly Roasted Coffee', desc: 'Expertly sourced and roasted Arabica beans brewed to absolute perfection by skilled baristas.' },
-            { icon: '🍕', title: 'Wood-Fired Pizza', desc: 'Deliciously fresh, cheesy, hand-tossed vegetarian pizzas baked hot out of the oven.' },
+            { icon: '🍕', title: 'Freshly Baked Pizza', desc: 'Deliciously fresh, cheesy, hand-tossed vegetarian pizzas baked hot out of the oven.' },
             { icon: '🛋️', title: 'Family-Friendly Seating', desc: 'Cozy modern seating, warm ambient lighting, and group tables perfect for get-togethers.' },
             { icon: '🔌', title: 'Free Wi-Fi & Work Space', desc: 'High-speed internet access and plenty of accessible charging ports at seating locations.' },
           ].map((item) => (
