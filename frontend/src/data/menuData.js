@@ -463,7 +463,7 @@ export const menuData = {
       price: 129,
       emoji: '🍟',
       desc: 'Freshly prepared schezwan fries',
-      image: '/images/menu/items/Schezwan Fries.png'
+      image: '/images/menu/items/Schezwan Fries.webp'
     },
     {
       name: 'Potato Wedges',
