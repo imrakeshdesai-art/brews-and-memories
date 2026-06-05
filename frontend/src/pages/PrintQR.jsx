@@ -9,11 +9,51 @@ function PrintQR() {
   const qrImageUrl = `https://quickchart.io/qr?text=${encodeURIComponent(tableUrl)}&size=250`;
 
   useEffect(() => {
-    // Automatically trigger print after page loads and images are fetched
-    const timer = setTimeout(() => {
-      window.print();
-    }, 1000);
-    return () => clearTimeout(timer);
+    const handlePrint = () => {
+      // Small safety timeout to let rendering paint complete
+      setTimeout(() => {
+        window.print();
+      }, 500);
+    };
+
+    const checkAllResources = () => {
+      const imgs = Array.from(document.images);
+      const checkImagesAndPrint = () => {
+        const allLoaded = imgs.every(img => img.complete);
+        if (allLoaded) {
+          handlePrint();
+        } else {
+          let loadedCount = imgs.filter(img => img.complete).length;
+          imgs.forEach(img => {
+            if (!img.complete) {
+              const onload = () => {
+                img.removeEventListener('load', onload);
+                img.removeEventListener('error', onload);
+                loadedCount++;
+                if (loadedCount === imgs.length) {
+                  handlePrint();
+                }
+              };
+              img.addEventListener('load', onload);
+              img.addEventListener('error', onload);
+            }
+          });
+        }
+      };
+
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(checkImagesAndPrint).catch(checkImagesAndPrint);
+      } else {
+        checkImagesAndPrint();
+      }
+    };
+
+    if (document.readyState === 'complete') {
+      checkAllResources();
+    } else {
+      window.addEventListener('load', checkAllResources);
+      return () => window.removeEventListener('load', checkAllResources);
+    }
   }, []);
 
   return (
@@ -290,21 +330,63 @@ function PrintQR() {
         .dot-sep { width: 3px; height: 3px; border-radius: 50%; background: #1C3829; opacity: 0.4; }
 
         @media print {
-          body {
+          @page {
+            size: portrait;
+            margin: 0 !important;
+          }
+          html, body {
+            margin: 0 !important;
+            padding: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
             background: #fff !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
           }
           .print-qr-page {
             background: #fff !important;
-            min-height: auto !important;
+            width: 100% !important;
+            height: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
           }
           .scene {
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: flex-start !important;
+            align-items: center !important;
+            gap: 0 !important;
             padding: 0 !important;
+            margin: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
           }
           .card-label {
             display: none !important;
           }
           .card-wrapper {
-            gap: 0 !important;
+            page-break-after: always !important;
+            break-after: page !important;
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            width: 100% !important;
+            height: 100vh !important;
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+            box-sizing: border-box !important;
+          }
+          .card-wrapper:last-child {
+            page-break-after: avoid !important;
+            break-after: avoid !important;
+          }
+          .card {
+            box-shadow: none !important;
+          }
+          .no-print {
+            display: none !important;
           }
         }
       `}</style>
