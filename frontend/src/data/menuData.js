@@ -308,43 +308,50 @@ export const menuData = {
       price: 79,
       emoji: '🍔',
       desc: 'Crispy patty in soft buns with fresh veggies',
-      badge: 'CUSTOMER FAVORITE'
+      badge: 'CUSTOMER FAVORITE',
+      image: '/images/menu/items/Veg Burger.png'
     },
     {
       name: 'Paneer Burger',
       price: 139,
       emoji: '🍔',
-      desc: 'Crispy patty in soft buns with fresh veggies'
+      desc: 'Crispy patty in soft buns with fresh veggies',
+      image: '/images/menu/items/Paneer Burger.png'
     },
     {
       name: 'Tandoori Paneer Burger',
       price: 109,
       emoji: '🍔',
-      desc: 'Crispy patty in soft buns with fresh veggies'
+      desc: 'Crispy patty in soft buns with fresh veggies',
+      image: '/images/menu/items/Tandoori Paneer Burger.png'
     },
     {
       name: 'Corn Burger',
       price: 109,
       emoji: '🌽',
-      desc: 'Crispy patty in soft buns with fresh veggies'
+      desc: 'Crispy patty in soft buns with fresh veggies',
+      image: '/images/menu/items/Corn Burger.png'
     },
     {
       name: 'Veg Cheese Burger',
       price: 109,
       emoji: '🧀',
-      desc: 'Crispy patty in soft buns with fresh veggies'
+      desc: 'Crispy patty in soft buns with fresh veggies',
+      image: '/images/menu/items/Veg Cheese Burger.png'
     },
     {
       name: 'Veg Classic Burger',
       price: 109,
       emoji: '🍔',
-      desc: 'Crispy patty in soft buns with fresh veggies'
+      desc: 'Crispy patty in soft buns with fresh veggies',
+      image: '/images/menu/items/Veg Classic Burger.png'
     },
     {
       name: 'BBQ Paneer Burger',
       price: 119,
       emoji: '🍔',
-      desc: 'Crispy patty in soft buns with fresh veggies'
+      desc: 'Crispy patty in soft buns with fresh veggies',
+      image: '/images/menu/items/BBQ Paneer Burger.png'
     },
   ],
   'Sandwiches': [
