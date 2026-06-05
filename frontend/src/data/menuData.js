@@ -470,28 +470,28 @@ export const menuData = {
       price: 119,
       emoji: '🍟',
       desc: 'Freshly prepared potato wedges',
-      image: '/images/menu/items/Potato Wedges.png'
+      image: '/images/menu/items/Potato Wedges.webp'
     },
     {
       name: 'Garlic Pops',
       price: 99,
       emoji: '🧄',
       desc: 'Freshly prepared garlic pops',
-      image: '/images/menu/items/Garlic Pops.png'
+      image: '/images/menu/items/Garlic Pops.webp'
     },
     {
       name: 'Onion Rings',
       price: 99,
       emoji: '🍟',
       desc: 'Freshly prepared onion rings',
-      image: '/images/menu/items/Onion Rings.png'
+      image: '/images/menu/items/Onion Rings.webp'
     },
     {
       name: 'Smileys',
       price: 99,
       emoji: '🍟',
       desc: 'Freshly prepared smileys',
-      image: '/images/menu/items/Smileys.png'
+      image: '/images/menu/items/Smileys.webp'
     },
     {
       name: 'Honey Chilli Potato',
