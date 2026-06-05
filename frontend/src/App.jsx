@@ -17,6 +17,7 @@ const Reserve = lazy(() => import('./pages/Reserve'));
 const TableOrder = lazy(() => import('./pages/TableOrder'));
 const Privacy = lazy(() => import('./pages/Privacy'));
 const Terms = lazy(() => import('./pages/Terms'));
+const PrintQR = lazy(() => import('./pages/PrintQR'));
 
 import Footer from './components/Footer';
 import FloatingActions from './components/FloatingActions';
@@ -201,15 +202,19 @@ function App() {
     onClearSession: handleClearSession,
   };
 
+  const isPrintPage = location.pathname.startsWith('/admin/print-qr');
+
   return (
     <ToastProvider>
       <div className="app-shell">
-        <NavBar 
-          cartCount={cartCount} 
-          onCartClick={() => setIsCartOpen(true)} 
-          activeTable={activeTable} 
-          onReserveClick={handleOpenReserve}
-        />
+        {!isPrintPage && (
+          <NavBar 
+            cartCount={cartCount} 
+            onCartClick={() => setIsCartOpen(true)} 
+            activeTable={activeTable} 
+            onReserveClick={handleOpenReserve}
+          />
+        )}
         <main className="page-shell">
           <Suspense fallback={<div className="page-loader">Loading page…</div>}>
             <Routes>
@@ -222,24 +227,27 @@ function App() {
               <Route path="/order" element={<TableOrder />} />
               <Route path="/order/:tableId" element={<TableOrder onSessionStart={handleSessionStart} />} />
               <Route path="/admin" element={<Admin />} />
+              <Route path="/admin/print-qr/:tableNum" element={<PrintQR />} />
               <Route path="/privacy" element={<Privacy />} />
               <Route path="/terms" element={<Terms />} />
               <Route path="*" element={<Home {...pageProps} />} />
             </Routes>
           </Suspense>
         </main>
-        <Footer onReserveClick={() => setIsReserveOpen(true)} />
-        <FloatingActions />
-        <CartDrawer
-          open={isCartOpen}
-          cart={cart}
-          total={cartTotal}
-          onClose={() => setIsCartOpen(false)}
-          onUpdateQty={updateCartQty}
-          onRemove={removeFromCart}
-          onCheckout={handleCheckoutOpen}
-          activeTable={activeTable}
-        />
+        {!isPrintPage && <Footer onReserveClick={() => setIsReserveOpen(true)} />}
+        {!isPrintPage && <FloatingActions />}
+        {!isPrintPage && (
+          <CartDrawer
+            open={isCartOpen}
+            cart={cart}
+            total={cartTotal}
+            onClose={() => setIsCartOpen(false)}
+            onUpdateQty={updateCartQty}
+            onRemove={removeFromCart}
+            onCheckout={handleCheckoutOpen}
+            activeTable={activeTable}
+          />
+        )}
         <CheckoutModal
           open={isCheckoutOpen}
           cart={cart}
