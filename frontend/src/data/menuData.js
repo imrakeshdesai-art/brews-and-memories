@@ -368,67 +368,78 @@ export const menuData = {
       name: 'Veg Sandwich',
       price: 99,
       emoji: '🥪',
-      desc: 'Freshly toasted sandwich with butter and toppings'
+      desc: 'Freshly toasted sandwich with butter and toppings',
+      image: '/images/menu/items/Veg Sandwich.png'
     },
     {
       name: 'Veg Club Sandwich',
       price: 109,
       emoji: '🥪',
-      desc: 'Freshly toasted sandwich with butter and toppings'
+      desc: 'Freshly toasted sandwich with butter and toppings',
+      image: '/images/menu/items/Veg Club Sandwich.webp'
     },
     {
       name: 'Veg Cheese Sandwich',
       price: 109,
       emoji: '🧀',
-      desc: 'Freshly toasted sandwich with butter and toppings'
+      desc: 'Freshly toasted sandwich with butter and toppings',
+      image: '/images/menu/items/Veg Cheese Sandwich.png'
     },
     {
       name: 'Peri Peri Paneer Sandwich',
       price: 129,
       emoji: '🌶️',
-      desc: 'Freshly toasted sandwich with butter and toppings'
+      desc: 'Freshly toasted sandwich with butter and toppings',
+      image: '/images/menu/items/Peri Peri Paneer Sandwich.png'
     },
     {
       name: 'Tandoori Paneer Sandwich',
       price: 119,
       emoji: '🥪',
-      desc: 'Freshly toasted sandwich with butter and toppings'
+      desc: 'Freshly toasted sandwich with butter and toppings',
+      image: '/images/menu/items/Tandoori Paneer Sandwich.png'
     },
     {
       name: 'Burnt Garlic Mushroom Sandwich',
       price: 149,
       emoji: '🧄',
-      desc: 'Freshly toasted sandwich with butter and toppings'
+      desc: 'Freshly toasted sandwich with butter and toppings',
+      image: '/images/menu/items/Burnt Garlic Mushroom Sandwich.png'
     },
     {
       name: 'Masala Corn Sandwich',
       price: 129,
       emoji: '🌽',
-      desc: 'Freshly toasted sandwich with butter and toppings'
+      desc: 'Freshly toasted sandwich with butter and toppings',
+      image: '/images/menu/items/Masala Corn Sandwich.png'
     },
     {
       name: 'Pizza Sandwich',
       price: 199,
       emoji: '🥪',
-      desc: 'Freshly toasted sandwich with butter and toppings'
+      desc: 'Freshly toasted sandwich with butter and toppings',
+      image: '/images/menu/items/Pizza Sandwich.png'
     },
     {
       name: 'Surender Sandwich',
       price: 99,
       emoji: '🥪',
-      desc: 'Freshly toasted sandwich with butter and toppings'
+      desc: 'Freshly toasted sandwich with butter and toppings',
+      image: '/images/menu/items/Surender Sandwich.png'
     },
     {
       name: 'BBQ Paneer Sandwich',
       price: 109,
       emoji: '🥪',
-      desc: 'Freshly toasted sandwich with butter and toppings'
+      desc: 'Freshly toasted sandwich with butter and toppings',
+      image: '/images/menu/items/BBQ Paneer Sandwich.png'
     },
     {
       name: 'Chocolate Sandwich',
       price: 99,
       emoji: '🍫',
-      desc: 'Freshly toasted sandwich with butter and toppings'
+      desc: 'Freshly toasted sandwich with butter and toppings',
+      image: '/images/menu/items/Chocolate Sandwich.png'
     },
   ],
   'Fries': [
