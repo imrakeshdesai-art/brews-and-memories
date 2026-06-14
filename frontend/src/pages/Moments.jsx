@@ -176,7 +176,7 @@ export default function Moments() {
                   padding: 0,
                   borderRadius: 12,
                   overflow: 'hidden',
-                  background: '#fff',
+                  background: 'var(--white)',
                   border: '1px solid var(--cream-dark)',
                   boxShadow: 'var(--shadow)',
                   display: 'flex',
@@ -294,7 +294,7 @@ export default function Moments() {
       </section>
 
       {/* OFFICIAL INSTAGRAM WIDGET SECTION */}
-      <section className="section" style={{ padding: '60px 20px', borderTop: '2px solid var(--cream-dark)', background: '#fff' }}>
+      <section className="section" style={{ padding: '60px 20px', borderTop: '2px solid var(--cream-dark)', background: 'var(--white)' }}>
         <div style={{ maxWidth: 1100, margin: '0 auto', textAlign: 'center' }}>
           <span style={{ 
             color: 'var(--green)', 
@@ -386,7 +386,7 @@ export default function Moments() {
             style={{ 
               maxWidth: 550, 
               width: '100%', 
-              background: '#fff', 
+              background: 'var(--white)', 
               borderRadius: 16, 
               overflow: 'hidden', 
               boxShadow: 'var(--shadow-lg)',

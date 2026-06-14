@@ -8,7 +8,7 @@ function Terms() {
         <h2 className="section-title" style={{ fontFamily: "'Playfair Display', serif", fontSize: '2.5rem', color: 'var(--green)', margin: '10px 0 16px' }}>Terms of Service</h2>
         <div className="section-divider" style={{ width: 60, height: 3, background: 'var(--green)', margin: '0 auto' }} />
       </div>
-      <div className="card" style={{ maxWidth: 800, width: '100%', margin: '0 auto', background: '#fff', border: '1px solid var(--cream-dark)', borderRadius: 16, padding: '40px', boxShadow: 'var(--shadow-lg)', color: 'var(--text-light)', lineHeight: 1.8 }}>
+      <div className="card" style={{ maxWidth: 800, width: '100%', margin: '0 auto', background: 'var(--white)', border: '1px solid var(--cream-dark)', borderRadius: 16, padding: '40px', boxShadow: 'var(--shadow-lg)', color: 'var(--text-light)', lineHeight: 1.8 }}>
         <p><strong>Last Updated: June 2026</strong></p>
         <p>
           Welcome to the digital table ordering portal of Brews & Memories. By using our website and scanning table QR codes, you agree to comply with the following terms of service.

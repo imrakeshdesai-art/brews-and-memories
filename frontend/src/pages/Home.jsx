@@ -632,7 +632,7 @@ function Home({ addToCart, openReserve }) {
               { icon: '☕', title: 'Coffee Catchups', desc: 'Catch up with friends or get work done with high-speed free Wi-Fi and power outlets.' }
             ].map((item, idx) => (
               <div key={idx} className="card" style={{ 
-                background: '#fff', 
+                background: 'var(--white)', 
                 border: '1px solid var(--cream-dark)', 
                 borderRadius: 16, 
                 padding: '30px 20px', 
@@ -662,7 +662,7 @@ function Home({ addToCart, openReserve }) {
       </section>
 
       {/* OUR STORY SECTION (RIGHT AFTER HERO) */}
-      <section className="section" style={{ background: '#fff', padding: '80px 20px' }}>
+      <section className="section" style={{ background: 'var(--white)', padding: '80px 20px' }}>
         <div className="grid-2" style={{ gap: '48px', alignItems: 'center', maxWidth: 1100, margin: '0 auto' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             <span className="section-label" style={{ color: 'var(--green)', textTransform: 'uppercase', letterSpacing: 2, fontSize: '0.85rem', fontWeight: 700 }}>Our Story</span>
@@ -702,7 +702,7 @@ function Home({ addToCart, openReserve }) {
 
 
       {/* EXPLORE WHAT WE SERVE (CATEGORIES - IMAGES INSTEAD OF EMOJIS) */}
-      <section className="section" style={{ background: '#fff', padding: '80px 20px' }}>
+      <section className="section" style={{ background: 'var(--white)', padding: '80px 20px' }}>
         <div className="section-header" style={{ marginBottom: 36, textAlign: 'center' }}>
           <span className="section-label" style={{ color: 'var(--green)', textTransform: 'uppercase', letterSpacing: 2, fontSize: '0.85rem', fontWeight: 700 }}>Explore Our Menu</span>
           <h2 className="section-title" style={{ fontFamily: "'Playfair Display', serif", fontSize: '2.2rem', color: 'var(--green)', margin: '8px 0 0' }}>Explore What We <em>Serve</em></h2>
@@ -721,7 +721,7 @@ function Home({ addToCart, openReserve }) {
                   padding: 0,
                   textAlign: 'center',
                   cursor: 'pointer',
-                  background: '#fff',
+                  background: 'var(--white)',
                   border: '1px solid var(--cream-dark)',
                   borderRadius: 12,
                   overflow: 'hidden',
@@ -771,7 +771,7 @@ function Home({ addToCart, openReserve }) {
       </section>
 
       {/* SECTION 1: CUSTOMER FAVORITES (100% REAL IMAGES & DATABASE DATA) */}
-      <section className="section" style={{ background: '#fff', padding: '85px 20px' }}>
+      <section className="section" style={{ background: 'var(--white)', padding: '85px 20px' }}>
         <div className="section-header" style={{ marginBottom: 48, textAlign: 'center' }}>
           <span className="section-label" style={{ color: 'var(--green)', textTransform: 'uppercase', letterSpacing: 2, fontSize: '0.85rem', fontWeight: 700 }}>Top Rated Selections</span>
           <h2 className="section-title" style={{ fontFamily: "'Playfair Display', serif", fontSize: '2.2rem', color: 'var(--green)', margin: '8px 0 0' }}>Customer <em>Favorites</em></h2>
@@ -790,7 +790,7 @@ function Home({ addToCart, openReserve }) {
                 padding: 0, 
                 display: 'flex', 
                 flexDirection: 'column', 
-                background: '#fff', 
+                background: 'var(--white)', 
                 border: '1px solid var(--cream-dark)',
                 boxShadow: 'var(--shadow)',
                 position: 'relative'
@@ -880,7 +880,7 @@ function Home({ addToCart, openReserve }) {
 
 
       {/* POWERFUL BRAND QUOTE */}
-      <section className="section" style={{ background: '#fff', padding: '60px 20px 20px', textAlign: 'center' }}>
+      <section className="section" style={{ background: 'var(--white)', padding: '60px 20px 20px', textAlign: 'center' }}>
         <div style={{ 
           maxWidth: 800, 
           margin: '0 auto', 
@@ -969,7 +969,7 @@ function Home({ addToCart, openReserve }) {
       </section>
 
       {/* FAQ SECTION */}
-      <section className="section" style={{ background: '#fff', padding: '80px 20px' }}>
+      <section className="section" style={{ background: 'var(--white)', padding: '80px 20px' }}>
         <div className="section-header" style={{ marginBottom: 48, textAlign: 'center' }}>
           <span className="section-label" style={{ color: 'var(--green)', textTransform: 'uppercase', letterSpacing: 2, fontSize: '0.85rem', fontWeight: 700 }}>Got Questions?</span>
           <h2 className="section-title" style={{ fontFamily: "'Playfair Display', serif", fontSize: '2.2rem', color: 'var(--green)', margin: '8px 0 0' }}>Frequently Asked <em>Questions</em></h2>

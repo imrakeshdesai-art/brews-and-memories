@@ -123,7 +123,7 @@ function Reviews() {
             { icon: '❤️', number: 'Countless', label: 'Memories Made' }
           ].map((stat, idx) => (
             <div key={idx} style={{ 
-              background: '#fff', 
+              background: 'var(--white)', 
               border: '1px solid var(--cream-dark)', 
               borderRadius: '16px', 
               padding: '24px 16px',

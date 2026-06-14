@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 
-function NavBar({ cartCount, onCartClick, activeTable, onReserveClick }) {
+function NavBar({ cartCount, onCartClick, activeTable, onReserveClick, theme, toggleTheme }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
 
@@ -77,6 +77,14 @@ function NavBar({ cartCount, onCartClick, activeTable, onReserveClick }) {
             <span className="cart-badge" aria-live="polite">{cartCount}</span>
           </button>
         )}
+        <button
+          className="theme-toggle-btn"
+          type="button"
+          onClick={toggleTheme}
+          aria-label={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
+        >
+          {theme === 'dark' ? '☀️' : '🌙'}
+        </button>
         <button
           className={`mobile-toggle ${menuOpen ? 'open' : ''}`}
           type="button"

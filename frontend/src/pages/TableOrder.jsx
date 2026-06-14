@@ -68,7 +68,7 @@ function TableOrder({ onSessionStart }) {
   if (!tableId) {
     return (
       <section className="section" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh', padding: '120px 20px 80px' }}>
-        <div className="card" style={{ maxWidth: 450, width: '100%', textAlign: 'center', background: '#fff', border: '1px solid var(--cream-dark)', borderRadius: 16, padding: '40px 30px', boxShadow: 'var(--shadow-lg)' }}>
+        <div className="card" style={{ maxWidth: 450, width: '100%', textAlign: 'center', background: 'var(--white)', border: '1px solid var(--cream-dark)', borderRadius: 16, padding: '40px 30px', boxShadow: 'var(--shadow-lg)' }}>
           <div style={{ fontSize: '4rem', marginBottom: 20 }}>📱</div>
           <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: '2rem', color: 'var(--green)', margin: '0 0 16px' }}>Table QR Required</h2>
           <div style={{ width: 60, height: 3, background: 'var(--green)', margin: '0 auto 20px' }} />
@@ -91,7 +91,7 @@ function TableOrder({ onSessionStart }) {
   if (!isValid) {
     return (
       <section className="section" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh', padding: '120px 20px 80px' }}>
-        <div className="card" style={{ maxWidth: 450, width: '100%', textAlign: 'center', background: '#fff', border: '1px solid var(--red)', borderRadius: 16, padding: '40px 30px', boxShadow: 'var(--shadow-lg)' }}>
+        <div className="card" style={{ maxWidth: 450, width: '100%', textAlign: 'center', background: 'var(--white)', border: '1px solid var(--red)', borderRadius: 16, padding: '40px 30px', boxShadow: 'var(--shadow-lg)' }}>
           <div style={{ fontSize: '4rem', marginBottom: 20 }}>⚠️</div>
           <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: '2rem', color: 'var(--red)', margin: '0 0 16px' }}>Invalid Table QR Code</h2>
           <div style={{ width: 60, height: 3, background: 'var(--red)', margin: '0 auto 20px' }} />
@@ -114,7 +114,7 @@ function TableOrder({ onSessionStart }) {
   if (isSessionBlocked) {
     return (
       <section className="section" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh', padding: '120px 20px 80px', background: 'var(--cream-light)' }}>
-        <div className="card" style={{ maxWidth: 450, width: '100%', textAlign: 'center', background: '#fff', border: '2px solid var(--red)', borderRadius: 16, padding: '40px 30px', boxShadow: 'var(--shadow-lg)' }}>
+        <div className="card" style={{ maxWidth: 450, width: '100%', textAlign: 'center', background: 'var(--white)', border: '2px solid var(--red)', borderRadius: 16, padding: '40px 30px', boxShadow: 'var(--shadow-lg)' }}>
           <div style={{ fontSize: '4rem', marginBottom: 20 }}>🔒</div>
           <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: '2rem', color: 'var(--red)', margin: '0 0 16px' }}>Shared Link Blocked</h2>
           <div style={{ width: 60, height: 3, background: 'var(--red)', margin: '0 auto 20px' }} />
@@ -138,7 +138,7 @@ function TableOrder({ onSessionStart }) {
 
   return (
     <section className="section" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh', padding: '120px 20px 80px', background: 'var(--cream-light)' }}>
-      <div className="card" style={{ maxWidth: 450, width: '100%', textAlign: 'center', background: '#fff', border: '2px solid var(--cream-dark)', borderRadius: 16, padding: '40px 30px', boxShadow: 'var(--shadow-lg)' }}>
+      <div className="card" style={{ maxWidth: 450, width: '100%', textAlign: 'center', background: 'var(--white)', border: '2px solid var(--cream-dark)', borderRadius: 16, padding: '40px 30px', boxShadow: 'var(--shadow-lg)' }}>
         <div style={{ width: 80, height: 80, borderRadius: '50%', background: 'var(--cream)', overflow: 'hidden', margin: '0 auto 16px', border: '2px solid var(--cream-dark)', boxShadow: '0 4px 10px rgba(0,0,0,0.05)' }}>
           <img src="/logo.jpg" alt="Brews & Memories Logo" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
         </div>

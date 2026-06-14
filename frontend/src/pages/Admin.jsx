@@ -807,7 +807,7 @@ function Admin() {
         )}
 
         {activeTab === 'qrs' && (
-          <div className="qr-generator-section" style={{ background: '#fff', border: '1px solid var(--cream-dark)', borderRadius: 12, padding: '24px 20px', textAlign: 'left' }}>
+          <div className="qr-generator-section" style={{ background: 'var(--white)', border: '1px solid var(--cream-dark)', borderRadius: 12, padding: '24px 20px', textAlign: 'left' }}>
             <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: '1.5rem', color: 'var(--green)', marginBottom: 12 }}>Table QR Codes Generator</h3>
             <p style={{ color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: 24 }}>
               Below are the digital ordering QR codes configured for your café tables. 
@@ -824,7 +824,7 @@ function Admin() {
                   <div key={tableNum} className="qr-card" style={{ border: '2px solid var(--cream-dark)', borderRadius: 12, padding: 20, textAlign: 'center', background: 'var(--cream-light)', boxShadow: 'var(--shadow-sm)' }}>
                     <div style={{ fontWeight: 800, fontSize: '1.25rem', color: 'var(--green)', marginBottom: 12 }}>Table {tableNum}</div>
                     
-                    <div style={{ background: '#fff', padding: 16, borderRadius: 8, display: 'inline-block', border: '1px solid var(--cream-dark)', marginBottom: 12 }}>
+                    <div style={{ background: 'var(--white)', padding: 16, borderRadius: 8, display: 'inline-block', border: '1px solid var(--cream-dark)', marginBottom: 12 }}>
                       <img 
                         src={qrImageUrl} 
                         alt={`QR Code for Table ${tableNum}`} 
@@ -867,7 +867,7 @@ function Admin() {
         )}
 
         {activeTab === 'reservations' && (
-          <div className="admin-table-wrap" style={{ background: '#fff', border: '1px solid var(--cream-dark)', borderRadius: 12, padding: '24px 20px', textAlign: 'left' }}>
+          <div className="admin-table-wrap" style={{ background: 'var(--white)', border: '1px solid var(--cream-dark)', borderRadius: 12, padding: '24px 20px', textAlign: 'left' }}>
             <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: '1.5rem', color: 'var(--green)', marginBottom: 12 }}>Table Reservations</h3>
             <p style={{ color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: 24 }}>
               Below is the list of customer table reservation requests. You can confirm or cancel requests here.

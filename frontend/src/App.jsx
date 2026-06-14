@@ -33,7 +33,19 @@ function App() {
   const [selectedPayment, setSelectedPayment] = useState('counter');
   const [activeTable, setActiveTable] = useState(null);
   const [tableSessionExpiry, setTableSessionExpiry] = useState(null);
+  const [theme, setTheme] = useState(() => {
+    return localStorage.getItem('theme') || 'light';
+  });
   const location = useLocation();
+
+  useEffect(() => {
+    document.body.className = theme === 'dark' ? 'theme-dark' : 'theme-light';
+    localStorage.setItem('theme', theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme((prev) => (prev === 'light' ? 'dark' : 'light'));
+  };
 
   useEffect(() => {
     const storedCart = loadCart();
@@ -223,6 +235,8 @@ function App() {
             onCartClick={() => setIsCartOpen(true)} 
             activeTable={activeTable} 
             onReserveClick={handleOpenReserve}
+            theme={theme}
+            toggleTheme={toggleTheme}
           />
         )}
         <main className="page-shell">
