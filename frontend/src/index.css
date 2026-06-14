@@ -510,6 +510,12 @@ button {
   gap: 24px;
 }
 
+.grid-5 {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 24px;
+}
+
 .card {
   background: #fff;
   border-radius: var(--radius-lg);
@@ -1286,6 +1292,7 @@ button {
 /* Responsive */
 @media (max-width: 900px) {
   .grid-4,
+  .grid-5,
   .admin-stats {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -2088,7 +2095,8 @@ button {
   /* Stack grid layouts to full-width single-column on mobile */
   .grid-2,
   .grid-3,
-  .grid-4 {
+  .grid-4,
+  .grid-5 {
     grid-template-columns: 1fr !important;
     gap: 28px !important;
   }
@@ -2225,20 +2233,20 @@ button {
 
 /* ==================== HIDDEN CORNER SECTION ==================== */
 .hidden-corner-section {
-  background: #fff;
-  padding: 90px 20px;
+  background: linear-gradient(135deg, #FAF8F5 0%, #F4F6F4 100%);
+  padding: 110px 20px;
   border-bottom: 1px solid var(--cream-dark);
 }
 
 .hidden-corner-container {
-  max-width: 1100px;
+  max-width: 1200px;
   margin: 0 auto;
 }
 
 .hidden-corner-grid {
   display: grid;
-  grid-template-columns: 1.1fr 0.9fr;
-  gap: 60px;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 80px;
   align-items: center;
 }
 

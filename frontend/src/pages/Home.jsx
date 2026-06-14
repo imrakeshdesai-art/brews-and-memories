@@ -257,22 +257,24 @@ function Home({ addToCart, openReserve }) {
             </h1>
 
             {/* Subtitle Tags & Operational Descriptor */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10, margin: '4px 0 8px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12, margin: '8px 0 12px' }}>
               <div className="hero-tags" style={{ 
                 color: '#fbbf24', 
-                fontSize: 'clamp(0.95rem, 2vw, 1.15rem)', 
+                fontSize: 'clamp(1.1rem, 2.5vw, 1.35rem)', 
                 fontWeight: 800, 
-                letterSpacing: '1.5px', 
+                letterSpacing: '1px', 
                 textTransform: 'uppercase',
                 display: 'flex',
                 flexWrap: 'wrap',
                 gap: '4px 10px',
-                alignItems: 'center'
+                alignItems: 'center',
+                fontFamily: "'Playfair Display', serif",
+                fontStyle: 'italic'
               }}>
-                <span>Premium Pure-Veg Cafe — Coffee, Pizza, Memories</span>
+                <span>Coffee Flows. Stories Wait. Memories Stay.</span>
               </div>
-              <p className="hero-subtitle" style={{ fontSize: 'clamp(0.95rem, 1.8vw, 1.15rem)', color: 'rgba(245, 230, 200, 0.85)', margin: 0, lineHeight: 1.5, fontWeight: 500, maxWidth: 620, textAlign: 'left' }}>
-                Where great food meets memorable moments. Premium Pure Veg Café in Vijayapura serving fresh brews, freshly baked pizzas, burgers, and signature desserts in a cozy garden ambiance.
+              <p className="hero-subtitle" style={{ fontSize: 'clamp(1rem, 1.8vw, 1.2rem)', color: 'rgba(245, 230, 200, 0.9)', margin: 0, lineHeight: 1.6, fontWeight: 500, maxWidth: 620, textAlign: 'left' }}>
+                Vijayapura's cozy café with books, board games, comfort food, and unforgettable moments.
               </p>
             </div>
 
@@ -457,10 +459,133 @@ function Home({ addToCart, openReserve }) {
               <p className="hidden-corner-text">
                 Pick a book. Play a board game. Stay as long as you like.
               </p>
-              <div className="hidden-corner-badge">
-                <span>📚</span> Curated Library & Games
+              <p style={{ color: 'var(--text-light)', fontSize: '0.98rem', lineHeight: 1.6, margin: 0 }}>
+                Our café features a curated shelf of bestsellers, classics, and self-help books alongside popular board games like Jenga, Chess, Ludo, Uno, and Catan. Whether you want to escape into a novel, challenge your friends to a game, or work in a cozy corner, we have the perfect space for you.
+              </p>
+              <div style={{ 
+                margin: '10px 0', 
+                background: 'var(--cream-light)', 
+                border: '1px solid var(--cream-dark)', 
+                borderRadius: '12px', 
+                padding: '16px 20px', 
+                width: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 10,
+                boxShadow: 'var(--shadow-sm)'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <span style={{ fontSize: '1.2rem' }}>☕</span>
+                  <div style={{ fontSize: '0.9rem', color: 'var(--text-light)' }}>
+                    <span style={{ textDecoration: 'line-through', marginRight: 6 }}>Most Cafés:</span> 
+                    <strong>Just Coffee &amp; Pizza</strong>
+                  </div>
+                </div>
+                <div style={{ height: '1px', background: 'var(--cream-dark)' }} />
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <span style={{ fontSize: '1.4rem' }}>✨</span>
+                  <div style={{ fontSize: '0.95rem', color: 'var(--green)' }}>
+                    <strong>B&amp;M Experience:</strong><br />
+                    <span style={{ fontWeight: 800, color: 'var(--green)' }}>Coffee + Pizza + Books + Board Games</span>
+                  </div>
+                </div>
+              </div>
+              {/* Popular Games & Books Showcase Chips */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 14, width: '100%', marginTop: 8 }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  <span style={{ fontSize: '0.82rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px', color: 'var(--green-light)', display: 'flex', alignItems: 'center', gap: 6 }}>
+                    🎲 Available Board Games:
+                  </span>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                    {['Chess', 'Jenga', 'Catan', 'Uno', 'Ludo', 'Monopoly', 'Playing Cards'].map(game => (
+                      <span key={game} style={{
+                        background: 'rgba(15, 61, 62, 0.05)',
+                        color: 'var(--green)',
+                        padding: '5px 12px',
+                        borderRadius: '20px',
+                        fontSize: '0.8rem',
+                        fontWeight: 700,
+                        border: '1px solid rgba(15, 61, 62, 0.08)'
+                      }}>
+                        {game}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  <span style={{ fontSize: '0.82rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px', color: 'var(--green-light)', display: 'flex', alignItems: 'center', gap: 6 }}>
+                    📚 Book Library Genres:
+                  </span>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                    {['Classics', 'Self-Help', 'Novels', 'Poetry', 'Philosophy', 'Biographies'].map(genre => (
+                      <span key={genre} style={{
+                        background: 'rgba(251, 191, 36, 0.08)',
+                        color: '#b45309',
+                        padding: '5px 12px',
+                        borderRadius: '20px',
+                        fontSize: '0.8rem',
+                        fontWeight: 700,
+                        border: '1px solid rgba(251, 191, 36, 0.15)'
+                      }}>
+                        {genre}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="hidden-corner-badge" style={{ marginTop: 6 }}>
+                <span>📚</span> Curated Library &amp; Tabletop Games
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* BEST FOR OCCASIONS SECTION */}
+      <section className="section" style={{ background: 'var(--cream-light)', padding: '80px 20px', borderBottom: '1px solid var(--cream-dark)' }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto', textAlign: 'center' }}>
+          <span style={{ color: 'var(--green)', textTransform: 'uppercase', letterSpacing: 2, fontSize: '0.85rem', fontWeight: 800, display: 'block', marginBottom: 8 }}>Find Your Vibe</span>
+          <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: '2.2rem', color: 'var(--green)', margin: '0 0 16px', fontWeight: 700 }}>
+            Best For...
+          </h2>
+          <div style={{ width: 60, height: 3, background: 'var(--green)', margin: '0 auto 40px' }} />
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 20 }}>
+            {[
+              { icon: '👫', title: 'Date Nights', desc: 'Cozy, ambient spots with warm lighting, perfect for sharing sweet moments and great conversation.' },
+              { icon: '👨‍👩‍👧', title: 'Family Time', desc: 'Spacious group tables and a premium vegetarian menu that everyone in the family will love.' },
+              { icon: '📚', title: 'Reading Corner', desc: 'A peaceful, quiet nook with a selection of free books and a warm cup of coffee.' },
+              { icon: '🎲', title: 'Game Nights', desc: 'Challenge your friends to chess, Jenga, or cards over signature milkshakes and Maggi.' },
+              { icon: '☕', title: 'Coffee Catchups', desc: 'Catch up with friends or get work done with high-speed free Wi-Fi and power outlets.' }
+            ].map((item, idx) => (
+              <div key={idx} className="card" style={{ 
+                background: '#fff', 
+                border: '1px solid var(--cream-dark)', 
+                borderRadius: 16, 
+                padding: '30px 20px', 
+                textAlign: 'center',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 12,
+                cursor: 'default',
+                transition: 'transform 0.3s ease, box-shadow 0.3s ease'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-6px)';
+                e.currentTarget.style.boxShadow = 'var(--shadow-lg)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = 'var(--shadow)';
+              }}
+              >
+                <span style={{ fontSize: '2.6rem' }} role="img" aria-label={item.title}>{item.icon}</span>
+                <h3 style={{ fontSize: '1.15rem', color: 'var(--green)', fontWeight: 800, margin: 0 }}>{item.title}</h3>
+                <p style={{ fontSize: '0.85rem', color: 'var(--text-light)', lineHeight: 1.5, margin: 0 }}>{item.desc}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -682,6 +807,62 @@ function Home({ addToCart, openReserve }) {
 
 
 
+
+      {/* POWERFUL BRAND QUOTE */}
+      <section className="section" style={{ background: '#fff', padding: '60px 20px 20px', textAlign: 'center' }}>
+        <div style={{ 
+          maxWidth: 800, 
+          margin: '0 auto', 
+          fontFamily: "'Playfair Display', serif", 
+          fontSize: 'clamp(1.6rem, 4.5vw, 2.4rem)', 
+          color: 'var(--green)',
+          fontStyle: 'italic',
+          fontWeight: 700,
+          lineHeight: 1.3
+        }}>
+          “Come for the coffee. Stay for the memories.”
+        </div>
+      </section>
+
+      {/* STATISTICS BLOCK: BREWS & MEMORIES BY NUMBERS */}
+      <section className="section" style={{ background: 'var(--green)', color: 'var(--cream)', padding: '60px 20px', textAlign: 'center' }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+          <span style={{ color: '#fbbf24', textTransform: 'uppercase', letterSpacing: 2, fontSize: '0.85rem', fontWeight: 800, display: 'block', marginBottom: 8 }}>Our Milestones</span>
+          <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: '2.2rem', color: 'var(--cream)', margin: '0 0 16px', fontWeight: 700 }}>
+            Brews &amp; Memories By Numbers
+          </h2>
+          <div style={{ width: 50, height: 3, background: '#fbbf24', margin: '0 auto 40px' }} />
+          
+          <div className="grid-5" style={{ gap: '30px 20px' }}>
+            {[
+              { icon: '☕', number: '500+', label: 'Happy Guests' },
+              { icon: '📚', number: 'Free', label: 'Books Available' },
+              { icon: '🎲', number: 'Free', label: 'Board Games' },
+              { icon: '⭐', number: '4.8+', label: 'Google Rating' },
+              { icon: '❤️', number: 'Countless', label: 'Memories Made' }
+            ].map((stat, idx) => (
+              <div key={idx} style={{ 
+                background: 'rgba(255, 255, 255, 0.05)', 
+                border: '1px solid rgba(245, 230, 200, 0.15)', 
+                borderRadius: '16px', 
+                padding: '24px 16px',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: 8,
+                transition: 'transform 0.3s ease'
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-4px)'}
+              onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+              >
+                <span style={{ fontSize: '2.5rem', marginBottom: 4 }}>{stat.icon}</span>
+                <strong style={{ fontSize: '1.8rem', color: '#fbbf24', fontWeight: 800 }}>{stat.number}</strong>
+                <span style={{ fontSize: '0.88rem', color: 'rgba(245, 230, 200, 0.85)', fontWeight: 600 }}>{stat.label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* LOCATION & TIMINGS BLOCK */}
       <section className="section" style={{ background: 'var(--cream-light)', padding: '60px 20px', borderTop: '1px solid var(--cream-dark)' }}>
