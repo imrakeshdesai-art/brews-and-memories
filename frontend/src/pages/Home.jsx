@@ -612,29 +612,7 @@ function Home({ addToCart, openReserve }) {
         </div>
       </section>
 
-      {/* WHY CHOOSE US */}
-      <section className="section" style={{ background: 'var(--cream-light)', padding: '80px 20px' }}>
-        <div className="section-header" style={{ marginBottom: 48, textAlign: 'center' }}>
-          <span className="section-label" style={{ color: 'var(--green)', textTransform: 'uppercase', letterSpacing: 2, fontSize: '0.85rem', fontWeight: 700 }}>Why Brews & Memories</span>
-          <h2 className="section-title" style={{ fontFamily: "'Playfair Display', serif", fontSize: '2.2rem', color: 'var(--green)', margin: '8px 0 0' }}>Crafting Experiences For <em>You</em></h2>
-          <div className="section-divider" style={{ width: 60, height: 3, background: 'var(--green)', margin: '16px auto 0' }} />
-        </div>
-        
-        <div className="grid-4" style={{ maxWidth: 1100, margin: '0 auto', gap: 24 }}>
-          {[
-            { icon: '☕', title: 'Freshly Roasted Coffee', desc: 'Expertly sourced and roasted Arabica beans brewed to absolute perfection by skilled baristas.' },
-            { icon: '🍕', title: 'Freshly Baked Pizza', desc: 'Deliciously fresh, cheesy, hand-tossed vegetarian pizzas baked hot out of the oven.' },
-            { icon: '🛋️', title: 'Family-Friendly Seating', desc: 'Cozy modern seating, warm ambient lighting, and group tables perfect for get-togethers.' },
-            { icon: '🔌', title: 'Free Wi-Fi & Work Space', desc: 'High-speed internet access and plenty of accessible charging ports at seating locations.' },
-          ].map((item) => (
-            <div key={item.title} className="card" style={{ cursor: 'default', background: '#fff', border: '1px solid var(--cream-dark)', padding: '30px 24px', borderRadius: 12 }}>
-              <div className="card-icon" style={{ fontSize: '2.5rem', marginBottom: 16 }}>{item.icon}</div>
-              <div className="card-title" style={{ fontSize: '1.15rem', color: 'var(--green)', fontWeight: 700, marginBottom: 10 }}>{item.title}</div>
-              <div className="card-copy" style={{ color: 'var(--text-light)', lineHeight: 1.6, fontSize: '0.9rem' }}>{item.desc}</div>
-            </div>
-          ))}
-        </div>
-      </section>
+
 
       {/* EXPLORE WHAT WE SERVE (CATEGORIES - IMAGES INSTEAD OF EMOJIS) */}
       <section className="section" style={{ background: '#fff', padding: '80px 20px' }}>
@@ -757,18 +735,11 @@ function Home({ addToCart, openReserve }) {
                 <p style={{ color: 'var(--text-light)', fontSize: '0.88rem', lineHeight: 1.5, margin: 0, flexGrow: 1 }}>
                   {dish.desc}
                 </p>
-                <div style={{ display: 'flex', gap: 10, marginTop: 8 }}>
-                  <button 
-                    onClick={() => handleAddFavorite(dish.item)}
-                    className="btn-primary" 
-                    style={{ flex: 1, padding: '12px 14px', fontSize: '0.85rem', borderRadius: 8, cursor: 'pointer', border: 'none', background: '#fbbf24', color: '#0f3d3e', fontWeight: 800 }}
-                  >
-                    🛒 Quick Add
-                  </button>
+                <div style={{ marginTop: 8 }}>
                   <Link 
                     to="/menu" 
                     className="btn-outline" 
-                    style={{ flex: 1, padding: '12px 14px', fontSize: '0.85rem', borderRadius: 8, textDecoration: 'none', textAlign: 'center', color: 'var(--green)', borderColor: 'var(--green)' }}
+                    style={{ display: 'block', padding: '12px 14px', fontSize: '0.85rem', borderRadius: 8, textDecoration: 'none', textAlign: 'center', color: 'var(--green)', borderColor: 'var(--green)' }}
                   >
                     Explore More
                   </Link>
@@ -1065,34 +1036,7 @@ function Home({ addToCart, openReserve }) {
         </div>
       </section>
 
-      {/* RESERVATION CTA BANNER */}
-      <section className="section" style={{ background: 'var(--green)', color: 'var(--cream)', padding: '60px 20px' }}>
-        <div style={{ maxWidth: 850, margin: '0 auto', textAlign: 'center' }}>
-          <span style={{ fontSize: '2.5rem', display: 'block', marginBottom: 12 }} aria-hidden="true">📅</span>
-          <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: '2.2rem', color: 'var(--cream)', margin: '0 0 12px' }}>Reserve Your Table</h2>
-          <p style={{ color: 'rgba(245, 230, 200, 0.85)', fontSize: '1.02rem', lineHeight: 1.6, margin: '0 0 24px' }}>
-            ⏳ Weekend tables and evening slots fill up quickly. Book your table today to secure your space for dates, family get-togethers, or work sessions!
-          </p>
-          <button 
-            onClick={openReserve} 
-            className="btn-primary" 
-            style={{ 
-              display: 'inline-block', 
-              padding: '14px 36px', 
-              textDecoration: 'none', 
-              color: '#0f3d3e', 
-              background: '#fbbf24',
-              fontWeight: 800,
-              borderRadius: 8,
-              border: 'none',
-              cursor: 'pointer',
-              boxShadow: '0 4px 14px rgba(251, 191, 36, 0.3)'
-            }}
-          >
-            Reserve Table Now
-          </button>
-        </div>
-      </section>
+
 
       {/* LOCATION & TIMINGS BLOCK */}
       <section className="section" style={{ background: 'var(--cream-light)', padding: '60px 20px', borderTop: '1px solid var(--cream-dark)' }}>
