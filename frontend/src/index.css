@@ -1768,7 +1768,7 @@ button {
   border-radius: 16px;
   overflow: hidden;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition: transform 0.5s cubic-bezier(0.165, 0.84, 0.44, 1), box-shadow 0.5s cubic-bezier(0.165, 0.84, 0.44, 1), border-color 0.4s ease;
 }
 
 .collage-item img {
@@ -1779,9 +1779,7 @@ button {
 }
 
 .collage-item:hover {
-  transform: translateY(-6px) scale(1.02);
   z-index: 10 !important;
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.45);
 }
 
 .collage-item.pizza {
@@ -1791,6 +1789,12 @@ button {
   border: 4px solid var(--green);
 }
 
+.collage-item.pizza:hover {
+  transform: translateY(-8px) rotate(-2deg) scale(1.03);
+  border-color: #fbbf24;
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.4), 0 0 25px rgba(251, 191, 36, 0.7);
+}
+
 .collage-item.coffee {
   grid-column: 6 / 13;
   grid-row: 5 / 13;
@@ -1798,11 +1802,23 @@ button {
   border: 4px solid var(--green);
 }
 
+.collage-item.coffee:hover {
+  transform: translateY(-8px) rotate(2deg) scale(1.03);
+  border-color: #fbbf24;
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.4), 0 0 25px rgba(251, 191, 36, 0.7);
+}
+
 .collage-item.sandwich {
   grid-column: 2 / 7;
   grid-row: 7 / 13;
   z-index: 4;
   border: 3px solid var(--green);
+}
+
+.collage-item.sandwich:hover {
+  transform: translateY(-8px) rotate(-3deg) scale(1.04);
+  border-color: #fbbf24;
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.4), 0 0 25px rgba(251, 191, 36, 0.7);
 }
 
 @media (max-width: 768px) {

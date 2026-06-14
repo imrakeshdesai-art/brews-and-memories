@@ -86,6 +86,77 @@ const FAQS = [
   }
 ];
 
+function StatCounter({ targetValue, duration = 2000 }) {
+  const [count, setCount] = useState(0);
+  const [hasStarted, setHasStarted] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || !window.IntersectionObserver) {
+      setHasStarted(true);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setHasStarted(true);
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    const element = document.getElementById(`stat-counter-${targetValue}`);
+    if (element) {
+      observer.observe(element);
+    }
+
+    return () => {
+      if (element) {
+        observer.unobserve(element);
+      }
+    };
+  }, [targetValue]);
+
+  useEffect(() => {
+    if (!hasStarted) return;
+
+    const isFloat = /^[0-9]+\.[0-9]+/.test(targetValue);
+    const isInt = /^[0-9]+/.test(targetValue);
+    
+    if (!isFloat && !isInt) {
+      setCount(targetValue);
+      return;
+    }
+
+    const numericValue = parseFloat(targetValue.match(/^[0-9.]+/)[0]);
+    const suffix = targetValue.replace(/^[0-9.]+/, '');
+    
+    let start = 0;
+    const steps = 60; // 60 frames
+    const increment = numericValue / steps;
+    let currentStep = 0;
+
+    const timer = setInterval(() => {
+      currentStep++;
+      const nextVal = increment * currentStep;
+      if (currentStep >= steps) {
+        clearInterval(timer);
+        setCount(targetValue);
+      } else {
+        if (isFloat) {
+          setCount(`${nextVal.toFixed(1)}${suffix}`);
+        } else {
+          setCount(`${Math.floor(nextVal)}${suffix}`);
+        }
+      }
+    }, duration / steps);
+
+    return () => clearInterval(timer);
+  }, [hasStarted, targetValue, duration]);
+
+  return <span id={`stat-counter-${targetValue}`}>{count || targetValue}</span>;
+}
+
 function Home({ addToCart, openReserve }) {
   const showToast = useToast();
 
@@ -856,7 +927,7 @@ function Home({ addToCart, openReserve }) {
               onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
               >
                 <span style={{ fontSize: '2.5rem', marginBottom: 4 }}>{stat.icon}</span>
-                <strong style={{ fontSize: '1.8rem', color: '#fbbf24', fontWeight: 800 }}>{stat.number}</strong>
+                <strong style={{ fontSize: '1.8rem', color: '#fbbf24', fontWeight: 800 }}><StatCounter targetValue={stat.number} /></strong>
                 <span style={{ fontSize: '0.88rem', color: 'rgba(245, 230, 200, 0.85)', fontWeight: 600 }}>{stat.label}</span>
               </div>
             ))}
@@ -880,22 +951,18 @@ function Home({ addToCart, openReserve }) {
               <div>📞 <strong>Contact:</strong> <a href="tel:+919945446137" style={{ color: 'var(--green)', fontWeight: 700, textDecoration: 'none' }}>+91 99454 46137</a></div>
             </div>
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 14, alignItems: 'center' }}>
-            <div style={{ background: '#fff', border: '1px solid var(--cream-dark)', padding: '28px', borderRadius: 16, width: '100%', maxWidth: 360, textAlign: 'center', boxShadow: 'var(--shadow)' }}>
-              <span style={{ fontSize: '2.5rem', display: 'block', marginBottom: 12 }} aria-hidden="true">🗺️</span>
-              <h3 style={{ fontSize: '1.2rem', color: 'var(--green)', margin: '0 0 10px' }}>Need Directions?</h3>
-              <p style={{ fontSize: '0.88rem', color: 'var(--text-light)', lineHeight: 1.5, margin: '0 0 20px' }}>
-                Open Google Maps to get real-time navigation directions to our cafe right away.
-              </p>
-              <a 
-                href="https://www.google.com/maps/place/Brews+and+Memories+cafe/@16.8637369,75.7133426,17z/data=!3m1!4b1!4m6!3m5!1s0x3bc65571521cbf25:0x8c034c8193bdc099!8m2!3d16.8637369!4d75.7159176"
-                target="_blank"
-                rel="noreferrer"
-                className="btn-primary"
-                style={{ display: 'inline-block', padding: '12px 28px', textDecoration: 'none', background: '#fbbf24', color: '#0f3d3e', fontWeight: 800, borderRadius: 8 }}
-              >
-                🗺️ Get Directions on Maps
-              </a>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 14, alignItems: 'center', width: '100%', maxWidth: 440 }}>
+            <div style={{ width: '100%', borderRadius: 16, overflow: 'hidden', border: '3px solid var(--cream-dark)', boxShadow: 'var(--shadow-lg)', height: 350 }}>
+              <iframe
+                title="Brews and Memories Cafe Location Map"
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3818.245682380596!2d75.71334267461603!3d16.863736917680278!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bc65571521cbf25%3A0x8c034c8193bdc099!2sBrews%20and%20Memories%20cafe!5e0!3m2!1sen!2sus!4v1780667200850!5m2!1sen!2sus"
+                width="100%"
+                height="100%"
+                style={{ border: 0 }}
+                allowFullScreen=""
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+              />
             </div>
           </div>
         </div>

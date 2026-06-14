@@ -1,4 +1,76 @@
+import { useState, useEffect } from 'react';
 import { reviewsData } from '../data/reviewsData';
+
+function StatCounter({ targetValue, duration = 2000 }) {
+  const [count, setCount] = useState(0);
+  const [hasStarted, setHasStarted] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || !window.IntersectionObserver) {
+      setHasStarted(true);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setHasStarted(true);
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    const element = document.getElementById(`reviews-stat-counter-${targetValue}`);
+    if (element) {
+      observer.observe(element);
+    }
+
+    return () => {
+      if (element) {
+        observer.unobserve(element);
+      }
+    };
+  }, [targetValue]);
+
+  useEffect(() => {
+    if (!hasStarted) return;
+
+    const isFloat = /^[0-9]+\.[0-9]+/.test(targetValue);
+    const isInt = /^[0-9]+/.test(targetValue);
+    
+    if (!isFloat && !isInt) {
+      setCount(targetValue);
+      return;
+    }
+
+    const numericValue = parseFloat(targetValue.match(/^[0-9.]+/)[0]);
+    const suffix = targetValue.replace(/^[0-9.]+/, '');
+    
+    let start = 0;
+    const steps = 60; // 60 frames
+    const increment = numericValue / steps;
+    let currentStep = 0;
+
+    const timer = setInterval(() => {
+      currentStep++;
+      const nextVal = increment * currentStep;
+      if (currentStep >= steps) {
+        clearInterval(timer);
+        setCount(targetValue);
+      } else {
+        if (isFloat) {
+          setCount(`${nextVal.toFixed(1)}${suffix}`);
+        } else {
+          setCount(`${Math.floor(nextVal)}${suffix}`);
+        }
+      }
+    }, duration / steps);
+
+    return () => clearInterval(timer);
+  }, [hasStarted, targetValue, duration]);
+
+  return <span id={`reviews-stat-counter-${targetValue}`}>{count || targetValue}</span>;
+}
 
 function Reviews() {
   return (
@@ -72,7 +144,7 @@ function Reviews() {
             }}
             >
               <span style={{ fontSize: '2.5rem', marginBottom: 4 }} role="img" aria-label={stat.label}>{stat.icon}</span>
-              <strong style={{ fontSize: '1.8rem', color: 'var(--green)', fontWeight: 800 }}>{stat.number}</strong>
+              <strong style={{ fontSize: '1.8rem', color: 'var(--green)', fontWeight: 800 }}><StatCounter targetValue={stat.number} /></strong>
               <span style={{ fontSize: '0.88rem', color: 'var(--text-light)', fontWeight: 600 }}>{stat.label}</span>
             </div>
           ))}
