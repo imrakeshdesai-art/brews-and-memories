@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://brews-and-memories.vercel.app/sitemap.xml
