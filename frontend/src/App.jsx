@@ -227,21 +227,23 @@ function App() {
         )}
         <main className="page-shell">
           <Suspense fallback={<div className="page-loader">Loading page…</div>}>
-            <Routes>
-              <Route path="/" element={<Home {...pageProps} />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/menu" element={<Menu {...pageProps} />} />
-              <Route path="/reviews" element={<Reviews />} />
-              <Route path="/reserve" element={<Reserve />} />
-              <Route path="/order" element={<TableOrder />} />
-              <Route path="/order/:tableId" element={<TableOrder onSessionStart={handleSessionStart} />} />
-              <Route path="/admin" element={<Admin />} />
-              <Route path="/admin/print-qr/:tableNum" element={<PrintQR />} />
-              <Route path="/privacy" element={<Privacy />} />
-              <Route path="/terms" element={<Terms />} />
-              <Route path="/moments" element={<Moments />} />
-              <Route path="*" element={<Home {...pageProps} />} />
-            </Routes>
+            <div key={location.pathname} className="page-fade-in">
+              <Routes location={location}>
+                <Route path="/" element={<Home {...pageProps} />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/menu" element={<Menu {...pageProps} />} />
+                <Route path="/reviews" element={<Reviews />} />
+                <Route path="/reserve" element={<Reserve />} />
+                <Route path="/order" element={<TableOrder />} />
+                <Route path="/order/:tableId" element={<TableOrder onSessionStart={handleSessionStart} />} />
+                <Route path="/admin" element={<Admin />} />
+                <Route path="/admin/print-qr/:tableNum" element={<PrintQR />} />
+                <Route path="/privacy" element={<Privacy />} />
+                <Route path="/terms" element={<Terms />} />
+                <Route path="/moments" element={<Moments />} />
+                <Route path="*" element={<Home {...pageProps} />} />
+              </Routes>
+            </div>
           </Suspense>
         </main>
         {!isPrintPage && <Footer onReserveClick={() => setIsReserveOpen(true)} />}
