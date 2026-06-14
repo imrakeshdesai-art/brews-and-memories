@@ -1,8 +1,12 @@
 import { useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 
 function NavBar({ cartCount, onCartClick, activeTable, onReserveClick }) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const location = useLocation();
+
+  const isHomeActive = location.pathname === '/' && !location.hash;
+  const isContactActive = location.pathname === '/' && location.hash === '#location';
 
   return (
     <header className="site-nav">
@@ -17,7 +21,7 @@ function NavBar({ cartCount, onCartClick, activeTable, onReserveClick }) {
       </div>
 
       <nav className="nav-links desktop-menu">
-        <NavLink to="/" end className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
+        <NavLink to="/" end className={() => (isHomeActive ? 'nav-link active' : 'nav-link')}>
           Home
         </NavLink>
         <NavLink to="/about" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
@@ -32,7 +36,7 @@ function NavBar({ cartCount, onCartClick, activeTable, onReserveClick }) {
         <NavLink to="/moments" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
           Moments
         </NavLink>
-        <NavLink to="/#location" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
+        <NavLink to="/#location" className={() => (isContactActive ? 'nav-link active' : 'nav-link')}>
           Contact
         </NavLink>
         <NavLink to="/admin" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
