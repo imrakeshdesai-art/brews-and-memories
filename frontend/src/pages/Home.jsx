@@ -143,6 +143,7 @@ const FAQS = [
 
 function Home({ addToCart, openReserve }) {
   const showToast = useToast();
+  const instagramWidgetUrl = import.meta.env.VITE_INSTAGRAM_WIDGET_URL || '';
 
   const favorites = FAVORITES_CONFIG.map(config => {
     const categoryItems = menuData[config.category] || [];
@@ -776,119 +777,132 @@ function Home({ addToCart, openReserve }) {
         </div>
 
         {/* Modern Instagram-style Gallery Grid (Sourced from official handle) */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 30, maxWidth: 1100, margin: '0 auto' }}>
-          {INSTAGRAM_POSTS.map((post, index) => (
-            <div 
-              key={index} 
-              className="card"
-              style={{
-                padding: 0,
-                borderRadius: 14,
-                overflow: 'hidden',
-                background: '#fff',
-                border: '1px solid var(--cream-dark)',
-                boxShadow: 'var(--shadow)',
-                display: 'flex',
-                flexDirection: 'column',
-                cursor: 'default'
-              }}
-            >
-              {/* Instagram Card Header */}
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', borderBottom: '1px solid var(--cream-light)' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <div style={{ 
-                    width: 34, 
-                    height: 34, 
-                    borderRadius: '50%', 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    justifyContent: 'center', 
-                    background: `hsl(${(index * 75) % 360}, 65%, 40%)`, 
-                    color: '#fff', 
-                    fontWeight: 700, 
-                    fontSize: '0.8rem',
-                    boxShadow: 'inset 0 0 4px rgba(0,0,0,0.1)'
-                  }}>
-                    {post.initials}
-                  </div>
-                  <div>
-                    <div style={{ fontWeight: 800, fontSize: '0.85rem', color: 'var(--green)', lineHeight: 1, display: 'flex', alignItems: 'baseline', gap: 4 }}>
-                      {post.username}
-                      {post.collaborators && (
-                        <span style={{ fontWeight: 400, color: 'var(--text-light)', fontSize: '0.72rem' }}>
-                          {post.collaborators}
-                        </span>
-                      )}
-                    </div>
-                    <small style={{ fontSize: '0.7rem', color: 'var(--text-light)' }}>Vijayapura, Karnataka</small>
-                  </div>
-                </div>
-                {/* Instagram Icon */}
-                <span style={{ fontSize: '1.25rem', color: '#c13584' }}>📸</span>
-              </div>
-
-              {/* Card Image */}
+        {instagramWidgetUrl ? (
+          <div style={{ maxWidth: 1100, margin: '0 auto', background: '#fff', borderRadius: 14, overflow: 'hidden', boxShadow: 'var(--shadow-sm)', border: '1px solid var(--cream-dark)', padding: '16px' }}>
+            <iframe 
+              src={instagramWidgetUrl}
+              scrolling="no" 
+              allowtransparency="true" 
+              className="instagram-embed-widget"
+              style={{ width: '100%', border: '0', overflow: 'hidden', minHeight: '650px', display: 'block' }}
+              title="Instagram Feed Widget"
+            />
+          </div>
+        ) : (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 30, maxWidth: 1100, margin: '0 auto' }}>
+            {INSTAGRAM_POSTS.map((post, index) => (
               <div 
-                style={{ height: 280, overflow: 'hidden', position: 'relative', cursor: 'pointer' }}
-                onClick={() => handleOpenLightbox(post.image, post.caption)}
-                title="Click to view closeup"
+                key={index} 
+                className="card"
+                style={{
+                  padding: 0,
+                  borderRadius: 14,
+                  overflow: 'hidden',
+                  background: '#fff',
+                  border: '1px solid var(--cream-dark)',
+                  boxShadow: 'var(--shadow)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  cursor: 'default'
+                }}
               >
-                <img 
-                  src={post.image} 
-                  alt={post.caption} 
-                  loading="lazy" 
-                  style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.4s ease' }}
-                  onMouseEnter={(e) => e.target.style.transform = 'scale(1.03)'}
-                  onMouseLeave={(e) => e.target.style.transform = 'scale(1)'}
-                />
-              </div>
-
-              {/* Instagram Card Body / Engagement stats */}
-              <div style={{ padding: 16, display: 'flex', flexDirection: 'column', gap: 10, flexGrow: 1 }}>
-                
-                {/* Like & Comment Counts */}
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid var(--cream-light)', paddingBottom: 10 }}>
-                  <div style={{ display: 'flex', gap: 16, fontSize: '0.85rem', fontWeight: 800, color: 'var(--green)' }}>
-                    <span>❤️ {post.likes} Likes</span>
-                    <span>💬 {post.comments} Comments</span>
+                {/* Instagram Card Header */}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', borderBottom: '1px solid var(--cream-light)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                    <div style={{ 
+                      width: 34, 
+                      height: 34, 
+                      borderRadius: '50%', 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      justifyContent: 'center', 
+                      background: `hsl(${(index * 75) % 360}, 65%, 40%)`, 
+                      color: '#fff', 
+                      fontWeight: 700, 
+                      fontSize: '0.8rem',
+                      boxShadow: 'inset 0 0 4px rgba(0,0,0,0.1)'
+                    }}>
+                      {post.initials}
+                    </div>
+                    <div>
+                      <div style={{ fontWeight: 800, fontSize: '0.85rem', color: 'var(--green)', lineHeight: 1, display: 'flex', alignItems: 'baseline', gap: 4 }}>
+                        {post.username}
+                        {post.collaborators && (
+                          <span style={{ fontWeight: 400, color: 'var(--text-light)', fontSize: '0.72rem' }}>
+                            {post.collaborators}
+                          </span>
+                        )}
+                      </div>
+                      <small style={{ fontSize: '0.7rem', color: 'var(--text-light)' }}>Vijayapura, Karnataka</small>
+                    </div>
                   </div>
-                  <span style={{ fontSize: '0.72rem', color: 'var(--text-light)', fontWeight: 600 }}>{post.date}</span>
+                  {/* Instagram Icon */}
+                  <span style={{ fontSize: '1.25rem', color: '#c13584' }}>📸</span>
                 </div>
 
-                {/* Caption Description */}
-                <p style={{ fontSize: '0.85rem', color: 'var(--text-light)', lineHeight: 1.5, margin: 0, flexGrow: 1 }}>
-                  <strong style={{ color: 'var(--green)', marginRight: 6 }}>{post.username}</strong>
-                  {post.caption}
-                </p>
+                {/* Card Image */}
+                <div 
+                  style={{ height: 280, overflow: 'hidden', position: 'relative', cursor: 'pointer' }}
+                  onClick={() => handleOpenLightbox(post.image, post.caption)}
+                  title="Click to view closeup"
+                >
+                  <img 
+                    src={post.image} 
+                    alt={post.caption} 
+                    loading="lazy" 
+                    style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.4s ease' }}
+                    onMouseEnter={(e) => e.target.style.transform = 'scale(1.03)'}
+                    onMouseLeave={(e) => e.target.style.transform = 'scale(1)'}
+                  />
+                </div>
 
-                {/* Card Button footer (Instagram themed) */}
-                <div style={{ marginTop: 10 }}>
-                  <a 
-                    href={post.postUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="btn-outline"
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: 8,
-                      padding: '10px',
-                      borderRadius: 8,
-                      fontSize: '0.85rem',
-                      fontWeight: 700,
-                      textDecoration: 'none',
-                      color: '#c13584',
-                      borderColor: '#c13584'
-                    }}
-                  >
-                    <span>🔗 View Instagram Post</span>
-                  </a>
+                {/* Instagram Card Body / Engagement stats */}
+                <div style={{ padding: 16, display: 'flex', flexDirection: 'column', gap: 10, flexGrow: 1 }}>
+                  
+                  {/* Like & Comment Counts */}
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid var(--cream-light)', paddingBottom: 10 }}>
+                    <div style={{ display: 'flex', gap: 16, fontSize: '0.85rem', fontWeight: 800, color: 'var(--green)' }}>
+                      <span>❤️ {post.likes} Likes</span>
+                      <span>💬 {post.comments} Comments</span>
+                    </div>
+                    <span style={{ fontSize: '0.72rem', color: 'var(--text-light)', fontWeight: 600 }}>{post.date}</span>
+                  </div>
+
+                  {/* Caption Description */}
+                  <p style={{ fontSize: '0.85rem', color: 'var(--text-light)', lineHeight: 1.5, margin: 0, flexGrow: 1 }}>
+                    <strong style={{ color: 'var(--green)', marginRight: 6 }}>{post.username}</strong>
+                    {post.caption}
+                  </p>
+
+                  {/* Card Button footer (Instagram themed) */}
+                  <div style={{ marginTop: 10 }}>
+                    <a 
+                      href={post.postUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="btn-outline"
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: 8,
+                        padding: '10px',
+                        borderRadius: 8,
+                        fontSize: '0.85rem',
+                        fontWeight: 700,
+                        textDecoration: 'none',
+                        color: '#c13584',
+                        borderColor: '#c13584'
+                      }}
+                    >
+                      <span>🔗 View Instagram Post</span>
+                    </a>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </section>
 
       {/* GUEST REVIEWS / TESTIMONIALS SECTION */}
