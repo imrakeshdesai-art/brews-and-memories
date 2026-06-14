@@ -143,22 +143,13 @@ const FAQS = [
 
 function Home({ addToCart, openReserve }) {
   const showToast = useToast();
-  const instagramWidgetUrl = import.meta.env.VITE_INSTAGRAM_WIDGET_URL || '';
+  const instagramWidgetUrl = import.meta.env.VITE_INSTAGRAM_WIDGET_URL || 'b16a01b6-838f-4360-88fc-9a34d2927446';
 
   useEffect(() => {
     if (instagramWidgetUrl && !instagramWidgetUrl.startsWith('http')) {
-      const script = document.createElement('script');
-      script.src = 'https://static.elfsight.com/platform/platform.js';
-      script.async = true;
-      script.defer = true;
-      document.body.appendChild(script);
-
-      return () => {
-        // Safe check to avoid DOM exceptions if script was already removed or modified
-        if (document.body.contains(script)) {
-          document.body.removeChild(script);
-        }
-      };
+      if (window.ElfsightPlatform && typeof window.ElfsightPlatform.init === 'function') {
+        window.ElfsightPlatform.init();
+      }
     }
   }, [instagramWidgetUrl]);
 
