@@ -452,6 +452,53 @@ function Home({ addToCart, openReserve }) {
         </div>
       </section>
 
+      {/* WHY PEOPLE LOVE SECTION */}
+      <section className="why-love-section">
+        <div className="why-love-container">
+          <span className="why-love-label">Experience the Vibe</span>
+          <h2 className="why-love-title">Why People Love Brews & Memories</h2>
+          <div className="why-love-divider" />
+          
+          <div className="why-love-grid">
+            {[
+              {
+                icon: '📚',
+                title: 'Free Books to Read',
+                desc: 'Dive into our curated library of novels, poetry, and biographies while enjoying your coffee.'
+              },
+              {
+                icon: '🎲',
+                title: 'Free Board Games',
+                desc: 'Unplug and challenge your friends to classic chess, card games, or fun tabletop battles.'
+              },
+              {
+                icon: '☕',
+                title: 'Fresh Coffee & Snacks',
+                desc: 'Enjoy freshly brewed coffee and premium pure-veg snacks crafted fresh in our kitchen.'
+              },
+              {
+                icon: '🌧️',
+                title: 'Cozy Rainy-Day Seating',
+                desc: 'Watch the rain pour through our glass windows in our warm, botanical garden indoor seating.'
+              },
+              {
+                icon: '📸',
+                title: 'Instagram-Worthy Ambience',
+                desc: 'Capture aesthetic moments with neon backdrops, lush green decor, and cozy lighting.'
+              }
+            ].map((item, index) => (
+              <div key={index} className="why-love-card">
+                <span className="why-love-icon" role="img" aria-label={item.title}>
+                  {item.icon}
+                </span>
+                <h4 className="why-love-card-title">{item.title}</h4>
+                <p className="why-love-card-desc">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* OUR STORY SECTION (RIGHT AFTER HERO) */}
       <section className="section" style={{ background: '#fff', padding: '80px 20px' }}>
         <div className="grid-2" style={{ gap: '48px', alignItems: 'center', maxWidth: 1100, margin: '0 auto' }}>
