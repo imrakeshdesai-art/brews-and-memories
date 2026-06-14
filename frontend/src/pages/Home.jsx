@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useToast } from '../components/ToastProvider';
 import { menuData } from '../data/menuData';
@@ -144,6 +144,23 @@ const FAQS = [
 function Home({ addToCart, openReserve }) {
   const showToast = useToast();
   const instagramWidgetUrl = import.meta.env.VITE_INSTAGRAM_WIDGET_URL || '';
+
+  useEffect(() => {
+    if (instagramWidgetUrl && !instagramWidgetUrl.startsWith('http')) {
+      const script = document.createElement('script');
+      script.src = 'https://static.elfsight.com/platform/platform.js';
+      script.async = true;
+      script.defer = true;
+      document.body.appendChild(script);
+
+      return () => {
+        // Safe check to avoid DOM exceptions if script was already removed or modified
+        if (document.body.contains(script)) {
+          document.body.removeChild(script);
+        }
+      };
+    }
+  }, [instagramWidgetUrl]);
 
   const favorites = FAVORITES_CONFIG.map(config => {
     const categoryItems = menuData[config.category] || [];
@@ -779,14 +796,21 @@ function Home({ addToCart, openReserve }) {
         {/* Modern Instagram-style Gallery Grid (Sourced from official handle) */}
         {instagramWidgetUrl ? (
           <div style={{ maxWidth: 1100, margin: '0 auto', background: '#fff', borderRadius: 14, overflow: 'hidden', boxShadow: 'var(--shadow-sm)', border: '1px solid var(--cream-dark)', padding: '16px' }}>
-            <iframe 
-              src={instagramWidgetUrl}
-              scrolling="no" 
-              allowtransparency="true" 
-              className="instagram-embed-widget"
-              style={{ width: '100%', border: '0', overflow: 'hidden', minHeight: '650px', display: 'block' }}
-              title="Instagram Feed Widget"
-            />
+            {instagramWidgetUrl.startsWith('http') ? (
+              <iframe 
+                src={instagramWidgetUrl}
+                scrolling="no" 
+                allowtransparency="true" 
+                className="instagram-embed-widget"
+                style={{ width: '100%', border: '0', overflow: 'hidden', minHeight: '650px', display: 'block' }}
+                title="Instagram Feed Widget"
+              />
+            ) : (
+              <div 
+                className={`elfsight-app-${instagramWidgetUrl}`} 
+                data-elfsight-app-lazy
+              />
+            )}
           </div>
         ) : (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 30, maxWidth: 1100, margin: '0 auto' }}>
