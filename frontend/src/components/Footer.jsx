@@ -87,6 +87,8 @@ function Footer({ onReserveClick }) {
           <Link to="/privacy" style={{ color: 'rgba(245,230,200,0.7)', textDecoration: 'underline' }} onMouseEnter={(e) => e.currentTarget.style.color = '#fbbf24'} onMouseLeave={(e) => e.currentTarget.style.color = 'rgba(245,230,200,0.7)'}>Privacy Policy</Link>
           <span style={{ margin: '0 8px', opacity: 0.3 }}>|</span>
           <Link to="/terms" style={{ color: 'rgba(245,230,200,0.7)', textDecoration: 'underline' }} onMouseEnter={(e) => e.currentTarget.style.color = '#fbbf24'} onMouseLeave={(e) => e.currentTarget.style.color = 'rgba(245,230,200,0.7)'}>Terms of Service</Link>
+          <span style={{ margin: '0 8px', opacity: 0.3 }}>|</span>
+          <span>Designed &amp; Built with ❤️ by <strong style={{ color: 'var(--cream)', fontWeight: 800 }}>Rakesh Desai</strong> (<a href="https://github.com/imrakeshdesai-art" target="_blank" rel="noreferrer" style={{ color: '#fbbf24', textDecoration: 'none' }} onMouseEnter={(e) => e.currentTarget.style.textDecoration = 'underline'} onMouseLeave={(e) => e.currentTarget.style.textDecoration = 'none'}>GitHub</a> · <a href="https://www.instagram.com/imrakeshdesai/" target="_blank" rel="noreferrer" style={{ color: '#fbbf24', textDecoration: 'none' }} onMouseEnter={(e) => e.currentTarget.style.textDecoration = 'underline'} onMouseLeave={(e) => e.currentTarget.style.textDecoration = 'none'}>Instagram</a>)</span>
         </div>
         <div className="social-links">
           <a href="https://www.instagram.com/brews_and_memories_/" target="_blank" rel="noreferrer" className="social-btn" aria-label="Instagram page">📸</a>
