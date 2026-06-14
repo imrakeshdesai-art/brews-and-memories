@@ -146,11 +146,50 @@ function Home({ addToCart, openReserve }) {
   const instagramWidgetUrl = import.meta.env.VITE_INSTAGRAM_WIDGET_URL || 'b16a01b6-838f-4360-88fc-9a34d2927446';
 
   useEffect(() => {
+    let scriptListener = null;
+    let timerId = null;
+
     if (instagramWidgetUrl && !instagramWidgetUrl.startsWith('http')) {
-      if (window.ElfsightPlatform && typeof window.ElfsightPlatform.init === 'function') {
-        window.ElfsightPlatform.init();
+      const initElfsight = () => {
+        timerId = setTimeout(() => {
+          if (window.ElfsightPlatform) {
+            if (typeof window.ElfsightPlatform.init === 'function') {
+              window.ElfsightPlatform.init();
+            } else if (typeof window.ElfsightPlatform.renderComponents === 'function') {
+              window.ElfsightPlatform.renderComponents();
+            }
+          }
+        }, 100);
+      };
+
+      let script = document.querySelector('script[src*="elfsight.com/platform/platform.js"]');
+      if (!script) {
+        script = document.createElement('script');
+        script.src = 'https://static.elfsight.com/platform/platform.js';
+        script.async = true;
+        script.defer = true;
+        script.setAttribute('data-use-service-core', '');
+        script.onload = initElfsight;
+        document.body.appendChild(script);
+      } else {
+        if (window.ElfsightPlatform) {
+          initElfsight();
+        } else {
+          scriptListener = initElfsight;
+          script.addEventListener('load', scriptListener);
+        }
       }
     }
+
+    return () => {
+      if (timerId) clearTimeout(timerId);
+      if (scriptListener) {
+        const script = document.querySelector('script[src*="elfsight.com/platform/platform.js"]');
+        if (script) {
+          script.removeEventListener('load', scriptListener);
+        }
+      }
+    };
   }, [instagramWidgetUrl]);
 
   const favorites = FAVORITES_CONFIG.map(config => {
@@ -786,7 +825,17 @@ function Home({ addToCart, openReserve }) {
 
         {/* Modern Instagram-style Gallery Grid (Sourced from official handle) */}
         {instagramWidgetUrl ? (
-          <div style={{ maxWidth: 1100, margin: '0 auto', background: '#fff', borderRadius: 14, overflow: 'hidden', boxShadow: 'var(--shadow-sm)', border: '1px solid var(--cream-dark)', padding: '16px' }}>
+          <div style={{ 
+            maxWidth: 1100, 
+            margin: '0 auto', 
+            background: '#fff', 
+            borderRadius: 14, 
+            overflow: 'hidden', 
+            boxShadow: 'var(--shadow-sm)', 
+            border: '1px solid var(--cream-dark)', 
+            padding: '16px',
+            minHeight: '450px'
+          }}>
             {instagramWidgetUrl.startsWith('http') ? (
               <iframe 
                 src={instagramWidgetUrl}
@@ -797,10 +846,21 @@ function Home({ addToCart, openReserve }) {
                 title="Instagram Feed Widget"
               />
             ) : (
-              <div 
-                className={`elfsight-app-${instagramWidgetUrl}`} 
-                data-elfsight-app-lazy
-              />
+              <div className={`elfsight-app-${instagramWidgetUrl}`}>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '400px', color: 'var(--text-light)' }}>
+                  <span className="spinner" style={{
+                    width: 36,
+                    height: 36,
+                    border: '3px solid rgba(15, 61, 62, 0.1)',
+                    borderTop: '3px solid var(--green)',
+                    borderRadius: '50%',
+                    animation: 'spin 0.8s linear infinite',
+                    marginBottom: 16
+                  }} />
+                  <p style={{ margin: 0, fontWeight: 700, color: 'var(--green)', fontSize: '0.95rem' }}>Loading Instagram Feed...</p>
+                  <p style={{ margin: '4px 0 0', fontSize: '0.8rem', color: 'var(--text-light)' }}>Connected to @brews_and_memories_</p>
+                </div>
+              </div>
             )}
           </div>
         ) : (
