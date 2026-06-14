@@ -499,6 +499,33 @@ function Home({ addToCart, openReserve }) {
         </div>
       </section>
 
+      {/* HIDDEN CORNER SECTION */}
+      <section className="hidden-corner-section">
+        <div className="hidden-corner-container">
+          <div className="hidden-corner-grid">
+            <div className="hidden-corner-image-wrapper">
+              <img 
+                src="/images/instagram/booksandboardgames.png" 
+                alt="A cozy bookshelf corner filled with novels, board games, and warm ambient lighting" 
+                className="hidden-corner-img"
+                loading="lazy"
+              />
+            </div>
+            <div className="hidden-corner-content">
+              <span className="hidden-corner-label">The Hidden Corner</span>
+              <h2 className="hidden-corner-title">More Than Just Coffee</h2>
+              <div className="hidden-corner-divider" />
+              <p className="hidden-corner-text">
+                Pick a book. Play a board game. Stay as long as you like.
+              </p>
+              <div className="hidden-corner-badge">
+                <span>📚</span> Curated Library & Games
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* OUR STORY SECTION (RIGHT AFTER HERO) */}
       <section className="section" style={{ background: '#fff', padding: '80px 20px' }}>
         <div className="grid-2" style={{ gap: '48px', alignItems: 'center', maxWidth: 1100, margin: '0 auto' }}>

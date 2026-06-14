@@ -2223,3 +2223,119 @@ button {
   }
 }
 
+/* ==================== HIDDEN CORNER SECTION ==================== */
+.hidden-corner-section {
+  background: #fff;
+  padding: 90px 20px;
+  border-bottom: 1px solid var(--cream-dark);
+}
+
+.hidden-corner-container {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.hidden-corner-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 60px;
+  align-items: center;
+}
+
+.hidden-corner-image-wrapper {
+  position: relative;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 16px 45px rgba(15, 61, 62, 0.12);
+  aspect-ratio: 4 / 3;
+}
+
+.hidden-corner-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  display: block;
+}
+
+.hidden-corner-image-wrapper:hover .hidden-corner-img {
+  transform: scale(1.06);
+}
+
+.hidden-corner-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
+  text-align: left;
+}
+
+.hidden-corner-label {
+  color: var(--green);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-size: 0.85rem;
+  font-weight: 800;
+  display: block;
+}
+
+.hidden-corner-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2rem, 4vw, 2.8rem);
+  color: var(--green);
+  margin: 0;
+  line-height: 1.2;
+  font-weight: 700;
+}
+
+.hidden-corner-divider {
+  width: 50px;
+  height: 3px;
+  background: var(--green);
+}
+
+.hidden-corner-text {
+  font-size: 1.25rem;
+  color: var(--text-dark);
+  line-height: 1.8;
+  font-style: italic;
+  font-family: 'Outfit', sans-serif;
+  margin: 8px 0 0 0;
+  font-weight: 500;
+}
+
+.hidden-corner-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--cream-light);
+  color: var(--green);
+  border: 1px solid var(--cream-dark);
+  padding: 8px 18px;
+  border-radius: 30px;
+  font-size: 0.82rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 10px;
+}
+
+@media (max-width: 992px) {
+  .hidden-corner-section {
+    padding: 60px 20px;
+  }
+  .hidden-corner-grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  .hidden-corner-image-wrapper {
+    order: 2;
+  }
+  .hidden-corner-content {
+    order: 1;
+    align-items: center;
+    text-align: center;
+  }
+}
+
+
