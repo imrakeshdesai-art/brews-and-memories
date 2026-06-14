@@ -59,15 +59,12 @@ const INSTAGRAM_POSTS = [
 ];
 
 export default function Moments() {
-  const [useFallback, setUseFallback] = useState(false);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [lightboxImage, setLightboxImage] = useState('');
   const [lightboxCaption, setLightboxCaption] = useState('');
 
   useEffect(() => {
-    let scriptListener = null;
     let timerId = null;
-    let fallbackTimerId = null;
 
     if (instagramWidgetUrl && !instagramWidgetUrl.startsWith('http')) {
       const initElfsight = () => {
@@ -95,32 +92,13 @@ export default function Moments() {
         if (window.ElfsightPlatform) {
           initElfsight();
         } else {
-          scriptListener = initElfsight;
-          script.addEventListener('load', scriptListener);
+          script.addEventListener('load', initElfsight);
         }
       }
-
-      // Check if widget loads successfully within 3.5 seconds. If not (blocked by ad-blocker), show offline fallback.
-      fallbackTimerId = setTimeout(() => {
-        const widgetContainer = document.querySelector(`.elfsight-app-${instagramWidgetUrl}`);
-        if (!widgetContainer || widgetContainer.children.length <= 1) {
-          console.warn('Elfsight widget timed out or was blocked. Falling back to native gallery grid.');
-          setUseFallback(true);
-        }
-      }, 3500);
-    } else {
-      setUseFallback(true);
     }
 
     return () => {
       if (timerId) clearTimeout(timerId);
-      if (fallbackTimerId) clearTimeout(fallbackTimerId);
-      if (scriptListener) {
-        const script = document.querySelector('script[src*="elfsight.com/platform/platform.js"]');
-        if (script) {
-          script.removeEventListener('load', scriptListener);
-        }
-      }
     };
   }, []);
 
@@ -131,7 +109,7 @@ export default function Moments() {
   };
 
   return (
-    <div style={{ background: 'var(--cream-light)', minHeight: '100vh', paddingBottom: '80px' }}>
+    <div style={{ background: 'var(--cream-light)', minHeight: '100vh', paddingBottom: '40px' }}>
       {/* HEADER SECTION */}
       <section style={{ 
         backgroundImage: 'linear-gradient(rgba(15, 61, 62, 0.82), rgba(15, 61, 62, 0.92)), url("/ambiance.webp")',
@@ -151,7 +129,7 @@ export default function Moments() {
             display: 'block',
             marginBottom: '8px'
           }}>
-            Real Instagram Moments
+            Guest Moments &amp; Vibes
           </span>
           <h1 style={{ 
             fontFamily: "'Playfair Display', serif", 
@@ -172,170 +150,220 @@ export default function Moments() {
             marginLeft: 'auto',
             marginRight: 'auto'
           }}>
-            A collection of beautiful memories captured by our guests at Brews &amp; Memories Cafe. Tag us <a href="https://www.instagram.com/brews_and_memories_/" target="_blank" rel="noreferrer" style={{ color: '#fbbf24', fontWeight: 700, textDecoration: 'none' }}>@brews_and_memories_</a> on Instagram to get featured!
+            Tag us <a href="https://www.instagram.com/brews_and_memories_/" target="_blank" rel="noreferrer" style={{ color: '#fbbf24', fontWeight: 700, textDecoration: 'none' }}>@brews_and_memories_</a> on Instagram to get featured on our board!
           </p>
         </div>
       </section>
 
-      {/* GALLERY / FEED SECTION */}
-      <section className="section" style={{ padding: '60px 20px' }}>
+      {/* CUSTOMER MOMENTS GALLERY */}
+      <section className="section" style={{ padding: '60px 20px 40px' }}>
         <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-          {useFallback ? (
-            /* STATIC MOCK FEED SOURCED FROM REAL ACCOUNT */
-            <div>
-              <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-                <span style={{ background: 'rgba(193, 53, 132, 0.1)', color: '#c13584', padding: '6px 16px', borderRadius: '20px', fontSize: '0.8rem', fontWeight: 800, display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-                  📸 Insta Gallery
-                </span>
-                <p style={{ margin: '8px 0 0', fontSize: '0.82rem', color: 'var(--text-light)' }}>
-                  Showing our latest guest moments. You can also view them directly on our page.
-                </p>
-              </div>
-              
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 30 }}>
-                {INSTAGRAM_POSTS.map((post, index) => (
-                  <div 
-                    key={index} 
-                    className="card"
-                    style={{
-                      padding: 0,
-                      borderRadius: 14,
-                      overflow: 'hidden',
-                      background: '#fff',
-                      border: '1px solid var(--cream-dark)',
-                      boxShadow: 'var(--shadow)',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      cursor: 'default'
-                    }}
-                  >
-                    {/* Header */}
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', borderBottom: '1px solid var(--cream-light)' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                        <div style={{ 
-                          width: 34, 
-                          height: 34, 
-                          borderRadius: '50%', 
-                          display: 'flex', 
-                          alignItems: 'center', 
-                          justifyContent: 'center', 
-                          background: `hsl(${(index * 75) % 360}, 65%, 40%)`, 
-                          color: '#fff', 
-                          fontWeight: 700, 
-                          fontSize: '0.8rem'
-                        }}>
-                          {post.initials}
-                        </div>
-                        <div>
-                          <div style={{ fontWeight: 800, fontSize: '0.85rem', color: 'var(--green)', lineHeight: 1, display: 'flex', alignItems: 'baseline', gap: 4 }}>
-                            {post.username}
-                            {post.collaborators && (
-                              <span style={{ fontWeight: 400, color: 'var(--text-light)', fontSize: '0.72rem' }}>
-                                {post.collaborators}
-                              </span>
-                            )}
-                          </div>
-                          <small style={{ fontSize: '0.7rem', color: 'var(--text-light)' }}>Vijayapura, Karnataka</small>
-                        </div>
-                      </div>
-                      <span style={{ fontSize: '1.25rem', color: '#c13584' }}>📸</span>
+          <div style={{ textAlign: 'center', marginBottom: '36px' }}>
+            <span style={{ background: 'rgba(15, 61, 62, 0.08)', color: 'var(--green)', padding: '6px 16px', borderRadius: '20px', fontSize: '0.82rem', fontWeight: 800, display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+              📸 Customer Moments Board
+            </span>
+            <p style={{ margin: '8px 0 0', fontSize: '0.82rem', color: 'var(--text-light)' }}>
+              Click on any image to view details and full description.
+            </p>
+          </div>
+          
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 24 }}>
+            {INSTAGRAM_POSTS.map((post, index) => (
+              <div 
+                key={index} 
+                className="card"
+                style={{
+                  padding: 0,
+                  borderRadius: 12,
+                  overflow: 'hidden',
+                  background: '#fff',
+                  border: '1px solid var(--cream-dark)',
+                  boxShadow: 'var(--shadow)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  cursor: 'default'
+                }}
+              >
+                {/* Header */}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', borderBottom: '1px solid var(--cream-light)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <div style={{ 
+                      width: 28, 
+                      height: 28, 
+                      borderRadius: '50%', 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      justifyContent: 'center', 
+                      background: `hsl(${(index * 75) % 360}, 60%, 40%)`, 
+                      color: '#fff', 
+                      fontWeight: 700, 
+                      fontSize: '0.72rem'
+                    }}>
+                      {post.initials}
                     </div>
-
-                    {/* Image */}
-                    <div 
-                      style={{ height: 280, overflow: 'hidden', position: 'relative', cursor: 'pointer' }}
-                      onClick={() => handleOpenLightbox(post.image, post.caption)}
-                      title="Click to view closeup"
-                    >
-                      <img 
-                        src={post.image} 
-                        alt={post.caption} 
-                        loading="lazy" 
-                        style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.4s ease' }}
-                        onMouseEnter={(e) => e.target.style.transform = 'scale(1.03)'}
-                        onMouseLeave={(e) => e.target.style.transform = 'scale(1)'}
-                      />
-                    </div>
-
-                    {/* Footer / Caption */}
-                    <div style={{ padding: 16, display: 'flex', flexDirection: 'column', gap: 10, flexGrow: 1 }}>
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid var(--cream-light)', paddingBottom: 10 }}>
-                        <div style={{ display: 'flex', gap: 16, fontSize: '0.85rem', fontWeight: 800, color: 'var(--green)' }}>
-                          <span>❤️ {post.likes} Likes</span>
-                          <span>💬 {post.comments} Comments</span>
-                        </div>
-                        <span style={{ fontSize: '0.72rem', color: 'var(--text-light)', fontWeight: 600 }}>{post.date}</span>
+                    <div>
+                      <div style={{ fontWeight: 800, fontSize: '0.8rem', color: 'var(--green)', lineHeight: 1.1, display: 'flex', alignItems: 'baseline', gap: 4, flexWrap: 'wrap' }}>
+                        {post.username}
+                        {post.collaborators && (
+                          <span style={{ fontWeight: 400, color: 'var(--text-light)', fontSize: '0.68rem' }}>
+                            {post.collaborators}
+                          </span>
+                        )}
                       </div>
-                      <p style={{ fontSize: '0.85rem', color: 'var(--text-light)', lineHeight: 1.5, margin: 0, flexGrow: 1 }}>
-                        <strong style={{ color: 'var(--green)', marginRight: 6 }}>{post.username}</strong>
-                        {post.caption}
-                      </p>
-                      <div style={{ marginTop: 10 }}>
-                        <a 
-                          href={post.postUrl}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="btn-outline"
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            gap: 8,
-                            padding: '10px',
-                            borderRadius: 8,
-                            fontSize: '0.85rem',
-                            fontWeight: 700,
-                            textDecoration: 'none',
-                            color: '#c13584',
-                            borderColor: '#c13584'
-                          }}
-                        >
-                          🔗 View Instagram Post
-                        </a>
-                      </div>
+                      <small style={{ fontSize: '0.65rem', color: 'var(--text-light)', display: 'block', marginTop: 1 }}>Vijayapura, Karnataka</small>
                     </div>
                   </div>
-                ))}
-              </div>
-            </div>
-          ) : (
-            /* ELFSIGHT LIVE WIDGET EMBED WITH BUILT-IN PREMIUM LOADER */
-            <div style={{ 
-              background: '#fff', 
-              borderRadius: 14, 
-              overflow: 'hidden', 
-              boxShadow: 'var(--shadow-sm)', 
-              border: '1px solid var(--cream-dark)', 
-              padding: '16px',
-              minHeight: '500px'
-            }}>
-              {instagramWidgetUrl.startsWith('http') ? (
-                <iframe 
-                  src={instagramWidgetUrl}
-                  scrolling="no" 
-                  allowtransparency="true" 
-                  style={{ width: '100%', border: '0', overflow: 'hidden', minHeight: '650px', display: 'block' }}
-                  title="Instagram Feed Widget"
-                />
-              ) : (
-                <div className={`elfsight-app-${instagramWidgetUrl}`}>
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '400px', color: 'var(--text-light)' }}>
-                    <span className="spinner" style={{
-                      width: 36,
-                      height: 36,
-                      border: '3px solid rgba(15, 61, 62, 0.1)',
-                      borderTop: '3px solid var(--green)',
-                      borderRadius: '50%',
-                      animation: 'spin 0.8s linear infinite',
-                      marginBottom: 16
-                    }} />
-                    <p style={{ margin: 0, fontWeight: 700, color: 'var(--green)', fontSize: '0.95rem' }}>Loading Instagram Feed...</p>
-                    <p style={{ margin: '4px 0 0', fontSize: '0.8rem', color: 'var(--text-light)' }}>Connected to @brews_and_memories_</p>
+                  <span style={{ fontSize: '1rem', color: '#c13584' }}>📸</span>
+                </div>
+
+                {/* Image */}
+                <div 
+                  style={{ height: 200, overflow: 'hidden', position: 'relative', cursor: 'pointer' }}
+                  onClick={() => handleOpenLightbox(post.image, post.caption)}
+                  title="Click to view closeup"
+                >
+                  <img 
+                    src={post.image} 
+                    alt={post.caption} 
+                    loading="lazy" 
+                    style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.4s ease' }}
+                    onMouseEnter={(e) => e.target.style.transform = 'scale(1.04)'}
+                    onMouseLeave={(e) => e.target.style.transform = 'scale(1)'}
+                  />
+                </div>
+
+                {/* Footer / Caption */}
+                <div style={{ padding: 12, display: 'flex', flexDirection: 'column', gap: 8, flexGrow: 1 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid var(--cream-light)', paddingBottom: 8 }}>
+                    <div style={{ display: 'flex', gap: 10, fontSize: '0.78rem', fontWeight: 800, color: 'var(--green)' }}>
+                      <span>❤️ {post.likes}</span>
+                      <span>💬 {post.comments}</span>
+                    </div>
+                    <span style={{ fontSize: '0.7rem', color: 'var(--text-light)', fontWeight: 600 }}>{post.date}</span>
+                  </div>
+                  <p style={{ 
+                    fontSize: '0.8rem', 
+                    color: 'var(--text-light)', 
+                    lineHeight: 1.45, 
+                    margin: 0, 
+                    display: '-webkit-box',
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: 'vertical',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    flexGrow: 1 
+                  }}>
+                    <strong style={{ color: 'var(--green)', marginRight: 6 }}>{post.username}</strong>
+                    {post.caption}
+                  </p>
+                  <div style={{ marginTop: 'auto', paddingTop: 4 }}>
+                    <a 
+                      href={post.postUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      style={{
+                        display: 'block',
+                        textAlign: 'center',
+                        padding: '8px',
+                        borderRadius: 8,
+                        fontSize: '0.78rem',
+                        fontWeight: 700,
+                        textDecoration: 'none',
+                        color: '#c13584',
+                        border: '1px solid #c13584',
+                        background: 'transparent',
+                        transition: 'all 0.2s ease'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.background = '#c13584';
+                        e.currentTarget.style.color = '#fff';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = 'transparent';
+                        e.currentTarget.style.color = '#c13584';
+                      }}
+                    >
+                      🔗 View Original Post
+                    </a>
                   </div>
                 </div>
-              )}
-            </div>
-          )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* OFFICIAL INSTAGRAM WIDGET SECTION */}
+      <section className="section" style={{ padding: '60px 20px', borderTop: '2px solid var(--cream-dark)', background: '#fff' }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto', textAlign: 'center' }}>
+          <span style={{ 
+            color: 'var(--green)', 
+            textTransform: 'uppercase', 
+            letterSpacing: '2px', 
+            fontSize: '0.85rem', 
+            fontWeight: 800, 
+            display: 'block',
+            marginBottom: '8px'
+          }}>
+            Follow Our Café
+          </span>
+          <h2 style={{ 
+            fontFamily: "'Playfair Display', serif", 
+            fontSize: 'clamp(1.8rem, 4vw, 2.4rem)', 
+            color: 'var(--green)', 
+            margin: '0 0 16px',
+            fontWeight: 700 
+          }}>
+            Connect on Instagram
+          </h2>
+          <div style={{ width: '50px', height: '3px', background: 'var(--green)', margin: '0 auto 24px' }} />
+          <p style={{ 
+            fontSize: '0.95rem', 
+            color: 'var(--text-light)', 
+            lineHeight: 1.6, 
+            margin: '0 0 32px',
+            maxWidth: '600px',
+            marginLeft: 'auto',
+            marginRight: 'auto'
+          }}>
+            Check out our official page <a href="https://www.instagram.com/brews_and_memories_/" target="_blank" rel="noreferrer" style={{ color: 'var(--green)', fontWeight: 800, textDecoration: 'none' }}>@brews_and_memories_</a> for daily specials, new menu launches, and beautiful stories!
+          </p>
+
+          <div style={{ 
+            background: 'var(--cream-light)', 
+            borderRadius: 16, 
+            overflow: 'hidden', 
+            boxShadow: 'var(--shadow-sm)', 
+            border: '1px solid var(--cream-dark)', 
+            padding: '16px',
+            minHeight: '450px'
+          }}>
+            {instagramWidgetUrl.startsWith('http') ? (
+              <iframe 
+                src={instagramWidgetUrl}
+                scrolling="no" 
+                allowtransparency="true" 
+                style={{ width: '100%', border: '0', overflow: 'hidden', minHeight: '650px', display: 'block' }}
+                title="Official Instagram Feed Widget"
+              />
+            ) : (
+              <div className={`elfsight-app-${instagramWidgetUrl}`}>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '350px', color: 'var(--text-light)' }}>
+                  <span className="spinner" style={{
+                    width: 32,
+                    height: 32,
+                    border: '3px solid rgba(15, 61, 62, 0.1)',
+                    borderTop: '3px solid var(--green)',
+                    borderRadius: '50%',
+                    animation: 'spin 0.8s linear infinite',
+                    marginBottom: 16
+                  }} />
+                  <p style={{ margin: 0, fontWeight: 700, color: 'var(--green)', fontSize: '0.9rem' }}>Loading Official Instagram Feed...</p>
+                  <p style={{ margin: '4px 0 0', fontSize: '0.78rem', color: 'var(--text-light)' }}>Connected to @brews_and_memories_</p>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </section>
 
