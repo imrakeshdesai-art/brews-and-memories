@@ -27,7 +27,7 @@ function Footer({ onReserveClick }) {
               <li><Link to="/menu" style={{ color: 'rgba(245,230,200,0.85)', textDecoration: 'none', fontSize: '0.88rem' }}>🍽 Menu</Link></li>
               <li><Link to="/about" style={{ color: 'rgba(245,230,200,0.85)', textDecoration: 'none', fontSize: '0.88rem' }}>📖 About Us</Link></li>
               <li><Link to="/reviews" style={{ color: 'rgba(245,230,200,0.85)', textDecoration: 'none', fontSize: '0.88rem' }}>⭐ Reviews</Link></li>
-              <li><Link to="/contact" style={{ color: 'rgba(245,230,200,0.85)', textDecoration: 'none', fontSize: '0.88rem' }}>📍 Contact</Link></li>
+              <li><Link to="/#location" style={{ color: 'rgba(245,230,200,0.85)', textDecoration: 'none', fontSize: '0.88rem' }}>📍 Contact</Link></li>
               <li>
                 <button 
                   onClick={onReserveClick} 

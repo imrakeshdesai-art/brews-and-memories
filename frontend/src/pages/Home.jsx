@@ -936,7 +936,7 @@ function Home({ addToCart, openReserve }) {
       </section>
 
       {/* LOCATION & TIMINGS BLOCK */}
-      <section className="section" style={{ background: 'var(--cream-light)', padding: '60px 20px', borderTop: '1px solid var(--cream-dark)' }}>
+      <section id="location" className="section" style={{ background: 'var(--cream-light)', padding: '60px 20px', borderTop: '1px solid var(--cream-dark)' }}>
         <div className="grid-2" style={{ maxWidth: 1000, margin: '0 auto', gap: 40, alignItems: 'center' }}>
           <div style={{ textAlign: 'left', display: 'flex', flexDirection: 'column', gap: 14 }}>
             <span style={{ color: 'var(--green)', textTransform: 'uppercase', letterSpacing: 2, fontSize: '0.85rem', fontWeight: 800 }}>Visit Our Cafe</span>

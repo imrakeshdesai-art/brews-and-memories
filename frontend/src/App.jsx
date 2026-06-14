@@ -11,7 +11,6 @@ const Home = lazy(() => import('./pages/Home'));
 const About = lazy(() => import('./pages/About'));
 const Menu = lazy(() => import('./pages/Menu'));
 const Reviews = lazy(() => import('./pages/Reviews'));
-const Contact = lazy(() => import('./pages/Contact'));
 const Admin = lazy(() => import('./pages/Admin'));
 const Reserve = lazy(() => import('./pages/Reserve'));
 const TableOrder = lazy(() => import('./pages/TableOrder'));
@@ -69,8 +68,18 @@ function App() {
   }, [location.pathname]);
 
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [location.pathname]);
+    if (location.hash) {
+      setTimeout(() => {
+        const id = location.hash.replace('#', '');
+        const element = document.getElementById(id);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 100);
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [location.pathname, location.hash]);
 
   const cartCount = useMemo(
     () => cart.reduce((sum, item) => sum + item.qty, 0),
@@ -223,7 +232,6 @@ function App() {
               <Route path="/about" element={<About />} />
               <Route path="/menu" element={<Menu {...pageProps} />} />
               <Route path="/reviews" element={<Reviews />} />
-              <Route path="/contact" element={<Contact />} />
               <Route path="/reserve" element={<Reserve />} />
               <Route path="/order" element={<TableOrder />} />
               <Route path="/order/:tableId" element={<TableOrder onSessionStart={handleSessionStart} />} />

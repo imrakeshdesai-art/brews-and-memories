@@ -32,7 +32,7 @@ function NavBar({ cartCount, onCartClick, activeTable, onReserveClick }) {
         <NavLink to="/moments" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
           Moments
         </NavLink>
-        <NavLink to="/contact" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
+        <NavLink to="/#location" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
           Contact
         </NavLink>
         <NavLink to="/admin" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
@@ -101,7 +101,7 @@ function NavBar({ cartCount, onCartClick, activeTable, onReserveClick }) {
         <NavLink to="/moments" className="nav-link" onClick={() => setMenuOpen(false)}>
           📸 Moments
         </NavLink>
-        <NavLink to="/contact" className="nav-link" onClick={() => setMenuOpen(false)}>
+        <NavLink to="/#location" className="nav-link" onClick={() => setMenuOpen(false)}>
           📍 Contact
         </NavLink>
         <NavLink to="/admin" className="nav-link" onClick={() => setMenuOpen(false)}>
