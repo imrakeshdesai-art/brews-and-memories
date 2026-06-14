@@ -18,6 +18,7 @@ const TableOrder = lazy(() => import('./pages/TableOrder'));
 const Privacy = lazy(() => import('./pages/Privacy'));
 const Terms = lazy(() => import('./pages/Terms'));
 const PrintQR = lazy(() => import('./pages/PrintQR'));
+const Moments = lazy(() => import('./pages/Moments'));
 
 import Footer from './components/Footer';
 import FloatingActions from './components/FloatingActions';
@@ -230,6 +231,7 @@ function App() {
               <Route path="/admin/print-qr/:tableNum" element={<PrintQR />} />
               <Route path="/privacy" element={<Privacy />} />
               <Route path="/terms" element={<Terms />} />
+              <Route path="/moments" element={<Moments />} />
               <Route path="*" element={<Home {...pageProps} />} />
             </Routes>
           </Suspense>

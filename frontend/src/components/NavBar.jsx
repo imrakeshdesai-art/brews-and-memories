@@ -29,6 +29,9 @@ function NavBar({ cartCount, onCartClick, activeTable, onReserveClick }) {
         <NavLink to="/reviews" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
           Reviews
         </NavLink>
+        <NavLink to="/moments" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
+          Moments
+        </NavLink>
         <NavLink to="/contact" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
           Contact
         </NavLink>
@@ -94,6 +97,9 @@ function NavBar({ cartCount, onCartClick, activeTable, onReserveClick }) {
         </NavLink>
         <NavLink to="/reviews" className="nav-link" onClick={() => setMenuOpen(false)}>
           ⭐ Reviews
+        </NavLink>
+        <NavLink to="/moments" className="nav-link" onClick={() => setMenuOpen(false)}>
+          📸 Moments
         </NavLink>
         <NavLink to="/contact" className="nav-link" onClick={() => setMenuOpen(false)}>
           📍 Contact
