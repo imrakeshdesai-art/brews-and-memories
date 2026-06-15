@@ -9,6 +9,9 @@ const reservationRoutes = require('./routes/reservations');
 
 const app = express();
 
+// Enable trusting the reverse proxy headers (Render/Cloudflare)
+app.set('trust proxy', 1);
+
 // Security: Helmet for HTTP headers
 app.use(helmet());
 
