@@ -25,11 +25,11 @@ router.post('/login', async (req, res) => {
     }
 
     const token = jwt.sign(
-      { role: 'admin', username: admin.email },
+      { role: admin.role, username: admin.email },
       process.env.JWT_SECRET,
       { expiresIn: '8h' }
     );
-    return res.json({ success: true, token });
+    return res.json({ success: true, token, role: admin.role });
 
   } catch (err) {
     console.error('Auth error:', err);

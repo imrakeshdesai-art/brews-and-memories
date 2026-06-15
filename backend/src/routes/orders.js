@@ -1,4 +1,5 @@
 const auth = require('../middleware/auth');
+const checkRole = require('../middleware/checkRole');
 const express = require('express');
 const router = express.Router();
 
@@ -104,7 +105,7 @@ router.post('/', async (req, res) => {
 
 
 // ==================== GET ALL ORDERS ====================
-router.get('/', auth, async (req, res) => {
+router.get('/', auth, checkRole(['admin', 'kitchen']), async (req, res) => {
   try {
     const orders = await Order.find().sort({ createdAt: -1 });
 
@@ -117,7 +118,7 @@ router.get('/', auth, async (req, res) => {
 
 
 // ==================== UPDATE ORDER STATUS ====================
-router.patch('/:id', auth, async (req, res) => {
+router.patch('/:id', auth, checkRole(['admin', 'kitchen']), async (req, res) => {
   try {
     const { id } = req.params;
     const { status } = req.body;
@@ -147,7 +148,7 @@ router.patch('/:id', auth, async (req, res) => {
 
 
 // ==================== DELETE ALL ORDERS ====================
-router.delete('/clean-all-tests', auth, async (req, res) => {
+router.delete('/clean-all-tests', auth, checkRole(['admin']), async (req, res) => {
   try {
     const result = await Order.deleteMany({});
     res.json({ message: 'All test orders deleted successfully', count: result.deletedCount });

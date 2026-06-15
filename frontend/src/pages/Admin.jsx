@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import api from '../services/api';
 import {
   saveAdminToken,
@@ -7,8 +7,51 @@ import {
 } from '../services/auth';
 import { useToast } from '../components/ToastProvider';
 
-function Admin() {
+function getRoleFromToken(tok) {
+  if (!tok) return null;
+  try {
+    const payload = JSON.parse(atob(tok.split('.')[1]));
+    return payload.role;
+  } catch (e) {
+    return null;
+  }
+}
 
+const playNewOrderChime = () => {
+  try {
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContext) return;
+    const ctx = new AudioContext();
+    
+    // First tone (D5)
+    const osc1 = ctx.createOscillator();
+    const gain1 = ctx.createGain();
+    osc1.type = 'sine';
+    osc1.frequency.setValueAtTime(587.33, ctx.currentTime);
+    gain1.gain.setValueAtTime(0.15, ctx.currentTime);
+    gain1.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+    osc1.connect(gain1);
+    gain1.connect(ctx.destination);
+    osc1.start();
+    osc1.stop(ctx.currentTime + 0.3);
+    
+    // Second tone (A5)
+    const osc2 = ctx.createOscillator();
+    const gain2 = ctx.createGain();
+    osc2.type = 'sine';
+    osc2.frequency.setValueAtTime(880.00, ctx.currentTime + 0.15);
+    gain2.gain.setValueAtTime(0.15, ctx.currentTime + 0.15);
+    gain2.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.55);
+    osc2.connect(gain2);
+    gain2.connect(ctx.destination);
+    osc2.start(ctx.currentTime + 0.15);
+    osc2.stop(ctx.currentTime + 0.55);
+  } catch (e) {
+    console.warn('Audio play failed:', e);
+  }
+};
+
+function Admin() {
   const toast = useToast();
 
   const [user, setUser] = useState('');
@@ -87,6 +130,17 @@ function Admin() {
     }
   };
 
+  const role = useMemo(() => getRoleFromToken(token), [token]);
+  const prevPendingCountRef = useRef(0);
+
+  useEffect(() => {
+    const currentPendingCount = orders.filter((o) => o.status === 'pending').length;
+    if (currentPendingCount > prevPendingCountRef.current && prevPendingCountRef.current > 0) {
+      playNewOrderChime();
+    }
+    prevPendingCountRef.current = currentPendingCount;
+  }, [orders]);
+
   // ================= AUTH + LOAD DATA =================
   useEffect(() => {
     if (!token) {
@@ -95,12 +149,17 @@ function Admin() {
     }
 
     const loadData = async () => {
-      await Promise.all([fetchOrders(), fetchReservations()]);
+      const userRole = getRoleFromToken(token);
+      if (userRole === 'kitchen') {
+        await fetchOrders();
+      } else {
+        await Promise.all([fetchOrders(), fetchReservations()]);
+      }
       setAuthChecked(true);
     };
 
     loadData();
-    const interval = setInterval(loadData, 20000);
+    const interval = setInterval(loadData, 12000);
     return () => clearInterval(interval);
   }, [token]);
 
@@ -246,6 +305,142 @@ function Admin() {
     );
   }
 
+  // ================= KITCHEN DISPLAY SYSTEM (KDS) =================
+  const renderKDSOrderCard = (order, actionType) => {
+    const elapsedMinutes = Math.floor((Date.now() - new Date(order.createdAt)) / 60000);
+    const getElapsedColor = () => {
+      if (order.status === 'completed') return 'var(--text-light)';
+      if (elapsedMinutes >= 15) return 'var(--red)';
+      if (elapsedMinutes >= 8) return '#d97706';
+      return 'var(--green)';
+    };
+
+    return (
+      <div key={order._id} style={{ border: '2px solid var(--cream-dark)', borderRadius: 12, padding: 16, background: 'var(--cream-light)', display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px dashed var(--cream-dark)', paddingBottom: 8 }}>
+          <span style={{ fontWeight: 800, fontSize: '1.1rem', color: 'var(--green)' }}>📍 {order.address}</span>
+          <span style={{ fontSize: '0.78rem', color: getElapsedColor(), fontWeight: 800 }}>
+            {order.status === 'completed' ? 'Ready' : `⏳ ${elapsedMinutes}m ago`}
+          </span>
+        </div>
+        
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+          {order.items.map((item, idx) => (
+            <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.92rem' }}>
+              <span>
+                <strong style={{ fontSize: '1.05rem', color: 'var(--text)' }}>{item.qty}x</strong> {item.name}
+                {item.variant && <small style={{ display: 'block', color: 'var(--text-light)', marginLeft: 22 }}>({item.variant})</small>}
+              </span>
+            </div>
+          ))}
+        </div>
+
+        {order.payment === 'counter' && (
+          <div style={{ fontSize: '0.75rem', background: 'rgba(251, 191, 36, 0.15)', color: '#b45309', padding: '4px 8px', borderRadius: 4, fontWeight: 700, alignSelf: 'flex-start' }}>
+            💵 Pay at Counter
+          </div>
+        )}
+
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 4 }}>
+          <span style={{ fontSize: '0.78rem', color: 'var(--text-light)' }}>
+            Order: #{order._id.slice(-5).toUpperCase()} ({order.name})
+          </span>
+          {actionType === 'start' && (
+            <button className="btn-primary" type="button" onClick={() => updateStatus(order._id, 'preparing')} style={{ padding: '6px 12px', fontSize: '0.8rem', background: 'var(--green)', border: 'none', color: '#fff', fontWeight: 800 }}>
+              🍳 Start Cooking
+            </button>
+          )}
+          {actionType === 'ready' && (
+            <button className="btn-primary" type="button" onClick={() => updateStatus(order._id, 'completed')} style={{ padding: '6px 12px', fontSize: '0.8rem', background: 'var(--red)', border: 'none', color: '#fff', fontWeight: 800 }}>
+              🔔 Mark as Ready
+            </button>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  const renderKitchenKDS = () => {
+    const pendingOrders = orders.filter(o => o.status === 'pending').sort((a,b) => new Date(a.createdAt) - new Date(b.createdAt));
+    const preparingOrders = orders.filter(o => o.status === 'preparing').sort((a,b) => new Date(a.createdAt) - new Date(b.createdAt));
+    const completedOrders = orders.filter(o => o.status === 'completed').slice(0, 10);
+
+    return (
+      <div className="kds-dashboard" style={{ padding: '0 4%', color: 'var(--text)' }}>
+        <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 28, borderBottom: '2px solid var(--cream-dark)', paddingBottom: 16 }}>
+          <div>
+            <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: '2.2rem', color: 'var(--green)', margin: 0 }}>🍳 Kitchen Live Screen</h2>
+            <p style={{ color: 'var(--text-light)', margin: '4px 0 0', fontSize: '0.9rem' }}>Real-time Kitchen Display System (KDS)</p>
+          </div>
+          <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+            <button className="btn-outline" type="button" onClick={fetchOrders} disabled={loading} style={{ padding: '8px 16px', fontSize: '0.85rem' }}>
+              🔄 {loading ? 'Syncing...' : 'Sync Orders'}
+            </button>
+            <button className="btn-primary" type="button" onClick={logout} style={{ padding: '8px 16px', fontSize: '0.85rem', background: 'var(--red)', color: '#fff' }}>
+              🚪 Logout
+            </button>
+          </div>
+        </header>
+
+        {error && (
+          <div style={{ background: '#fee2e2', color: '#991b1b', padding: '12px 16px', borderRadius: 8, marginBottom: 24, fontSize: '0.9rem' }}>
+            ⚠️ {error}
+          </div>
+        )}
+
+        <div className="kds-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 24 }}>
+          {/* COLUMN 1: PENDING ORDERS */}
+          <div style={{ background: 'var(--white)', border: '1px solid var(--cream-dark)', borderRadius: 16, padding: 20, boxShadow: 'var(--shadow)' }}>
+            <div style={{ background: 'rgba(251, 191, 36, 0.15)', color: '#b45309', padding: '10px 16px', borderRadius: 8, fontWeight: 800, textTransform: 'uppercase', letterSpacing: 1, fontSize: '0.85rem', marginBottom: 20, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span>📥 New Orders</span>
+              <span className="badge" style={{ background: '#b45309', color: '#fff', borderRadius: '50%', width: 22, height: 22, display: 'grid', placeItems: 'center', fontSize: '0.75rem' }}>{pendingOrders.length}</span>
+            </div>
+            
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16, maxHeight: '65vh', overflowY: 'auto', paddingRight: 4 }}>
+              {pendingOrders.length === 0 ? (
+                <div style={{ textAlign: 'center', color: 'var(--text-light)', padding: '40px 10px', fontStyle: 'italic', fontSize: '0.9rem' }}>No pending orders</div>
+              ) : (
+                pendingOrders.map(order => renderKDSOrderCard(order, 'start'))
+              )}
+            </div>
+          </div>
+
+          {/* COLUMN 2: PREPARING ORDERS */}
+          <div style={{ background: 'var(--white)', border: '1px solid var(--cream-dark)', borderRadius: 16, padding: 20, boxShadow: 'var(--shadow)' }}>
+            <div style={{ background: 'rgba(249, 115, 22, 0.15)', color: '#c2410c', padding: '10px 16px', borderRadius: 8, fontWeight: 800, textTransform: 'uppercase', letterSpacing: 1, fontSize: '0.85rem', marginBottom: 20, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span>🔥 In Prep</span>
+              <span className="badge" style={{ background: '#c2410c', color: '#fff', borderRadius: '50%', width: 22, height: 22, display: 'grid', placeItems: 'center', fontSize: '0.75rem' }}>{preparingOrders.length}</span>
+            </div>
+            
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16, maxHeight: '65vh', overflowY: 'auto', paddingRight: 4 }}>
+              {preparingOrders.length === 0 ? (
+                <div style={{ textAlign: 'center', color: 'var(--text-light)', padding: '40px 10px', fontStyle: 'italic', fontSize: '0.9rem' }}>No orders in preparation</div>
+              ) : (
+                preparingOrders.map(order => renderKDSOrderCard(order, 'ready'))
+              )}
+            </div>
+          </div>
+
+          {/* COLUMN 3: COMPLETED ORDERS */}
+          <div style={{ background: 'var(--white)', border: '1px solid var(--cream-dark)', borderRadius: 16, padding: 20, boxShadow: 'var(--shadow)' }}>
+            <div style={{ background: 'rgba(34, 197, 94, 0.15)', color: '#15803d', padding: '10px 16px', borderRadius: 8, fontWeight: 800, textTransform: 'uppercase', letterSpacing: 1, fontSize: '0.85rem', marginBottom: 20, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span>✅ Recently Ready</span>
+              <span className="badge" style={{ background: '#15803d', color: '#fff', borderRadius: '50%', width: 22, height: 22, display: 'grid', placeItems: 'center', fontSize: '0.75rem' }}>{completedOrders.length}</span>
+            </div>
+            
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16, maxHeight: '65vh', overflowY: 'auto', paddingRight: 4 }}>
+              {completedOrders.length === 0 ? (
+                <div style={{ textAlign: 'center', color: 'var(--text-light)', padding: '40px 10px', fontStyle: 'italic', fontSize: '0.9rem' }}>No recently ready orders</div>
+              ) : (
+                completedOrders.map(order => renderKDSOrderCard(order, 'done'))
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   // ================= LOGIN UI =================
   if (!token) {
 
@@ -270,7 +465,7 @@ function Admin() {
             </div>
 
             <h2 className="admin-login-title">
-              Admin Login
+              Staff Login
             </h2>
 
             <p
@@ -279,7 +474,7 @@ function Admin() {
                 fontSize: '0.9rem',
               }}
             >
-              Brews & Memories Dashboard
+              Brews & Memories Staff Portal
             </p>
           </div>
 
@@ -295,7 +490,7 @@ function Admin() {
             <div className="form-group">
 
               <label htmlFor="admin-user">
-                Admin Email
+                Staff Email
               </label>
 
               <input
@@ -305,7 +500,7 @@ function Admin() {
                 onChange={(e) =>
                   setUser(e.target.value)
                 }
-                placeholder="admin@example.com"
+                placeholder="staff@example.com"
                 required
                 autoComplete="email"
               />
@@ -368,9 +563,16 @@ function Admin() {
     );
   }
 
+  if (role === 'kitchen') {
+    return (
+      <section className="section admin-panel" style={{ padding: '100px 0 40px' }}>
+        {renderKitchenKDS()}
+      </section>
+    );
+  }
+
   // ================= DASHBOARD =================
   return (
-
     <section className="section admin-panel">
 
       <div className="admin-dashboard">

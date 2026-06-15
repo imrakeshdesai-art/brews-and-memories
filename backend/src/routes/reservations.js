@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Reservation = require('../models/Reservation');
 const auth = require('../middleware/auth');
+const checkRole = require('../middleware/checkRole');
 
 // ==================== CREATE RESERVATION ====================
 // POST /api/reservations
@@ -47,7 +48,7 @@ router.post('/', async (req, res) => {
 
 // ==================== GET ALL RESERVATIONS ====================
 // GET /api/reservations (requires auth)
-router.get('/', auth, async (req, res) => {
+router.get('/', auth, checkRole(['admin']), async (req, res) => {
   try {
     const reservations = await Reservation.find().sort({ date: -1, time: -1, createdAt: -1 });
     res.json(reservations);
@@ -59,7 +60,7 @@ router.get('/', auth, async (req, res) => {
 
 // ==================== UPDATE RESERVATION STATUS ====================
 // PATCH /api/reservations/:id (requires auth)
-router.patch('/:id', auth, async (req, res) => {
+router.patch('/:id', auth, checkRole(['admin']), async (req, res) => {
   try {
     const { id } = req.params;
     const { status } = req.body;
