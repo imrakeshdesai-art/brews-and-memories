@@ -1,7 +1,13 @@
 import { useState } from 'react';
 import api from '../services/api';
+import useSEO from '../hooks/useSEO';
 
 function Reserve() {
+  useSEO({
+    title: 'Book a Table',
+    description: 'Book a table at Brews & Memories Café, B.M. Patil Circle, Vijayapura. Plan your coffee dates, team meetings, birthday celebrations, or study sessions in our cozy environment.'
+  });
+
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [guests, setGuests] = useState('2');
@@ -44,12 +50,11 @@ function Reserve() {
       setError(err.response?.data?.message || 'Could not submit reservation. Please try again.');
     }
   };
-
   return (
     <section className="section" id="reserve" style={{ background: 'var(--cream-light)', minHeight: '80vh' }}>
       <div className="section-header">
         <span className="section-label">Book a Table</span>
-        <h2 className="section-title">Table <em>Reservations</em></h2>
+        <h1 className="section-title">Table <em>Reservations</em></h1>
         <p style={{ maxWidth: 600, margin: '12px auto 0', color: 'var(--text-light)', lineHeight: 1.6 }}>
           Plan your visit to Brews & Memories. Reserve a cozy corner for studying, meetings, birthday gatherings, or a coffee date at B.M. Patil Circle, Vijayapura.
         </p>

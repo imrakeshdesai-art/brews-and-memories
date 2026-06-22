@@ -1,12 +1,19 @@
+import useSEO from '../hooks/useSEO';
+
 function About() {
+  useSEO({
+    title: 'About Us',
+    description: 'Brews & Memories is a cozy café at B.M. Patil Circle, Vijayapura, Karnataka. Discover our story, comfy vibes, and why we are the city\'s favourite hangout spot.'
+  });
+
   return (
     <div>
       <section className="section" style={{ background: 'var(--green)', color: 'var(--cream)' }}>
         <div className="section-header">
           <span className="section-label" style={{ color: '#fbbf24' }}>Our Story</span>
-          <h2 className="section-title" style={{ color: 'var(--cream)' }}>
+          <h1 className="section-title" style={{ color: 'var(--cream)' }}>
             Where Every Cup Tells a <em>Story</em>
-          </h2>
+          </h1>
           <div className="section-divider" style={{ margin: '16px auto 0' }} />
         </div>
         <div className="grid-2" style={{ gap: '60px', alignItems: 'center', maxWidth: 1100, margin: '0 auto' }}>

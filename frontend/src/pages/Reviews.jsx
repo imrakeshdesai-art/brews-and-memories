@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { reviewsData } from '../data/reviewsData';
+import useSEO from '../hooks/useSEO';
 
 function StatCounter({ targetValue, duration = 2000 }) {
   const [count, setCount] = useState(0);
@@ -73,11 +74,16 @@ function StatCounter({ targetValue, duration = 2000 }) {
 }
 
 function Reviews() {
+  useSEO({
+    title: 'Reviews',
+    description: 'Read reviews and testimonials from our guests at Brews & Memories Café in Vijayapura. See why they love our freshly brewed coffee, hot pizzas, and ambient environment.'
+  });
+
   return (
     <section className="section" id="reviews">
       <div className="section-header" style={{ marginBottom: 40 }}>
         <span className="section-label">Customer Love</span>
-        <h2 className="section-title">What Our Guests <em>Say</em></h2>
+        <h1 className="section-title">What Our Guests <em>Say</em></h1>
         <div className="section-divider" />
       </div>
 

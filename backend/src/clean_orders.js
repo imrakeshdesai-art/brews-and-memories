@@ -1,0 +1,28 @@
+const dns = require('dns');
+dns.setServers(['8.8.8.8', '1.1.1.1']);
+
+const mongoose = require('mongoose');
+const Order = require('./models/Order');
+
+const uri = 'mongodb+srv://testuser:Brew%40Cafe%2394821%21Admin@cluster0.u5jjdfm.mongodb.net/brews-memories?retryWrites=true&w=majority';
+
+async function main() {
+  await mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+  console.log('Connected to DB');
+  
+  const countBefore = await Order.countDocuments({});
+  console.log(`Current total orders in database: ${countBefore}`);
+
+  if (countBefore > 0) {
+    console.log('Deleting all orders...');
+    const result = await Order.deleteMany({});
+    console.log(`Successfully deleted ${result.deletedCount} orders.`);
+  } else {
+    console.log('No orders to delete.');
+  }
+
+  await mongoose.disconnect();
+  console.log('Disconnected from DB.');
+}
+
+main().catch(console.error);

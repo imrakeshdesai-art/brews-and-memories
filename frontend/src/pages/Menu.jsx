@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { menuData, menuCategories } from '../data/menuData';
 import { reviewsData } from '../data/reviewsData';
 import { useToast } from '../components/ToastProvider';
+import useSEO from '../hooks/useSEO';
 
 const INSTAGRAM_FEED = [
   {
@@ -36,6 +37,11 @@ const INSTAGRAM_FEED = [
 ];
 
 function Menu({ addToCart, activeTable, endTableSession, cart = [], updateCartQty }) {
+  useSEO({
+    title: 'Our Menu',
+    description: 'Explore the Brews & Memories menu. We serve freshly brewed coffee, hot pizzas, delicious pasta, sizzling brownie, momos, rolls, and vegetarian favorites in Vijayapura.'
+  });
+
   const showToast = useToast();
 
   const getCartItem = (item) => {
@@ -144,7 +150,7 @@ function Menu({ addToCart, activeTable, endTableSession, cart = [], updateCartQt
     <section className="section" id="menu">
       <div className="section-header">
         <span className="section-label">Our Menu</span>
-        <h2 className="section-title">Crafted with <em>Love</em></h2>
+        <h1 className="section-title">Crafted with <em>Love</em></h1>
         <div className="section-divider" />
       </div>
 

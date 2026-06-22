@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import useSEO from '../hooks/useSEO';
 
 const instagramWidgetUrl = import.meta.env.VITE_INSTAGRAM_WIDGET_URL || 'b16a01b6-838f-4360-88fc-9a34d2927446';
 
@@ -59,6 +60,11 @@ const INSTAGRAM_POSTS = [
 ];
 
 export default function Moments() {
+  useSEO({
+    title: 'Moments',
+    description: 'See the customer moments, photos, and Instagram gallery from Brews & Memories Café at B.M. Patil Circle, Vijayapura. Share your cozy cafe memories with us.'
+  });
+
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [lightboxImage, setLightboxImage] = useState('');
   const [lightboxCaption, setLightboxCaption] = useState('');

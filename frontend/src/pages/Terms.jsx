@@ -1,11 +1,17 @@
 import React from 'react';
+import useSEO from '../hooks/useSEO';
 
 function Terms() {
+  useSEO({
+    title: 'Terms of Service',
+    description: 'Terms of Service for Brews & Memories Café. Understand our table ordering policies, digital session rules, and payment options.'
+  });
+
   return (
     <section className="section" style={{ padding: '120px 20px 80px', minHeight: '80vh', background: 'var(--cream-light)' }}>
       <div className="section-header" style={{ textAlign: 'center', marginBottom: 40 }}>
         <span className="section-label" style={{ textTransform: 'uppercase', letterSpacing: 2, fontSize: '0.8rem', fontWeight: 800, color: 'var(--green)' }}>Rules & Agreement</span>
-        <h2 className="section-title" style={{ fontFamily: "'Playfair Display', serif", fontSize: '2.5rem', color: 'var(--green)', margin: '10px 0 16px' }}>Terms of Service</h2>
+        <h1 className="section-title" style={{ fontFamily: "'Playfair Display', serif", fontSize: '2.5rem', color: 'var(--green)', margin: '10px 0 16px' }}>Terms of Service</h1>
         <div className="section-divider" style={{ width: 60, height: 3, background: 'var(--green)', margin: '0 auto' }} />
       </div>
       <div className="card" style={{ maxWidth: 800, width: '100%', margin: '0 auto', background: 'var(--white)', border: '1px solid var(--cream-dark)', borderRadius: 16, padding: '40px', boxShadow: 'var(--shadow-lg)', color: 'var(--text-light)', lineHeight: 1.8 }}>

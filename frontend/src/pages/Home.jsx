@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useToast } from '../components/ToastProvider';
 import { menuData } from '../data/menuData';
+import useSEO from '../hooks/useSEO';
 
 const FEATURED_CATEGORIES = [
   { image: '/ColdCoffee.png', label: 'Cold Coffee', category: 'Cold Beverages' },
@@ -156,8 +157,12 @@ function StatCounter({ targetValue, duration = 2000 }) {
 
   return <span id={`stat-counter-${targetValue}`}>{count || targetValue}</span>;
 }
-
 function Home({ addToCart, openReserve }) {
+  useSEO({
+    isHome: true,
+    description: 'Welcome to Brews & Memories Café at B.M. Patil Circle, Vijayapura. Enjoy freshly brewed coffee, pizzas, pasta, sizzling brownie, and cozy ambiance.'
+  });
+
   const showToast = useToast();
 
 
