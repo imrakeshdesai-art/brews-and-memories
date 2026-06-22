@@ -9,3 +9,6 @@ yarn-error.log*
 # Scratch / temporary debug scripts — never commit these
 scratch/
 *.local.js
+
+# Agent workspace memory — may contain sensitive context
+.agents/
