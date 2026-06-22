@@ -5,3 +5,7 @@ build/
 .DS_Store
 npm-debug.log*
 yarn-error.log*
+
+# Scratch / temporary debug scripts — never commit these
+scratch/
+*.local.js
