@@ -192,11 +192,19 @@ function Admin() {
       toast('Logged in successfully ✅');
 
     } catch (err) {
-
-      setError(
-        err.response?.data?.message ||
-        'Invalid credentials'
-      );
+      if (err.response?.status === 429) {
+        setError(
+          typeof err.response.data === 'string'
+            ? err.response.data
+            : 'Too many login attempts, please try again later.'
+        );
+      } else {
+        setError(
+          (typeof err.response?.data === 'string' && err.response.data.length < 150 ? err.response.data : null) ||
+          err.response?.data?.message ||
+          'Invalid credentials'
+        );
+      }
     }
   };
 
