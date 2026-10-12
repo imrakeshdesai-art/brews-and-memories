@@ -1,72 +1,133 @@
 import useSEO from '../hooks/useSEO';
+import { Link } from 'react-router-dom';
 
 function About() {
   useSEO({
-    title: 'About Us',
-    description: 'The Moras Cafe is a cozy café at B.M. Patil Circle, Vijayapura, Karnataka. Discover our story, comfy vibes, and why we are the city\'s favourite hangout spot.'
+    title: 'About Us — The Story',
+    description: 'The Moras Cafe is Vijayapura\'s sanctuary for specialty coffee, artisan vegetarian craft, and slow, meaningful conversations at B.M. Patil Circle.'
   });
 
   return (
-    <div>
-      <section className="section" style={{ background: 'var(--green)', color: 'var(--cream)' }}>
-        <div className="section-header">
-          <span className="section-label" style={{ color: '#fbbf24' }}>Our Story</span>
-          <h1 className="section-title" style={{ color: 'var(--cream)' }}>
-            Where Every Cup Tells a <em>Story</em>
+    <div className="about-editorial-page" style={{ background: '#FAF5EF', minHeight: '100vh', paddingBottom: 80 }}>
+      {/* CHAPTER 1: HERITAGE PROLOGUE */}
+      <section className="section" style={{ padding: '70px 5% 40px' }}>
+        <div className="section-header" style={{ marginBottom: 48, textAlign: 'center' }}>
+          <span className="hero-editorial-kicker" style={{ color: '#b45309' }}>
+            The Heritage &amp; Craft
+          </span>
+          <h1 className="hero-editorial-title" style={{ fontSize: 'clamp(2.4rem, 5vw, 4rem)', marginTop: 12 }}>
+            Where Every Pour Tells a <em>Story</em>
           </h1>
-          <div className="section-divider" style={{ margin: '16px auto 0' }} />
-        </div>
-        <div className="grid-2" style={{ gap: '60px', alignItems: 'center', maxWidth: 1100, margin: '0 auto' }}>
-          <div>
-            <p style={{ lineHeight: 1.9, color: 'rgba(245,230,200,0.85)', marginBottom: 18 }}>
-              The Moras Cafe is a cozy café where people come to relax, enjoy great food, and create memories. Nestled at B M Patil Circle on the Ring Road of Vijayapura, Karnataka, we've become the city's favourite hangout spot.
-            </p>
-            <p style={{ lineHeight: 1.9, color: 'rgba(245,230,200,0.85)', marginBottom: 18 }}>
-              From the aroma of freshly brewed coffee to the sizzle of hot pizzas, every visit is an experience crafted with love. Our warm interiors, comfortable seating, and welcoming staff make you feel right at home.
-            </p>
-            <p style={{ lineHeight: 1.9, color: 'rgba(245,230,200,0.85)' }}>
-              We believe the best conversations happen over great food. That's why we put our heart into every cup, every bite, and every smile we serve.
-            </p>
+          <div className="hero-editorial-tagline" style={{ marginTop: 16 }}>
+            “The Place That Knows You”
           </div>
-          <div className="card" style={{ background: '#FAF5EF', border: '1px solid var(--cream-dark)', boxShadow: 'var(--shadow-lg)' }}>
-            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 20 }}>
-              <img 
-                src="/logo.png" 
-                alt="The Moras Cafe Logo" 
-                style={{ width: '85%', maxWidth: 220, height: 'auto', objectFit: 'contain' }} 
-              />
+        </div>
+
+        <div className="grid-2" style={{ gap: '60px', alignItems: 'center', maxWidth: 1160, margin: '0 auto' }}>
+          <div>
+            <p style={{ fontSize: '1.15rem', lineHeight: 1.85, color: '#0f3d3e', fontWeight: 600, marginBottom: 20 }}>
+              The Moras Cafe was founded on a simple, timeless belief: a true neighborhood cafe is not merely a place to grab coffee, but a warm sanctuary where people pause, connect, and feel genuinely known.
+            </p>
+            <p style={{ fontSize: '1.02rem', lineHeight: 1.8, color: 'var(--text-light)', marginBottom: 20 }}>
+              Nestled at B.M. Patil Circle along Vijayapura's Ring Road, we combine artisan roasting techniques with 100% pure vegetarian culinary craft. From slow-pulled espresso shots to hand-stretched stone-baked pizzas, every plate is prepared fresh to order.
+            </p>
+            <p style={{ fontSize: '1.02rem', lineHeight: 1.8, color: 'var(--text-light)', marginBottom: 28 }}>
+              Whether you are discovering a quiet corner with a curated book, sharing laughter with longtime friends, or celebrating an evening milestone, we pour our heart into every detail.
+            </p>
+            <div>
+              <Link to="/menu" className="btn-editorial-primary" style={{ padding: '14px 32px' }}>
+                Explore Our Offerings
+              </Link>
             </div>
-            <div className="about-card" style={{ textAlign: 'center' }}>
-              <div className="card-title" style={{ color: 'var(--green)', fontSize: '1.4rem', marginBottom: 8 }}>The Moras Cafe</div>
-              <div style={{ color: 'var(--text-light)', lineHeight: 1.8 }}>
-                Discover our cozy café vibes, the best coffee in Vijayapura, and delightful food made fresh daily.
+          </div>
+
+          <div style={{ position: 'relative' }}>
+            <div style={{
+              background: '#FFFFFF',
+              borderRadius: '24px',
+              padding: '40px 32px',
+              border: '1px solid var(--cream-dark)',
+              boxShadow: '0 20px 50px rgba(15, 61, 62, 0.08)',
+              textAlign: 'center'
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 24 }}>
+                <img 
+                  src="/logo.png" 
+                  alt="The Moras Cafe Emblem" 
+                  style={{ width: '100%', maxWidth: 200, height: 'auto', objectFit: 'contain', filter: 'drop-shadow(0 10px 20px rgba(15,61,62,0.1))' }} 
+                />
               </div>
+              <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: '1.6rem', color: 'var(--green)', margin: '0 0 8px' }}>
+                The Moras Cafe
+              </h2>
+              <div style={{ color: '#b45309', fontSize: '0.85rem', letterSpacing: '2px', textTransform: 'uppercase', fontWeight: 700, marginBottom: 16 }}>
+                Vijayapura · Karnataka
+              </div>
+              <p style={{ color: 'var(--text-light)', fontSize: '0.94rem', lineHeight: 1.7, margin: 0 }}>
+                Specialty brews, artisan bites, and comfortable spaces crafted for the city we love.
+              </p>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="section" style={{ background: 'var(--cream-light)' }}>
-        <div className="section-header">
-          <span className="section-label">Why Choose Us</span>
-          <h2 className="section-title" style={{ color: 'var(--green)' }}>
-            The Moras Cafe <em>Experience</em>
-          </h2>
-          <div className="section-divider" />
-        </div>
-        <div className="grid-2" style={{ gap: '24px', maxWidth: 1000, margin: '0 auto 0', gridTemplateColumns: 'repeat(auto-fit, minmax(220px,1fr))' }}>
-          {[
-            { icon: '🛋️', title: 'Comfortable Seating', description: 'Plush seating for a relaxing, cozy stay — perfect for long conversations.' },
-            { icon: '🎵', title: 'Chill Vibes', description: 'Ambient music and warm lighting that puts you instantly at ease.' },
-            { icon: '🤝', title: 'Social Hangout', description: 'The perfect spot for friends, dates, and team meetups in Vijayapura.' },
-            { icon: '⏱️', title: 'Stay Awhile', description: 'Average visits last 1.5 to 3 hours — because you won’t want to leave!' },
-          ].map((item) => (
-            <div key={item.title} className="card" style={{ cursor: 'default' }}>
-              <div className="card-icon">{item.icon}</div>
-              <div className="card-title">{item.title}</div>
-              <div className="card-copy">{item.description}</div>
-            </div>
-          ))}
+      {/* CHAPTER 2: FOUR CORNERSTONES */}
+      <section style={{ padding: '60px 5%', borderTop: '1px solid var(--cream-dark)', borderBottom: '1px solid var(--cream-dark)', background: '#FAF5EF' }}>
+        <div style={{ maxWidth: 1160, margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: 44 }}>
+            <span style={{ fontSize: '0.8rem', letterSpacing: '3px', textTransform: 'uppercase', color: 'var(--green)', fontWeight: 800 }}>
+              The Pillars
+            </span>
+            <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: 'clamp(2rem, 3.5vw, 2.8rem)', color: 'var(--green)', margin: '8px 0 0' }}>
+              The Guest Experience
+            </h2>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '24px' }}>
+            {[
+              {
+                num: '01',
+                title: 'Artisan Brews',
+                desc: 'Specialty coffee beans selected and precision-extracted for the cleanest, most aromatically rich cup in Vijayapura.'
+              },
+              {
+                num: '02',
+                title: 'Pure Vegetarian Craft',
+                desc: 'A dedicated 100% vegetarian kitchen serving sourdough-crust pizzas, fresh pasta, loaded sandwiches, and sizzling treats.'
+              },
+              {
+                num: '03',
+                title: 'Slow Ambiance',
+                desc: 'Comfortable seating, acoustic warmth, and peaceful lighting designed for unhurried conversations and quiet focus.'
+              },
+              {
+                num: '04',
+                title: 'Curated Library & Games',
+                desc: 'Complimentary reading library and classic tabletop games to unwind with friends and family at your leisure.'
+              }
+            ].map((pillar) => (
+              <div key={pillar.num} style={{
+                background: '#FFFFFF',
+                borderRadius: '16px',
+                padding: '32px 24px',
+                border: '1px solid var(--cream-dark)',
+                boxShadow: '0 4px 16px rgba(15, 61, 62, 0.04)',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '12px'
+              }}>
+                <div style={{ fontFamily: "'Playfair Display', serif", fontSize: '1.4rem', fontWeight: 800, color: '#b45309' }}>
+                  {pillar.num}
+                </div>
+                <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: '1.2rem', color: 'var(--green)', margin: 0, fontWeight: 700 }}>
+                  {pillar.title}
+                </h3>
+                <p style={{ fontSize: '0.92rem', color: 'var(--text-light)', lineHeight: 1.6, margin: 0 }}>
+                  {pillar.desc}
+                </p>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
     </div>

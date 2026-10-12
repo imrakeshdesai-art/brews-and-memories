@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { reviewsData } from '../data/reviewsData';
 import useSEO from '../hooks/useSEO';
 
@@ -80,78 +80,66 @@ function Reviews() {
   });
 
   return (
-    <section className="section" id="reviews">
-      <div className="section-header" style={{ marginBottom: 40 }}>
-        <span className="section-label">Customer Love</span>
-        <h1 className="section-title">What Our Guests <em>Say</em></h1>
-        <div className="section-divider" />
+    <div className="reviews-editorial-page" style={{ background: '#FAF5EF', minHeight: '100vh', padding: '60px 5% 80px' }}>
+      <div className="section-header" style={{ marginBottom: 44, textAlign: 'center' }}>
+        <span className="hero-editorial-kicker" style={{ color: '#b45309' }}>Guest Reflections</span>
+        <h1 className="hero-editorial-title" style={{ fontSize: 'clamp(2.4rem, 5vw, 4rem)', marginTop: 12 }}>
+          What Our Patrons <em>Share</em>
+        </h1>
+        <div className="hero-editorial-tagline" style={{ marginTop: 16 }}>
+          “The Place That Knows You”
+        </div>
       </div>
 
-      {/* POWERFUL BRAND QUOTE */}
-      <div style={{ 
-        maxWidth: 800, 
-        margin: '0 auto 40px', 
-        fontFamily: "'Playfair Display', serif", 
-        fontSize: 'clamp(1.5rem, 4vw, 2.2rem)', 
-        color: 'var(--green)',
-        fontStyle: 'italic',
-        fontWeight: 700,
-        lineHeight: 1.3,
-        textAlign: 'center',
-        padding: '0 20px'
-      }}>
-        “Come for the coffee. Stay for the memories.”
-      </div>
-
-      {/* STATISTICS BLOCK: The Moras Cafe BY NUMBERS */}
+      {/* REFINED EDITORIAL STATS */}
       <div style={{ 
         maxWidth: 1100, 
         margin: '0 auto 60px', 
-        background: 'var(--cream-light)', 
+        background: '#FFFFFF', 
         borderRadius: '24px', 
         border: '1px solid var(--cream-dark)', 
         padding: '48px 32px', 
         textAlign: 'center',
-        boxShadow: 'var(--shadow-sm)'
+        boxShadow: '0 10px 30px rgba(15, 61, 62, 0.05)'
       }}>
-        <span style={{ color: 'var(--green)', textTransform: 'uppercase', letterSpacing: 2, fontSize: '0.82rem', fontWeight: 800, display: 'block', marginBottom: 8 }}>Our Milestones</span>
-        <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: '2rem', color: 'var(--green)', margin: '0 0 16px', fontWeight: 700 }}>
-          The Moras Cafe By Numbers
+        <span style={{ color: 'var(--green)', textTransform: 'uppercase', letterSpacing: 2, fontSize: '0.8rem', fontWeight: 800, display: 'block', marginBottom: 8 }}>
+          Milestones of Care
+        </span>
+        <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: '2rem', color: 'var(--green)', margin: '0 0 24px', fontWeight: 700 }}>
+          The Moras Cafe in Numbers
         </h2>
-        <div style={{ width: 50, height: 3, background: 'var(--green)', margin: '0 auto 36px' }} />
         
-        <div className="grid-5" style={{ gap: '20px' }}>
+        <div className="grid-4" style={{ gap: '20px' }}>
           {[
-            { icon: '☕', number: '500+', label: 'Happy Guests' },
-            { icon: '📚', number: 'Free', label: 'Books Available' },
-            { icon: '🎲', number: 'Free', label: 'Board Games' },
-            { icon: '⭐', number: '4.8+', label: 'Google Rating' },
-            { icon: '❤️', number: 'Countless', label: 'Memories Made' }
+            { number: '4.8★', label: 'Google Rating', note: 'Based on 500+ verified guest reviews' },
+            { number: '100%', label: 'Pure Veg Craft', note: 'Dedicated pure vegetarian kitchen' },
+            { number: '10k+', label: 'Cups Poured', note: 'Precision artisan brews' },
+            { number: 'Daily', label: '10 AM – 10:30 PM', note: 'Open 7 days a week at B.M. Patil Circle' }
           ].map((stat, idx) => (
             <div key={idx} style={{ 
-              background: 'var(--white)', 
+              background: '#FAF5EF', 
               border: '1px solid var(--cream-dark)', 
               borderRadius: '16px', 
-              padding: '24px 16px',
+              padding: '24px 18px',
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
-              gap: 8,
-              boxShadow: 'var(--shadow-sm)',
-              transition: 'transform 0.3s ease, box-shadow 0.3s ease'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = 'translateY(-4px)';
-              e.currentTarget.style.boxShadow = 'var(--shadow)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = 'translateY(0)';
-              e.currentTarget.style.boxShadow = 'var(--shadow-sm)';
-            }}
-            >
-              <span style={{ fontSize: '2.5rem', marginBottom: 4 }} role="img" aria-label={stat.label}>{stat.icon}</span>
-              <strong style={{ fontSize: '1.8rem', color: 'var(--green)', fontWeight: 800 }}><StatCounter targetValue={stat.number} /></strong>
-              <span style={{ fontSize: '0.88rem', color: 'var(--text-light)', fontWeight: 600 }}>{stat.label}</span>
+              gap: 6
+            }}>
+              <div style={{ 
+                fontFamily: "'Playfair Display', serif", 
+                fontSize: '1.8rem', 
+                fontWeight: 800, 
+                color: 'var(--green)'
+              }}>
+                <StatCounter targetValue={stat.number} />
+              </div>
+              <div style={{ fontSize: '0.88rem', fontWeight: 700, color: '#b45309', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                {stat.label}
+              </div>
+              <div style={{ fontSize: '0.8rem', color: 'var(--text-light)', lineHeight: 1.4 }}>
+                {stat.note}
+              </div>
             </div>
           ))}
         </div>
@@ -178,7 +166,7 @@ function Reviews() {
           </article>
         ))}
       </div>
-    </section>
+    </div>
   );
 }
 

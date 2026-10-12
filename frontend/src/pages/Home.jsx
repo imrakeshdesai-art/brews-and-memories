@@ -291,6 +291,10 @@ function Home({ addToCart, openReserve }) {
               Book a Table
             </button>
           </div>
+          <div className="hero-scroll-cue" aria-hidden="true">
+            <span className="scroll-cue-line" />
+            <span className="scroll-cue-text">SCROLL TO EXPLORE</span>
+          </div>
         </div>
       </section>
 
