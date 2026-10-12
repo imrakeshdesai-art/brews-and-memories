@@ -1,0 +1,133 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="900" viewBox="0 0 800 900" fill="none">
+  <defs>
+    <!-- Gold filigree gradient -->
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E5C378" />
+      <stop offset="50%" stop-color="#C59B3F" />
+      <stop offset="100%" stop-color="#8C661D" />
+    </linearGradient>
+
+    <!-- Leaf gradient -->
+    <linearGradient id="leafGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2E6B47" />
+      <stop offset="60%" stop-color="#144A2D" />
+      <stop offset="100%" stop-color="#0A2818" />
+    </linearGradient>
+
+    <!-- Cherry gradient -->
+    <radialGradient id="cherryGrad" cx="35%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#F24B4B" />
+      <stop offset="40%" stop-color="#A61C1C" />
+      <stop offset="100%" stop-color="#540707" />
+    </radialGradient>
+
+    <!-- Roasted bean gradient -->
+    <radialGradient id="beanGrad" cx="30%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#8B5A36" />
+      <stop offset="70%" stop-color="#4A2611" />
+      <stop offset="100%" stop-color="#241105" />
+    </radialGradient>
+
+    <!-- Drop shadow filter -->
+    <filter id="softShadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#1F1610" flood-opacity="0.18" />
+    </filter>
+
+    <!-- Mask that creates the transparent window for the video to shine through -->
+    <mask id="portalHole">
+      <rect width="800" height="900" fill="white" />
+      <!-- Left Lobe Cutout -->
+      <path d="M 390 85 C 300 160, 235 320, 235 450 C 235 580, 300 740, 390 815 C 350 580, 360 320, 390 85 Z" fill="black" />
+      <!-- Right Lobe Cutout -->
+      <path d="M 410 85 C 500 160, 565 320, 565 450 C 565 580, 500 740, 410 815 C 445 580, 435 320, 410 85 Z" fill="black" />
+    </mask>
+  </defs>
+
+  <!-- BACKGROUND ILLUMINATION & GOLD RIMS -->
+  <g filter="url(#softShadow)">
+    <!-- Outer Gold Silhouette Line -->
+    <path d="M 400 70 C 270 170, 210 320, 210 450 C 210 580, 270 730, 400 830 C 530 730, 590 580, 590 450 C 590 320, 530 170, 400 70 Z" 
+          stroke="url(#goldGrad)" stroke-width="4.5" fill="none" />
+          
+    <!-- Inner Calligraphic Gold S-Seam -->
+    <path d="M 400 72 C 375 220, 360 360, 400 450 C 440 540, 425 680, 400 828" 
+          stroke="url(#goldGrad)" stroke-width="5" stroke-linecap="round" fill="none" />
+  </g>
+
+  <!-- BOTANICAL BRANCHES, LEAVES & CHERRIES (LEFT ARCH) -->
+  <g>
+    <!-- Left Stem Line -->
+    <path d="M 210 450 C 200 340, 250 220, 330 140" stroke="#7A6348" stroke-width="2.5" fill="none" />
+    <path d="M 210 450 C 210 580, 260 700, 340 760" stroke="#7A6348" stroke-width="2.5" fill="none" />
+
+    <!-- Upper Left Cluster: Leaves -->
+    <path d="M 320 150 C 280 130, 250 160, 260 190 C 290 190, 320 170, 320 150 Z" fill="url(#leafGrad)" />
+    <path d="M 260 210 C 220 190, 190 220, 200 250 C 230 250, 260 230, 260 210 Z" fill="url(#leafGrad)" />
+    <path d="M 220 280 C 170 270, 150 310, 170 340 C 200 330, 220 300, 220 280 Z" fill="url(#leafGrad)" />
+
+    <!-- Mid Left Leaves (Large Hero Leaf) -->
+    <path d="M 190 430 C 130 400, 100 460, 120 510 C 160 510, 190 460, 190 430 Z" fill="url(#leafGrad)" />
+    <path d="M 180 500 C 130 520, 130 580, 170 610 C 190 570, 200 530, 180 500 Z" fill="url(#leafGrad)" />
+
+    <!-- Lower Left Leaves -->
+    <path d="M 230 650 C 190 680, 200 730, 240 750 C 260 710, 250 670, 230 650 Z" fill="url(#leafGrad)" />
+    <path d="M 300 740 C 280 790, 330 820, 360 800 C 350 760, 330 740, 300 740 Z" fill="url(#leafGrad)" />
+
+    <!-- Left Ruby Cherries -->
+    <circle cx="215" cy="400" r="14" fill="url(#cherryGrad)" />
+    <circle cx="195" cy="415" r="13" fill="url(#cherryGrad)" />
+    <circle cx="225" cy="610" r="12" fill="url(#cherryGrad)" />
+    <circle cx="210" cy="625" r="11" fill="url(#cherryGrad)" />
+  </g>
+
+  <!-- BOTANICAL BRANCHES, LEAVES & CHERRIES (RIGHT ARCH) -->
+  <g>
+    <!-- Right Stem Line -->
+    <path d="M 590 450 C 600 340, 550 220, 470 140" stroke="#7A6348" stroke-width="2.5" fill="none" />
+    <path d="M 590 450 C 590 580, 540 700, 460 760" stroke="#7A6348" stroke-width="2.5" fill="none" />
+
+    <!-- Upper Right Cluster: Leaves -->
+    <path d="M 480 150 C 520 130, 550 160, 540 190 C 510 190, 480 170, 480 150 Z" fill="url(#leafGrad)" />
+    <path d="M 540 210 C 580 190, 610 220, 600 250 C 570 250, 540 230, 540 210 Z" fill="url(#leafGrad)" />
+    <path d="M 580 280 C 630 270, 650 310, 630 340 C 600 330, 580 300, 580 280 Z" fill="url(#leafGrad)" />
+
+    <!-- Mid Right Leaves (Large Hero Leaf) -->
+    <path d="M 610 430 C 670 400, 700 460, 680 510 C 640 510, 610 460, 610 430 Z" fill="url(#leafGrad)" />
+    <path d="M 620 500 C 670 520, 670 580, 630 610 C 610 570, 600 530, 620 500 Z" fill="url(#leafGrad)" />
+
+    <!-- Lower Right Leaves -->
+    <path d="M 570 650 C 610 680, 600 730, 560 750 C 540 710, 550 670, 570 650 Z" fill="url(#leafGrad)" />
+    <path d="M 500 740 C 520 790, 470 820, 440 800 C 450 760, 470 740, 500 740 Z" fill="url(#leafGrad)" />
+
+    <!-- Right Ruby Cherries -->
+    <circle cx="585" cy="400" r="14" fill="url(#cherryGrad)" />
+    <circle cx="605" cy="415" r="13" fill="url(#cherryGrad)" />
+    <circle cx="575" cy="610" r="12" fill="url(#cherryGrad)" />
+    <circle cx="590" cy="625" r="11" fill="url(#cherryGrad)" />
+  </g>
+
+  <!-- FLOATING ROASTED COFFEE BEANS -->
+  <!-- Top Left Bean -->
+  <g transform="translate(260, 210) rotate(-25)">
+    <ellipse cx="0" cy="0" rx="14" ry="24" fill="url(#beanGrad)" />
+    <path d="M 0 -20 C 4 -7, -4 7, 0 20" stroke="#241105" stroke-width="2" fill="none" />
+  </g>
+
+  <!-- Bottom Left Bean -->
+  <g transform="translate(230, 690) rotate(35)">
+    <ellipse cx="0" cy="0" rx="13" ry="22" fill="url(#beanGrad)" />
+    <path d="M 0 -18 C 3 -6, -3 6, 0 18" stroke="#241105" stroke-width="2" fill="none" />
+  </g>
+
+  <!-- Top Right Bean -->
+  <g transform="translate(630, 210) rotate(20)">
+    <ellipse cx="0" cy="0" rx="14" ry="24" fill="url(#beanGrad)" />
+    <path d="M 0 -20 C -4 -7, 4 7, 0 20" stroke="#241105" stroke-width="2" fill="none" />
+  </g>
+
+  <!-- Bottom Right Bean -->
+  <g transform="translate(650, 640) rotate(-30)">
+    <ellipse cx="0" cy="0" rx="15" ry="25" fill="url(#beanGrad)" />
+    <path d="M 0 -21 C -4 -7, 4 7, 0 21" stroke="#241105" stroke-width="2" fill="none" />
+  </g>
+</svg>

@@ -26,13 +26,17 @@ function NavBar({ cartCount, onCartClick, activeTable, onReserveClick, theme, to
   return (
     <header className={`site-nav ${isScrolled ? 'scrolled' : 'transparent'} ${location.pathname === '/' ? 'is-home' : ''}`}>
       <div className="nav-container-split">
-        {/* LEFT NAV WING: Home, About */}
+        {/* LEFT NAV WING: Home, About, Menu */}
         <nav className="nav-wing nav-wing-left desktop-menu">
           <NavLink to="/" end className={() => (isHomeActive ? 'nav-link active' : 'nav-link')}>
             Home
+            {isHomeActive && <span className="nav-active-dot" aria-hidden="true" />}
           </NavLink>
           <NavLink to="/about" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
             About
+          </NavLink>
+          <NavLink to="/menu" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
+            Menu
           </NavLink>
         </nav>
 
@@ -41,13 +45,16 @@ function NavBar({ cartCount, onCartClick, activeTable, onReserveClick, theme, to
           <img src="/logo.png" alt="The Moras Cafe" className="brand-center-img" />
         </NavLink>
 
-        {/* RIGHT NAV WING: Menu, Contact */}
+        {/* RIGHT NAV WING: Gallery, Contact, Order Now */}
         <nav className="nav-wing nav-wing-right desktop-menu">
-          <NavLink to="/menu" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
-            Menu
+          <NavLink to="/moments" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
+            Gallery
           </NavLink>
           <NavLink to="/#location" className={() => (isContactActive ? 'nav-link active' : 'nav-link')}>
             Contact
+          </NavLink>
+          <NavLink to="/menu" className="nav-btn-order">
+            Order Now &rarr;
           </NavLink>
         </nav>
 
