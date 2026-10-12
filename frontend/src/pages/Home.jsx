@@ -274,38 +274,10 @@ function Home({ addToCart, openReserve }) {
 
   return (
     <div className="home-page-editorial">
-      {/* CHAPTER 1: THE EDITORIAL HERO WITH ARTISAN PORTAL MASK */}
+      {/* CHAPTER 1: THE EDITORIAL HERO */}
       <section className="hero-editorial-section">
-        {/* PARALLAX ARTISAN PORTAL CONTAINER */}
-        <div 
-          className="hero-artisan-portal-stage"
-          style={{
-            transform: `scale(${1 + scrollProgress * 0.42}) translateY(${scrollProgress * -20}px)`,
-            opacity: Math.max(0.2, 1 - scrollProgress * 0.65)
-          }}
-          aria-hidden="true"
-        >
-          <div className="hero-portal-window">
-            <img 
-              src="/ambiance.webp" 
-              alt="" 
-              className="hero-portal-ambient-media"
-              style={{
-                transform: `scale(${1.15 + scrollProgress * 0.25}) rotate(${scrollProgress * 2}deg)`
-              }}
-            />
-            <div className="hero-portal-glow-rim" />
-          </div>
-        </div>
-
         <div className="hero-editorial-overlay" />
-
-        <div 
-          className="hero-editorial-container"
-          style={{
-            transform: `translateY(${scrollProgress * -35}px)`
-          }}
-        >
+        <div className="hero-editorial-container">
           <div className="hero-reference-pretitle">
             Welcome to
           </div>
@@ -313,7 +285,7 @@ function Home({ addToCart, openReserve }) {
             The Moras Cafe
           </h1>
           <div className="hero-reference-tagline">
-            A place that knows you!
+            “The Place That Knows You”
           </div>
           <p className="hero-editorial-lead">
             Where freshly pulled espresso meets warm conversations, artisan pizzas, curated books, and slow, unforgettable moments.
