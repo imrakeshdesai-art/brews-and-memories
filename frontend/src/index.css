@@ -756,8 +756,9 @@ button {
 }
 
 .menu-card-img {
-  height: 130px;
-  background: linear-gradient(135deg, var(--cream), var(--cream-dark));
+  height: 160px;
+  background: #fdfaf6;
+  border-bottom: 1px solid var(--cream-dark);
   display: flex;
   align-items: center;
   justify-content: center;

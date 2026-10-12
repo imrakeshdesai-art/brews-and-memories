@@ -109,26 +109,25 @@ function Reviews() {
           The Moras Cafe in Numbers
         </h2>
         
-        <div className="grid-4" style={{ gap: '20px' }}>
+        <div className="grid-3" style={{ gap: '24px' }}>
           {[
-            { number: '4.8★', label: 'Google Rating', note: 'Based on 500+ verified guest reviews' },
-            { number: '100%', label: 'Pure Veg Craft', note: 'Dedicated pure vegetarian kitchen' },
-            { number: '10k+', label: 'Cups Poured', note: 'Precision artisan brews' },
-            { number: 'Daily', label: '10 AM – 10:30 PM', note: 'Open 7 days a week at B.M. Patil Circle' }
+            { number: '4.8★', label: 'Google Rating', note: 'Based on genuine patron reviews on Google Maps' },
+            { number: '100%', label: 'Pure Veg Craft', note: 'Strictly vegetarian kitchen & fresh preparation' },
+            { number: 'Daily', label: '10 AM – 10:30 PM', note: 'Welcoming guests 7 days a week at B.M. Patil Circle' }
           ].map((stat, idx) => (
             <div key={idx} style={{ 
               background: '#FAF5EF', 
               border: '1px solid var(--cream-dark)', 
               borderRadius: '16px', 
-              padding: '24px 18px',
+              padding: '28px 20px',
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
-              gap: 6
+              gap: 8
             }}>
               <div style={{ 
                 fontFamily: "'Playfair Display', serif", 
-                fontSize: '1.8rem', 
+                fontSize: '2rem', 
                 fontWeight: 800, 
                 color: 'var(--green)'
               }}>
@@ -137,18 +136,12 @@ function Reviews() {
               <div style={{ fontSize: '0.88rem', fontWeight: 700, color: '#b45309', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                 {stat.label}
               </div>
-              <div style={{ fontSize: '0.8rem', color: 'var(--text-light)', lineHeight: 1.4 }}>
+              <div style={{ fontSize: '0.82rem', color: 'var(--text-light)', lineHeight: 1.5 }}>
                 {stat.note}
               </div>
             </div>
           ))}
         </div>
-      </div>
-
-      <div className="rating-summary">
-        <div className="big-rating">4.8</div>
-        <div className="rating-stars-big">★★★★★</div>
-        <div className="rating-meta">Based on 500+ Google Reviews</div>
       </div>
       
       <div className="reviews-grid">
