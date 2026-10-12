@@ -263,22 +263,14 @@ function Home({ addToCart, openReserve }) {
       <section className="hero-editorial-section">
         <div className="hero-editorial-overlay" />
         <div className="hero-editorial-container">
-          <span className="hero-editorial-kicker">
-            VIJAYAPURA'S SPECIALTY COFFEE &amp; PURE VEG BITES
-          </span>
-          <h1 className="hero-editorial-brand">
-            <img 
-              src="/logo.png" 
-              alt="The Moras Cafe" 
-              className="hero-editorial-crest" 
-              width="240"
-              height="240"
-              loading="eager"
-            />
-            <span className="sr-only">The Moras Cafe</span>
+          <div className="hero-reference-pretitle">
+            Welcome to
+          </div>
+          <h1 className="hero-reference-brand-title">
+            The Moras Cafe
           </h1>
-          <div className="hero-editorial-tagline">
-            “The Place That Knows You”
+          <div className="hero-reference-tagline">
+            A place that knows you!
           </div>
           <p className="hero-editorial-lead">
             Where freshly pulled espresso meets warm conversations, artisan pizzas, curated books, and slow, unforgettable moments.

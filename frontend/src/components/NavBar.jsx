@@ -26,7 +26,7 @@ function NavBar({ cartCount, onCartClick, activeTable, onReserveClick, theme, to
   return (
     <header className={`site-nav ${isScrolled ? 'scrolled' : 'transparent'} ${location.pathname === '/' ? 'is-home' : ''}`}>
       <div className="nav-container-split">
-        {/* LEFT NAV WING */}
+        {/* LEFT NAV WING: Home, About */}
         <nav className="nav-wing nav-wing-left desktop-menu">
           <NavLink to="/" end className={() => (isHomeActive ? 'nav-link active' : 'nav-link')}>
             Home
@@ -34,23 +34,17 @@ function NavBar({ cartCount, onCartClick, activeTable, onReserveClick, theme, to
           <NavLink to="/about" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
             About
           </NavLink>
-          <NavLink to="/menu" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
-            Menu
-          </NavLink>
         </nav>
 
-        {/* CENTER LUXURY LOGO BRAND */}
+        {/* CENTER LUXURY LOGO EMBLEM */}
         <NavLink to="/" className="site-brand-center" aria-label="The Moras Cafe Home">
-          <img src="/logo.png" alt="The Moras Cafe logo" className="brand-center-img" />
+          <img src="/logo.png" alt="The Moras Cafe" className="brand-center-img" />
         </NavLink>
 
-        {/* RIGHT NAV WING */}
+        {/* RIGHT NAV WING: Menu, Contact */}
         <nav className="nav-wing nav-wing-right desktop-menu">
-          <NavLink to="/reviews" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
-            Reviews
-          </NavLink>
-          <NavLink to="/moments" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
-            Moments
+          <NavLink to="/menu" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
+            Menu
           </NavLink>
           <NavLink to="/#location" className={() => (isContactActive ? 'nav-link active' : 'nav-link')}>
             Contact

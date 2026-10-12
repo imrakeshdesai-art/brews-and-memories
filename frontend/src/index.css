@@ -164,26 +164,13 @@ button {
   align-items: center;
   justify-content: center;
   text-decoration: none;
-  padding: 0 10px;
-  transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-/* On top of home page (transparent header): navbar logo fades out gracefully so hero crest shines */
-.site-nav.transparent.is-home .site-brand-center {
-  opacity: 0;
-  pointer-events: none;
-  transform: translateY(-4px) scale(0.92);
-}
-
-.site-nav.scrolled .site-brand-center,
-.site-nav:not(.is-home) .site-brand-center {
+  padding: 0 16px;
   opacity: 1;
-  pointer-events: auto;
-  transform: translateY(0) scale(1);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .site-brand-center:hover {
-  transform: scale(1.04);
+  transform: scale(1.05);
 }
 
 .brand-center-img {
@@ -262,19 +249,24 @@ button {
 }
 
 .nav-link {
-  color: #0f3d3e;
-  font-weight: 600;
-  padding: 8px 14px;
-  border-radius: 6px;
-  font-size: 0.9rem;
-  letter-spacing: 0.3px;
-  transition: var(--transition);
+  color: #2c1810;
+  font-family: 'Playfair Display', serif;
+  font-weight: 500;
+  padding: 8px 18px;
+  font-size: 1.15rem;
+  letter-spacing: 0.5px;
+  text-decoration: none;
+  transition: color 0.25s ease, transform 0.2s ease;
+  position: relative;
 }
 
-.nav-link:hover,
+.nav-link:hover {
+  color: #b45309;
+}
+
 .nav-link.active {
-  background: rgba(15, 61, 62, 0.08);
-  color: #0f3d3e;
+  color: #b45309;
+  font-weight: 700;
 }
 
 .nav-btn-reserve {
@@ -2550,81 +2542,37 @@ button {
   }
 }
 
-.hero-editorial-kicker {
-  font-size: 0.8rem;
-  letter-spacing: 4px;
-  color: var(--green);
-  font-weight: 800;
-  text-transform: uppercase;
+/* EXACT LUXURY REFERENCE HERO TYPOGRAPHY */
+.hero-reference-pretitle {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.6rem, 3.2vw, 2.4rem);
+  font-weight: 400;
+  color: #1e3a5f;
+  letter-spacing: 0.5px;
+  margin-bottom: -4px;
   animation: heroItemFade 0.8s ease 0.1s both;
 }
 
-/* HERO EDITORIAL BRAND CREST */
-.hero-editorial-brand {
-  margin: 8px 0 4px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  animation: heroItemFade 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;
-}
-
-.hero-editorial-crest {
-  width: clamp(190px, 24vw, 260px);
-  height: auto;
-  aspect-ratio: 1 / 1;
-  object-fit: contain;
-  display: block;
-  filter: drop-shadow(0 14px 28px rgba(15, 61, 62, 0.14));
-  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.hero-editorial-crest:hover {
-  transform: scale(1.03);
-}
-
-/* Screen-reader utility for SEO */
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
-}
-
-.hero-editorial-title {
+.hero-reference-brand-title {
   font-family: 'Playfair Display', serif;
-  font-size: clamp(3.2rem, 7vw, 5.8rem);
-  font-weight: 800;
+  font-size: clamp(3rem, 7.8vw, 6.2rem);
+  font-weight: 700;
+  color: #111827;
+  letter-spacing: -0.5px;
   line-height: 1.05;
   margin: 0;
-  color: var(--green);
-  letter-spacing: -0.5px;
   animation: heroItemFade 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;
 }
 
-.hero-editorial-title em {
-  color: #b45309;
-  font-style: italic;
-  font-weight: 700;
-}
-
-/* SIGNATURE TAGLINE: "The Place That Knows You" */
-.hero-editorial-tagline {
+.hero-reference-tagline {
   font-family: 'Playfair Display', serif;
-  font-size: clamp(1.25rem, 2.8vw, 1.75rem);
-  color: #0f3d3e;
+  font-size: clamp(1.3rem, 2.8vw, 1.9rem);
   font-style: italic;
-  font-weight: 600;
+  font-weight: 500;
+  color: #1e3a5f;
   letter-spacing: 0.5px;
-  margin: 4px 0;
-  padding: 8px 24px;
-  border-top: 1px solid rgba(15, 61, 62, 0.14);
-  border-bottom: 1px solid rgba(15, 61, 62, 0.14);
-  display: inline-block;
+  margin-top: 8px;
+  margin-bottom: 8px;
   animation: heroItemFade 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.35s both;
 }
 
