@@ -262,9 +262,8 @@ function Home({ addToCart, openReserve }) {
   };
 
   const heroPinRef = useRef(null);
-  const maskRef = useRef(null);
-  const headlineRef = useRef(null);
   const videoRef = useRef(null);
+  const headingsRef = useRef(null);
 
   useEffect(() => {
     // Respect user's reduced-motion preference
@@ -273,35 +272,41 @@ function Home({ addToCart, openReserve }) {
 
     const ctx = gsap.context(() => {
       const isMobile = window.innerWidth < 768;
-      const pinDistance = isMobile ? '+=120%' : '+=200%';
-      // Calculate expansion factor based on viewport diagonal so flower mask completely expands beyond all edges
-      const targetScale = isMobile ? 8 : 6;
+      const initialSize = isMobile ? '320px 320px' : '520px 520px';
+      const targetSize = isMobile ? '3200px 3200px' : '5000px 5000px';
+
+      // Set initial mask size so the flower reveals the center video on load
+      gsap.set(videoRef.current, {
+        maskSize: initialSize,
+        webkitMaskSize: initialSize
+      });
 
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: heroPinRef.current,
           start: 'top top',
-          end: pinDistance,
-          scrub: 0.8,
+          end: isMobile ? '+=140%' : '+=220%',
+          scrub: 0.6,
           pin: true,
           anticipatePin: 1,
           invalidateOnRefresh: true,
         }
       });
 
-      // 1. Smoothly enlarge the botanical flower mask from centered initial window to full viewport reveal
-      tl.to(maskRef.current, {
-        scale: targetScale,
+      // 1. Expand the authentic Mask.svg from initial 520px flower to full viewport coverage
+      tl.to(videoRef.current, {
+        maskSize: targetSize,
+        webkitMaskSize: targetSize,
         ease: 'power2.inOut',
         duration: 1
       }, 0);
 
-      // 2. Fade out headline and CTAs as flower mask expands
-      tl.to(headlineRef.current, {
+      // 2. Fade out text smoothly as flower expands
+      tl.to(headingsRef.current, {
         opacity: 0,
-        y: -40,
+        scale: 1.08,
         ease: 'power1.out',
-        duration: 0.45
+        duration: 0.55
       }, 0);
     }, heroPinRef);
 
@@ -310,95 +315,34 @@ function Home({ addToCart, openReserve }) {
 
   return (
     <div className="home-page-editorial">
-      {/* CHAPTER 1: SCROLL-DRIVEN BOTANICAL FLOWER VIDEO HERO */}
-      <section className="botanical-hero-pin" ref={heroPinRef}>
-        {/* SVG DEFINITION FOR SINGLE SYMMETRICAL 8-PETAL BOTANICAL FLOWER SILHOUETTE MASK */}
-        <svg width="0" height="0" style={{ position: 'absolute', pointerEvents: 'none' }} aria-hidden="true">
-          <defs>
-            <clipPath id="botanical-flower-clip" clipPathUnits="objectBoundingBox">
-              <path 
-                ref={maskRef}
-                style={{ transformOrigin: '50% 50%', transformBox: 'fill-box' }}
-                d="M 0.500 0.260
-                   C 0.518 0.200, 0.540 0.160, 0.500 0.140
-                   C 0.460 0.160, 0.482 0.200, 0.500 0.260
-                   M 0.500 0.260
-                   C 0.560 0.220, 0.610 0.180, 0.640 0.210
-                   C 0.670 0.240, 0.630 0.290, 0.590 0.350
-                   M 0.590 0.350
-                   C 0.650 0.350, 0.720 0.360, 0.740 0.400
-                   C 0.760 0.440, 0.700 0.470, 0.620 0.500
-                   M 0.620 0.500
-                   C 0.700 0.530, 0.760 0.560, 0.740 0.600
-                   C 0.720 0.640, 0.650 0.650, 0.590 0.650
-                   M 0.590 0.650
-                   C 0.630 0.710, 0.670 0.760, 0.640 0.790
-                   C 0.610 0.820, 0.560 0.780, 0.500 0.740
-                   M 0.500 0.740
-                   C 0.482 0.800, 0.460 0.840, 0.500 0.860
-                   C 0.540 0.840, 0.518 0.800, 0.500 0.740
-                   M 0.500 0.740
-                   C 0.440 0.780, 0.390 0.820, 0.360 0.790
-                   C 0.330 0.760, 0.370 0.710, 0.410 0.650
-                   M 0.410 0.650
-                   C 0.350 0.650, 0.280 0.640, 0.260 0.600
-                   C 0.240 0.560, 0.300 0.530, 0.380 0.500
-                   M 0.380 0.500
-                   C 0.300 0.470, 0.240 0.440, 0.260 0.400
-                   C 0.280 0.360, 0.350 0.350, 0.410 0.350
-                   M 0.410 0.350
-                   C 0.370 0.290, 0.330 0.240, 0.360 0.210
-                   C 0.390 0.180, 0.440 0.220, 0.500 0.260 Z"
-              />
-            </clipPath>
-          </defs>
-        </svg>
+      {/* CHAPTER 1: EXACT SCROLL-DRIVEN MASK.SVG HERO */}
+      <section className="rc-video-section" ref={heroPinRef}>
+        <div className="rc-video-container">
+          {/* Full-viewport Background Video with /Mask.svg */}
+          <video
+            ref={videoRef}
+            src="/hero-video.mp4"
+            poster="/ambiance.webp"
+            autoPlay
+            loop
+            muted
+            playsInline
+            preload="metadata"
+            className="rc-background-video"
+          />
 
-        {/* FULL-VIEWPORT MASKED MEDIA STAGE */}
-        <div className="botanical-video-viewport">
-          <div className="botanical-masked-screen">
-            <video
-              ref={videoRef}
-              src="/hero-video.mp4"
-              poster="/ambiance.webp"
-              autoPlay
-              loop
-              muted
-              playsInline
-              preload="metadata"
-              className="botanical-media-el"
-            />
+          {/* Blend Mode Headings (mix-blend-mode: exclusion) */}
+          <div className="rc-blend-headings" ref={headingsRef}>
+            <h1 className="rc-hero-h1">
+              <span className="rc-line-1">Welcome to</span>
+              <span className="rc-line-2">The Moras Cafe</span>
+              <span className="rc-line-3">“The Place That Knows You”</span>
+            </h1>
           </div>
-          {/* Subtle warm amber ambient vignette around the flower cutout */}
-          <div className="botanical-ambient-wash" aria-hidden="true" />
-        </div>
 
-        {/* FOREGROUND HTML HEADLINE LAYER (ABOVE MEDIA) */}
-        <div className="botanical-hero-content" ref={headlineRef}>
-          <div className="hero-reference-pretitle">
-            Welcome to
-          </div>
-          <h1 className="hero-reference-brand-title">
-            The Moras Cafe
-          </h1>
-          <div className="hero-reference-tagline">
-            “The Place That Knows You”
-          </div>
-          <p className="hero-editorial-lead">
-            Where freshly pulled espresso meets warm conversations, artisan pizzas, curated books, and slow, unforgettable moments.
+          <p className="rc-scroll-text" aria-hidden="true">
+            SCROLL TO EXPLORE
           </p>
-          <div className="hero-editorial-actions">
-            <Link to="/menu" className="btn-editorial-primary">
-              Explore Our Menu
-            </Link>
-            <button type="button" onClick={openReserve} className="btn-editorial-outline">
-              Book a Table
-            </button>
-          </div>
-          <div className="hero-scroll-cue" aria-hidden="true">
-            <span className="scroll-cue-line" />
-            <span className="scroll-cue-text">SCROLL TO UNVEIL</span>
-          </div>
         </div>
       </section>
 

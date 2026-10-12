@@ -2490,85 +2490,132 @@ button {
   background: var(--cream-light);
   color: var(--text);
   overflow-x: hidden;
+  margin-top: -88px; /* Offset .page-shell padding so hero starts flush at top 0 under transparent navbar */
 }
 
-/* ==================== CHAPTER 1: GSAP SCROLL-DRIVEN BOTANICAL HERO PIN ==================== */
-.botanical-hero-pin {
+@media (max-width: 980px) {
+  .home-page-editorial {
+    margin-top: -70px;
+  }
+}
+
+/* On Homepage at top: completely transparent navbar over the cream hero */
+.site-nav.is-home.transparent {
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border-bottom: none !important;
+}
+
+/* ==================== CHAPTER 1: EXACT REFERENCE VIDEO MASK & BLEND STYLES ==================== */
+.rc-video-section {
   position: relative;
   width: 100%;
   height: 100vh;
-  min-height: 100vh;
-  background-color: #FAF5EF;
   overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  background: #FAF5EF;
   border-bottom: 1px solid var(--cream-dark);
 }
 
-/* FULL-VIEWPORT MASKED VIDEO STAGE */
-.botanical-video-viewport {
-  position: absolute;
-  inset: 0;
+.rc-video-container {
+  position: relative;
   width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 1;
-}
-
-.botanical-masked-screen {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  clip-path: url(#botanical-flower-clip);
-  -webkit-clip-path: url(#botanical-flower-clip);
-  background: #140c07;
+  height: 100vh;
   overflow: hidden;
+  background: #FAF5EF;
 }
 
-.botanical-media-el {
+.rc-background-video {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center center;
   display: block;
-  filter: brightness(0.92) contrast(1.08) saturate(1.15);
+  mask-image: url(/Mask.svg);
+  -webkit-mask-image: url(/Mask.svg);
+  mask-repeat: no-repeat;
+  -webkit-mask-repeat: no-repeat;
+  mask-position: center center;
+  -webkit-mask-position: center center;
+  mask-size: 520px 520px;
+  -webkit-mask-size: 520px 520px;
+  will-change: mask-size, -webkit-mask-size;
 }
 
-.botanical-ambient-wash {
+/* BLEND MODE HEADINGS (EXACT REFERENCE MIX-BLEND-MODE) */
+.rc-blend-headings {
   position: absolute;
-  inset: 0;
-  background: radial-gradient(circle at 50% 50%, rgba(250, 245, 239, 0.2) 0%, rgba(250, 245, 239, 0.75) 60%, #FAF5EF 90%);
-  pointer-events: none;
-}
-
-/* FOREGROUND HTML HEADLINE LAYER (ABOVE MEDIA) */
-.botanical-hero-content {
-  position: relative;
-  z-index: 10;
-  max-width: 860px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   text-align: center;
-  gap: 16px;
+  z-index: 20;
+  mix-blend-mode: exclusion;
+  color: white;
+  pointer-events: none;
+  width: 100%;
+  max-width: 900px;
   padding: 0 20px;
-  pointer-events: auto;
+  will-change: opacity, transform;
 }
 
-/* PREFERS-REDUCED-MOTION ACCESSIBILITY FALLBACK */
+.rc-hero-h1 {
+  margin: 0;
+  padding: 0;
+}
+
+.rc-hero-h1 span {
+  display: block;
+}
+
+.rc-line-1 {
+  font-family: 'Manrope', 'Plus Jakarta Sans', sans-serif;
+  font-size: clamp(24px, 4vw, 42px);
+  font-weight: 300;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.rc-line-2 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(48px, 9vw, 96px);
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  line-height: 1.05;
+}
+
+.rc-line-3 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(20px, 3.2vw, 34px);
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: 0.5px;
+  margin-top: 10px;
+}
+
+.rc-scroll-text {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 40px;
+  letter-spacing: 7px;
+  font-size: 11px;
+  mix-blend-mode: exclusion;
+  color: white;
+  width: 240px;
+  text-align: center;
+  font-weight: 600;
+  pointer-events: none;
+  z-index: 20;
+}
+
+/* REDUCED MOTION FALLBACK */
 @media (prefers-reduced-motion: reduce) {
-  .botanical-hero-pin {
-    height: auto;
-    min-height: 85vh;
-    padding: 140px 20px 90px;
-  }
-  .botanical-masked-screen {
-    clip-path: none !important;
-    -webkit-clip-path: none !important;
-    opacity: 0.18;
+  .rc-background-video {
+    mask-size: 100% 100% !important;
+    -webkit-mask-size: 100% 100% !important;
   }
 }
 
