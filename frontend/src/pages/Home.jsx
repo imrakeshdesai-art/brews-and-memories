@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useToast } from '../components/ToastProvider';
 import { menuData } from '../data/menuData';
@@ -327,30 +327,29 @@ function Home({ addToCart, openReserve }) {
               </span>
             </div>
             
-            <h1 className="hero-title" style={{ fontSize: 'clamp(2.4rem, 4.5vw, 3.8rem)', lineHeight: 1.12, color: 'var(--cream)', fontWeight: 800, margin: 0 }}>
-              Brews &amp;<br />
-              <span style={{ color: '#fbbf24', fontFamily: "'Dancing Script', cursive" }}>Memories</span>
+            <h1 className="hero-title" style={{ fontSize: 'clamp(2.4rem, 4.5vw, 4rem)', lineHeight: 1.1, color: 'var(--cream)', fontWeight: 800, margin: 0, fontFamily: "'Playfair Display', serif" }}>
+              The Moras<br />
+              <span style={{ color: '#fbbf24', fontStyle: 'italic', fontWeight: 700 }}>Cafe</span>
             </h1>
 
             {/* Subtitle Tags & Operational Descriptor */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12, margin: '8px 0 12px' }}>
               <div className="hero-tags" style={{ 
                 color: '#fbbf24', 
-                fontSize: 'clamp(1.1rem, 2.5vw, 1.35rem)', 
+                fontSize: 'clamp(1rem, 2.2vw, 1.25rem)', 
                 fontWeight: 800, 
-                letterSpacing: '1px', 
+                letterSpacing: '1.5px', 
                 textTransform: 'uppercase',
                 display: 'flex',
                 flexWrap: 'wrap',
                 gap: '4px 10px',
                 alignItems: 'center',
                 fontFamily: "'Playfair Display', serif",
-                fontStyle: 'italic'
               }}>
-                <span>Coffee Flows. Stories Wait. Memories Stay.</span>
+                <span>Fresh Brews. Great Food. Cozy Vibe.</span>
               </div>
-              <p className="hero-subtitle" style={{ fontSize: 'clamp(1rem, 1.8vw, 1.2rem)', color: 'rgba(245, 230, 200, 0.9)', margin: 0, lineHeight: 1.6, fontWeight: 500, maxWidth: 620, textAlign: 'left' }}>
-                Vijayapura's cozy café with books, board games, comfort food, and unforgettable moments.
+              <p className="hero-subtitle" style={{ fontSize: 'clamp(1rem, 1.8vw, 1.15rem)', color: 'rgba(245, 230, 200, 0.92)', margin: 0, lineHeight: 1.6, fontWeight: 400, maxWidth: 620, textAlign: 'left' }}>
+                Vijayapura's favorite café for specialty coffee, artisan pizzas, sizzling brownie, and cozy hangout moments.
               </p>
             </div>
 
