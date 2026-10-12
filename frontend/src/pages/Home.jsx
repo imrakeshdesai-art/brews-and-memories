@@ -264,7 +264,7 @@ function Home({ addToCart, openReserve }) {
         <div className="hero-editorial-overlay" />
         <div className="hero-editorial-container">
           <span className="hero-editorial-kicker">
-            ☕ VIJAYAPURA'S SPECIALTY COFFEE &amp; PURE VEG BITES
+            VIJAYAPURA'S SPECIALTY COFFEE &amp; PURE VEG BITES
           </span>
           <h1 className="hero-editorial-title">
             The Moras<br />
@@ -287,32 +287,7 @@ function Home({ addToCart, openReserve }) {
         </div>
       </section>
 
-      {/* CHAPTER 2: REFINED CREDENTIALS BAR */}
-      <section className="credentials-editorial-bar">
-        <div className="credentials-container">
-          <div className="credential-item">
-            <strong>4.8 ★</strong>
-            <span>500+ Google Reviews</span>
-          </div>
-          <div className="credential-sep">·</div>
-          <div className="credential-item">
-            <strong>100%</strong>
-            <span>Pure Vegetarian Craft</span>
-          </div>
-          <div className="credential-sep">·</div>
-          <div className="credential-item">
-            <strong>Specialty Brews</strong>
-            <span>Freshly Ground &amp; Poured</span>
-          </div>
-          <div className="credential-sep">·</div>
-          <div className="credential-item">
-            <strong>B.M. Patil Circle</strong>
-            <span>Open Daily · 10 AM – 10:30 PM</span>
-          </div>
-        </div>
-      </section>
-
-      {/* CHAPTER 3: THE MORAS VIBE & CRAFT (EDITORIAL SPLIT) */}
+      {/* CHAPTER 2: THE MORAS VIBE & CRAFT (EDITORIAL SPLIT) */}
       <section className="section-editorial craft-story-section">
         <div className="craft-grid">
           <div className="craft-image-frame">

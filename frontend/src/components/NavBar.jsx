@@ -55,14 +55,6 @@ function NavBar({ cartCount, onCartClick, activeTable, onReserveClick, theme, to
           <NavLink to="/#location" className={() => (isContactActive ? 'nav-link active' : 'nav-link')}>
             Contact
           </NavLink>
-          <button 
-            type="button" 
-            onClick={onReserveClick} 
-            className="nav-btn-reserve" 
-            aria-label="Book a reservation table"
-          >
-            Book Table
-          </button>
         </nav>
 
         {/* MOBILE / QUICK ACTIONS (RIGHT SIDE) */}
@@ -78,14 +70,6 @@ function NavBar({ cartCount, onCartClick, activeTable, onReserveClick, theme, to
               <span className="cart-badge" aria-live="polite">{cartCount}</span>
             </button>
           )}
-          <button
-            className="theme-toggle-btn"
-            type="button"
-            onClick={toggleTheme}
-            aria-label={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
-          >
-            {theme === 'dark' ? '☀️' : '🌙'}
-          </button>
           <button
             className={`mobile-toggle ${menuOpen ? 'open' : ''}`}
             type="button"

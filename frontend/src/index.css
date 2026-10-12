@@ -2521,14 +2521,27 @@ button {
   flex-direction: column;
   align-items: center;
   gap: 16px;
+  animation: heroReveal 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes heroReveal {
+  0% {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .hero-editorial-kicker {
   font-size: 0.8rem;
-  letter-spacing: 3.5px;
+  letter-spacing: 4px;
   color: var(--green);
   font-weight: 800;
   text-transform: uppercase;
+  animation: heroItemFade 0.8s ease 0.1s both;
 }
 
 .hero-editorial-title {
@@ -2539,6 +2552,7 @@ button {
   margin: 0;
   color: var(--green);
   letter-spacing: -0.5px;
+  animation: heroItemFade 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;
 }
 
 .hero-editorial-title em {
@@ -2556,10 +2570,11 @@ button {
   font-weight: 600;
   letter-spacing: 0.5px;
   margin: 4px 0;
-  padding: 6px 20px;
-  border-top: 1px solid rgba(15, 61, 62, 0.12);
-  border-bottom: 1px solid rgba(15, 61, 62, 0.12);
+  padding: 8px 24px;
+  border-top: 1px solid rgba(15, 61, 62, 0.14);
+  border-bottom: 1px solid rgba(15, 61, 62, 0.14);
   display: inline-block;
+  animation: heroItemFade 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.35s both;
 }
 
 .hero-editorial-lead {
@@ -2569,6 +2584,7 @@ button {
   max-width: 660px;
   margin: 8px 0 0;
   font-weight: 400;
+  animation: heroItemFade 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.45s both;
 }
 
 .hero-editorial-actions {
@@ -2577,6 +2593,18 @@ button {
   flex-wrap: wrap;
   justify-content: center;
   margin-top: 16px;
+  animation: heroItemFade 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.55s both;
+}
+
+@keyframes heroItemFade {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .btn-editorial-primary {
