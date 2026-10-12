@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="540" height="540" viewBox="0 0 540 540" fill="none">
+  <defs>
+    <mask id="beanCutout">
+      <rect width="540" height="540" fill="white" />
+      <path d="M 270 20 C 365 110, 440 180, 440 270 C 440 360, 365 430, 270 520 C 175 430, 100 360, 100 270 C 100 180, 175 110, 270 20 Z" fill="black" />
+    </mask>
+  </defs>
+  <image href="/botanical-bean.jpg" width="540" height="540" preserveAspectRatio="xMidYMid slice" mask="url(#beanCutout)" />
+</svg>

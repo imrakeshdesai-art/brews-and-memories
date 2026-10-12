@@ -264,6 +264,7 @@ function Home({ addToCart, openReserve }) {
   const spacerRef = useRef(null);
   const stickyRef = useRef(null);
   const videoRef = useRef(null);
+  const frameRef = useRef(null);
   const headingsRef = useRef(null);
 
   useEffect(() => {
@@ -302,7 +303,15 @@ function Home({ addToCart, openReserve }) {
         duration: 1
       }, 0);
 
-      // 2. Fade out text smoothly as flower expands
+      // 2. Scale & fade out the botanical leaf wreath gracefully
+      tl.to(frameRef.current, {
+        opacity: 0,
+        scale: 1.15,
+        ease: 'power1.out',
+        duration: 0.45
+      }, 0);
+
+      // 3. Fade out text smoothly as flower expands
       tl.to(headingsRef.current, {
         opacity: 0,
         scale: 1.08,
@@ -331,6 +340,11 @@ function Home({ addToCart, openReserve }) {
             preload="metadata"
             className="rc-background-video"
           />
+
+          {/* Botanical Coffee Bean Leaf Wreath Overlay */}
+          <div className="rc-botanical-frame-overlay" ref={frameRef} aria-hidden="true">
+            <img src="/BotanicalFrame.svg" alt="" className="rc-botanical-frame-img" />
+          </div>
 
           {/* Blend Mode Headings (mix-blend-mode: exclusion) */}
           <div className="rc-blend-headings" ref={headingsRef}>
