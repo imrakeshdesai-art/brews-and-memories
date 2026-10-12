@@ -24,7 +24,7 @@ function NavBar({ cartCount, onCartClick, activeTable, onReserveClick, theme, to
   const isContactActive = location.pathname === '/' && location.hash === '#location';
 
   return (
-    <header className={`site-nav ${isScrolled ? 'scrolled' : 'transparent'}`}>
+    <header className={`site-nav ${isScrolled ? 'scrolled' : 'transparent'} ${location.pathname === '/' ? 'is-home' : ''}`}>
       <div className="nav-container-split">
         {/* LEFT NAV WING */}
         <nav className="nav-wing nav-wing-left desktop-menu">

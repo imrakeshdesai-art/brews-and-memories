@@ -266,9 +266,16 @@ function Home({ addToCart, openReserve }) {
           <span className="hero-editorial-kicker">
             VIJAYAPURA'S SPECIALTY COFFEE &amp; PURE VEG BITES
           </span>
-          <h1 className="hero-editorial-title">
-            The Moras<br />
-            <em>Cafe</em>
+          <h1 className="hero-editorial-brand">
+            <img 
+              src="/logo.png" 
+              alt="The Moras Cafe" 
+              className="hero-editorial-crest" 
+              width="240"
+              height="240"
+              loading="eager"
+            />
+            <span className="sr-only">The Moras Cafe</span>
           </h1>
           <div className="hero-editorial-tagline">
             “The Place That Knows You”
