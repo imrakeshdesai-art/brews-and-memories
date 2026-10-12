@@ -2485,26 +2485,31 @@ button {
   overflow-x: hidden;
 }
 
-/* CHAPTER 1: HERO */
+/* CHAPTER 1: HERO - SEAMLESS LUXURY WARM PALETTE */
 .hero-editorial-section {
   position: relative;
-  min-height: 85vh;
+  min-height: 88vh;
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 140px 20px 80px;
-  background-image: url('/ambiance.webp');
+  padding: 140px 20px 90px;
+  background-color: #FAF5EF;
+  background-image: 
+    radial-gradient(ellipse at 50% 30%, rgba(250, 245, 239, 0.72) 0%, rgba(250, 245, 239, 0.94) 75%, #FAF5EF 100%),
+    url('/ambiance.webp');
   background-size: cover;
   background-position: center;
-  color: var(--cream);
+  background-repeat: no-repeat;
+  color: var(--text);
+  border-bottom: 1px solid var(--cream-dark);
 }
 
 .hero-editorial-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(15, 61, 62, 0.88) 0%, rgba(9, 40, 41, 0.92) 100%);
-  backdrop-filter: blur(2px);
+  background: linear-gradient(180deg, rgba(250, 245, 239, 0.6) 0%, rgba(250, 245, 239, 0.85) 65%, #FAF5EF 100%);
+  pointer-events: none;
 }
 
 .hero-editorial-container {
@@ -2515,38 +2520,54 @@ button {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 20px;
+  gap: 16px;
 }
 
 .hero-editorial-kicker {
-  font-size: 0.82rem;
-  letter-spacing: 3px;
-  color: #fbbf24;
+  font-size: 0.8rem;
+  letter-spacing: 3.5px;
+  color: var(--green);
   font-weight: 800;
   text-transform: uppercase;
 }
 
 .hero-editorial-title {
   font-family: 'Playfair Display', serif;
-  font-size: clamp(3.2rem, 7vw, 5.6rem);
+  font-size: clamp(3.2rem, 7vw, 5.8rem);
   font-weight: 800;
   line-height: 1.05;
   margin: 0;
-  color: #FAF5EF;
+  color: var(--green);
+  letter-spacing: -0.5px;
 }
 
 .hero-editorial-title em {
-  color: #fbbf24;
+  color: #b45309;
   font-style: italic;
   font-weight: 700;
 }
 
+/* SIGNATURE TAGLINE: "The Place That Knows You" */
+.hero-editorial-tagline {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.25rem, 2.8vw, 1.75rem);
+  color: #0f3d3e;
+  font-style: italic;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  margin: 4px 0;
+  padding: 6px 20px;
+  border-top: 1px solid rgba(15, 61, 62, 0.12);
+  border-bottom: 1px solid rgba(15, 61, 62, 0.12);
+  display: inline-block;
+}
+
 .hero-editorial-lead {
-  font-size: clamp(1.05rem, 2vw, 1.3rem);
+  font-size: clamp(1.05rem, 2vw, 1.25rem);
   line-height: 1.7;
-  color: rgba(245, 230, 200, 0.88);
-  max-width: 680px;
-  margin: 0;
+  color: var(--text-light);
+  max-width: 660px;
+  margin: 8px 0 0;
   font-weight: 400;
 }
 
@@ -2555,15 +2576,15 @@ button {
   gap: 16px;
   flex-wrap: wrap;
   justify-content: center;
-  margin-top: 12px;
+  margin-top: 16px;
 }
 
 .btn-editorial-primary {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: #fbbf24;
-  color: #0f3d3e;
+  background: var(--green);
+  color: #FAF5EF;
   padding: 15px 36px;
   border-radius: 8px;
   font-weight: 800;
@@ -2572,14 +2593,14 @@ button {
   text-decoration: none;
   border: none;
   cursor: pointer;
-  box-shadow: 0 4px 18px rgba(251, 191, 36, 0.35);
+  box-shadow: 0 4px 18px rgba(15, 61, 62, 0.22);
   transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
 }
 
 .btn-editorial-primary:hover {
-  background: #f59e0b;
+  background: #164e63;
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(251, 191, 36, 0.45);
+  box-shadow: 0 8px 24px rgba(15, 61, 62, 0.32);
 }
 
 .btn-editorial-outline {
@@ -2587,8 +2608,8 @@ button {
   align-items: center;
   justify-content: center;
   background: transparent;
-  color: #FAF5EF;
-  border: 2px solid rgba(250, 245, 239, 0.6);
+  color: var(--green);
+  border: 2px solid var(--green);
   padding: 15px 36px;
   border-radius: 8px;
   font-weight: 700;
@@ -2600,8 +2621,7 @@ button {
 }
 
 .btn-editorial-outline:hover {
-  background: rgba(250, 245, 239, 0.12);
-  border-color: #FAF5EF;
+  background: rgba(15, 61, 62, 0.08);
   transform: translateY(-2px);
 }
 

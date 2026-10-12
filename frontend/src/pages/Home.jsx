@@ -264,14 +264,17 @@ function Home({ addToCart, openReserve }) {
         <div className="hero-editorial-overlay" />
         <div className="hero-editorial-container">
           <span className="hero-editorial-kicker">
-            ☕ SPECIALTY COFFEE &amp; PURE VEG ARTISAN BITES · VIJAYAPURA
+            ☕ VIJAYAPURA'S SPECIALTY COFFEE &amp; PURE VEG BITES
           </span>
           <h1 className="hero-editorial-title">
             The Moras<br />
             <em>Cafe</em>
           </h1>
+          <div className="hero-editorial-tagline">
+            “The Place That Knows You”
+          </div>
           <p className="hero-editorial-lead">
-            Where slow roasted coffee meets warm conversations, fresh wood-fired pizzas, and cozy corner moments.
+            Where freshly pulled espresso meets warm conversations, artisan pizzas, curated books, and slow, unforgettable moments.
           </p>
           <div className="hero-editorial-actions">
             <Link to="/menu" className="btn-editorial-primary">
