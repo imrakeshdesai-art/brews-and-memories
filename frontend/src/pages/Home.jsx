@@ -261,7 +261,8 @@ function Home({ addToCart, openReserve }) {
     setResError('');
   };
 
-  const heroPinRef = useRef(null);
+  const spacerRef = useRef(null);
+  const stickyRef = useRef(null);
   const videoRef = useRef(null);
   const headingsRef = useRef(null);
 
@@ -273,7 +274,7 @@ function Home({ addToCart, openReserve }) {
     const ctx = gsap.context(() => {
       const isMobile = window.innerWidth < 768;
       const initialSize = isMobile ? '320px 320px' : '520px 520px';
-      const targetSize = isMobile ? '3200px 3200px' : '5000px 5000px';
+      const targetSize = isMobile ? '3500px 3500px' : '5500px 5500px';
 
       // Set initial mask size so the flower reveals the center video on load
       gsap.set(videoRef.current, {
@@ -283,17 +284,17 @@ function Home({ addToCart, openReserve }) {
 
       const tl = gsap.timeline({
         scrollTrigger: {
-          trigger: heroPinRef.current,
+          trigger: spacerRef.current,
           start: 'top top',
-          end: isMobile ? '+=140%' : '+=220%',
+          end: 'bottom bottom',
           scrub: 0.6,
-          pin: true,
+          pin: stickyRef.current,
           anticipatePin: 1,
           invalidateOnRefresh: true,
         }
       });
 
-      // 1. Expand the authentic Mask.svg from initial 520px flower to full viewport coverage
+      // 1. Expand the authentic Mask.svg as user scrolls while hero stays pinned
       tl.to(videoRef.current, {
         maskSize: targetSize,
         webkitMaskSize: targetSize,
@@ -306,18 +307,18 @@ function Home({ addToCart, openReserve }) {
         opacity: 0,
         scale: 1.08,
         ease: 'power1.out',
-        duration: 0.55
+        duration: 0.45
       }, 0);
-    }, heroPinRef);
+    }, spacerRef);
 
     return () => ctx.revert();
   }, []);
 
   return (
     <div className="home-page-editorial">
-      {/* CHAPTER 1: EXACT SCROLL-DRIVEN MASK.SVG HERO */}
-      <section className="rc-video-section" ref={heroPinRef}>
-        <div className="rc-video-container">
+      {/* CHAPTER 1: EXACT SCROLL-DRIVEN MASK.SVG HERO WITH PINNED STICKY STAGE */}
+      <div className="rc-video-spacer" ref={spacerRef}>
+        <section className="rc-video-sticky" ref={stickyRef}>
           {/* Full-viewport Background Video with /Mask.svg */}
           <video
             ref={videoRef}
@@ -343,8 +344,8 @@ function Home({ addToCart, openReserve }) {
           <p className="rc-scroll-text" aria-hidden="true">
             SCROLL TO EXPLORE
           </p>
-        </div>
-      </section>
+        </section>
+      </div>
 
       {/* CHAPTER 2: THE MORAS VIBE & CRAFT (EDITORIAL SPLIT) */}
       <section className="section-editorial craft-story-section">

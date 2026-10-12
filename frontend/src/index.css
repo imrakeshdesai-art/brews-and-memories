@@ -41,7 +41,7 @@ body.theme-dark {
 
 html, body {
   max-width: 100%;
-  overflow-x: hidden;
+  overflow-x: clip;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
 }
@@ -96,7 +96,7 @@ button {
 
 .app-shell {
   position: relative;
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 /* SPLIT-NAV LUXURY HEADER */
@@ -2456,7 +2456,12 @@ button {
 }
 
 .page-fade-in {
-  animation: pageFadeIn 0.5s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
+  animation: pageFadeIn 0.35s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.page-fade-in:has(.home-page-editorial) {
+  animation: none !important;
+  transform: none !important;
 }
 
 @keyframes menuFadeIn {
@@ -2489,7 +2494,7 @@ button {
 .home-page-editorial {
   background: var(--cream-light);
   color: var(--text);
-  overflow-x: hidden;
+  overflow-x: clip;
   margin-top: -88px; /* Offset .page-shell padding so hero starts flush at top 0 under transparent navbar */
 }
 
@@ -2508,21 +2513,27 @@ button {
 }
 
 /* ==================== CHAPTER 1: EXACT REFERENCE VIDEO MASK & BLEND STYLES ==================== */
-.rc-video-section {
+.rc-video-spacer {
   position: relative;
+  width: 100%;
+  height: 300vh; /* Dedicated scroll room while video stays locked/pinned in view */
+}
+
+@media (max-width: 768px) {
+  .rc-video-spacer {
+    height: 220vh;
+  }
+}
+
+.rc-video-sticky {
+  position: sticky;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100vh;
   overflow: hidden;
   background: #FAF5EF;
   border-bottom: 1px solid var(--cream-dark);
-}
-
-.rc-video-container {
-  position: relative;
-  width: 100%;
-  height: 100vh;
-  overflow: hidden;
-  background: #FAF5EF;
 }
 
 .rc-background-video {
