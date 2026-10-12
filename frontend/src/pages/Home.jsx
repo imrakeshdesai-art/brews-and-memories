@@ -264,10 +264,8 @@ function Home({ addToCart, openReserve }) {
   const spacerRef = useRef(null);
   const stickyRef = useRef(null);
   const videoRef = useRef(null);
-  const leftColRef = useRef(null);
-  const portalFrameRef = useRef(null);
-  const vertAccentRef = useRef(null);
-  const scrollCueRef = useRef(null);
+  const frameRef = useRef(null);
+  const headingsRef = useRef(null);
 
   useEffect(() => {
     // Respect user's reduced-motion preference
@@ -275,17 +273,14 @@ function Home({ addToCart, openReserve }) {
     if (prefersReducedMotion) return;
 
     const ctx = gsap.context(() => {
-      const isMobile = window.innerWidth < 1024;
-      const initialSize = isMobile ? '340px 380px' : '520px 580px';
-      const targetSize = isMobile ? '3500px 3900px' : '5800px 6500px';
-      const initialPos = isMobile ? 'center center' : '62% 48%';
+      const isMobile = window.innerWidth < 768;
+      const initialSize = isMobile ? '320px 320px' : '520px 520px';
+      const targetSize = isMobile ? '3500px 3500px' : '5500px 5500px';
 
-      // Set initial mask size & position so video reveals inside the coffee bean
+      // Set initial mask size so the flower reveals the center video on load
       gsap.set(videoRef.current, {
         maskSize: initialSize,
-        webkitMaskSize: initialSize,
-        maskPosition: initialPos,
-        webkitMaskPosition: initialPos,
+        webkitMaskSize: initialSize
       });
 
       const tl = gsap.timeline({
@@ -300,37 +295,28 @@ function Home({ addToCart, openReserve }) {
         }
       });
 
-      // 1. Expand the authentic Coffee Bean mask from center-right to full viewport
+      // 1. Expand the authentic Mask.svg as user scrolls while hero stays pinned
       tl.to(videoRef.current, {
         maskSize: targetSize,
         webkitMaskSize: targetSize,
-        maskPosition: '50% 50%',
-        webkitMaskPosition: '50% 50%',
         ease: 'power2.inOut',
         duration: 1
       }, 0);
 
-      // 2. Left editorial column fades out and slides gently left
-      tl.to(leftColRef.current, {
+      // 2. Scale & fade out the botanical leaf wreath gracefully
+      tl.to(frameRef.current, {
         opacity: 0,
-        x: -40,
+        scale: 1.15,
         ease: 'power1.out',
-        duration: 0.35
+        duration: 0.45
       }, 0);
 
-      // 3. Botanical leaves & floating beans frame fades out smoothly
-      tl.to(portalFrameRef.current, {
+      // 3. Fade out text smoothly as flower expands
+      tl.to(headingsRef.current, {
         opacity: 0,
-        scale: 1.12,
+        scale: 1.08,
         ease: 'power1.out',
-        duration: 0.4
-      }, 0);
-
-      // 4. Vertical kicker and scroll cues dissolve
-      tl.to([vertAccentRef.current, scrollCueRef.current], {
-        opacity: 0,
-        ease: 'power1.out',
-        duration: 0.25
+        duration: 0.45
       }, 0);
     }, spacerRef);
 
@@ -339,14 +325,10 @@ function Home({ addToCart, openReserve }) {
 
   return (
     <div className="home-page-editorial">
-      {/* CHAPTER 1: EXACT EDITORIAL SPLIT HERO WITH COFFEE BEAN PORTAL REVEAL */}
+      {/* CHAPTER 1: EXACT SCROLL-DRIVEN MASK.SVG HERO WITH PINNED STICKY STAGE */}
       <div className="rc-video-spacer" ref={spacerRef}>
         <section className="rc-video-sticky" ref={stickyRef}>
-          {/* Ambient Blurred Depth Leaves (Top-Left & Bottom-Right) */}
-          <div className="ambient-leaf ambient-leaf-tl" aria-hidden="true" />
-          <div className="ambient-leaf ambient-leaf-br" aria-hidden="true" />
-
-          {/* Full-viewport Background Video with /Mask.svg (Plays inside the bean) */}
+          {/* Full-viewport Background Video with /Mask.svg */}
           <video
             ref={videoRef}
             src="/hero-video.mp4"
@@ -359,86 +341,23 @@ function Home({ addToCart, openReserve }) {
             className="rc-background-video"
           />
 
-          {/* EDITORIAL SPLIT STAGE */}
-          <div className="hero-editorial-stage">
-            {/* LEFT COLUMN: Brand Title, Tagline, CTAs & 4 Feature Pillars */}
-            <div className="hero-editorial-left" ref={leftColRef}>
-              <div className="hero-kicker-spaced">
-                GOOD COFFEE. GREAT COMPANY.
-              </div>
-
-              <h1 className="hero-editorial-title">
-                <span>The Moras</span>
-                <span>Cafe</span>
-              </h1>
-
-              <p className="hero-editorial-tagline">
-                A place for coffee,<br />
-                conversations and memories.
-              </p>
-
-              <div className="hero-action-buttons">
-                <Link to="/menu" className="btn-hero-order-pill">
-                  Explore Our Menu &rarr;
-                </Link>
-                <Link to="/about" className="btn-hero-story-pill">
-                  Our Story
-                </Link>
-              </div>
-
-              {/* 4 Feature Pillars with Subtle Dividers */}
-              <div className="hero-features-bar">
-                <div className="feature-pillar">
-                  <span className="feature-icon">☕</span>
-                  <span className="feature-text">Specialty<br />Coffee</span>
-                </div>
-                <div className="feature-divider" />
-                <div className="feature-pillar">
-                  <span className="feature-icon">🍃</span>
-                  <span className="feature-text">Pure<br />Vegetarian</span>
-                </div>
-                <div className="feature-divider" />
-                <div className="feature-pillar">
-                  <span className="feature-icon">📖</span>
-                  <span className="feature-text">Books &amp;<br />Board Games</span>
-                </div>
-                <div className="feature-divider" />
-                <div className="feature-pillar">
-                  <span className="feature-icon">👥</span>
-                  <span className="feature-text">Cozy<br />Ambience</span>
-                </div>
-              </div>
-            </div>
-
-            {/* RIGHT COLUMN: Coffee Bean Botanical Wreath & Floating Beans */}
-            <div className="hero-editorial-right" ref={portalFrameRef} aria-hidden="true">
-              <img src="/CoffeeBeanPortal.svg" alt="" className="bean-portal-graphic" />
-            </div>
-
-            {/* FAR RIGHT VERTICAL ACCENT KICKER */}
-            <div className="hero-vertical-accent" ref={vertAccentRef} aria-hidden="true">
-              <div className="vert-primary">
-                <span>MORE</span>
-                <span>THAN</span>
-                <span>COFFEE</span>
-              </div>
-              <div className="vert-secondary">
-                <span>PEOPLE</span>
-                <span>BOOKS</span>
-                <span>GOOD FOOD</span>
-                <span>GREAT TIMES</span>
-              </div>
-            </div>
+          {/* Botanical Coffee Bean Leaf Wreath Overlay */}
+          <div className="rc-botanical-frame-overlay" ref={frameRef} aria-hidden="true">
+            <img src="/BotanicalFrame.svg" alt="" className="rc-botanical-frame-img" />
           </div>
 
-          {/* BOTTOM CENTER: Mouse Scroll Indicator */}
-          <div className="hero-scroll-indicator" ref={scrollCueRef} aria-hidden="true">
-            <div className="mouse-scroll-pill">
-              <span className="mouse-wheel-dot" />
-            </div>
-            <span className="scroll-caption">SCROLL TO EXPLORE</span>
-            <span className="scroll-chevron">⌄</span>
+          {/* Blend Mode Headings (mix-blend-mode: exclusion) */}
+          <div className="rc-blend-headings" ref={headingsRef}>
+            <h1 className="rc-hero-h1">
+              <span className="rc-line-1">Welcome to</span>
+              <span className="rc-line-2">The Moras Cafe</span>
+              <span className="rc-line-3">“The Place That Knows You”</span>
+            </h1>
           </div>
+
+          <p className="rc-scroll-text" aria-hidden="true">
+            SCROLL TO EXPLORE
+          </p>
         </section>
       </div>
 
