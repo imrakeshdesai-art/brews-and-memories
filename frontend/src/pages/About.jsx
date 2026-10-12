@@ -1,4 +1,4 @@
-﻿import useSEO from '../hooks/useSEO';
+import useSEO from '../hooks/useSEO';
 
 function About() {
   useSEO({
@@ -33,7 +33,7 @@ function About() {
               <img 
                 src="/logo.jpg" 
                 alt="The Moras Cafe Logo" 
-                style={{ width: 120, height: 120, borderRadius: '50%', border: '3px solid var(--cream)', objectFit: 'cover', boxShadow: 'var(--shadow-lg)' }} 
+                style={{ width: 140, height: 140, borderRadius: 16, objectFit: 'contain', boxShadow: 'var(--shadow-md)', background: 'transparent' }} 
               />
             </div>
             <div className="about-card" style={{ textAlign: 'center' }}>

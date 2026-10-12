@@ -128,14 +128,13 @@ button {
 }
 
 .brand-icon {
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  background: var(--cream);
+  width: 54px;
+  height: 54px;
+  border-radius: 10px;
+  background: transparent;
   overflow: hidden;
   display: grid;
   place-items: center;
-  border: 2px solid rgba(245, 230, 200, 0.24);
 }
 
 .brand-icon img {
