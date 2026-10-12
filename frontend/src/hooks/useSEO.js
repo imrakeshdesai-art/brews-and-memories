@@ -3,9 +3,9 @@ import { useEffect } from 'react';
 export default function useSEO({ title, description, isHome = false }) {
   useEffect(() => {
     if (isHome) {
-      document.title = 'Brews & Memories Café — Cafe, Coffee & More in Vijayapura';
+      document.title = 'The Moras Cafe — Coffee, Food & More in Vijayapura';
     } else if (title) {
-      document.title = `${title} | Brews & Memories Café`;
+      document.title = `${title} | The Moras Cafe`;
     }
 
     if (description) {

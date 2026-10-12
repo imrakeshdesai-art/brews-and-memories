@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+﻿import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { menuData, menuCategories } from '../data/menuData';
 import { reviewsData } from '../data/reviewsData';
@@ -39,7 +39,7 @@ const INSTAGRAM_FEED = [
 function Menu({ addToCart, activeTable, endTableSession, cart = [], updateCartQty }) {
   useSEO({
     title: 'Our Menu',
-    description: 'Explore the Brews & Memories menu. We serve freshly brewed coffee, hot pizzas, delicious pasta, sizzling brownie, momos, rolls, and vegetarian favorites in Vijayapura.'
+    description: 'Explore the The Moras Cafe menu. We serve freshly brewed coffee, hot pizzas, delicious pasta, sizzling brownie, momos, rolls, and vegetarian favorites in Vijayapura.'
   });
 
   const showToast = useToast();
@@ -422,7 +422,7 @@ function Menu({ addToCart, activeTable, endTableSession, cart = [], updateCartQt
         <div className="promise-section">
           <div className="section-header">
             <span className="section-label">Our Values</span>
-            <h2 className="section-title" style={{ fontSize: '1.8rem' }}>The Brews &amp; Memories <em>Promise</em></h2>
+            <h2 className="section-title" style={{ fontSize: '1.8rem' }}>The The Moras Cafe <em>Promise</em></h2>
             <div className="section-divider" style={{ margin: '12px auto' }} />
           </div>
           <div className="promise-grid">

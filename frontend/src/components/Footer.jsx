@@ -10,8 +10,8 @@ function Footer({ onReserveClick }) {
               <img src="/logo.jpg" alt="Logo" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             </div>
             <div>
-              <div className="footer-brand-name">Brews & Memories</div>
-              <small style={{ color: 'var(--cream-dark)', letterSpacing: 1, textTransform: 'uppercase', fontSize: '0.7rem' }}>Café · Coffee · More</small>
+              <div className="footer-brand-name">The Moras Cafe</div>
+              <small style={{ color: 'var(--cream-dark)', letterSpacing: 1, textTransform: 'uppercase', fontSize: '0.7rem' }}>Cafe · Coffee · More</small>
             </div>
           </div>
           <p style={{ color: 'rgba(245, 230, 200, 0.75)', fontSize: '0.88rem', lineHeight: 1.6, margin: 0 }}>
@@ -66,7 +66,7 @@ function Footer({ onReserveClick }) {
               <span>📍</span>
               <div>
                 <strong>Address:</strong>
-                <div style={{ marginTop: 2, color: 'rgba(245,230,200,0.7)' }}>Brews & Memories Café, B M Patil Circle, Ring Rd, Adarsh Nagar, Vijayapura, KA 586102</div>
+                <div style={{ marginTop: 2, color: 'rgba(245,230,200,0.7)' }}>The Moras Cafe, B M Patil Circle, Ring Rd, Adarsh Nagar, Vijayapura, KA 586102</div>
               </div>
             </li>
             <li style={{ display: 'flex', gap: 8, fontSize: '0.88rem', color: 'rgba(245,230,200,0.85)' }}>
@@ -82,7 +82,7 @@ function Footer({ onReserveClick }) {
 
       <div className="footer-bottom" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
         <div style={{ fontSize: '0.85rem' }}>
-          &copy; {new Date().getFullYear()} Brews &amp; Memories. All rights reserved.
+          © {new Date().getFullYear()} The Moras Cafe. All rights reserved.
           <span style={{ margin: '0 8px', opacity: 0.3 }}>|</span>
           <Link to="/privacy" style={{ color: 'rgba(245,230,200,0.7)', textDecoration: 'underline' }} onMouseEnter={(e) => e.currentTarget.style.color = '#fbbf24'} onMouseLeave={(e) => e.currentTarget.style.color = 'rgba(245,230,200,0.7)'}>Privacy Policy</Link>
           <span style={{ margin: '0 8px', opacity: 0.3 }}>|</span>

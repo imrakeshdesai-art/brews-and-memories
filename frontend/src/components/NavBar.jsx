@@ -12,11 +12,11 @@ function NavBar({ cartCount, onCartClick, activeTable, onReserveClick, theme, to
     <header className="site-nav">
       <div className="site-brand">
         <div className="brand-icon">
-          <img src="/logo.jpg" alt="Brews & Memories logo" />
+          <img src="/logo.jpg" alt="The Moras Cafe logo" />
         </div>
         <div className="brand-text">
-          <span>Brews & Memories</span>
-          <small>CAFÉ</small>
+          <span>The Moras</span>
+          <small>CAFE</small>
         </div>
       </div>
 

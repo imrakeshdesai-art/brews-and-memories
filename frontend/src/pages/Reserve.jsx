@@ -1,11 +1,11 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import api from '../services/api';
 import useSEO from '../hooks/useSEO';
 
 function Reserve() {
   useSEO({
     title: 'Book a Table',
-    description: 'Book a table at Brews & Memories Café, B.M. Patil Circle, Vijayapura. Plan your coffee dates, team meetings, birthday celebrations, or study sessions in our cozy environment.'
+    description: 'Book a table at The Moras Cafe, B.M. Patil Circle, Vijayapura. Plan your coffee dates, team meetings, birthday celebrations, or study sessions in our cozy environment.'
   });
 
   const [name, setName] = useState('');
@@ -56,7 +56,7 @@ function Reserve() {
         <span className="section-label">Book a Table</span>
         <h1 className="section-title">Table <em>Reservations</em></h1>
         <p style={{ maxWidth: 600, margin: '12px auto 0', color: 'var(--text-light)', lineHeight: 1.6 }}>
-          Plan your visit to Brews & Memories. Reserve a cozy corner for studying, meetings, birthday gatherings, or a coffee date at B.M. Patil Circle, Vijayapura.
+          Plan your visit to The Moras Cafe. Reserve a cozy corner for studying, meetings, birthday gatherings, or a coffee date at B.M. Patil Circle, Vijayapura.
         </p>
         <div className="section-divider" />
       </div>

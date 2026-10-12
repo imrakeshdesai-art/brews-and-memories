@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useToast } from '../components/ToastProvider';
 import { menuData } from '../data/menuData';
@@ -160,7 +160,7 @@ function StatCounter({ targetValue, duration = 2000 }) {
 function Home({ addToCart, openReserve }) {
   useSEO({
     isHome: true,
-    description: 'Welcome to Brews & Memories Café at B.M. Patil Circle, Vijayapura. Enjoy freshly brewed coffee, pizzas, pasta, sizzling brownie, and cozy ambiance.'
+    description: 'Welcome to The Moras Cafe at B.M. Patil Circle, Vijayapura. Enjoy freshly brewed coffee, pizzas, pasta, sizzling brownie, and cozy ambiance.'
   });
 
   const showToast = useToast();
@@ -399,7 +399,7 @@ function Home({ addToCart, openReserve }) {
 
           {/* Right Column: Hero Media - Overlapping Grid Collage of Food & Drinks */}
           <div className="hero-media-wrapper" style={{ width: '100%' }}>
-            <div className="hero-food-collage" aria-label="Brews & Memories Signature Food Collage">
+            <div className="hero-food-collage" aria-label="The Moras Cafe Signature Food Collage">
               {/* Main Pizza Card */}
               <div className="collage-item pizza" title="Tandoori Paneer Pizza">
                 <img src="/images/instagram/hero_pizza.webp" alt="Freshly baked Tandoori Paneer Pizza" />
@@ -473,7 +473,7 @@ function Home({ addToCart, openReserve }) {
       <section className="why-love-section">
         <div className="why-love-container">
           <span className="why-love-label">Experience the Vibe</span>
-          <h2 className="why-love-title">Why People Love Brews & Memories</h2>
+          <h2 className="why-love-title">Why People Love The Moras Cafe</h2>
           <div className="why-love-divider" />
           
           <div className="why-love-grid">
@@ -676,7 +676,7 @@ function Home({ addToCart, openReserve }) {
             </h2>
             <div style={{ width: 50, height: 3, background: 'var(--green)' }} />
             <p style={{ lineHeight: 1.7, color: 'var(--text-light)', margin: 0, fontSize: '0.95rem' }}>
-              Welcome to <strong>Brews & Memories Café</strong>, Vijayapura's premium destination for delicious pure vegetarian delicacies and specialty roasted coffees. Located right at the heart of the city near B.M. Patil Circle, we offer the perfect cozy space for coffee dates, birthday celebrations, and productive work sessions.
+              Welcome to <strong>The Moras Cafe</strong>, Vijayapura's premium destination for delicious pure vegetarian delicacies and specialty roasted coffees. Located right at the heart of the city near B.M. Patil Circle, we offer the perfect cozy space for coffee dates, birthday celebrations, and productive work sessions.
             </p>
             <p style={{ lineHeight: 1.7, color: 'var(--text-light)', margin: 0, fontSize: '0.95rem' }}>
               Our mission is simple: to serve food crafted with love, provide warm hospitality, and create a cozy ambiance where you can slow down and build beautiful memories with friends and family.
@@ -697,7 +697,7 @@ function Home({ addToCart, openReserve }) {
           <div style={{ borderRadius: 16, overflow: 'hidden', boxShadow: 'var(--shadow-lg)', aspectRatio: '4/3' }}>
             <img 
               src="/ambiance.webp" 
-              alt="Cozy interior seating at Brews and Memories Cafe Vijayapura" 
+              alt="Cozy interior seating at The Moras Cafe Cafe Vijayapura" 
               style={{ width: '100%', height: '100%', objectFit: 'cover' }}
             />
           </div>
@@ -900,12 +900,12 @@ function Home({ addToCart, openReserve }) {
         </div>
       </section>
 
-      {/* STATISTICS BLOCK: BREWS & MEMORIES BY NUMBERS */}
+      {/* STATISTICS BLOCK: The Moras Cafe BY NUMBERS */}
       <section className="section" style={{ background: 'var(--green)', color: 'var(--cream)', padding: '60px 20px', textAlign: 'center' }}>
         <div style={{ maxWidth: 1100, margin: '0 auto' }}>
           <span style={{ color: '#fbbf24', textTransform: 'uppercase', letterSpacing: 2, fontSize: '0.85rem', fontWeight: 800, display: 'block', marginBottom: 8 }}>Our Milestones</span>
           <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: '2.2rem', color: 'var(--cream)', margin: '0 0 16px', fontWeight: 700 }}>
-            Brews &amp; Memories By Numbers
+            The Moras Cafe By Numbers
           </h2>
           <div style={{ width: 50, height: 3, background: '#fbbf24', margin: '0 auto 40px' }} />
           
@@ -951,7 +951,7 @@ function Home({ addToCart, openReserve }) {
               Stop by for a freshly brewed cup and your favorite bites. We are located at a prime, easily accessible location in Vijayapura with comfortable indoor & garden seating.
             </p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8, fontSize: '0.92rem', color: 'var(--text-dark)', marginTop: 8 }}>
-              <div>📍 <strong>Address:</strong> Brews and Memories cafe, B M Patil circle, Ring Rd, Adarsh Nagar, solapur road, Vijayapura, Karnataka 586102</div>
+              <div>📍 <strong>Address:</strong> The Moras Cafe cafe, B M Patil circle, Ring Rd, Adarsh Nagar, solapur road, Vijayapura, Karnataka 586102</div>
               <div>🕒 <strong>Hours:</strong> Open Daily · 10:00 AM – 10:30 PM</div>
               <div>📞 <strong>Contact:</strong> <a href="tel:+919945446137" style={{ color: 'var(--green)', fontWeight: 700, textDecoration: 'none' }}>+91 99454 46137</a></div>
             </div>
@@ -959,7 +959,7 @@ function Home({ addToCart, openReserve }) {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 14, alignItems: 'center', width: '100%', maxWidth: 440 }}>
             <div style={{ width: '100%', borderRadius: 16, overflow: 'hidden', border: '3px solid var(--cream-dark)', boxShadow: 'var(--shadow-lg)', height: 350 }}>
               <iframe
-                title="Brews and Memories Cafe Location Map"
+                title="The Moras Cafe Cafe Location Map"
                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3818.245682380596!2d75.71334267461603!3d16.863736917680278!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bc65571521cbf25%3A0x8c034c8193bdc099!2sBrews%20and%20Memories%20cafe!5e0!3m2!1sen!2sus!4v1780667200850!5m2!1sen!2sus"
                 width="100%"
                 height="100%"

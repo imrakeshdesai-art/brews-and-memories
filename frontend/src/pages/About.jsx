@@ -1,9 +1,9 @@
-import useSEO from '../hooks/useSEO';
+﻿import useSEO from '../hooks/useSEO';
 
 function About() {
   useSEO({
     title: 'About Us',
-    description: 'Brews & Memories is a cozy café at B.M. Patil Circle, Vijayapura, Karnataka. Discover our story, comfy vibes, and why we are the city\'s favourite hangout spot.'
+    description: 'The Moras Cafe is a cozy café at B.M. Patil Circle, Vijayapura, Karnataka. Discover our story, comfy vibes, and why we are the city\'s favourite hangout spot.'
   });
 
   return (
@@ -19,7 +19,7 @@ function About() {
         <div className="grid-2" style={{ gap: '60px', alignItems: 'center', maxWidth: 1100, margin: '0 auto' }}>
           <div>
             <p style={{ lineHeight: 1.9, color: 'rgba(245,230,200,0.85)', marginBottom: 18 }}>
-              Brews & Memories is a cozy café where people come to relax, enjoy great food, and create memories. Nestled at B M Patil Circle on the Ring Road of Vijayapura, Karnataka, we've become the city's favourite hangout spot.
+              The Moras Cafe is a cozy café where people come to relax, enjoy great food, and create memories. Nestled at B M Patil Circle on the Ring Road of Vijayapura, Karnataka, we've become the city's favourite hangout spot.
             </p>
             <p style={{ lineHeight: 1.9, color: 'rgba(245,230,200,0.85)', marginBottom: 18 }}>
               From the aroma of freshly brewed coffee to the sizzle of hot pizzas, every visit is an experience crafted with love. Our warm interiors, comfortable seating, and welcoming staff make you feel right at home.
@@ -32,12 +32,12 @@ function About() {
             <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 24 }}>
               <img 
                 src="/logo.jpg" 
-                alt="Brews & Memories Logo" 
+                alt="The Moras Cafe Logo" 
                 style={{ width: 120, height: 120, borderRadius: '50%', border: '3px solid var(--cream)', objectFit: 'cover', boxShadow: 'var(--shadow-lg)' }} 
               />
             </div>
             <div className="about-card" style={{ textAlign: 'center' }}>
-              <div className="card-title" style={{ color: 'var(--cream)' }}>Brews & Memories</div>
+              <div className="card-title" style={{ color: 'var(--cream)' }}>The Moras Cafe</div>
               <div style={{ color: 'rgba(245,230,200,0.9)', lineHeight: 1.8 }}>
                 Discover our cozy café vibes, the best coffee in Vijayapura, and delightful food made fresh daily.
               </div>
@@ -50,7 +50,7 @@ function About() {
         <div className="section-header">
           <span className="section-label">Why Choose Us</span>
           <h2 className="section-title" style={{ color: 'var(--green)' }}>
-            The Brews & Memories <em>Experience</em>
+            The The Moras Cafe <em>Experience</em>
           </h2>
           <div className="section-divider" />
         </div>

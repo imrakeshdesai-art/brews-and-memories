@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import useSEO from '../hooks/useSEO';
 
 const instagramWidgetUrl = import.meta.env.VITE_INSTAGRAM_WIDGET_URL || 'b16a01b6-838f-4360-88fc-9a34d2927446';
@@ -9,7 +9,7 @@ const INSTAGRAM_POSTS = [
     collaborators: 'and 2 others',
     initials: 'HS',
     image: '/images/instagram/hightide_sagar.jpeg',
-    caption: '☕️Brews & Memories✨ #newcafe in ❤️🔥VIJAYAPUR ♥️\n\nLocation - Infront of the Udayshree sports academy Solapur road vijayapur\n\nThank you♥️ @guruprasad_27 for helping me in the shoot📸\n\n#hightidesagar #bijapur #bijapurmerijaan #karnataka #vijayapur #kannada #india #cafe #newcafe #food #bijapurfoodwalks #Bijapurfood #bijapurcafes',
+    caption: '☕️The Moras Cafe✨ #newcafe in ❤️🔥VIJAYAPUR ♥️\n\nLocation - Infront of the Udayshree sports academy Solapur road vijayapur\n\nThank you♥️ @guruprasad_27 for helping me in the shoot📸\n\n#hightidesagar #bijapur #bijapurmerijaan #karnataka #vijayapur #kannada #india #cafe #newcafe #food #bijapurfoodwalks #Bijapurfood #bijapurcafes',
     likes: 412,
     comments: 63,
     date: 'May 20, 2026',
@@ -51,7 +51,7 @@ const INSTAGRAM_POSTS = [
     username: 'foodieme_5',
     initials: 'FM',
     image: '/images/instagram/foodieme_5.jpeg',
-    caption: 'Hot dog.. coffee.... and vibes...☕️\n📍Brews and Memories\n\n#winter#food#hotdog#coffee',
+    caption: 'Hot dog.. coffee.... and vibes...☕️\n📍The Moras Cafe\n\n#winter#food#hotdog#coffee',
     likes: 312,
     comments: 48,
     date: 'May 05, 2026',
@@ -62,7 +62,7 @@ const INSTAGRAM_POSTS = [
 export default function Moments() {
   useSEO({
     title: 'Moments',
-    description: 'See the customer moments, photos, and Instagram gallery from Brews & Memories Café at B.M. Patil Circle, Vijayapura. Share your cozy cafe memories with us.'
+    description: 'See the customer moments, photos, and Instagram gallery from The Moras Cafe at B.M. Patil Circle, Vijayapura. Share your cozy cafe memories with us.'
   });
 
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);

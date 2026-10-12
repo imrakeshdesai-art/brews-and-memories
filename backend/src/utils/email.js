@@ -1,4 +1,4 @@
-const nodemailer = require('nodemailer');
+﻿const nodemailer = require('nodemailer');
 const https = require('https');
 
 function cleanEnvVar(val) {
@@ -127,7 +127,7 @@ function buildCustomerEmailHTML({ name, items, total, payment, address, orderId 
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Order Confirmed &mdash; Brews & Memories</title>
+  <title>Order Confirmed &mdash; The Moras Cafe</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
     
@@ -156,9 +156,9 @@ function buildCustomerEmailHTML({ name, items, total, payment, address, orderId 
     <!-- Header -->
     <div style="background:linear-gradient(135deg,#0f3d3e 0%,#185c5d 100%);padding:40px 32px;text-align:center;border-bottom:3px solid #fbbf24">
       <div style="margin-bottom:16px">
-        <img src="https://brews-and-memories.vercel.app/logo.jpg" alt="Brews & Memories Logo" style="width:75px;height:75px;border-radius:50%;border:3px solid #fbbf24;box-shadow:0 4px 10px rgba(0,0,0,0.15);display:inline-block;object-fit:cover" />
+        <img src="https://brews-and-memories.vercel.app/logo.jpg" alt="The Moras Cafe Logo" style="width:75px;height:75px;border-radius:50%;border:3px solid #fbbf24;box-shadow:0 4px 10px rgba(0,0,0,0.15);display:inline-block;object-fit:cover" />
       </div>
-      <div style="color:#fbbf24;font-size:13px;letter-spacing:4px;text-transform:uppercase;font-weight:800;margin-bottom:8px">Brews & Memories</div>
+      <div style="color:#fbbf24;font-size:13px;letter-spacing:4px;text-transform:uppercase;font-weight:800;margin-bottom:8px">The Moras Cafe</div>
       <h1 style="color:#fff;margin:0;font-size:28px;font-weight:800;font-family:'Playfair Display', Georgia, serif;letter-spacing:-0.5px">Order Confirmed! &#x1F389;</h1>
       <p style="color:rgba(255,255,255,0.85);margin:10px 0 0;font-size:14px;font-style:italic;font-family:'Playfair Display', Georgia, serif">Vijayapura's Premium Cozy Caf&eacute;</p>
     </div>
@@ -266,7 +266,7 @@ function buildCustomerEmailHTML({ name, items, total, payment, address, orderId 
     <!-- Footer -->
     <div style="background:#0f3d3e;padding:24px 32px;text-align:center;border-top:3px solid #fbbf24">
       <p style="margin:0;font-size:12px;color:rgba(255,255,255,0.7);line-height:1.6">
-        &copy; 2026 Brews & Memories Caf&eacute; &middot; Vijayapura<br/>
+        &copy; 2026 The Moras Cafe Caf&eacute; &middot; Vijayapura<br/>
         Follow our memories on Instagram 
         <a href="https://www.instagram.com/brews_and_memories_/" style="color:#fbbf24;font-weight:700;text-decoration:none">@brews_and_memories_</a>
       </p>
@@ -283,7 +283,7 @@ async function sendOrderEmail(orderData) {
     return { success: false, error: 'No customer email provided' };
   }
 
-  const subject = `✅ Order Confirmed - Brews & Memories (#${String(orderData.orderId).slice(-6)})`;
+  const subject = `✅ Order Confirmed - The Moras Cafe (#${String(orderData.orderId).slice(-6)})`;
   const htmlContent = buildCustomerEmailHTML(orderData);
   const errors = [];
 
@@ -323,7 +323,7 @@ async function sendOrderEmail(orderData) {
   const transporter = createTransporter();
   try {
     const info = await transporter.sendMail({
-      from: `"Brews & Memories Café" <${GMAIL_USER}>`,
+      from: `"The Moras Cafe" <${GMAIL_USER}>`,
       to: orderData.email,
       subject: subject,
       html: htmlContent,

@@ -1,10 +1,10 @@
-import React from 'react';
+﻿import React from 'react';
 import useSEO from '../hooks/useSEO';
 
 function Terms() {
   useSEO({
     title: 'Terms of Service',
-    description: 'Terms of Service for Brews & Memories Café. Understand our table ordering policies, digital session rules, and payment options.'
+    description: 'Terms of Service for The Moras Cafe. Understand our table ordering policies, digital session rules, and payment options.'
   });
 
   return (
@@ -17,12 +17,12 @@ function Terms() {
       <div className="card" style={{ maxWidth: 800, width: '100%', margin: '0 auto', background: 'var(--white)', border: '1px solid var(--cream-dark)', borderRadius: 16, padding: '40px', boxShadow: 'var(--shadow-lg)', color: 'var(--text-light)', lineHeight: 1.8 }}>
         <p><strong>Last Updated: June 2026</strong></p>
         <p>
-          Welcome to the digital table ordering portal of Brews & Memories. By using our website and scanning table QR codes, you agree to comply with the following terms of service.
+          Welcome to the digital table ordering portal of The Moras Cafe. By using our website and scanning table QR codes, you agree to comply with the following terms of service.
         </p>
         
         <h3 style={{ color: 'var(--green)', marginTop: 24 }}>1. Digital Table Ordering</h3>
         <p>
-          Our digital ordering system is designed strictly for customers physically present at Brews & Memories. 
+          Our digital ordering system is designed strictly for customers physically present at The Moras Cafe. 
         </p>
         <ul>
           <li>Orders must specify a valid active table identifier obtained by scanning the physical QR code on the table.</li>

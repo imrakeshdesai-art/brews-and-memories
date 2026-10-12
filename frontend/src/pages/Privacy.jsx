@@ -1,10 +1,10 @@
-import React from 'react';
+﻿import React from 'react';
 import useSEO from '../hooks/useSEO';
 
 function Privacy() {
   useSEO({
     title: 'Privacy Policy',
-    description: 'Privacy Policy for Brews & Memories Café. Learn how we collect, protect, and process your table ordering information securely.'
+    description: 'Privacy Policy for The Moras Cafe. Learn how we collect, protect, and process your table ordering information securely.'
   });
 
   return (
@@ -17,7 +17,7 @@ function Privacy() {
       <div className="card" style={{ maxWidth: 800, width: '100%', margin: '0 auto', background: 'var(--white)', border: '1px solid var(--cream-dark)', borderRadius: 16, padding: '40px', boxShadow: 'var(--shadow-lg)', color: 'var(--text-light)', lineHeight: 1.8 }}>
         <p><strong>Last Updated: June 2026</strong></p>
         <p>
-          At Brews & Memories, we prioritize the privacy and security of our guests. This privacy policy describes how we collect, use, and process your information when you use our QR code table ordering system or website.
+          At The Moras Cafe, we prioritize the privacy and security of our guests. This privacy policy describes how we collect, use, and process your information when you use our QR code table ordering system or website.
         </p>
         
         <h3 style={{ color: 'var(--green)', marginTop: 24 }}>1. Information We Collect</h3>

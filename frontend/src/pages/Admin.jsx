@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+﻿import { useEffect, useMemo, useRef, useState } from 'react';
 import api from '../services/api';
 import {
   saveAdminToken,
@@ -482,7 +482,7 @@ function Admin() {
                 fontSize: '0.9rem',
               }}
             >
-              Brews & Memories Staff Portal
+              The Moras Cafe Staff Portal
             </p>
           </div>
 

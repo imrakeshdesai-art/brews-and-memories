@@ -1,7 +1,7 @@
-{
+﻿{
   "name": "brews-memories-backend",
   "version": "1.0.0",
-  "description": "Backend API for Brews & Memories Café",
+  "description": "Backend API for The Moras Cafe",
   "main": "src/server.js",
   "scripts": {
     "dev": "nodemon src/server.js",

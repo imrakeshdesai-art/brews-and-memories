@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { reviewsData } from '../data/reviewsData';
 import useSEO from '../hooks/useSEO';
 
@@ -76,7 +76,7 @@ function StatCounter({ targetValue, duration = 2000 }) {
 function Reviews() {
   useSEO({
     title: 'Reviews',
-    description: 'Read reviews and testimonials from our guests at Brews & Memories Café in Vijayapura. See why they love our freshly brewed coffee, hot pizzas, and ambient environment.'
+    description: 'Read reviews and testimonials from our guests at The Moras Cafe in Vijayapura. See why they love our freshly brewed coffee, hot pizzas, and ambient environment.'
   });
 
   return (
@@ -103,7 +103,7 @@ function Reviews() {
         “Come for the coffee. Stay for the memories.”
       </div>
 
-      {/* STATISTICS BLOCK: BREWS & MEMORIES BY NUMBERS */}
+      {/* STATISTICS BLOCK: The Moras Cafe BY NUMBERS */}
       <div style={{ 
         maxWidth: 1100, 
         margin: '0 auto 60px', 
@@ -116,7 +116,7 @@ function Reviews() {
       }}>
         <span style={{ color: 'var(--green)', textTransform: 'uppercase', letterSpacing: 2, fontSize: '0.82rem', fontWeight: 800, display: 'block', marginBottom: 8 }}>Our Milestones</span>
         <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: '2rem', color: 'var(--green)', margin: '0 0 16px', fontWeight: 700 }}>
-          Brews &amp; Memories By Numbers
+          The Moras Cafe By Numbers
         </h2>
         <div style={{ width: 50, height: 3, background: 'var(--green)', margin: '0 auto 36px' }} />
         

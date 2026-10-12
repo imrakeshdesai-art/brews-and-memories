@@ -1,4 +1,4 @@
-const twilio = require('twilio');
+﻿const twilio = require('twilio');
 
 // ── Config ──────────────────────────────────────────────────────────────────
 const ACCOUNT_SID   = process.env.TWILIO_ACCOUNT_SID;
@@ -28,7 +28,7 @@ function formatItems(items) {
 
 // ── Customer confirmation message ────────────────────────────────────────────
 function buildCustomerMessage({ name, items, total }) {
-  return `✅ *Order Confirmed — Brews & Memories*
+  return `✅ *Order Confirmed — The Moras Cafe*
 
 Hi ${name}! 👋
 
@@ -42,7 +42,7 @@ ${formatItems(items)}
 🕐 *Open: 10:00 AM – 10:30 PM*
 
 Thank you for choosing us! ☕🍕
-— *Brews & Memories Team*`;
+— *The Moras Cafe Team*`;
 }
 
 // ── Owner/café alert message ─────────────────────────────────────────────────
