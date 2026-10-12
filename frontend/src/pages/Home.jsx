@@ -257,12 +257,55 @@ function Home({ addToCart, openReserve }) {
     setResError('');
   };
 
+  const [scrollProgress, setScrollProgress] = useState(0);
+
+  useEffect(() => {
+    const handleHeroScroll = () => {
+      const scrollY = window.scrollY;
+      const maxScroll = 500;
+      const progress = Math.min(Math.max(scrollY / maxScroll, 0), 1);
+      setScrollProgress(progress);
+    };
+
+    window.addEventListener('scroll', handleHeroScroll, { passive: true });
+    handleHeroScroll();
+    return () => window.removeEventListener('scroll', handleHeroScroll);
+  }, []);
+
   return (
     <div className="home-page-editorial">
-      {/* CHAPTER 1: THE EDITORIAL HERO */}
+      {/* CHAPTER 1: THE EDITORIAL HERO WITH ARTISAN PORTAL MASK */}
       <section className="hero-editorial-section">
+        {/* PARALLAX ARTISAN PORTAL CONTAINER */}
+        <div 
+          className="hero-artisan-portal-stage"
+          style={{
+            transform: `scale(${1 + scrollProgress * 0.42}) translateY(${scrollProgress * -20}px)`,
+            opacity: Math.max(0.2, 1 - scrollProgress * 0.65)
+          }}
+          aria-hidden="true"
+        >
+          <div className="hero-portal-window">
+            <img 
+              src="/ambiance.webp" 
+              alt="" 
+              className="hero-portal-ambient-media"
+              style={{
+                transform: `scale(${1.15 + scrollProgress * 0.25}) rotate(${scrollProgress * 2}deg)`
+              }}
+            />
+            <div className="hero-portal-glow-rim" />
+          </div>
+        </div>
+
         <div className="hero-editorial-overlay" />
-        <div className="hero-editorial-container">
+
+        <div 
+          className="hero-editorial-container"
+          style={{
+            transform: `translateY(${scrollProgress * -35}px)`
+          }}
+        >
           <div className="hero-reference-pretitle">
             Welcome to
           </div>
