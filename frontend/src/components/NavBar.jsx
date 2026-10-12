@@ -1,96 +1,102 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 
 function NavBar({ cartCount, onCartClick, activeTable, onReserveClick, theme, toggleTheme }) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 40) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const isHomeActive = location.pathname === '/' && !location.hash;
   const isContactActive = location.pathname === '/' && location.hash === '#location';
 
   return (
-    <header className="site-nav">
-      <NavLink to="/" className="site-brand" aria-label="The Moras Cafe Home">
-        <div className="brand-icon">
-          <img src="/logo.png" alt="The Moras Cafe logo" />
-        </div>
-      </NavLink>
+    <header className={`site-nav ${isScrolled ? 'scrolled' : 'transparent'}`}>
+      <div className="nav-container-split">
+        {/* LEFT NAV WING */}
+        <nav className="nav-wing nav-wing-left desktop-menu">
+          <NavLink to="/" end className={() => (isHomeActive ? 'nav-link active' : 'nav-link')}>
+            Home
+          </NavLink>
+          <NavLink to="/about" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
+            About
+          </NavLink>
+          <NavLink to="/menu" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
+            Menu
+          </NavLink>
+        </nav>
 
-      <nav className="nav-links desktop-menu">
-        <NavLink to="/" end className={() => (isHomeActive ? 'nav-link active' : 'nav-link')}>
-          Home
+        {/* CENTER LUXURY LOGO BRAND */}
+        <NavLink to="/" className="site-brand-center" aria-label="The Moras Cafe Home">
+          <img src="/logo.png" alt="The Moras Cafe logo" className="brand-center-img" />
         </NavLink>
-        <NavLink to="/about" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
-          About
-        </NavLink>
-        <NavLink to="/menu" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
-          Menu
-        </NavLink>
-        <NavLink to="/reviews" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
-          Reviews
-        </NavLink>
-        <NavLink to="/moments" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
-          Moments
-        </NavLink>
-        <NavLink to="/#location" className={() => (isContactActive ? 'nav-link active' : 'nav-link')}>
-          Contact
-        </NavLink>
-        <NavLink to="/admin" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
-          Staff Login
-        </NavLink>
-        <button 
-          type="button" 
-          onClick={onReserveClick} 
-          className="nav-btn-reserve" 
-          aria-label="Book a reservation table"
-        >
-          Book Table
-        </button>
-      </nav>
 
-      <div className="nav-actions" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-        {activeTable && (
-          <span className="table-badge-nav" style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 6,
-            background: 'var(--cream-light)',
-            color: 'var(--green)',
-            padding: '6px 12px',
-            borderRadius: '20px',
-            fontSize: '0.8rem',
-            fontWeight: 800,
-            border: '1px solid var(--cream-dark)',
-            textTransform: 'uppercase',
-            letterSpacing: 0.5
-          }}>
-            <span style={{ color: '#10b981', display: 'inline-block', transform: 'scale(0.8)' }}>●</span> {activeTable}
-          </span>
-        )}
-        {activeTable && (
-          <button className="btn-cart" type="button" onClick={onCartClick} aria-label="Open cart">
-            🛒 Cart
-            <span className="cart-badge" aria-live="polite">{cartCount}</span>
+        {/* RIGHT NAV WING */}
+        <nav className="nav-wing nav-wing-right desktop-menu">
+          <NavLink to="/reviews" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
+            Reviews
+          </NavLink>
+          <NavLink to="/moments" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
+            Moments
+          </NavLink>
+          <NavLink to="/#location" className={() => (isContactActive ? 'nav-link active' : 'nav-link')}>
+            Contact
+          </NavLink>
+          <button 
+            type="button" 
+            onClick={onReserveClick} 
+            className="nav-btn-reserve" 
+            aria-label="Book a reservation table"
+          >
+            Book Table
           </button>
-        )}
-        <button
-          className="theme-toggle-btn"
-          type="button"
-          onClick={toggleTheme}
-          aria-label={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
-        >
-          {theme === 'dark' ? '☀️' : '🌙'}
-        </button>
-        <button
-          className={`mobile-toggle ${menuOpen ? 'open' : ''}`}
-          type="button"
-          aria-label="Toggle navigation menu"
-          onClick={() => setMenuOpen((current) => !current)}
-        >
-          <span />
-          <span />
-          <span />
-        </button>
+        </nav>
+
+        {/* MOBILE / QUICK ACTIONS (RIGHT SIDE) */}
+        <div className="nav-actions-split">
+          {activeTable && (
+            <span className="table-badge-nav">
+              <span className="dot-live">●</span> {activeTable}
+            </span>
+          )}
+          {activeTable && (
+            <button className="btn-cart" type="button" onClick={onCartClick} aria-label="Open cart">
+              🛒 Cart
+              <span className="cart-badge" aria-live="polite">{cartCount}</span>
+            </button>
+          )}
+          <button
+            className="theme-toggle-btn"
+            type="button"
+            onClick={toggleTheme}
+            aria-label={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
+          >
+            {theme === 'dark' ? '☀️' : '🌙'}
+          </button>
+          <button
+            className={`mobile-toggle ${menuOpen ? 'open' : ''}`}
+            type="button"
+            aria-label="Toggle navigation menu"
+            onClick={() => setMenuOpen((current) => !current)}
+          >
+            <span />
+            <span />
+            <span />
+          </button>
+        </div>
       </div>
 
       <div className={`mobile-menu ${menuOpen ? 'open' : ''}`} aria-hidden={!menuOpen}>
