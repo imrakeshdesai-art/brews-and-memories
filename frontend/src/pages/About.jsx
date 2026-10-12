@@ -28,17 +28,17 @@ function About() {
               We believe the best conversations happen over great food. That's why we put our heart into every cup, every bite, and every smile we serve.
             </p>
           </div>
-          <div className="card" style={{ background: 'rgba(245,230,200,0.08)', border: 'none' }}>
-            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 24 }}>
+          <div className="card" style={{ background: '#FAF5EF', border: '1px solid var(--cream-dark)', boxShadow: 'var(--shadow-lg)' }}>
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 20 }}>
               <img 
-                src="/logo.jpg" 
+                src="/logo.png" 
                 alt="The Moras Cafe Logo" 
-                style={{ width: 140, height: 140, borderRadius: 16, objectFit: 'contain', boxShadow: 'var(--shadow-md)', background: 'transparent' }} 
+                style={{ width: '85%', maxWidth: 220, height: 'auto', objectFit: 'contain' }} 
               />
             </div>
             <div className="about-card" style={{ textAlign: 'center' }}>
-              <div className="card-title" style={{ color: 'var(--cream)' }}>The Moras Cafe</div>
-              <div style={{ color: 'rgba(245,230,200,0.9)', lineHeight: 1.8 }}>
+              <div className="card-title" style={{ color: 'var(--green)', fontSize: '1.4rem', marginBottom: 8 }}>The Moras Cafe</div>
+              <div style={{ color: 'var(--text-light)', lineHeight: 1.8 }}>
                 Discover our cozy café vibes, the best coffee in Vijayapura, and delightful food made fresh daily.
               </div>
             </div>
@@ -50,7 +50,7 @@ function About() {
         <div className="section-header">
           <span className="section-label">Why Choose Us</span>
           <h2 className="section-title" style={{ color: 'var(--green)' }}>
-            The The Moras Cafe <em>Experience</em>
+            The Moras Cafe <em>Experience</em>
           </h2>
           <div className="section-divider" />
         </div>
