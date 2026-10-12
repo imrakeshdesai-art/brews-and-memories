@@ -10,15 +10,11 @@ function NavBar({ cartCount, onCartClick, activeTable, onReserveClick, theme, to
 
   return (
     <header className="site-nav">
-      <div className="site-brand">
+      <NavLink to="/" className="site-brand" aria-label="The Moras Cafe Home">
         <div className="brand-icon">
           <img src="/logo.png" alt="The Moras Cafe logo" />
         </div>
-        <div className="brand-text">
-          <span>The Moras</span>
-          <small>CAFE</small>
-        </div>
-      </div>
+      </NavLink>
 
       <nav className="nav-links desktop-menu">
         <NavLink to="/" end className={() => (isHomeActive ? 'nav-link active' : 'nav-link')}>

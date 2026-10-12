@@ -121,28 +121,34 @@ button {
 .site-brand {
   display: flex;
   align-items: center;
-  gap: 12px;
-  color: var(--cream);
-  font-family: 'Playfair Display', serif;
-  font-weight: 700;
+  text-decoration: none;
 }
 
 .brand-icon {
   width: auto;
-  max-width: 90px;
-  height: 48px;
-  background: transparent;
+  height: 52px;
+  padding: 4px 14px;
+  background: #FAF5EF;
+  border-radius: 26px;
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.16);
+  border: 1px solid rgba(251, 191, 36, 0.28);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.brand-icon:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.22);
 }
 
 .brand-icon img {
   width: auto;
   height: 100%;
-  max-height: 48px;
+  max-height: 44px;
   object-fit: contain;
-  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.12));
+  display: block;
 }
 
 .brand-text {
