@@ -12,7 +12,7 @@ function NavBar({ cartCount, onCartClick, activeTable, onReserveClick, theme, to
     <header className="site-nav">
       <div className="site-brand">
         <div className="brand-icon">
-          <img src="/logo.jpg" alt="The Moras Cafe logo" />
+          <img src="/logo.png" alt="The Moras Cafe logo" />
         </div>
         <div className="brand-text">
           <span>The Moras</span>

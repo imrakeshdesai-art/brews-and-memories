@@ -128,19 +128,21 @@ button {
 }
 
 .brand-icon {
-  width: 54px;
-  height: 54px;
-  border-radius: 10px;
+  width: auto;
+  max-width: 90px;
+  height: 48px;
   background: transparent;
-  overflow: hidden;
-  display: grid;
-  place-items: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .brand-icon img {
-  width: 100%;
+  width: auto;
   height: 100%;
+  max-height: 48px;
   object-fit: contain;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.12));
 }
 
 .brand-text {

@@ -6,8 +6,8 @@ function Footer({ onReserveClick }) {
       <div className="footer-grid">
         <div className="footer-brand" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <div style={{ width: 50, height: 50, borderRadius: 10, background: 'transparent', overflow: 'hidden' }}>
-              <img src="/logo.jpg" alt="The Moras Cafe Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+            <div style={{ width: 60, height: 44, borderRadius: 8, background: 'transparent', overflow: 'hidden' }}>
+              <img src="/logo.png" alt="The Moras Cafe Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
             </div>
             <div>
               <div className="footer-brand-name">The Moras Cafe</div>
