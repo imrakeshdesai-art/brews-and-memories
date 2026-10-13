@@ -1,11 +1,7 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { menuData } from '../data/menuData';
 import useSEO from '../hooks/useSEO';
-
-gsap.registerPlugin(ScrollTrigger);
 
 const FEATURED_CATEGORIES = [
   { image: '/ColdCoffee.png', label: 'Cold Coffee', category: 'Cold Beverages' },
@@ -252,105 +248,38 @@ function Home({ openReserve }) {
     setResError('');
   };
 
-  const spacerRef = useRef(null);
-  const stickyRef = useRef(null);
-  const videoRef = useRef(null);
-  const frameRef = useRef(null);
-  const headingsRef = useRef(null);
-
-  useEffect(() => {
-    // Respect user's reduced-motion preference
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (prefersReducedMotion) return;
-
-    const ctx = gsap.context(() => {
-      const isMobile = window.innerWidth < 768;
-      const initialSize = isMobile ? '320px 320px' : '520px 520px';
-      const targetSize = isMobile ? '3500px 3500px' : '5500px 5500px';
-
-      // Set initial mask size so the flower reveals the center video on load
-      gsap.set(videoRef.current, {
-        maskSize: initialSize,
-        webkitMaskSize: initialSize
-      });
-
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: spacerRef.current,
-          start: 'top top',
-          end: 'bottom bottom',
-          scrub: 0.6,
-          pin: stickyRef.current,
-          anticipatePin: 1,
-          invalidateOnRefresh: true,
-        }
-      });
-
-      // 1. Expand the authentic Mask.svg as user scrolls while hero stays pinned
-      tl.to(videoRef.current, {
-        maskSize: targetSize,
-        webkitMaskSize: targetSize,
-        ease: 'power2.inOut',
-        duration: 1
-      }, 0);
-
-      // 2. Scale & fade out the botanical leaf wreath gracefully
-      tl.to(frameRef.current, {
-        opacity: 0,
-        scale: 1.15,
-        ease: 'power1.out',
-        duration: 0.45
-      }, 0);
-
-      // 3. Fade out text smoothly as flower expands
-      tl.to(headingsRef.current, {
-        opacity: 0,
-        scale: 1.08,
-        ease: 'power1.out',
-        duration: 0.45
-      }, 0);
-    }, spacerRef);
-
-    return () => ctx.revert();
-  }, []);
-
   return (
     <div className="home-page-editorial">
-      {/* CHAPTER 1: EXACT SCROLL-DRIVEN MASK.SVG HERO WITH PINNED STICKY STAGE */}
-      <div className="rc-video-spacer" ref={spacerRef}>
-        <section className="rc-video-sticky" ref={stickyRef}>
-          {/* Full-viewport Background Video with /Mask.svg */}
-          <video
-            ref={videoRef}
-            src="/hero-video.mp4"
-            poster="/ambiance.webp"
-            autoPlay
-            loop
-            muted
-            playsInline
-            preload="metadata"
-            className="rc-background-video"
-          />
-
-          {/* Botanical Coffee Bean Leaf Wreath Overlay */}
-          <div className="rc-botanical-frame-overlay" ref={frameRef} aria-hidden="true">
-            <img src="/BotanicalFrame.svg" alt="" className="rc-botanical-frame-img" />
+      {/* CHAPTER 1: THE EDITORIAL HERO */}
+      <section className="hero-editorial-section">
+        <div className="hero-editorial-overlay" />
+        <div className="hero-editorial-container">
+          <div className="hero-reference-pretitle">
+            Welcome to
           </div>
-
-          {/* Blend Mode Headings (mix-blend-mode: exclusion) */}
-          <div className="rc-blend-headings" ref={headingsRef}>
-            <h1 className="rc-hero-h1">
-              <span className="rc-line-1">Welcome to</span>
-              <span className="rc-line-2">The Moras Cafe</span>
-              <span className="rc-line-3">“The Place That Knows You”</span>
-            </h1>
+          <h1 className="hero-reference-brand-title">
+            The Moras Cafe
+          </h1>
+          <div className="hero-reference-tagline">
+            “The Place That Knows You”
           </div>
-
-          <p className="rc-scroll-text" aria-hidden="true">
-            SCROLL TO EXPLORE
+          <p className="hero-editorial-lead">
+            Where freshly pulled espresso meets warm conversations, artisan pizzas, curated books, and slow, unforgettable moments.
           </p>
-        </section>
-      </div>
+          <div className="hero-editorial-actions">
+            <Link to="/menu" className="btn-editorial-primary">
+              Explore Our Menu
+            </Link>
+            <button type="button" onClick={openReserve} className="btn-editorial-outline">
+              Book a Table
+            </button>
+          </div>
+          <div className="hero-scroll-cue" aria-hidden="true">
+            <span className="scroll-cue-line" />
+            <span className="scroll-cue-text">SCROLL TO EXPLORE</span>
+          </div>
+        </div>
+      </section>
 
       {/* CHAPTER 2: THE MORAS VIBE & CRAFT (EDITORIAL SPLIT) */}
       <section className="section-editorial craft-story-section">

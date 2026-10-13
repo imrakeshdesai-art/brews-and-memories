@@ -2512,152 +2512,40 @@ button {
   border-bottom: none !important;
 }
 
-/* ==================== CHAPTER 1: EXACT REFERENCE VIDEO MASK & BLEND STYLES ==================== */
-.rc-video-spacer {
+/* ==================== CHAPTER 1: HERO - PRISTINE LUXURY WARM AMBIENT CANVAS ==================== */
+.hero-editorial-section {
   position: relative;
-  width: 100%;
-  height: 300vh; /* Dedicated scroll room while video stays locked/pinned in view */
-}
-
-@media (max-width: 768px) {
-  .rc-video-spacer {
-    height: 220vh;
-  }
-}
-
-.rc-video-sticky {
-  position: sticky;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100vh;
-  overflow: hidden;
-  background: #FAF5EF;
-  border-bottom: 1px solid var(--cream-dark);
-}
-
-.rc-background-video {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-  mask-image: url(/Mask.svg);
-  -webkit-mask-image: url(/Mask.svg);
-  mask-repeat: no-repeat;
-  -webkit-mask-repeat: no-repeat;
-  mask-position: center center;
-  -webkit-mask-position: center center;
-  mask-size: 520px 520px;
-  -webkit-mask-size: 520px 520px;
-  will-change: mask-size, -webkit-mask-size;
-}
-
-/* BOTANICAL COFFEE BEAN LEAF WREATH OVERLAY */
-.rc-botanical-frame-overlay {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 520px;
-  height: 520px;
-  pointer-events: none;
-  z-index: 10;
+  min-height: 86vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  will-change: opacity, transform;
-}
-
-.rc-botanical-frame-img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  display: block;
-}
-
-@media (max-width: 768px) {
-  .rc-botanical-frame-overlay {
-    width: 320px;
-    height: 320px;
-  }
-}
-
-/* BLEND MODE HEADINGS (EXACT REFERENCE MIX-BLEND-MODE) */
-.rc-blend-headings {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
   text-align: center;
-  z-index: 20;
-  mix-blend-mode: exclusion;
-  color: white;
-  pointer-events: none;
-  width: 100%;
-  max-width: 900px;
-  padding: 0 20px;
-  will-change: opacity, transform;
+  padding: 140px 20px 90px;
+  background-color: #FAF5EF;
+  color: var(--text);
+  overflow: hidden;
+  border-bottom: 1px solid var(--cream-dark);
 }
 
-.rc-hero-h1 {
-  margin: 0;
-  padding: 0;
-}
-
-.rc-hero-h1 span {
-  display: block;
-}
-
-.rc-line-1 {
-  font-family: 'Manrope', 'Plus Jakarta Sans', sans-serif;
-  font-size: clamp(24px, 4vw, 42px);
-  font-weight: 300;
-  letter-spacing: 0.5px;
-  margin-bottom: 4px;
-}
-
-.rc-line-2 {
-  font-family: 'Playfair Display', serif;
-  font-size: clamp(48px, 9vw, 96px);
-  font-weight: 700;
-  letter-spacing: -0.5px;
-  line-height: 1.05;
-}
-
-.rc-line-3 {
-  font-family: 'Playfair Display', serif;
-  font-size: clamp(20px, 3.2vw, 34px);
-  font-style: italic;
-  font-weight: 400;
-  letter-spacing: 0.5px;
-  margin-top: 10px;
-}
-
-.rc-scroll-text {
+.hero-editorial-overlay {
   position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  bottom: 40px;
-  letter-spacing: 7px;
-  font-size: 11px;
-  mix-blend-mode: exclusion;
-  color: white;
-  width: 240px;
-  text-align: center;
-  font-weight: 600;
+  inset: 0;
+  background: 
+    radial-gradient(circle at 50% 40%, rgba(251, 191, 36, 0.08) 0%, transparent 60%),
+    radial-gradient(circle at 50% 60%, rgba(15, 61, 62, 0.03) 0%, transparent 70%);
   pointer-events: none;
-  z-index: 20;
 }
 
-/* REDUCED MOTION FALLBACK */
-@media (prefers-reduced-motion: reduce) {
-  .rc-background-video {
-    mask-size: 100% 100% !important;
-    -webkit-mask-size: 100% 100% !important;
-  }
+.hero-editorial-container {
+  position: relative;
+  z-index: 2;
+  max-width: 860px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  animation: heroReveal 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 @keyframes heroReveal {
