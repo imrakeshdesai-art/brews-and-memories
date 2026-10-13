@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { useToast } from '../components/ToastProvider';
 import { menuData } from '../data/menuData';
 import useSEO from '../hooks/useSEO';
 
@@ -161,13 +160,11 @@ function StatCounter({ targetValue, duration = 2000 }) {
 
   return <span id={`stat-counter-${targetValue}`}>{count || targetValue}</span>;
 }
-function Home({ addToCart, openReserve }) {
+function Home({ openReserve }) {
   useSEO({
     isHome: true,
     description: 'Welcome to The Moras Cafe at B.M. Patil Circle, Vijayapura. Enjoy freshly brewed coffee, pizzas, pasta, sizzling brownie, and cozy ambiance.'
   });
-
-  const showToast = useToast();
 
 
   const favorites = FAVORITES_CONFIG.map(config => {
@@ -214,13 +211,7 @@ function Home({ addToCart, openReserve }) {
   const [resSuccess, setResSuccess] = useState(false);
   const [resError, setResError] = useState('');
 
-  const handleAddFavorite = (item) => {
-    addToCart(item);
-    showToast(`🛒 ${item.name} added to cart!`);
-    if (window.trackEvent) {
-      window.trackEvent('quick_add', { item_name: item.name, price: item.price });
-    }
-  };
+
 
 
 
@@ -437,14 +428,6 @@ function Home({ addToCart, openReserve }) {
                   <span className="signature-price">₹{dish.price}</span>
                 </div>
                 <p className="signature-desc">{dish.desc}</p>
-                <button 
-                  type="button"
-                  onClick={() => handleAddFavorite(dish.item)}
-                  className="btn-signature-add"
-                  aria-label={`Add ${dish.name} to cart`}
-                >
-                  Quick Add +
-                </button>
               </div>
             </div>
           ))}
