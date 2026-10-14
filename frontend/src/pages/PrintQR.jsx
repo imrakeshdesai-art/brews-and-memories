@@ -1,4 +1,4 @@
-﻿import React, { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
 function PrintQR() {
@@ -424,9 +424,9 @@ function PrintQR() {
 
             <div class="front-header">
               <div class="logo-ring">
-                <img src="/logo.jpg" style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover', display: 'block' }} alt="Cafe Logo" />
+                <img src="/images/brand/secondary-badge-dark.png" style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'contain', display: 'block' }} alt="The Moras Cafe Circular Badge" />
               </div>
-              <div class="brand-name">The Moras Cafe<br />Café</div>
+              <div class="brand-name">The Moras Cafe</div>
               <div class="brand-tagline">Crafted with love · Est. 2020</div>
             </div>
 
@@ -489,7 +489,7 @@ function PrintQR() {
 
             <div class="back-header">
               <div class="back-logo-row">
-                <img src="/logo.jpg" style={{ width: 20, height: 20, borderRadius: '50%', objectFit: 'cover', display: 'block' }} alt="Cafe Logo Icon" />
+                <img src="/images/brand/brand-icon.png" style={{ width: 22, height: 22, objectFit: 'contain', display: 'block' }} alt="The Moras Cafe Icon" />
                 <span class="back-brand">The Moras Cafe</span>
               </div>
               <div class="back-headline">How It Works</div>

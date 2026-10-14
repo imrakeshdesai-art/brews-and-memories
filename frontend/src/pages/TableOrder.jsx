@@ -139,8 +139,8 @@ function TableOrder({ onSessionStart }) {
   return (
     <section className="section" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh', padding: '120px 20px 80px', background: 'var(--cream-light)' }}>
       <div className="card" style={{ maxWidth: 450, width: '100%', textAlign: 'center', background: 'var(--white)', border: '2px solid var(--cream-dark)', borderRadius: 16, padding: '40px 30px', boxShadow: 'var(--shadow-lg)' }}>
-        <div style={{ width: 100, height: 100, borderRadius: 12, background: 'transparent', overflow: 'hidden', margin: '0 auto 16px', boxShadow: '0 4px 12px rgba(0,0,0,0.06)' }}>
-          <img src="/logo.jpg" alt="The Moras Cafe Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+        <div style={{ width: 100, height: 100, borderRadius: '50%', background: 'transparent', overflow: 'hidden', margin: '0 auto 16px', boxShadow: '0 4px 16px rgba(15, 61, 62, 0.15)' }}>
+          <img src="/images/brand/secondary-badge-dark.png" alt="The Moras Cafe Seal" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
         </div>
         <span style={{ textTransform: 'uppercase', letterSpacing: 2, fontSize: '0.8rem', fontWeight: 800, color: 'var(--green)' }}>The Moras Cafe</span>
         <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: '2.2rem', color: 'var(--green)', margin: '8px 0 16px' }}>
