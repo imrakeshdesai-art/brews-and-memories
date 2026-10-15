@@ -12,16 +12,17 @@ const reservationSchema = new mongoose.Schema({
   paymentMethod: { type: String, default: 'UPI' },
   paymentStatus: {
     type: String,
-    enum: ['pending', 'paid', 'verified'],
-    default: 'paid',
+    enum: ['pending_payment', 'pending_verification', 'paid', 'verified'],
+    default: 'pending_payment',
   },
   upiRef: { type: String, default: '', trim: true },
   confirmationEmailSent: { type: Boolean, default: false },
   status: {
     type: String,
     enum: ['pending', 'confirmed', 'cancelled'],
-    default: 'confirmed',
+    default: 'pending',
   },
+  confirmedAt: { type: Date, default: null },
   createdAt: { type: Date, default: Date.now },
 });
 

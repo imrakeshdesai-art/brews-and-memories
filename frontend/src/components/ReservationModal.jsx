@@ -65,8 +65,8 @@ function ReservationModal({ open, onClose }) {
     };
   }, [open, onClose]);
 
-  // Step 1: Validate details before moving to ₹10 UPI payment
-  const handleProceedToPayment = (e) => {
+  // Step 1: Create pending reservation before moving to ₹10 UPI payment
+  const handleProceedToPayment = async (e) => {
     e.preventDefault();
     setError('');
 
@@ -92,16 +92,7 @@ function ReservationModal({ open, onClose }) {
       return;
     }
 
-    setStep(2);
-  };
-
-  // Step 2: Finalize booking after ₹10 UPI Payment
-  const handleCompleteReservation = async () => {
     setIsSubmitting(true);
-    setError('');
-
-    const cleanedPhone = phone.replace(/\D/g, '');
-
     try {
       const res = await api.post('/reservations', {
         name: name.trim(),
@@ -112,6 +103,71 @@ function ReservationModal({ open, onClose }) {
         time,
         notes: notes.trim(),
         amount: UPI_CONFIG.bookingAmount,
+      });
+
+      setCreatedBooking(res.data);
+      setIsSubmitting(false);
+
+      // If an existing PhonePe payment matched instantly upon booking creation
+      if (res.data.status === 'confirmed') {
+        setStep(3);
+        if (window.trackEvent) {
+          window.trackEvent('reserve_success', { 
+            guests, 
+            date, 
+            time, 
+            amount: UPI_CONFIG.bookingAmount 
+          });
+        }
+      } else {
+        setStep(2);
+      }
+    } catch (err) {
+      setIsSubmitting(false);
+      setError(err.response?.data?.message || 'Could not initiate reservation. Please try again.');
+    }
+  };
+
+  // Step 2: Real-time Polling for Instant PhonePe Webhook Confirmation
+  useEffect(() => {
+    if (step !== 2 || !createdBooking?._id) return;
+
+    let isMounted = true;
+    const pollInterval = setInterval(async () => {
+      try {
+        const res = await api.get(`/reservations/status/${createdBooking._id}`);
+        if (isMounted && res.data && res.data.status === 'confirmed') {
+          clearInterval(pollInterval);
+          setCreatedBooking((prev) => ({ ...prev, ...res.data }));
+          setStep(3);
+          if (window.trackEvent) {
+            window.trackEvent('reserve_success', { 
+              guests: res.data.guests, 
+              date: res.data.date, 
+              time: res.data.time, 
+              amount: res.data.amount 
+            });
+          }
+        }
+      } catch (err) {
+        // Polling gracefully ignores transient network glitches
+      }
+    }, 2500);
+
+    return () => {
+      isMounted = false;
+      clearInterval(pollInterval);
+    };
+  }, [step, createdBooking?._id]);
+
+  // Step 2 Fallback: Manual Confirmation or UTR submission
+  const handleCompleteReservation = async () => {
+    if (!createdBooking?._id) return;
+    setIsSubmitting(true);
+    setError('');
+
+    try {
+      const res = await api.patch(`/reservations/${createdBooking._id}/submit-utr`, {
         upiRef: upiRef.trim(),
       });
 
@@ -129,7 +185,7 @@ function ReservationModal({ open, onClose }) {
       }
     } catch (err) {
       setIsSubmitting(false);
-      setError(err.response?.data?.message || 'Could not submit reservation. Please try again.');
+      setError(err.response?.data?.message || 'Could not confirm reservation. Please try again.');
     }
   };
 
@@ -285,6 +341,7 @@ function ReservationModal({ open, onClose }) {
               <button 
                 className="btn-primary" 
                 type="submit" 
+                disabled={isSubmitting}
                 style={{ 
                   marginTop: 6, 
                   display: 'flex', 
@@ -296,8 +353,17 @@ function ReservationModal({ open, onClose }) {
                   fontSize: '1rem'
                 }}
               >
-                <span>Proceed to Reserve (₹10 Advance)</span>
-                <span>→</span>
+                {isSubmitting ? (
+                  <>
+                    <span className="spinner" style={{ width: 16, height: 16, border: '2px solid rgba(255,255,255,0.3)', borderTop: '2px solid #fff', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+                    <span>Preparing Reservation...</span>
+                  </>
+                ) : (
+                  <>
+                    <span>Proceed to Reserve (₹10 Advance)</span>
+                    <span>→</span>
+                  </>
+                )}
               </button>
             </form>
           )}
@@ -318,6 +384,25 @@ function ReservationModal({ open, onClose }) {
                 >
                   Edit
                 </button>
+              </div>
+
+              {/* Real-Time PhonePe Listening Pulse Badge */}
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 10,
+                background: '#ecfdf5',
+                border: '1px solid #a7f3d0',
+                borderRadius: 12,
+                padding: '10px 14px',
+                color: '#065f46',
+                fontSize: '0.84rem',
+                fontWeight: 600,
+                textAlign: 'center'
+              }}>
+                <span className="live-pulse-dot" />
+                <span>Listening for your ₹10 payment in real-time...</span>
               </div>
 
               {/* 100% Redeemable Advance Callout */}
