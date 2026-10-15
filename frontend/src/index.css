@@ -3184,9 +3184,9 @@ button {
 /* CHAPTER 4: THE SIGNATURE FOUR */
 .signatures-section {
   background: #FAF5EF;
-  border-top: 1px solid var(--cream-dark);
-  border-bottom: 1px solid var(--cream-dark);
-  padding: 52px 5% 42px;
+  border-top: none;
+  border-bottom: none;
+  padding: 56px 5% 52px;
 }
 
 .editorial-header-center {
@@ -3333,8 +3333,10 @@ button {
 .visit-section {
   position: relative;
   overflow: hidden;
-  background: var(--cream-light);
-  padding: 52px 5%;
+  background: #FAF5EF;
+  padding: 56px 5% 68px;
+  border-top: none;
+  border-bottom: none;
 }
 
 .visit-grid {
@@ -3511,8 +3513,10 @@ button {
 .gallery-section {
   position: relative;
   overflow: hidden;
-  background: #FFFFFF;
-  padding: 56px 5% 44px;
+  background: #FAF5EF;
+  padding: 64px 5% 52px;
+  border-top: none;
+  border-bottom: none;
 }
 
 .gallery-container {
@@ -3666,9 +3670,9 @@ button {
   position: relative;
   overflow: hidden;
   background: #FAF5EF;
-  padding: 56px 5% 44px;
-  border-top: 1px solid var(--cream-dark);
-  border-bottom: 1px solid var(--cream-dark);
+  padding: 56px 5% 52px;
+  border-top: none;
+  border-bottom: none;
 }
 
 .home-reviews-grid {
