@@ -93,6 +93,15 @@ function NavBar({ cartCount, onCartClick, activeTable, onReserveClick, theme, to
         <NavLink to="/moments" className="nav-link" onClick={() => setMenuOpen(false)}>
           📸 Moments
         </NavLink>
+        <a 
+          href="https://www.instagram.com/brews_and_memories_/" 
+          target="_blank" 
+          rel="noreferrer" 
+          className="nav-link" 
+          onClick={() => setMenuOpen(false)}
+        >
+          📷 Instagram
+        </a>
         <NavLink to="/#location" className="nav-link" onClick={() => setMenuOpen(false)}>
           📍 Contact
         </NavLink>
