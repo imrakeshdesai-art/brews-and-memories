@@ -281,20 +281,49 @@ function Home({ openReserve }) {
         </div>
       </section>
 
-      {/* CHAPTER 2: THE MORAS VIBE & CRAFT (EDITORIAL SPLIT) */}
+      {/* CHAPTER 2: THE MORAS VIBE & CRAFT (EDITORIAL LAYERED COLLAGE) */}
       <section className="section-editorial craft-story-section">
+        {/* Background Ambient Watermark Motif */}
+        <div className="craft-watermark-bg" aria-hidden="true" />
+
         <div className="craft-grid">
-          <div className="craft-image-frame">
-            <img 
-              src="/ambiance.webp" 
-              alt="The Moras Cafe cozy ambient interior in Vijayapura" 
-              className="craft-image"
-              loading="lazy"
-            />
-            <div className="craft-floating-badge">
-              <span>Cozy · Books · Games · Coffee</span>
+          {/* Layered Collage Column */}
+          <div className="craft-collage-wrap">
+            {/* Base Ambient Frame */}
+            <div className="craft-image-frame">
+              <img 
+                src="/ambiance.webp" 
+                alt="The Moras Cafe cozy ambient interior in Vijayapura" 
+                className="craft-image"
+                loading="lazy"
+              />
+              <div className="craft-floating-badge">
+                <span>Cozy · Books · Games · Coffee</span>
+              </div>
+            </div>
+
+            {/* Overlapping Floating Artisan Cutout Plate */}
+            <div className="craft-overlapping-dish" aria-hidden="true">
+              <img 
+                src="/Tandoori Paneer Pizza.png" 
+                alt="Artisan Stone-baked Pizza" 
+                className="craft-overlapping-dish-img"
+                loading="lazy"
+              />
+            </div>
+
+            {/* Official Circular Stamp Seal */}
+            <div className="craft-seal-badge" aria-hidden="true">
+              <img 
+                src="/images/brand/secondary-badge-light.png" 
+                alt="The Moras Cafe Official Seal" 
+                className="craft-seal-img" 
+                loading="lazy"
+              />
             </div>
           </div>
+
+          {/* Editorial Story Content */}
           <div className="craft-content">
             <span className="editorial-label">The Experience</span>
             <h2 className="editorial-heading">
@@ -303,7 +332,7 @@ function Home({ openReserve }) {
             </h2>
             <div className="editorial-divider" />
             <p className="editorial-body-text">
-              Nestled at B.M. Patil Circle, <strong>The Moras Cafe</strong> was created for those who cherish authentic flavors and meaningful moments. Whether you’re working over an iced hazelnut brew, diving into our complimentary library of books, or challenging friends over board games, our café is your neighborhood sanctuary.
+              <strong>The Moras Cafe</strong> was born out of a simple idea — to bring authentic, slow-crafted coffee and comforting pure-vegetarian dining to Vijayapura, prepared with passion and the warmth of home. Whether you’re working over an iced hazelnut brew, diving into our complimentary library of books, or challenging friends over board games, our café is your neighborhood sanctuary.
             </p>
 
             <div className="craft-pillars-list">
@@ -328,6 +357,12 @@ function Home({ openReserve }) {
                   <p>Unplug from screens with classic chess, Jenga, Uno, and curated bestselling paperbacks.</p>
                 </div>
               </div>
+            </div>
+
+            <div className="craft-story-action">
+              <Link to="/about" className="craft-story-link">
+                Read Our Story &amp; Philosophy ↗
+              </Link>
             </div>
           </div>
         </div>

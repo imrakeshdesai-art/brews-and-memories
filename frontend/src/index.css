@@ -2524,7 +2524,6 @@ button {
   background-color: #FAF5EF;
   color: var(--text);
   overflow: hidden;
-  border-bottom: 1px solid var(--cream-dark);
 }
 
 .hero-editorial-overlay {
@@ -2780,7 +2779,30 @@ button {
 
 /* CHAPTER 3: CRAFT & STORY SPLIT */
 .section-editorial {
-  padding: 100px 5%;
+  padding: 110px 5%;
+}
+
+.craft-story-section {
+  position: relative;
+  overflow: hidden;
+  background-color: #FAF5EF;
+}
+
+/* AMBIENT BOTANICAL WATERMARK MOTIF */
+.craft-watermark-bg {
+  position: absolute;
+  right: -100px;
+  bottom: -80px;
+  width: 580px;
+  height: 580px;
+  background-image: url('/images/brand/brand-icon.png');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  opacity: 0.04;
+  pointer-events: none;
+  z-index: 0;
+  filter: grayscale(100%);
 }
 
 .craft-grid {
@@ -2788,17 +2810,28 @@ button {
   margin: 0 auto;
   display: grid;
   grid-template-columns: 1fr 1.15fr;
-  gap: 70px;
+  gap: 75px;
   align-items: center;
+  position: relative;
+  z-index: 1;
+}
+
+/* EDITORIAL LAYERED COLLAGE */
+.craft-collage-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
 }
 
 .craft-image-frame {
   position: relative;
-  border-radius: 20px;
+  border-radius: 24px;
   overflow: hidden;
-  box-shadow: 0 16px 40px rgba(15, 61, 62, 0.12);
+  box-shadow: 0 20px 48px rgba(15, 61, 62, 0.14);
   aspect-ratio: 4/3;
-  border: 1px solid var(--cream-dark);
+  border: 2px solid rgba(214, 210, 196, 0.6);
+  background: #FFFFFF;
 }
 
 .craft-image {
@@ -2810,6 +2843,56 @@ button {
 
 .craft-image-frame:hover .craft-image {
   transform: scale(1.04);
+}
+
+/* OVERLAPPING FLOATING ARTISAN CUTOUT */
+.craft-overlapping-dish {
+  position: absolute;
+  right: -36px;
+  bottom: -32px;
+  width: 180px;
+  height: 180px;
+  z-index: 2;
+  filter: drop-shadow(0 16px 30px rgba(15, 61, 62, 0.28));
+  transition: transform 0.4s ease;
+  pointer-events: none;
+}
+
+.craft-collage-wrap:hover .craft-overlapping-dish {
+  transform: scale(1.06) rotate(3deg);
+}
+
+.craft-overlapping-dish-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+/* OFFICIAL CIRCULAR STAMP BADGE MEDALLION */
+.craft-seal-badge {
+  position: absolute;
+  top: -22px;
+  left: -20px;
+  width: 84px;
+  height: 84px;
+  z-index: 3;
+  border-radius: 50%;
+  box-shadow: 0 10px 24px rgba(15, 61, 62, 0.22);
+  transform: rotate(-8deg);
+  transition: transform 0.35s ease;
+}
+
+.craft-collage-wrap:hover .craft-seal-badge {
+  transform: rotate(0deg) scale(1.06);
+}
+
+.craft-seal-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  border-radius: 50%;
 }
 
 .craft-floating-badge {
@@ -2825,6 +2908,7 @@ button {
   letter-spacing: 1px;
   text-transform: uppercase;
   backdrop-filter: blur(8px);
+  z-index: 1;
 }
 
 .craft-content {
@@ -2907,10 +2991,51 @@ button {
   line-height: 1.5;
 }
 
+.craft-story-action {
+  margin-top: 14px;
+}
+
+.craft-story-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Playfair Display', serif;
+  font-size: 1.08rem;
+  font-weight: 700;
+  color: var(--green);
+  text-decoration: none;
+  border-bottom: 2px solid #b45309;
+  padding-bottom: 4px;
+  transition: all 0.2s ease;
+}
+
+.craft-story-link:hover {
+  color: #b45309;
+  transform: translateX(5px);
+}
+
 @media (max-width: 900px) {
   .craft-grid {
     grid-template-columns: 1fr;
-    gap: 40px;
+    gap: 48px;
+  }
+  .craft-overlapping-dish {
+    width: 140px;
+    height: 140px;
+    right: -14px;
+    bottom: -18px;
+  }
+  .craft-seal-badge {
+    width: 68px;
+    height: 68px;
+    top: -14px;
+    left: -12px;
+  }
+  .craft-watermark-bg {
+    width: 380px;
+    height: 380px;
+    right: -60px;
+    bottom: -40px;
   }
 }
 
