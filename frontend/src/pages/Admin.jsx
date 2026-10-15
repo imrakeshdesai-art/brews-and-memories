@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import api from '../services/api';
 import {
   saveAdminToken,
@@ -268,6 +268,22 @@ function Admin() {
         err.response?.data?.message ||
         'Update failed'
       );
+    }
+  };
+
+  // ================= RE-SEND RESERVATION EMAIL =================
+  const resendReservationEmail = async (id, email) => {
+    try {
+      toast(`Sending confirmation email to ${email}...`);
+      const res = await api.post(`/reservations/${id}/resend-email`);
+      toast(res.data?.message || 'Confirmation email sent!');
+      setReservations((prev) =>
+        prev.map((r) =>
+          r._id === id ? { ...r, confirmationEmailSent: true } : r
+        )
+      );
+    } catch (err) {
+      toast(err.response?.data?.message || 'Could not send email');
     }
   };
 
@@ -1097,26 +1113,25 @@ function Admin() {
                       color: 'var(--cream)',
                     }}
                   >
-                    <th style={{ padding: '12px 14px', textAlign: 'left' }}>ID</th>
-                    <th style={{ padding: '12px 14px', textAlign: 'left' }}>Name</th>
-                    <th style={{ padding: '12px 14px', textAlign: 'left' }}>Phone</th>
-                    <th style={{ padding: '12px 14px', textAlign: 'center' }}>Guests</th>
-                    <th style={{ padding: '12px 14px', textAlign: 'left' }}>Date</th>
-                    <th style={{ padding: '12px 14px', textAlign: 'left' }}>Time Slot</th>
+                    <th style={{ padding: '12px 14px', textAlign: 'left' }}>Ref ID</th>
+                    <th style={{ padding: '12px 14px', textAlign: 'left' }}>Guest Info</th>
+                    <th style={{ padding: '12px 14px', textAlign: 'center' }}>Party</th>
+                    <th style={{ padding: '12px 14px', textAlign: 'left' }}>Slot</th>
+                    <th style={{ padding: '12px 14px', textAlign: 'left' }}>₹10 Advance (UPI)</th>
                     <th style={{ padding: '12px 14px', textAlign: 'left' }}>Special Requests</th>
-                    <th style={{ padding: '12px 14px', textAlign: 'left' }}>Status</th>
+                    <th style={{ padding: '12px 14px', textAlign: 'left' }}>Status &amp; Email</th>
                   </tr>
                 </thead>
                 <tbody>
                   {loading ? (
                     <tr>
-                      <td colSpan="8" style={{ padding: 32, textAlign: 'center', color: 'var(--text-light)' }}>
+                      <td colSpan="7" style={{ padding: 32, textAlign: 'center', color: 'var(--text-light)' }}>
                         Loading reservations…
                       </td>
                     </tr>
                   ) : reservations.length === 0 ? (
                     <tr>
-                      <td colSpan="8" style={{ padding: 32, textAlign: 'center', color: 'var(--text-light)' }}>
+                      <td colSpan="7" style={{ padding: 32, textAlign: 'center', color: 'var(--text-light)' }}>
                         No reservations yet
                       </td>
                     </tr>
@@ -1129,46 +1144,107 @@ function Admin() {
                           borderBottom: '1px solid var(--cream-dark)',
                         }}
                       >
-                        <td style={{ padding: '12px 14px', fontFamily: 'monospace', fontSize: '0.8rem' }}>
+                        <td style={{ padding: '12px 14px', fontFamily: 'monospace', fontSize: '0.8rem', fontWeight: 700 }}>
                           #{r._id.slice(-6).toUpperCase()}
                         </td>
-                        <td style={{ padding: '12px 14px', fontWeight: 700 }}>{r.name}</td>
-                        <td style={{ padding: '12px 14px' }}>{r.phone}</td>
-                        <td style={{ padding: '12px 14px', textAlign: 'center', fontWeight: 700 }}>{r.guests}</td>
-                        <td style={{ padding: '12px 14px' }}>{r.date}</td>
-                        <td style={{ padding: '12px 14px', fontWeight: 700, color: 'var(--green)' }}>{r.time}</td>
-                        <td style={{ padding: '12px 14px', maxWidth: 200, color: 'var(--text-light)', fontSize: '0.82rem' }}>
+                        <td style={{ padding: '12px 14px' }}>
+                          <div style={{ fontWeight: 700, color: 'var(--green)' }}>{r.name}</div>
+                          {r.email && (
+                            <div style={{ fontSize: '0.8rem', color: 'var(--text-light)' }}>
+                              ✉️ {r.email}
+                            </div>
+                          )}
+                          <div style={{ fontSize: '0.8rem', color: 'var(--text-light)' }}>
+                            📞 {r.phone}
+                          </div>
+                        </td>
+                        <td style={{ padding: '12px 14px', textAlign: 'center', fontWeight: 700 }}>
+                          {r.guests}
+                        </td>
+                        <td style={{ padding: '12px 14px' }}>
+                          <div style={{ fontWeight: 600 }}>{r.date}</div>
+                          <div style={{ color: 'var(--green)', fontWeight: 700, fontSize: '0.85rem' }}>{r.time}</div>
+                        </td>
+                        <td style={{ padding: '12px 14px' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                            <span style={{ 
+                              background: '#dcfce7', 
+                              color: '#15803d', 
+                              padding: '2px 8px', 
+                              borderRadius: 12, 
+                              fontSize: '0.78rem', 
+                              fontWeight: 700 
+                            }}>
+                              ₹{r.amount || 10} Paid
+                            </span>
+                          </div>
+                          {r.upiRef ? (
+                            <div style={{ fontSize: '0.75rem', fontFamily: 'monospace', color: 'var(--text-light)', marginTop: 4 }}>
+                              UTR: {r.upiRef}
+                            </div>
+                          ) : (
+                            <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: 4 }}>
+                              UPI Direct
+                            </div>
+                          )}
+                        </td>
+                        <td style={{ padding: '12px 14px', maxWidth: 180, color: 'var(--text-light)', fontSize: '0.82rem' }}>
                           {r.notes || '—'}
                         </td>
                         <td style={{ padding: '12px 14px' }}>
-                          <select
-                            className="status-select"
-                            value={r.status}
-                            onChange={(e) => updateReservationStatus(r._id, e.target.value)}
-                            style={{
-                              background:
-                                r.status === 'pending'
-                                  ? '#fef3c7'
-                                  : r.status === 'confirmed'
-                                  ? '#d1fae5'
-                                  : '#fee2e2',
-                              color:
-                                r.status === 'pending'
-                                  ? '#92400e'
-                                  : r.status === 'confirmed'
-                                  ? '#065f46'
-                                  : '#991b1b',
-                              fontWeight: 700,
-                              border: 'none',
-                              borderRadius: 8,
-                              padding: '6px 10px',
-                              cursor: 'pointer',
-                            }}
-                          >
-                            <option value="pending">⏳ Pending</option>
-                            <option value="confirmed">✅ Confirmed</option>
-                            <option value="cancelled">❌ Cancelled</option>
-                          </select>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                            <select
+                              className="status-select"
+                              value={r.status}
+                              onChange={(e) => updateReservationStatus(r._id, e.target.value)}
+                              style={{
+                                background:
+                                  r.status === 'pending'
+                                    ? '#fef3c7'
+                                    : r.status === 'confirmed'
+                                    ? '#d1fae5'
+                                    : '#fee2e2',
+                                color:
+                                  r.status === 'pending'
+                                    ? '#92400e'
+                                    : r.status === 'confirmed'
+                                    ? '#065f46'
+                                    : '#991b1b',
+                                fontWeight: 700,
+                                border: 'none',
+                                borderRadius: 8,
+                                padding: '6px 10px',
+                                cursor: 'pointer',
+                              }}
+                            >
+                              <option value="pending">⏳ Pending</option>
+                              <option value="confirmed">✅ Confirmed</option>
+                              <option value="cancelled">❌ Cancelled</option>
+                            </select>
+
+                            {r.email && (
+                              <button
+                                type="button"
+                                onClick={() => resendReservationEmail(r._id, r.email)}
+                                style={{
+                                  background: 'none',
+                                  border: '1px solid var(--cream-dark)',
+                                  borderRadius: 6,
+                                  padding: '3px 8px',
+                                  fontSize: '0.72rem',
+                                  cursor: 'pointer',
+                                  color: 'var(--green)',
+                                  fontWeight: 600,
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: 4
+                                }}
+                                title="Re-send Confirmation Email to customer"
+                              >
+                                {r.confirmationEmailSent ? '✓ Sent (Resend)' : '✉️ Send Email'}
+                              </button>
+                            )}
+                          </div>
                         </td>
                       </tr>
                     ))

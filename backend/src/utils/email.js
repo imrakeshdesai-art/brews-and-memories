@@ -276,30 +276,170 @@ function buildCustomerEmailHTML({ name, items, total, payment, address, orderId 
 </html>`;
 }
 
-// ── Main send function ────────────────────────────────────────────────────────
-async function sendOrderEmail(orderData) {
-  if (!orderData.email) {
-    console.log('[Email] No customer email provided — skipping.');
-    return { success: false, error: 'No customer email provided' };
+// ── HTML Table Reservation Email Template ─────────────────────────────────────
+function buildReservationEmailHTML({ name, date, time, guests, notes, amount = 10, upiRef, _id }) {
+  const refCode = _id ? String(_id).slice(-6).toUpperCase() : 'CONFIRMED';
+  return `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Table Reservation Confirmed &mdash; The Moras Cafe</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+    body {
+      font-family: 'Plus Jakarta Sans', 'Segoe UI', -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+    }
+    @media only screen and (max-width: 480px) {
+      .email-wrapper {
+        margin: 10px auto !important;
+        border-radius: 8px !important;
+        width: 100% !important;
+      }
+      .email-body {
+        padding: 18px !important;
+      }
+      .details-box {
+        padding: 16px !important;
+      }
+    }
+  </style>
+</head>
+<body style="margin:0;padding:0;background:#f5f0e8;font-family:'Plus Jakarta Sans','Segoe UI',Arial,sans-serif">
+  <div class="email-wrapper" style="width:100%;max-width:560px;margin:32px auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.10);border:1px solid #e8e2d2">
+
+    <!-- Header -->
+    <div style="background:linear-gradient(135deg,#0f3d3e 0%,#185c5d 100%);padding:36px 28px;text-align:center;border-bottom:3px solid #fbbf24">
+      <div style="margin-bottom:14px">
+        <img src="https://themorascafe.vercel.app/logo.png" alt="The Moras Cafe Logo" style="width:72px;height:72px;border-radius:50%;border:3px solid #fbbf24;box-shadow:0 4px 10px rgba(0,0,0,0.15);display:inline-block;object-fit:cover" />
+      </div>
+      <div style="color:#fbbf24;font-size:12px;letter-spacing:4px;text-transform:uppercase;font-weight:800;margin-bottom:6px">The Moras Cafe</div>
+      <h1 style="color:#fff;margin:0;font-size:26px;font-weight:800;font-family:'Playfair Display', Georgia, serif;letter-spacing:-0.5px">Table Reserved! &#x1F942;</h1>
+      <p style="color:rgba(255,255,255,0.85);margin:8px 0 0;font-size:14px;font-style:italic;font-family:'Playfair Display', Georgia, serif">Vijayapura's Cozy Living Room</p>
+    </div>
+
+    <!-- Body -->
+    <div class="email-body" style="padding:28px">
+      <p style="color:#2d2d2d;font-size:15px;line-height:1.6;margin:0 0 20px;font-family:'Plus Jakarta Sans', Arial, sans-serif">
+        Dear <strong>${name}</strong>, &#x1F44B;<br/><br/>
+        We are thrilled to confirm your table reservation at <strong>The Moras Cafe</strong>! Your table is set and our team looks forward to hosting you for an unforgettable time.
+      </p>
+
+      <!-- Details Box -->
+      <div class="details-box" style="background:#faf8f5;border-radius:14px;padding:20px;margin-bottom:24px;border:1px solid #e8e2d2;box-shadow:inset 0 1px 3px rgba(0,0,0,0.02)">
+        <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;table-layout:fixed;width:100%">
+          <tr>
+            <td style="padding-bottom:14px;border-bottom:2px dashed #e8e2d2">
+              <div style="font-size:11px;color:#8e8a7e;letter-spacing:2px;text-transform:uppercase;font-weight:700;margin-bottom:4px">Booking Reference</div>
+              <div style="font-size:16px;color:#0f3d3e;font-weight:800;font-family:monospace">#TMC-RES-${refCode}</div>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding-top:14px">
+              <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse">
+                <tr>
+                  <td style="padding:7px 0;font-size:14px;color:#666">📅 Date</td>
+                  <td style="padding:7px 0;text-align:right;font-size:15px;font-weight:700;color:#0f3d3e">${date}</td>
+                </tr>
+                <tr>
+                  <td style="padding:7px 0;font-size:14px;color:#666">⏰ Time Slot</td>
+                  <td style="padding:7px 0;text-align:right;font-size:15px;font-weight:700;color:#0f3d3e">${time}</td>
+                </tr>
+                <tr>
+                  <td style="padding:7px 0;font-size:14px;color:#666">👥 Party Size</td>
+                  <td style="padding:7px 0;text-align:right;font-size:15px;font-weight:700;color:#0f3d3e">${guests} Guests</td>
+                </tr>
+                <tr>
+                  <td style="padding:7px 0;font-size:14px;color:#666">💳 Advance Paid</td>
+                  <td style="padding:7px 0;text-align:right;font-size:15px;font-weight:800;color:#047857">&#x20B9;${amount} (UPI Paid &bull; Redeemable)</td>
+                </tr>
+                ${upiRef ? `
+                <tr>
+                  <td style="padding:7px 0;font-size:14px;color:#666">🔢 UPI Ref / UTR</td>
+                  <td style="padding:7px 0;text-align:right;font-size:13px;font-weight:600;color:#555;font-family:monospace">${upiRef}</td>
+                </tr>` : ''}
+                ${notes ? `
+                <tr>
+                  <td style="padding:7px 0;font-size:14px;color:#666">📝 Special Notes</td>
+                  <td style="padding:7px 0;text-align:right;font-size:14px;font-weight:500;color:#333">${notes}</td>
+                </tr>` : ''}
+              </table>
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- Info Cards -->
+      <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px;border-collapse:separate;border-spacing:0 8px">
+        <tr>
+          <td style="background:#f0fdf4;border-radius:12px;padding:14px 18px;border:1px solid #bbf7d0">
+            <div style="font-size:10px;color:#047857;text-transform:uppercase;letter-spacing:1.5px;font-weight:700;margin-bottom:2px">Location</div>
+            <div style="font-size:14px;font-weight:700;color:#065f46">B.M. Patil Circle, Vijayapura, Karnataka</div>
+          </td>
+        </tr>
+        <tr>
+          <td style="background:#fff7ed;border-radius:12px;padding:14px 18px;border:1px solid #fed7aa">
+            <div style="font-size:10px;color:#c2410c;text-transform:uppercase;letter-spacing:1.5px;font-weight:700;margin-bottom:2px">100% Redeemable Advance</div>
+            <div style="font-size:13px;color:#9a3412;line-height:1.5">
+              Your &#x20B9;${amount} reservation fee guarantees your table and will be fully deducted from your cafe food and beverage bill! Tables are held for 15 minutes past the reserved time.
+            </div>
+          </td>
+        </tr>
+      </table>
+
+      <!-- WhatsApp / Contact Button -->
+      <div style="text-align:center;margin-bottom:24px">
+        <a href="https://wa.me/919945446137?text=Hi%20The%20Moras%20Cafe%2C%20regarding%20my%20table%20reservation%20%23TMC-RES-${refCode}" 
+           style="display:inline-block;background:linear-gradient(135deg,#0f3d3e,#185c5d);color:#fff;text-decoration:none;padding:14px 28px;border-radius:50px;font-weight:700;font-size:14px;letter-spacing:0.5px;box-shadow:0 4px 12px rgba(15,61,62,0.25);border:2px solid #fbbf24">
+          &#x1F4AC; WhatsApp Café Host
+        </a>
+      </div>
+
+      <!-- Directions Footer -->
+      <div style="background:#faf8f5;border-radius:12px;padding:14px;text-align:center;border:1px solid #e8e2d2">
+        <p style="color:#5e5a50;font-size:12px;line-height:1.6;margin:0">
+          &#x1F4CD; Google Maps: <a href="https://www.google.com/maps/search/?api=1&query=The+Moras+Cafe+B+M+Patil+Circle+Vijayapura" style="color:#0f3d3e;font-weight:700">Get Directions</a> &middot;
+          &#x1F4DE; Host Desk: <a href="tel:+919945446137" style="color:#0f3d3e;font-weight:700">+91 99454 46137</a>
+        </p>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div style="background:#0f3d3e;padding:20px 28px;text-align:center;border-top:3px solid #fbbf24">
+      <p style="margin:0;font-size:12px;color:rgba(255,255,255,0.7);line-height:1.6">
+        &copy; 2026 The Moras Cafe &middot; Vijayapura<br/>
+        Follow our memories on Instagram 
+        <a href="https://www.instagram.com/themorascafe/" style="color:#fbbf24;font-weight:700;text-decoration:none">@themorascafe</a>
+      </p>
+    </div>
+  </div>
+</body>
+</html>`;
+}
+
+// ── Shared Email Dispatch Engine ──────────────────────────────────────────────
+async function dispatchEmail({ to, subject, htmlContent }) {
+  if (!to) {
+    console.log('[Email] No recipient email provided — skipping.');
+    return { success: false, error: 'No recipient email provided' };
   }
 
-  const subject = `✅ Order Confirmed - The Moras Cafe (#${String(orderData.orderId).slice(-6)})`;
-  const htmlContent = buildCustomerEmailHTML(orderData);
   const errors = [];
 
   // 1️⃣ Try sending via Google HTTP Proxy if configured (Bypasses Render free tier SMTP blocks)
   if (GMAIL_PROXY_URL) {
     try {
-      console.log(`[Email] Attempting HTTP Proxy send to ${orderData.email}...`);
+      console.log(`[Email] Attempting HTTP Proxy send to ${to}...`);
       const result = await sendPostRequest(GMAIL_PROXY_URL, {
-        to: orderData.email,
-        subject: subject,
+        to,
+        subject,
         htmlBody: htmlContent,
         token: GMAIL_PROXY_TOKEN
       });
       
       if (result && result.success) {
-        console.log(`[Email] Confirmation sent via HTTP Proxy → ${orderData.email}`);
+        console.log(`[Email] Confirmation sent via HTTP Proxy → ${to}`);
         return { success: true, method: 'proxy', result };
       } else {
         throw new Error((result && result.error) || 'Proxy execution failed');
@@ -324,12 +464,12 @@ async function sendOrderEmail(orderData) {
   try {
     const info = await transporter.sendMail({
       from: `"The Moras Cafe" <${GMAIL_USER}>`,
-      to: orderData.email,
-      subject: subject,
+      to,
+      subject,
       html: htmlContent,
       textEncoding: 'base64',
     });
-    console.log(`[Email] Confirmation sent via SMTP → ${orderData.email} | MessageID: ${info.messageId}`);
+    console.log(`[Email] Confirmation sent via SMTP → ${to} | MessageID: ${info.messageId}`);
     return { success: true, method: 'smtp', info };
   } catch (err) {
     errors.push(`SMTP Error: ${err.message}`);
@@ -339,4 +479,30 @@ async function sendOrderEmail(orderData) {
   return { success: false, errors };
 }
 
-module.exports = { sendOrderEmail };
+// ── Main Order Email ──────────────────────────────────────────────────────────
+async function sendOrderEmail(orderData) {
+  if (!orderData.email) {
+    console.log('[Email] No customer email provided for order — skipping.');
+    return { success: false, error: 'No customer email provided' };
+  }
+  const subject = `✅ Order Confirmed - The Moras Cafe (#${String(orderData.orderId).slice(-6)})`;
+  const htmlContent = buildCustomerEmailHTML(orderData);
+  return dispatchEmail({ to: orderData.email, subject, htmlContent });
+}
+
+// ── Table Reservation Email ───────────────────────────────────────────────────
+async function sendReservationEmail(reservationData) {
+  if (!reservationData.email) {
+    console.log('[Email] No customer email provided for reservation — skipping.');
+    return { success: false, error: 'No customer email provided' };
+  }
+  const refCode = reservationData._id ? String(reservationData._id).slice(-6).toUpperCase() : 'CONFIRMED';
+  const subject = `🥂 Table Reservation Confirmed (#${refCode}) - The Moras Cafe`;
+  const htmlContent = buildReservationEmailHTML(reservationData);
+  return dispatchEmail({ to: reservationData.email, subject, htmlContent });
+}
+
+module.exports = { 
+  sendOrderEmail, 
+  sendReservationEmail 
+};
