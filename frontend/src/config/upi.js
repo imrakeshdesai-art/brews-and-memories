@@ -2,7 +2,7 @@
 export const UPI_CONFIG = {
   // Cafe official UPI Virtual Payment Address (VPA)
   // Can be overridden via VITE_CAFE_UPI_ID in environment
-  upiId: import.meta.env.VITE_CAFE_UPI_ID || '9945446137@ybl',
+  upiId: import.meta.env.VITE_CAFE_UPI_ID || 'rockey63616792411@ybl',
   payeeName: 'The Moras Cafe',
   bookingAmount: 10, // ₹10 nominal commitment advance
   cafePhone: '+919945446137',
