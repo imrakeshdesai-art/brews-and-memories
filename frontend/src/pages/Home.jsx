@@ -61,6 +61,30 @@ const FAVORITES_CONFIG = [
   }
 ];
 
+const VERIFIED_HOME_REVIEWS = [
+  {
+    name: 'Govindraj Pujari',
+    initials: 'GP',
+    rating: 5,
+    date: 'Google Review · 4 months ago',
+    text: 'Best place... the spot! 😊 Great ambiance, tasty brews, and chill vibes. You and your squad will have a blast there!'
+  },
+  {
+    name: 'Priya S.',
+    initials: 'PS',
+    rating: 5,
+    date: 'Google Review · 1 month ago',
+    text: 'Food is very delicious and highly recommended. The paneer pizza was absolutely loaded with toppings. Will definitely come back!'
+  },
+  {
+    name: 'Sagar Lamani',
+    initials: 'SL',
+    rating: 5,
+    date: 'Google Review · Recent',
+    text: 'Good taste and nice atmosphere. Perfect place to dine in with friends after a long day in Vijayapura.'
+  }
+];
+
 
 
 const FAQS = [
@@ -429,7 +453,155 @@ function Home({ openReserve }) {
         </div>
       </section>
 
-      {/* CHAPTER 5: VISIT US & RESERVATIONS */}
+      {/* CHAPTER 5: SIGNATURE CAFE ATMOSPHERE (WIDE PHOTOGRAPHIC FEATURE) */}
+      <section className="atmosphere-section">
+        <div className="atmosphere-container">
+          <span className="atmosphere-kicker">A Tranquil Garden Setting</span>
+          <h2 className="atmosphere-heading">
+            Your Little Escape <em>in Vijayapura</em>
+          </h2>
+          <p className="atmosphere-lead">
+            An open-air garden terrace shaded by leafy canopies, softly lit with warm evening pendant lights, and filled with the unhurried aroma of freshly ground espresso. A sanctuary built for slower moments.
+          </p>
+          <div className="atmosphere-actions">
+            <button type="button" onClick={openReserve} className="btn-atmosphere-primary">
+              📅 Reserve a Garden Table
+            </button>
+            <a 
+              href="https://www.google.com/maps/dir/?api=1&destination=16.822765,75.703274" 
+              target="_blank" 
+              rel="noreferrer" 
+              className="btn-atmosphere-outline"
+            >
+              📍 Get Directions ↗
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* CHAPTER 6: EDITORIAL ASYMMETRICAL PHOTO GALLERY */}
+      <section className="gallery-section">
+        {/* Ambient Botanical Brand Watermark Motif */}
+        <div className="brand-watermark-light" style={{ right: -60, top: -40, width: 440, height: 440 }} aria-hidden="true" />
+
+        <div className="gallery-container">
+          <div className="editorial-header-center">
+            <span className="editorial-label">Life at The Moras Cafe</span>
+            <h2 className="editorial-heading">Every Corner <em>Tells a Story</em></h2>
+            <div className="editorial-divider center" />
+            <p className="editorial-lead-center">
+              From our hand-painted coffee mural patio to twilight garden tables and handcrafted pure-veg plates.
+            </p>
+          </div>
+
+          <div className="gallery-mosaic-grid">
+            {/* Major Left Feature: Coffee & Music Mural Patio */}
+            <div className="gallery-mosaic-feature">
+              <img 
+                src="/images/instagram/manju_duddagi.jpeg" 
+                alt="Outdoor seating at The Moras Cafe next to the vibrant coffee and music mural"
+                loading="lazy"
+              />
+              <div className="gallery-card-badge">
+                <strong>The Mural Patio</strong>
+                <span>Where vibrant street art meets your afternoon espresso</span>
+              </div>
+            </div>
+
+            {/* Right Side Stack: 1 Top Banner + 2 Mini Cards */}
+            <div className="gallery-mosaic-side">
+              {/* Top: Twilight Ambience */}
+              <div className="gallery-mosaic-top">
+                <img 
+                  src="/images/instagram/mahantesh_loni.jpeg" 
+                  alt="Twilight ambiance with glowing dreamcatchers and evening lawn at The Moras Cafe"
+                  loading="lazy"
+                />
+                <div className="gallery-card-badge">
+                  <strong>Twilight Ambience</strong>
+                  <span>Golden hour glow, dreamcatchers, and soothing music</span>
+                </div>
+              </div>
+
+              {/* Bottom Split: Indoor Sanctuary & Artisan Table */}
+              <div className="gallery-mosaic-bottom-split">
+                <div className="gallery-mosaic-mini">
+                  <img 
+                    src="/ambiance.webp" 
+                    alt="Cozy indoor cafe counter and seating with curated books at The Moras Cafe"
+                    loading="lazy"
+                  />
+                  <div className="gallery-card-badge">
+                    <strong>Indoor Sanctuary</strong>
+                    <span>Books, games &amp; quiet corners</span>
+                  </div>
+                </div>
+                <div className="gallery-mosaic-mini">
+                  <img 
+                    src="/Tandoori Paneer Pizza.png" 
+                    alt="Freshly baked artisan pure vegetarian pizza at The Moras Cafe"
+                    loading="lazy"
+                  />
+                  <div className="gallery-card-badge">
+                    <strong>Fresh Pure-Veg</strong>
+                    <span>Stone-baked pizzas &amp; comfort food</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="gallery-cta-wrap">
+            <Link to="/moments" className="gallery-explore-link">
+              📸 Explore More Guest Moments &amp; Instagram Stories →
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* CHAPTER 7: GUEST LOVE & COMMUNITY REVIEWS */}
+      <section className="home-reviews-section">
+        {/* Ambient Botanical Brand Watermark Motif */}
+        <div className="brand-watermark-light" style={{ right: -80, bottom: -60, width: 460, height: 460 }} aria-hidden="true" />
+
+        <div className="editorial-header-center" style={{ position: 'relative', zIndex: 1 }}>
+          <span className="editorial-label">Google 4.8★ Verified Reviews</span>
+          <h2 className="editorial-heading">Stories From <em>Our Patrons</em></h2>
+          <div className="editorial-divider center" />
+          <p className="editorial-lead-center">
+            Over 520+ local patrons and travelers make The Moras Cafe their everyday sanctuary in Vijayapura.
+          </p>
+        </div>
+
+        <div className="home-reviews-grid">
+          {VERIFIED_HOME_REVIEWS.map((review, idx) => (
+            <div key={idx} className="home-review-card">
+              <div>
+                <div className="home-review-header">
+                  <div className="home-review-avatar">{review.initials}</div>
+                  <div>
+                    <div className="home-review-name">{review.name}</div>
+                    <div className="home-review-date">{review.date}</div>
+                  </div>
+                </div>
+                <div className="home-review-stars">{'★'.repeat(review.rating)}</div>
+                <p className="home-review-quote">"{review.text}"</p>
+              </div>
+              <div className="home-review-verified">
+                <span>✓</span> Verified Google Review
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="home-reviews-cta-wrap" style={{ position: 'relative', zIndex: 1 }}>
+          <Link to="/reviews" className="btn-editorial-primary">
+            Read All 520+ Patron Reviews →
+          </Link>
+        </div>
+      </section>
+
+      {/* CHAPTER 8: VISIT US & DIRECTIONS */}
       <section id="location" className="section-editorial visit-section">
         {/* Ambient Botanical Brand Watermark Motif */}
         <div className="brand-watermark-light visit-watermark" aria-hidden="true" />
@@ -466,17 +638,25 @@ function Home({ openReserve }) {
               </div>
             </div>
 
-            <div style={{ marginTop: 24 }}>
+            <div style={{ marginTop: 24, display: 'flex', gap: 12, flexWrap: 'wrap' }}>
               <button type="button" onClick={openReserve} className="btn-editorial-primary">
                 Book a Table Now
               </button>
+              <a 
+                href="https://www.google.com/maps/dir/?api=1&destination=16.822765,75.703274"
+                target="_blank"
+                rel="noreferrer"
+                className="btn-editorial-outline"
+              >
+                Get Directions ↗
+              </a>
             </div>
           </div>
 
           <div className="visit-map-frame">
             <iframe
               title="The Moras Cafe Location Map"
-              src="https://maps.google.com/maps?q=The+Moras+Cafe,+B+M+Patil+Circle,+Vijayapura,+Karnataka+586102&t=&z=16&ie=UTF8&iwloc=&output=embed"
+              src="https://maps.google.com/maps?q=16.822765,75.703274&hl=en&z=16&output=embed"
               width="100%"
               height="100%"
               style={{ border: 0, minHeight: 360 }}
