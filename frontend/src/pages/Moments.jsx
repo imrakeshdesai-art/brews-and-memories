@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import useSEO from '../hooks/useSEO';
 
 const instagramWidgetUrl = import.meta.env.VITE_INSTAGRAM_WIDGET_URL || 'b16a01b6-838f-4360-88fc-9a34d2927446';
@@ -30,7 +30,7 @@ const INSTAGRAM_POSTS = [
     collaborators: 'and 1 other',
     initials: 'MD',
     image: '/images/instagram/manju_duddagi.jpeg',
-    caption: 'New Cafein Bijapur..! ✨\nCome for The Brews, Stay for The Memories ☕💛\n📍Visit Today & Create Your Story Here!\n#brewsandmemories\n\n#brewsandmemories #cafelaunch #coffeevibes #cozycafe #cafenights #newcafeInbijapur #coffeeloversclub #cafegoals #eveningvibes #foodielife #bestplace #instacafevibes #bijapur #bijapurmerijaan #bijapurfoodwalks #vijayapura #karnataka #foodlovers #viral #reels #cafe #cafelovers',
+    caption: 'A magical evening at The Moras Cafe! ✨\nArtisan coffee, garden vibes, and unforgettable memories ☕💛\n📍Visit us at B.M. Patil Circle, Vijayapura!\n#themorascafe #vijayapuracafe #gardenvibes #coffeeandstories',
     likes: 356,
     comments: 52,
     date: 'May 08, 2026',
@@ -38,7 +38,7 @@ const INSTAGRAM_POSTS = [
   },
   {
     username: 'mahantesh_loni',
-    collaborators: 'and brews_and_memories_',
+    collaborators: 'and 1 other',
     initials: 'ML',
     image: '/images/instagram/mahantesh_loni.jpeg',
     caption: '#cafe #coffeelover #pizza',

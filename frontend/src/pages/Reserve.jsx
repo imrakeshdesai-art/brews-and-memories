@@ -1,4 +1,4 @@
-﻿import { useState } from 'react';
+import { useState } from 'react';
 import api from '../services/api';
 import useSEO from '../hooks/useSEO';
 
@@ -61,7 +61,8 @@ function Reserve() {
         <div className="section-divider" />
       </div>
 
-      <div className="reservation-form-container">
+      <div className="reservation-page-split" style={{ maxWidth: 1140, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '40px', alignItems: 'start' }}>
+        <div className="reservation-form-container" style={{ margin: 0, width: '100%', maxWidth: 'none' }}>
         {success ? (
           <div className="order-success">
             <div className="success-icon" style={{ fontSize: '3.5rem', marginBottom: 16 }}>🎉</div>
@@ -218,6 +219,50 @@ function Reserve() {
             </button>
           </form>
         )}
+      </div>
+
+        {/* Atmosphere Preview Card */}
+        <div className="reservation-atmosphere-card" style={{ background: '#FFFFFF', borderRadius: '24px', overflow: 'hidden', border: '1px solid var(--cream-dark)', boxShadow: '0 16px 40px rgba(15,61,62,0.08)' }}>
+          <div style={{ position: 'relative', height: 320, overflow: 'hidden' }}>
+            <img 
+              src="/images/instagram/hightide_sagar.jpeg" 
+              alt="Outdoor garden table seating under warm evening lights at The Moras Cafe"
+              style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+            />
+            <div style={{ position: 'absolute', bottom: 14, left: 14, background: 'rgba(15, 61, 62, 0.92)', color: '#FAF5EF', padding: '6px 14px', borderRadius: 20, fontSize: '0.78rem', fontWeight: 700, backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', gap: 6 }}>
+              <span style={{ color: '#10b981' }}>●</span>
+              <span>Garden Terrace Seating</span>
+            </div>
+          </div>
+          <div style={{ padding: '28px 24px' }}>
+            <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: '1.4rem', color: 'var(--green)', margin: '0 0 10px' }}>
+              Your Table Awaits
+            </h3>
+            <p style={{ color: 'var(--text-light)', fontSize: '0.92rem', lineHeight: 1.6, margin: '0 0 20px' }}>
+              Whether you prefer our quiet indoor library corners or our fairy-lit open-air garden, every table at The Moras Cafe is prepared with warm hospitality.
+            </p>
+            <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 24px', display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <li style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: '0.9rem', color: 'var(--green)', fontWeight: 600 }}>
+                <span>🌿</span> Open-air garden &amp; cozy indoor spaces
+              </li>
+              <li style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: '0.9rem', color: 'var(--green)', fontWeight: 600 }}>
+                <span>📶</span> High-speed Wi-Fi &amp; charging outlets
+              </li>
+              <li style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: '0.9rem', color: 'var(--green)', fontWeight: 600 }}>
+                <span>🎯</span> Free board games &amp; curated book library
+              </li>
+              <li style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: '0.9rem', color: 'var(--green)', fontWeight: 600 }}>
+                <span>✨</span> Zero reservation or cover charges
+              </li>
+            </ul>
+            <div style={{ borderTop: '1px solid var(--cream-dark)', paddingTop: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
+              <span style={{ fontSize: '0.85rem', color: 'var(--text-light)' }}>Need an instant booking?</span>
+              <a href="tel:+919945446137" style={{ color: 'var(--green)', fontWeight: 800, textDecoration: 'none', fontSize: '0.92rem' }}>
+                📞 +91 99454 46137
+              </a>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div style={{ textAlign: 'center', marginTop: 36, color: 'var(--text-light)', fontSize: '0.9rem' }}>
