@@ -102,8 +102,11 @@ function About() {
       </section>
 
       {/* CHAPTER 2: FOUR CORNERSTONES */}
-      <section style={{ padding: '60px 5%', borderTop: '1px solid var(--cream-dark)', borderBottom: '1px solid var(--cream-dark)', background: '#FAF5EF' }}>
-        <div style={{ maxWidth: 1160, margin: '0 auto' }}>
+      <section style={{ padding: '60px 5%', borderTop: '1px solid var(--cream-dark)', borderBottom: '1px solid var(--cream-dark)', background: '#FAF5EF', position: 'relative', overflow: 'hidden' }}>
+        {/* Ambient Botanical Brand Watermark Motif */}
+        <div className="brand-watermark-light about-pillars-watermark" aria-hidden="true" />
+
+        <div style={{ maxWidth: 1160, margin: '0 auto', position: 'relative', zIndex: 1 }}>
           <div style={{ textAlign: 'center', marginBottom: 44 }}>
             <span style={{ fontSize: '0.8rem', letterSpacing: '3px', textTransform: 'uppercase', color: 'var(--green)', fontWeight: 800 }}>
               The Pillars

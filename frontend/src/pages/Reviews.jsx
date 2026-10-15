@@ -100,14 +100,20 @@ function Reviews() {
         border: '1px solid var(--cream-dark)', 
         padding: '48px 32px', 
         textAlign: 'center',
-        boxShadow: '0 10px 30px rgba(15, 61, 62, 0.05)'
+        boxShadow: '0 10px 30px rgba(15, 61, 62, 0.05)',
+        position: 'relative',
+        overflow: 'hidden'
       }}>
-        <span style={{ color: 'var(--green)', textTransform: 'uppercase', letterSpacing: 2, fontSize: '0.8rem', fontWeight: 800, display: 'block', marginBottom: 8 }}>
-          Milestones of Care
-        </span>
-        <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: '2rem', color: 'var(--green)', margin: '0 0 24px', fontWeight: 700 }}>
-          The Moras Cafe in Numbers
-        </h2>
+        {/* Ambient Botanical Brand Watermark Motif */}
+        <div className="brand-watermark-light reviews-watermark" aria-hidden="true" />
+
+        <div style={{ position: 'relative', zIndex: 1 }}>
+          <span style={{ color: 'var(--green)', textTransform: 'uppercase', letterSpacing: 2, fontSize: '0.8rem', fontWeight: 800, display: 'block', marginBottom: 8 }}>
+            Milestones of Care
+          </span>
+          <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: '2rem', color: 'var(--green)', margin: '0 0 24px', fontWeight: 700 }}>
+            The Moras Cafe in Numbers
+          </h2>
         
         <div className="grid-3" style={{ gap: '24px' }}>
           {[
@@ -143,6 +149,7 @@ function Reviews() {
           ))}
         </div>
       </div>
+    </div>
       
       <div className="reviews-grid">
         {reviewsData.map((review) => (

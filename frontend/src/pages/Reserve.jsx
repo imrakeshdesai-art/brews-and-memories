@@ -222,7 +222,10 @@ function Reserve() {
       </div>
 
         {/* Atmosphere Preview Card */}
-        <div className="reservation-atmosphere-card" style={{ background: '#FFFFFF', borderRadius: '24px', overflow: 'hidden', border: '1px solid var(--cream-dark)', boxShadow: '0 16px 40px rgba(15,61,62,0.08)' }}>
+        <div className="reservation-atmosphere-card" style={{ position: 'relative', background: '#FFFFFF', borderRadius: '24px', overflow: 'hidden', border: '1px solid var(--cream-dark)', boxShadow: '0 16px 40px rgba(15,61,62,0.08)' }}>
+          {/* Ambient Botanical Brand Watermark Motif */}
+          <div className="brand-watermark-light reserve-watermark" aria-hidden="true" />
+
           <div style={{ position: 'relative', height: 320, overflow: 'hidden' }}>
             <img 
               src="/images/instagram/hightide_sagar.jpeg" 
@@ -234,7 +237,7 @@ function Reserve() {
               <span>Garden Terrace Seating</span>
             </div>
           </div>
-          <div style={{ padding: '28px 24px' }}>
+          <div style={{ padding: '28px 24px', position: 'relative', zIndex: 1 }}>
             <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: '1.4rem', color: 'var(--green)', margin: '0 0 10px' }}>
               Your Table Awaits
             </h3>

@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { menuData, menuCategories } from '../data/menuData';
 import { reviewsData } from '../data/reviewsData';
@@ -147,8 +147,11 @@ function Menu({ addToCart, activeTable, endTableSession, cart = [], updateCartQt
   };
 
   return (
-    <section className="section" id="menu">
-      <div className="section-header">
+    <section className="section" id="menu" style={{ position: 'relative', overflow: 'hidden' }}>
+      {/* Ambient Botanical Brand Watermark Motif */}
+      <div className="brand-watermark-light menu-watermark-top" aria-hidden="true" />
+
+      <div className="section-header" style={{ position: 'relative', zIndex: 1 }}>
         <span className="section-label">Our Menu</span>
         <h1 className="section-title">Crafted with <em>Love</em></h1>
         <div className="section-divider" />

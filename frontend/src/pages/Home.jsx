@@ -431,6 +431,9 @@ function Home({ openReserve }) {
 
       {/* CHAPTER 5: VISIT US & RESERVATIONS */}
       <section id="location" className="section-editorial visit-section">
+        {/* Ambient Botanical Brand Watermark Motif */}
+        <div className="brand-watermark-light visit-watermark" aria-hidden="true" />
+
         <div className="visit-grid">
           <div className="visit-content">
             <span className="editorial-label">Come Say Hello</span>

@@ -2,7 +2,10 @@ import { Link } from 'react-router-dom';
 
 function Footer({ onReserveClick }) {
   return (
-    <footer className="site-footer" style={{ background: '#0B2827', borderTop: '2px solid rgba(250, 245, 239, 0.1)', marginTop: 40, color: '#FAF5EF' }}>
+    <footer className="site-footer" style={{ position: 'relative', overflow: 'hidden', background: '#0B2827', borderTop: '2px solid rgba(250, 245, 239, 0.1)', marginTop: 40, color: '#FAF5EF' }}>
+      {/* Ambient Botanical Brand Watermark Motif */}
+      <div className="brand-watermark-dark footer-watermark" aria-hidden="true" />
+
       <div className="footer-grid">
         {/* Brand Information */}
         <div className="footer-brand" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
