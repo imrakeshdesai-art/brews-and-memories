@@ -94,7 +94,7 @@ function NavBar({ cartCount, onCartClick, activeTable, onReserveClick, theme, to
           📸 Moments
         </NavLink>
         <a 
-          href="https://www.instagram.com/brews_and_memories_/" 
+          href="https://www.instagram.com/themorascafe/" 
           target="_blank" 
           rel="noreferrer" 
           className="nav-link" 

@@ -156,7 +156,7 @@ export default function Moments() {
             marginLeft: 'auto',
             marginRight: 'auto'
           }}>
-            Tag us <a href="https://www.instagram.com/brews_and_memories_/" target="_blank" rel="noreferrer" style={{ color: '#fbbf24', fontWeight: 700, textDecoration: 'none' }}>@brews_and_memories_</a> on Instagram to get featured on our board!
+            Tag us <a href="https://www.instagram.com/themorascafe/" target="_blank" rel="noreferrer" style={{ color: '#fbbf24', fontWeight: 700, textDecoration: 'none' }}>@themorascafe</a> on Instagram to get featured on our board!
           </p>
         </div>
       </section>
@@ -332,7 +332,7 @@ export default function Moments() {
             marginLeft: 'auto',
             marginRight: 'auto'
           }}>
-            Check out our official page <a href="https://www.instagram.com/brews_and_memories_/" target="_blank" rel="noreferrer" style={{ color: 'var(--green)', fontWeight: 800, textDecoration: 'none' }}>@brews_and_memories_</a> for daily specials, new menu launches, and beautiful stories!
+            Check out our official page <a href="https://www.instagram.com/themorascafe/" target="_blank" rel="noreferrer" style={{ color: 'var(--green)', fontWeight: 800, textDecoration: 'none' }}>@themorascafe</a> for daily specials, new menu launches, and beautiful stories!
           </p>
 
           <div style={{ 
@@ -365,7 +365,7 @@ export default function Moments() {
                     marginBottom: 16
                   }} />
                   <p style={{ margin: 0, fontWeight: 700, color: 'var(--green)', fontSize: '0.9rem' }}>Loading Official Instagram Feed...</p>
-                  <p style={{ margin: '4px 0 0', fontSize: '0.78rem', color: 'var(--text-light)' }}>Connected to @brews_and_memories_</p>
+                  <p style={{ margin: '4px 0 0', fontSize: '0.78rem', color: 'var(--text-light)' }}>Connected to @themorascafe</p>
                 </div>
               </div>
             )}

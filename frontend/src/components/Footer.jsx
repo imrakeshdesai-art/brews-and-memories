@@ -112,7 +112,7 @@ function Footer({ onReserveClick }) {
           </div>
           <div className="footer-action-pills" style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
             <a 
-              href="https://www.instagram.com/brews_and_memories_/" 
+              href="https://www.instagram.com/themorascafe/" 
               target="_blank" 
               rel="noreferrer" 
               className="footer-pill-btn" 
