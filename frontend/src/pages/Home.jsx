@@ -318,16 +318,19 @@ function Home({ openReserve }) {
           {/* Right Column: Genuine Atmosphere Showcase */}
           <div className="hero-editorial-visual">
             <div className="hero-visual-frame">
-              <img 
-                src="/images/instagram/hero_nightambience.webp" 
-                alt="The Moras Cafe cozy outdoor garden and fairy-lit dining atmosphere in Vijayapura"
-                className="hero-visual-img"
-                loading="eager"
-                decoding="async"
-              />
+              <picture>
+                <source srcSet="/images/instagram/hero_garden_evening.webp" type="image/webp" />
+                <img 
+                  src="/images/instagram/hightide_sagar.jpeg" 
+                  alt="The Moras Cafe authentic open-air garden terrace dining table under warm evening pendant lights in Vijayapura"
+                  className="hero-visual-img"
+                  loading="eager"
+                  decoding="async"
+                />
+              </picture>
               <div className="hero-visual-badge">
                 <span className="hero-badge-dot">●</span>
-                <span>Outdoor Garden &amp; Cozy Seating</span>
+                <span>Open-Air Garden Sanctuary</span>
               </div>
             </div>
           </div>
