@@ -83,9 +83,23 @@ function Footer({ onReserveClick }) {
           <span style={{ margin: '0 8px', opacity: 0.3 }}>|</span>
           <span>Crafted with passion by <strong style={{ color: 'var(--cream)', fontWeight: 800 }}>Rakesh Desai</strong> (<a href="https://github.com/imrakeshdesai-art" target="_blank" rel="noreferrer" style={{ color: '#fbbf24', textDecoration: 'none' }} onMouseEnter={(e) => e.currentTarget.style.textDecoration = 'underline'} onMouseLeave={(e) => e.currentTarget.style.textDecoration = 'none'}>GitHub</a> · <a href="https://www.instagram.com/imrakeshdesai/" target="_blank" rel="noreferrer" style={{ color: '#fbbf24', textDecoration: 'none' }} onMouseEnter={(e) => e.currentTarget.style.textDecoration = 'underline'} onMouseLeave={(e) => e.currentTarget.style.textDecoration = 'none'}>Instagram</a>)</span>
         </div>
-        <div className="social-links" style={{ display: 'flex', gap: 10 }}>
-          <a href="https://www.instagram.com/brews_and_memories_/" target="_blank" rel="noreferrer" className="social-btn" aria-label="Instagram page" style={{ fontSize: '0.85rem', fontWeight: 700, padding: '6px 12px', border: '1px solid rgba(245,230,200,0.2)', borderRadius: 20, color: 'var(--cream)', textDecoration: 'none' }}>Instagram</a>
-          <a href="tel:+919945446137" className="social-btn" aria-label="Call Phone" style={{ fontSize: '0.85rem', fontWeight: 700, padding: '6px 12px', border: '1px solid rgba(245,230,200,0.2)', borderRadius: 20, color: '#fbbf24', textDecoration: 'none' }}>Call Us</a>
+        <div className="footer-action-pills" style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+          <a 
+            href="https://www.instagram.com/brews_and_memories_/" 
+            target="_blank" 
+            rel="noreferrer" 
+            className="footer-pill-btn" 
+            aria-label="Instagram page"
+          >
+            Instagram ↗
+          </a>
+          <a 
+            href="tel:+919945446137" 
+            className="footer-pill-btn gold" 
+            aria-label="Call Phone"
+          >
+            📞 Call Us
+          </a>
         </div>
       </div>
     </footer>
