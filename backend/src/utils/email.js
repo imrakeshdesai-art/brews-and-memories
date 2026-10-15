@@ -161,8 +161,10 @@ function buildCustomerEmailHTML({ name, items, total, payment, address, orderId 
 
     <!-- Header -->
     <div style="background:linear-gradient(135deg,#0f3d3e 0%,#185c5d 100%);padding:40px 32px;text-align:center;border-bottom:3px solid #fbbf24">
-      <div style="margin-bottom:16px">
-        <img src="https://themorascafe.vercel.app/logo.jpg" alt="The Moras Cafe Logo" style="width:75px;height:75px;border-radius:50%;border:3px solid #fbbf24;box-shadow:0 4px 10px rgba(0,0,0,0.15);display:inline-block;object-fit:cover" />
+      <div style="margin-bottom:16px;text-align:center">
+        <div style="width:72px;height:72px;border-radius:50%;overflow:hidden;margin:0 auto;box-shadow:0 4px 14px rgba(0,0,0,0.35);background-color:#FAF5EF;border:2px solid #fbbf24;display:inline-block">
+          <img src="https://themorascafe.vercel.app/images/brand/secondary-badge-light.png" alt="The Moras Cafe Seal" width="72" height="72" style="width:100%;height:100%;object-fit:contain;display:block;border:0" />
+        </div>
       </div>
       <div style="color:#fbbf24;font-size:13px;letter-spacing:4px;text-transform:uppercase;font-weight:800;margin-bottom:8px">The Moras Cafe</div>
       <h1 style="color:#fff;margin:0;font-size:28px;font-weight:800;font-family:'Playfair Display', Georgia, serif;letter-spacing:-0.5px">Order Confirmed! &#x1F389;</h1>
@@ -329,8 +331,10 @@ function buildReservationEmailHTML({ name, date, time, guests, notes, amount = 1
 
     <!-- Header -->
     <div style="background:linear-gradient(135deg,#0f3d3e 0%,#185c5d 100%);padding:36px 28px;text-align:center;border-bottom:3px solid #fbbf24">
-      <div style="margin-bottom:14px">
-        <img src="https://themorascafe.vercel.app/logo.png" alt="The Moras Cafe Logo" style="width:72px;height:72px;border-radius:50%;border:3px solid #fbbf24;box-shadow:0 4px 10px rgba(0,0,0,0.15);display:inline-block;object-fit:cover" />
+      <div style="margin-bottom:14px;text-align:center">
+        <div style="width:72px;height:72px;border-radius:50%;overflow:hidden;margin:0 auto;box-shadow:0 4px 14px rgba(0,0,0,0.35);background-color:#FAF5EF;border:2px solid #fbbf24;display:inline-block">
+          <img src="https://themorascafe.vercel.app/images/brand/secondary-badge-light.png" alt="The Moras Cafe Seal" width="72" height="72" style="width:100%;height:100%;object-fit:contain;display:block;border:0" />
+        </div>
       </div>
       <div style="color:#fbbf24;font-size:12px;letter-spacing:4px;text-transform:uppercase;font-weight:800;margin-bottom:6px">The Moras Cafe</div>
       <h1 style="color:#fff;margin:0;font-size:26px;font-weight:800;font-family:'Playfair Display', Georgia, serif;letter-spacing:-0.5px">Table Reserved! &#x1F942;</h1>
