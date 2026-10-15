@@ -21,6 +21,7 @@ const allowedOrigins = [
   'http://localhost:4173',
   'http://localhost:3000',
   'https://brews-and-memories.vercel.app',
+  'https://themorascafe.vercel.app',
 ];
 
 app.use(cors({
