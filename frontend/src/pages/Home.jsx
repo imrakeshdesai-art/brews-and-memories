@@ -500,7 +500,8 @@ function Home({ openReserve }) {
               <img 
                 src="/images/instagram/manju_duddagi.jpeg" 
                 alt="Outdoor seating at The Moras Cafe next to the vibrant coffee and music mural"
-                loading="lazy"
+                loading="eager"
+                decoding="async"
               />
               <div className="gallery-card-badge">
                 <strong>The Mural Patio</strong>
@@ -515,7 +516,8 @@ function Home({ openReserve }) {
                 <img 
                   src="/images/instagram/mahantesh_loni.jpeg" 
                   alt="Twilight ambiance with glowing dreamcatchers and evening lawn at The Moras Cafe"
-                  loading="lazy"
+                  loading="eager"
+                  decoding="async"
                 />
                 <div className="gallery-card-badge">
                   <strong>Twilight Ambience</strong>
@@ -529,7 +531,8 @@ function Home({ openReserve }) {
                   <img 
                     src="/ambiance.webp" 
                     alt="Cozy indoor cafe counter and seating with curated books at The Moras Cafe"
-                    loading="lazy"
+                    loading="eager"
+                    decoding="async"
                   />
                   <div className="gallery-card-badge">
                     <strong>Indoor Sanctuary</strong>
@@ -540,7 +543,8 @@ function Home({ openReserve }) {
                   <img 
                     src="/Tandoori Paneer Pizza.png" 
                     alt="Freshly baked artisan pure vegetarian pizza at The Moras Cafe"
-                    loading="lazy"
+                    loading="eager"
+                    decoding="async"
                   />
                   <div className="gallery-card-badge">
                     <strong>Fresh Pure-Veg</strong>
@@ -565,11 +569,11 @@ function Home({ openReserve }) {
         <div className="brand-watermark-light" style={{ right: -80, bottom: -60, width: 460, height: 460 }} aria-hidden="true" />
 
         <div className="editorial-header-center" style={{ position: 'relative', zIndex: 1 }}>
-          <span className="editorial-label">Google 4.8★ Verified Reviews</span>
-          <h2 className="editorial-heading">Stories From <em>Our Patrons</em></h2>
+          <span className="editorial-label">Patron Reflections</span>
+          <h2 className="editorial-heading">Stories From <em>Our Guests</em></h2>
           <div className="editorial-divider center" />
           <p className="editorial-lead-center">
-            Over 520+ local patrons and travelers make The Moras Cafe their everyday sanctuary in Vijayapura.
+            Honest words from friends and neighbors who make The Moras Cafe their everyday sanctuary in Vijayapura.
           </p>
         </div>
 
@@ -596,7 +600,7 @@ function Home({ openReserve }) {
 
         <div className="home-reviews-cta-wrap" style={{ position: 'relative', zIndex: 1 }}>
           <Link to="/reviews" className="btn-editorial-primary">
-            Read All 520+ Patron Reviews →
+            Explore All Guest Reviews →
           </Link>
         </div>
       </section>
