@@ -82,7 +82,7 @@ function sendPostRequest(url, data, maxRedirects = 5) {
       }
     }
     
-    const payload = escapeUnicode(JSON.stringify(data));
+    const payload = JSON.stringify(data);
     doRequest(url, payload, maxRedirects);
   });
 }
@@ -150,8 +150,14 @@ function buildCustomerEmailHTML({ name, items, total, payment, address, orderId 
     }
   </style>
 </head>
-<body style="margin:0;padding:0;background:#f5f0e8;font-family:'Plus Jakarta Sans','Segoe UI',Arial,sans-serif">
-  <div class="email-wrapper" style="width:100%;max-width:560px;margin:32px auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.10);border:1px solid #e8e2d2">
+<body style="margin:0;padding:0;background-color:#f5f0e8;font-family:'Plus Jakarta Sans','Segoe UI',Arial,sans-serif;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%">
+  <center style="width:100%;background-color:#f5f0e8">
+    <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#f5f0e8" style="background-color:#f5f0e8;margin:0;padding:32px 0;width:100%">
+      <tr>
+        <td align="center" valign="top" style="text-align:center">
+          <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width:560px;width:100%;background-color:#ffffff;border-radius:16px;overflow:hidden;border:1px solid #e8e2d2;box-shadow:0 4px 24px rgba(0,0,0,0.08);margin:0 auto;text-align:left" align="center">
+            <tr>
+              <td>
 
     <!-- Header -->
     <div style="background:linear-gradient(135deg,#0f3d3e 0%,#185c5d 100%);padding:40px 32px;text-align:center;border-bottom:3px solid #fbbf24">
@@ -271,7 +277,13 @@ function buildCustomerEmailHTML({ name, items, total, payment, address, orderId 
         <a href="https://www.instagram.com/themorascafe/" style="color:#fbbf24;font-weight:700;text-decoration:none">@themorascafe</a>
       </p>
     </div>
-  </div>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </center>
 </body>
 </html>`;
 }
@@ -306,8 +318,14 @@ function buildReservationEmailHTML({ name, date, time, guests, notes, amount = 1
     }
   </style>
 </head>
-<body style="margin:0;padding:0;background:#f5f0e8;font-family:'Plus Jakarta Sans','Segoe UI',Arial,sans-serif">
-  <div class="email-wrapper" style="width:100%;max-width:560px;margin:32px auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.10);border:1px solid #e8e2d2">
+<body style="margin:0;padding:0;background-color:#f5f0e8;font-family:'Plus Jakarta Sans','Segoe UI',Arial,sans-serif;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%">
+  <center style="width:100%;background-color:#f5f0e8">
+    <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#f5f0e8" style="background-color:#f5f0e8;margin:0;padding:32px 0;width:100%">
+      <tr>
+        <td align="center" valign="top" style="text-align:center">
+          <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width:560px;width:100%;background-color:#ffffff;border-radius:16px;overflow:hidden;border:1px solid #e8e2d2;box-shadow:0 4px 24px rgba(0,0,0,0.08);margin:0 auto;text-align:left" align="center">
+            <tr>
+              <td>
 
     <!-- Header -->
     <div style="background:linear-gradient(135deg,#0f3d3e 0%,#185c5d 100%);padding:36px 28px;text-align:center;border-bottom:3px solid #fbbf24">
@@ -339,29 +357,29 @@ function buildReservationEmailHTML({ name, date, time, guests, notes, amount = 1
             <td style="padding-top:14px">
               <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse">
                 <tr>
-                  <td style="padding:7px 0;font-size:14px;color:#666">📅 Date</td>
+                  <td style="padding:7px 0;font-size:14px;color:#666">&#x1F4C5; Date</td>
                   <td style="padding:7px 0;text-align:right;font-size:15px;font-weight:700;color:#0f3d3e">${date}</td>
                 </tr>
                 <tr>
-                  <td style="padding:7px 0;font-size:14px;color:#666">⏰ Time Slot</td>
+                  <td style="padding:7px 0;font-size:14px;color:#666">&#x23F0; Time Slot</td>
                   <td style="padding:7px 0;text-align:right;font-size:15px;font-weight:700;color:#0f3d3e">${time}</td>
                 </tr>
                 <tr>
-                  <td style="padding:7px 0;font-size:14px;color:#666">👥 Party Size</td>
+                  <td style="padding:7px 0;font-size:14px;color:#666">&#x1F465; Party Size</td>
                   <td style="padding:7px 0;text-align:right;font-size:15px;font-weight:700;color:#0f3d3e">${guests} Guests</td>
                 </tr>
                 <tr>
-                  <td style="padding:7px 0;font-size:14px;color:#666">💳 Advance Paid</td>
+                  <td style="padding:7px 0;font-size:14px;color:#666">&#x1F4B3; Advance Paid</td>
                   <td style="padding:7px 0;text-align:right;font-size:15px;font-weight:800;color:#047857">&#x20B9;${amount} (UPI Paid &bull; Redeemable)</td>
                 </tr>
                 ${upiRef ? `
                 <tr>
-                  <td style="padding:7px 0;font-size:14px;color:#666">🔢 UPI Ref / UTR</td>
+                  <td style="padding:7px 0;font-size:14px;color:#666">&#x1F522; UPI Ref / UTR</td>
                   <td style="padding:7px 0;text-align:right;font-size:13px;font-weight:600;color:#555;font-family:monospace">${upiRef}</td>
                 </tr>` : ''}
                 ${notes ? `
                 <tr>
-                  <td style="padding:7px 0;font-size:14px;color:#666">📝 Special Notes</td>
+                  <td style="padding:7px 0;font-size:14px;color:#666">&#x1F4DD; Special Notes</td>
                   <td style="padding:7px 0;text-align:right;font-size:14px;font-weight:500;color:#333">${notes}</td>
                 </tr>` : ''}
               </table>
@@ -413,7 +431,13 @@ function buildReservationEmailHTML({ name, date, time, guests, notes, amount = 1
         <a href="https://www.instagram.com/themorascafe/" style="color:#fbbf24;font-weight:700;text-decoration:none">@themorascafe</a>
       </p>
     </div>
-  </div>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </center>
 </body>
 </html>`;
 }
@@ -485,7 +509,7 @@ async function sendOrderEmail(orderData) {
     console.log('[Email] No customer email provided for order — skipping.');
     return { success: false, error: 'No customer email provided' };
   }
-  const subject = `✅ Order Confirmed - The Moras Cafe (#${String(orderData.orderId).slice(-6)})`;
+  const subject = `Order Confirmed (#${String(orderData.orderId).slice(-6)}) - The Moras Cafe`;
   const htmlContent = buildCustomerEmailHTML(orderData);
   return dispatchEmail({ to: orderData.email, subject, htmlContent });
 }
@@ -497,7 +521,7 @@ async function sendReservationEmail(reservationData) {
     return { success: false, error: 'No customer email provided' };
   }
   const refCode = reservationData._id ? String(reservationData._id).slice(-6).toUpperCase() : 'CONFIRMED';
-  const subject = `🥂 Table Reservation Confirmed (#${refCode}) - The Moras Cafe`;
+  const subject = `Table Reservation Confirmed (#${refCode}) - The Moras Cafe`;
   const htmlContent = buildReservationEmailHTML(reservationData);
   return dispatchEmail({ to: reservationData.email, subject, htmlContent });
 }
