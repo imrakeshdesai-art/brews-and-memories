@@ -109,7 +109,7 @@ button {
 .site-nav {
   position: fixed;
   inset: 0 0 auto;
-  z-index: 1000;
+  z-index: 3950;
   width: 100%;
   padding: 0 4%;
   height: 84px;
@@ -136,6 +136,20 @@ button {
   height: 72px;
   box-shadow: 0 4px 24px rgba(15, 61, 62, 0.08);
   border-bottom: 1px solid rgba(15, 61, 62, 0.1);
+}
+
+/* 3. When Mobile Drawer is Open: Opaque Solid Ivory Canvas */
+.site-nav.menu-is-open {
+  background: rgba(250, 245, 239, 1) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border-bottom: 1px solid rgba(15, 61, 62, 0.1) !important;
+  z-index: 3950 !important;
+}
+
+body.theme-dark .site-nav.menu-is-open {
+  background: #140f0c !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
 }
 
 .nav-container-split {
@@ -224,8 +238,14 @@ button {
 
 @media (max-width: 980px) {
   .site-nav {
-    height: 70px;
-    padding: 0 5%;
+    height: 68px !important;
+    min-height: 68px !important;
+    padding: 0 5% !important;
+    z-index: 3950 !important;
+  }
+
+  .site-nav.scrolled {
+    height: 68px !important;
   }
 
   .nav-container-split {
@@ -250,7 +270,7 @@ button {
   }
 
   .mobile-menu {
-    top: 70px;
+    top: 68px;
   }
 }
 
@@ -453,7 +473,7 @@ button {
   gap: 4px;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  z-index: 999;
+  z-index: 3900;
   box-shadow: 0 16px 36px rgba(0, 0, 0, 0.4);
 }
 
@@ -1579,9 +1599,10 @@ button {
 
 @media (max-width: 640px) {
   .site-nav {
-    height: auto;
-    flex-wrap: wrap;
-    padding: 12px 4%;
+    height: 68px !important;
+    min-height: 68px !important;
+    padding: 0 4% !important;
+    z-index: 3950 !important;
   }
 
   /* Temporarily show nav-links on mobile for testing */
@@ -1985,9 +2006,10 @@ button {
     display: flex !important;
   }
   .site-nav {
-    min-height: 68px;
-    height: auto;
-    padding: 12px 5% !important;
+    height: 68px !important;
+    min-height: 68px !important;
+    padding: 0 5% !important;
+    z-index: 3950 !important;
   }
   .mobile-menu {
     display: none;

@@ -44,61 +44,64 @@ function NavBar({ cartCount, onCartClick, activeTable, onReserveClick, theme, to
   const isContactActive = location.pathname === '/' && location.hash === '#location';
 
   return (
-    <header className={`site-nav ${isScrolled ? 'scrolled' : 'transparent'} ${location.pathname === '/' ? 'is-home' : ''}`}>
-      <div className="nav-container-split">
-        {/* LEFT NAV WING: Home, About */}
-        <nav className="nav-wing nav-wing-left desktop-menu">
-          <NavLink to="/" end className={() => (isHomeActive ? 'nav-link active' : 'nav-link')}>
-            Home
-          </NavLink>
-          <NavLink to="/about" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
-            About
-          </NavLink>
-        </nav>
+    <>
+      <header className={`site-nav ${isScrolled ? 'scrolled' : 'transparent'} ${location.pathname === '/' ? 'is-home' : ''} ${menuOpen ? 'menu-is-open' : ''}`}>
+        <div className="nav-container-split">
+          {/* LEFT NAV WING: Home, About */}
+          <nav className="nav-wing nav-wing-left desktop-menu">
+            <NavLink to="/" end className={() => (isHomeActive ? 'nav-link active' : 'nav-link')}>
+              Home
+            </NavLink>
+            <NavLink to="/about" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
+              About
+            </NavLink>
+          </nav>
 
-        {/* CENTER LUXURY LOGO EMBLEM */}
-        <NavLink to="/" className="site-brand-center" aria-label="The Moras Cafe Home">
-          <img src="/logo.png" alt="The Moras Cafe" className="brand-center-img" />
-        </NavLink>
-
-        {/* RIGHT NAV WING: Menu, Contact */}
-        <nav className="nav-wing nav-wing-right desktop-menu">
-          <NavLink to="/menu" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
-            Menu
+          {/* CENTER LUXURY LOGO EMBLEM */}
+          <NavLink to="/" className="site-brand-center" aria-label="The Moras Cafe Home">
+            <img src="/logo.png" alt="The Moras Cafe" className="brand-center-img" />
           </NavLink>
-          <NavLink to="/#location" className={() => (isContactActive ? 'nav-link active' : 'nav-link')}>
-            Contact
-          </NavLink>
-        </nav>
 
-        {/* MOBILE / QUICK ACTIONS (RIGHT SIDE) */}
-        <div className="nav-actions-split">
-          {activeTable && (
-            <span className="table-badge-nav">
-              <span className="dot-live">●</span> {activeTable}
-            </span>
-          )}
-          {activeTable && (
-            <button className="btn-cart" type="button" onClick={onCartClick} aria-label="Open cart">
-              Cart
-              <span className="cart-badge" aria-live="polite">{cartCount}</span>
+          {/* RIGHT NAV WING: Menu, Contact */}
+          <nav className="nav-wing nav-wing-right desktop-menu">
+            <NavLink to="/menu" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
+              Menu
+            </NavLink>
+            <NavLink to="/#location" className={() => (isContactActive ? 'nav-link active' : 'nav-link')}>
+              Contact
+            </NavLink>
+          </nav>
+
+          {/* MOBILE / QUICK ACTIONS (RIGHT SIDE) */}
+          <div className="nav-actions-split">
+            {activeTable && (
+              <span className="table-badge-nav">
+                <span className="dot-live">●</span> {activeTable}
+              </span>
+            )}
+            {activeTable && (
+              <button className="btn-cart" type="button" onClick={onCartClick} aria-label="Open cart">
+                Cart
+                <span className="cart-badge" aria-live="polite">{cartCount}</span>
+              </button>
+            )}
+            <button
+              className={`mobile-toggle ${menuOpen ? 'open' : ''}`}
+              type="button"
+              aria-label={menuOpen ? "Close navigation menu" : "Open navigation menu"}
+              aria-expanded={menuOpen}
+              aria-controls="mobile-navigation-drawer"
+              onClick={() => setMenuOpen((current) => !current)}
+            >
+              <span />
+              <span />
+              <span />
             </button>
-          )}
-          <button
-            className={`mobile-toggle ${menuOpen ? 'open' : ''}`}
-            type="button"
-            aria-label={menuOpen ? "Close navigation menu" : "Open navigation menu"}
-            aria-expanded={menuOpen}
-            aria-controls="mobile-navigation-drawer"
-            onClick={() => setMenuOpen((current) => !current)}
-          >
-            <span />
-            <span />
-            <span />
-          </button>
+          </div>
         </div>
-      </div>
+      </header>
 
+      {/* MOBILE NAVIGATION DRAWER - Rendered outside <header> to avoid backdrop-filter containing block trap */}
       <nav 
         id="mobile-navigation-drawer"
         className={`mobile-menu ${menuOpen ? 'open' : ''}`} 
@@ -190,7 +193,7 @@ function NavBar({ cartCount, onCartClick, activeTable, onReserveClick, theme, to
           <span className="mobile-secondary-arrow" aria-hidden="true">→</span>
         </NavLink>
       </nav>
-    </header>
+    </>
   );
 }
 
