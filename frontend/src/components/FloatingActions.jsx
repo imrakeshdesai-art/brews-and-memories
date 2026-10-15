@@ -4,7 +4,7 @@ function FloatingActions() {
   const location = useLocation();
   const phone = '+919945446137';
   const whatsappUrl = 'https://wa.me/919945446137?text=Hello%20The%20Moras%20Cafe%2C%20I%20would%20like%20to%20inquire%20about%20a%20booking!';
-  const directionsUrl = 'https://www.google.com/maps/place/Brews+and+Memories+cafe/@16.8637369,75.7133426,17z/data=!3m1!4b1!4m6!3m5!1s0x3bc65571521cbf25:0x8c034c8193bdc099!8m2!3d16.8637369!4d75.7159176';
+  const directionsUrl = 'https://www.google.com/maps/search/?api=1&query=The+Moras+Cafe+B+M+Patil+Circle+Vijayapura';
 
   // Hide on interactive routes like /menu, /order, /admin, or print QR
   const hiddenPrefixes = ['/menu', '/order', '/admin'];

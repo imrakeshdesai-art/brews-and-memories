@@ -22,7 +22,7 @@ const FAVORITES_CONFIG = [
     name: 'Cold Coffee',
     badge: 'Customer Favorite',
     image: '/ColdCoffee.png',
-    desc: 'Chilled and refreshing specialty cold coffee - creamy, rich, and Vijayapura\'s most popular drink.'
+    desc: 'Slow-brewed and blended specialty cold coffee — chilled, rich, and finished with decadent chocolate swirl.'
   },
   {
     category: 'Pizza',
@@ -54,7 +54,7 @@ const FAVORITES_CONFIG = [
   },
   {
     category: 'Maggi',
-    name: 'B&M Signature Maggi',
+    name: 'The Moras Signature Maggi',
     badge: 'Best Seller',
     image: '/images/menu/items/B&M Signature Maggi.webp',
     desc: 'Our signature masala Maggi loaded with sweet corn, green peas, carrots, herbs and naturally melted cheese.'
@@ -250,33 +250,62 @@ function Home({ openReserve }) {
 
   return (
     <div className="home-page-editorial">
-      {/* CHAPTER 1: THE EDITORIAL HERO */}
+      {/* CHAPTER 1: THE EDITORIAL HERO (SPLIT ATMOSPHERE CANVAS) */}
       <section className="hero-editorial-section">
         <div className="hero-editorial-overlay" />
         <div className="hero-editorial-container">
-          <div className="hero-reference-pretitle">
-            Welcome to
+          {/* Left Column: Brand Story & CTAs */}
+          <div className="hero-editorial-copy">
+            <div className="hero-reference-pretitle">
+              Welcome to
+            </div>
+            <h1 className="hero-reference-brand-title">
+              The Moras Cafe
+            </h1>
+            <div className="hero-reference-tagline">
+              “The Place That Knows You”
+            </div>
+            <p className="hero-editorial-lead">
+              Where freshly ground espresso meets warm conversations, artisan pizzas, curated books, and slow, unforgettable moments in Vijayapura.
+            </p>
+            <div className="hero-editorial-actions">
+              <Link to="/menu" className="btn-editorial-primary">
+                Explore Our Menu
+              </Link>
+              <button type="button" onClick={openReserve} className="btn-editorial-outline">
+                Book a Table
+              </button>
+            </div>
+            <div className="hero-trust-strip">
+              <div className="hero-trust-item">
+                <span className="hero-trust-star">★</span> <strong>4.8</strong> Rating
+              </div>
+              <span className="hero-trust-dot">•</span>
+              <div className="hero-trust-item">
+                <strong>100%</strong> Pure Veg
+              </div>
+              <span className="hero-trust-dot">•</span>
+              <div className="hero-trust-item">
+                B.M. Patil Circle
+              </div>
+            </div>
           </div>
-          <h1 className="hero-reference-brand-title">
-            The Moras Cafe
-          </h1>
-          <div className="hero-reference-tagline">
-            “The Place That Knows You”
-          </div>
-          <p className="hero-editorial-lead">
-            Where freshly pulled espresso meets warm conversations, artisan pizzas, curated books, and slow, unforgettable moments.
-          </p>
-          <div className="hero-editorial-actions">
-            <Link to="/menu" className="btn-editorial-primary">
-              Explore Our Menu
-            </Link>
-            <button type="button" onClick={openReserve} className="btn-editorial-outline">
-              Book a Table
-            </button>
-          </div>
-          <div className="hero-scroll-cue" aria-hidden="true">
-            <span className="scroll-cue-line" />
-            <span className="scroll-cue-text">SCROLL TO EXPLORE</span>
+
+          {/* Right Column: Genuine Atmosphere Showcase */}
+          <div className="hero-editorial-visual">
+            <div className="hero-visual-frame">
+              <img 
+                src="/images/instagram/hero_nightambience.webp" 
+                alt="The Moras Cafe cozy outdoor garden and fairy-lit dining atmosphere in Vijayapura"
+                className="hero-visual-img"
+                loading="eager"
+                decoding="async"
+              />
+              <div className="hero-visual-badge">
+                <span className="hero-badge-dot">●</span>
+                <span>Outdoor Garden &amp; Cozy Seating</span>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -340,14 +369,14 @@ function Home({ openReserve }) {
                 <span className="pillar-num">01</span>
                 <div>
                   <h4>Artisan Coffee &amp; Shakes</h4>
-                  <p>Single-origin roasted espresso, hand-pulled crema, and thick handcrafted shakes.</p>
+                  <p>Freshly ground espresso brews, handcrafted frappes, and indulgent thick shakes.</p>
                 </div>
               </div>
               <div className="craft-pillar">
                 <span className="pillar-num">02</span>
                 <div>
                   <h4>Fresh Pure-Veg Dining</h4>
-                  <p>Wood-fired tandoori paneer pizzas, crunchy double-decker clubs, and sizzling desserts.</p>
+                  <p>Crispy stone-baked pizzas, loaded double-decker grilled sandwiches, and sizzling brownie treats.</p>
                 </div>
               </div>
               <div className="craft-pillar">
@@ -375,7 +404,7 @@ function Home({ openReserve }) {
           <h2 className="editorial-heading">The Signature <em>Four</em></h2>
           <div className="editorial-divider center" />
           <p className="editorial-lead-center">
-            Handpicked favorites loved by hundreds of Vijayapura coffee lovers and foodies.
+            Our most requested creations — freshly prepared every day for local coffee lovers and foodies.
           </p>
         </div>
 
@@ -384,7 +413,13 @@ function Home({ openReserve }) {
             <div key={dish.name} className="signature-card">
               <div className="signature-badge">{dish.badge}</div>
               <div className="signature-img-wrap">
-                <img src={dish.image} alt={dish.name} className="signature-img" loading="lazy" />
+                <img 
+                  src={dish.image} 
+                  alt={dish.name} 
+                  className="signature-img" 
+                  loading="eager" 
+                  decoding="async" 
+                />
               </div>
               <div className="signature-details">
                 <div className="signature-meta">
@@ -448,7 +483,7 @@ function Home({ openReserve }) {
           <div className="visit-map-frame">
             <iframe
               title="The Moras Cafe Location Map"
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3818.245682380596!2d75.71334267461603!3d16.863736917680278!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bc65571521cbf25%3A0x8c034c8193bdc099!2sBrews%20and%20Memories%20cafe!5e0!3m2!1sen!2sus!4v1780667200850!5m2!1sen!2sus"
+              src="https://maps.google.com/maps?q=The+Moras+Cafe,+B+M+Patil+Circle,+Vijayapura,+Karnataka+586102&t=&z=16&ie=UTF8&iwloc=&output=embed"
               width="100%"
               height="100%"
               style={{ border: 0, minHeight: 360 }}

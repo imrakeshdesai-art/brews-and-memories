@@ -574,7 +574,7 @@ export const menuData = {
       desc: 'Spicy Maggi noodles tossed with hot peri peri seasoning & capsicum'
     },
     {
-      name: 'B&M Signature Maggi',
+      name: 'The Moras Signature Maggi',
       price: 99,
       emoji: '🍜',
       image: '/images/menu/items/B&M Signature Maggi.webp',
