@@ -2754,7 +2754,7 @@ button {
   align-items: center;
   justify-content: center;
   background: #0F3D3E !important;
-  color: #FAF5EF !important;
+  color: #FFFFFF !important;
   padding: 14px 34px;
   border-radius: 8px;
   font-weight: 800;
@@ -2764,6 +2764,8 @@ button {
   border: 1px solid #0F3D3E;
   cursor: pointer;
   box-shadow: 0 4px 18px rgba(15, 61, 62, 0.24);
+  -webkit-print-color-adjust: exact !important;
+  print-color-adjust: exact !important;
   transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
 }
 
@@ -2788,6 +2790,8 @@ button {
   letter-spacing: 0.5px;
   cursor: pointer;
   text-decoration: none;
+  -webkit-print-color-adjust: exact !important;
+  print-color-adjust: exact !important;
   transition: all 0.2s ease;
 }
 
@@ -3070,12 +3074,13 @@ button {
   background: #FAF5EF;
   border-top: 1px solid var(--cream-dark);
   border-bottom: 1px solid var(--cream-dark);
+  padding: 52px 5% 42px;
 }
 
 .editorial-header-center {
   text-align: center;
   max-width: 700px;
-  margin: 0 auto 36px;
+  margin: 0 auto 32px;
 }
 
 .editorial-lead-center {
@@ -3197,7 +3202,7 @@ button {
 
 .signatures-cta-wrap {
   text-align: center;
-  margin-top: 48px;
+  margin-top: 28px;
 }
 
 @media (max-width: 1024px) {
@@ -3215,6 +3220,7 @@ button {
 /* CHAPTER 5: VISIT US */
 .visit-section {
   background: var(--cream-light);
+  padding: 52px 5%;
 }
 
 .visit-grid {
@@ -3279,6 +3285,52 @@ button {
     gap: 40px;
   }
 }
+
+/* ==================== PRINT & PDF EXPORT OPTIMIZATIONS ==================== */
+@media print {
+  *, *::before, *::after {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+
+  /* Prevent sticky navigation from repeating and covering content across page breaks in PDF captures */
+  .site-nav {
+    position: static !important;
+    height: auto !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    border: none !important;
+  }
+
+  .floating-actions-mobile {
+    display: none !important;
+  }
+
+  /* Prevent awkward page breaks in the middle of sections and cards */
+  .section-editorial,
+  .signatures-section,
+  .visit-section,
+  .craft-story-section,
+  .signature-card,
+  .hero-editorial-section {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  .site-footer {
+    background: #0B2827 !important;
+    color: #FAF5EF !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .btn-editorial-primary {
+    background: #0F3D3E !important;
+    color: #FFFFFF !important;
+  }
+}
+
 
 
 

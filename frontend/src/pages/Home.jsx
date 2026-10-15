@@ -331,16 +331,6 @@ function Home({ openReserve }) {
               </div>
             </div>
 
-            {/* Overlapping Floating Artisan Cutout Plate */}
-            <div className="craft-overlapping-dish" aria-hidden="true">
-              <img 
-                src="/Tandoori Paneer Pizza.png" 
-                alt="Artisan Stone-baked Pizza" 
-                className="craft-overlapping-dish-img"
-                loading="lazy"
-              />
-            </div>
-
             {/* Official Circular Stamp Seal */}
             <div className="craft-seal-badge" aria-hidden="true">
               <img 
