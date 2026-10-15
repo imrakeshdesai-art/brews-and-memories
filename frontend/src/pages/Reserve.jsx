@@ -228,8 +228,8 @@ function Reserve() {
 
           <div style={{ position: 'relative', height: 320, overflow: 'hidden' }}>
             <img 
-              src="/images/instagram/hightide_sagar.jpeg" 
-              alt="Outdoor garden table seating under warm evening lights at The Moras Cafe"
+              src="/images/instagram/garden_night_seating.webp" 
+              alt="Serene garden table seating under warm evening pendant lights at The Moras Cafe"
               style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
             />
             <div style={{ position: 'absolute', bottom: 14, left: 14, background: 'rgba(15, 61, 62, 0.92)', color: '#FAF5EF', padding: '6px 14px', borderRadius: 20, fontSize: '0.78rem', fontWeight: 700, backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', gap: 6 }}>

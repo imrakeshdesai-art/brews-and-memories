@@ -511,32 +511,32 @@ function Home({ openReserve }) {
 
             {/* Right Side Stack: 1 Top Banner + 2 Mini Cards */}
             <div className="gallery-mosaic-side">
-              {/* Top: Twilight Ambience */}
+              {/* Top: Night Garden Seating */}
               <div className="gallery-mosaic-top">
                 <img 
-                  src="/images/instagram/mahantesh_loni.jpeg" 
-                  alt="Twilight ambiance with glowing dreamcatchers and evening lawn at The Moras Cafe"
+                  src="/images/instagram/garden_night_seating.webp" 
+                  alt="Evening garden seating under glowing pendant lights at The Moras Cafe"
                   loading="eager"
                   decoding="async"
                 />
                 <div className="gallery-card-badge">
-                  <strong>Twilight Ambience</strong>
-                  <span>Golden hour glow, dreamcatchers, and soothing music</span>
+                  <strong>Night Garden Seating</strong>
+                  <span>Pendant bulbs, ambient greenery &amp; evening tranquility</span>
                 </div>
               </div>
 
-              {/* Bottom Split: Indoor Sanctuary & Artisan Table */}
+              {/* Bottom Split: Mindful Leisure & Artisan Table */}
               <div className="gallery-mosaic-bottom-split">
                 <div className="gallery-mosaic-mini">
                   <img 
-                    src="/ambiance.webp" 
-                    alt="Cozy indoor cafe counter and seating with curated books at The Moras Cafe"
+                    src="/images/instagram/cafe_chess_board.webp" 
+                    alt="Handcrafted wooden chess board and slow leisure moments at The Moras Cafe"
                     loading="eager"
                     decoding="async"
                   />
                   <div className="gallery-card-badge">
-                    <strong>Indoor Sanctuary</strong>
-                    <span>Books, games &amp; quiet corners</span>
+                    <strong>Mindful Leisure</strong>
+                    <span>Handcrafted chess &amp; quiet corners</span>
                   </div>
                 </div>
                 <div className="gallery-mosaic-mini">

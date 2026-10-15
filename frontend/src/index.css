@@ -3405,9 +3405,9 @@ button {
 .atmosphere-section {
   position: relative;
   overflow: hidden;
-  background-image: linear-gradient(rgba(11, 40, 39, 0.82), rgba(15, 61, 62, 0.90)), url('/images/instagram/hightide_sagar.jpeg');
+  background-image: linear-gradient(rgba(11, 40, 39, 0.82), rgba(15, 61, 62, 0.90)), url('/images/instagram/garden_night_seating.webp');
   background-size: cover;
-  background-position: center 35%;
+  background-position: center 40%;
   background-attachment: scroll;
   padding: 68px 5%;
   color: #FAF5EF;

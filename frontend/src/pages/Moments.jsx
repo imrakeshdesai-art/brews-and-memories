@@ -5,6 +5,27 @@ const instagramWidgetUrl = import.meta.env.VITE_INSTAGRAM_WIDGET_URL || 'b16a01b
 
 const INSTAGRAM_POSTS = [
   {
+    username: 'themorascafe',
+    collaborators: 'and guests',
+    initials: 'MC',
+    image: '/images/instagram/cafe_chess_board.webp',
+    caption: 'Checkmate & Cold Coffee ♟️☕\nSlow down, unplug from screens, and challenge your friends to classic chess. Curated tabletop games are always free for every table at The Moras Cafe.\n📍 B.M. Patil Circle, Vijayapura\n#themorascafe #chesscafe #slowliving #boardgames #vijayapura',
+    likes: 428,
+    comments: 39,
+    date: 'Jun 12, 2026',
+    postUrl: 'https://www.instagram.com/themorascafe/'
+  },
+  {
+    username: 'themorascafe',
+    initials: 'MC',
+    image: '/images/instagram/garden_night_seating.webp',
+    caption: 'Quiet corners, gentle night breezes, and warm pendant lights. ✨🌿\nYour little open-air sanctuary in Vijayapura is prepared for your evening conversations.\n📍 B.M. Patil Circle, Vijayapura\n#themorascafe #gardencafe #nightvibes #vijayapuracity',
+    likes: 485,
+    comments: 57,
+    date: 'Jun 10, 2026',
+    postUrl: 'https://www.instagram.com/themorascafe/'
+  },
+  {
     username: 'hightide.sagar',
     collaborators: 'and 2 others',
     initials: 'HS',

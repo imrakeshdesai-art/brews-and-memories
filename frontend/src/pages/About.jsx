@@ -53,7 +53,7 @@ function About() {
               background: '#0F3D3E'
             }}>
               <img 
-                src="/images/instagram/hightide_sagar.jpeg" 
+                src="/images/instagram/garden_night_seating.webp" 
                 alt="The Moras Cafe serene garden dining table under warm evening pendant lights" 
                 style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
               />
@@ -179,7 +179,7 @@ function About() {
             </p>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '28px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '24px' }}>
             {/* Photo 1: Garden Canopy */}
             <div style={{
               background: '#FFFFFF',
@@ -188,10 +188,10 @@ function About() {
               border: '1px solid var(--cream-dark)',
               boxShadow: '0 12px 32px rgba(15, 61, 62, 0.06)'
             }}>
-              <div style={{ height: '340px', overflow: 'hidden' }}>
+              <div style={{ height: '320px', overflow: 'hidden' }}>
                 <img 
-                  src="/images/instagram/hightide_sagar.jpeg" 
-                  alt="Outdoor garden terrace dining with fairy lights" 
+                  src="/images/instagram/garden_night_seating.webp" 
+                  alt="Outdoor garden terrace dining with warm pendant lights at The Moras Cafe" 
                   style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                   loading="lazy"
                 />
@@ -214,7 +214,7 @@ function About() {
               border: '1px solid var(--cream-dark)',
               boxShadow: '0 12px 32px rgba(15, 61, 62, 0.06)'
             }}>
-              <div style={{ height: '340px', overflow: 'hidden' }}>
+              <div style={{ height: '320px', overflow: 'hidden' }}>
                 <img 
                   src="/images/instagram/mahantesh_loni.jpeg" 
                   alt="Twilight ambience with glowing dreamcatcher" 
@@ -240,7 +240,7 @@ function About() {
               border: '1px solid var(--cream-dark)',
               boxShadow: '0 12px 32px rgba(15, 61, 62, 0.06)'
             }}>
-              <div style={{ height: '340px', overflow: 'hidden' }}>
+              <div style={{ height: '320px', overflow: 'hidden' }}>
                 <img 
                   src="/images/instagram/manju_duddagi.jpeg" 
                   alt="Artistic coffee mural corner in outdoor seating" 
@@ -254,6 +254,32 @@ function About() {
                 </h3>
                 <p style={{ color: 'var(--text-light)', fontSize: '0.9rem', lineHeight: 1.6, margin: 0 }}>
                   Vibrant custom wall art celebrating music, coffee culture, and unhurried good times with your squad.
+                </p>
+              </div>
+            </div>
+
+            {/* Photo 4: Mindful Leisure & Chess */}
+            <div style={{
+              background: '#FFFFFF',
+              borderRadius: '20px',
+              overflow: 'hidden',
+              border: '1px solid var(--cream-dark)',
+              boxShadow: '0 12px 32px rgba(15, 61, 62, 0.06)'
+            }}>
+              <div style={{ height: '320px', overflow: 'hidden' }}>
+                <img 
+                  src="/images/instagram/cafe_chess_board.webp" 
+                  alt="Classic wooden chess board and slow mindful leisure at The Moras Cafe" 
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  loading="lazy"
+                />
+              </div>
+              <div style={{ padding: '24px 20px' }}>
+                <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: '1.25rem', color: 'var(--green)', margin: '0 0 8px' }}>
+                  Mindful Leisure &amp; Chess
+                </h3>
+                <p style={{ color: 'var(--text-light)', fontSize: '0.9rem', lineHeight: 1.6, margin: 0 }}>
+                  Handcrafted wooden chessboards, tabletop games, and curated books designed to slow down time over hot coffee.
                 </p>
               </div>
             </div>
