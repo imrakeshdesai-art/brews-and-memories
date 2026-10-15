@@ -37,11 +37,11 @@ function parseUpiNotification(text = '', title = '') {
 }
 
 // ==================== 1. REAL-TIME PHONEPE / UPI WEBHOOK ====================
-// POST /api/reservations/webhook/upi
+// POST or GET /api/reservations/webhook/upi
 // Free Android webhook: forwards PhonePe notification in 1-2 seconds
-router.post('/webhook/upi', async (req, res) => {
+router.all('/webhook/upi', async (req, res) => {
   try {
-    const token = req.headers['x-webhook-token'] || req.query.token || req.body.token;
+    const token = req.headers['x-webhook-token'] || req.query.token || (req.body && req.body.token);
     const expectedToken = process.env.UPI_WEBHOOK_SECRET || 'moras_upi_secret_2026';
 
     if (token !== expectedToken) {
@@ -49,13 +49,35 @@ router.post('/webhook/upi', async (req, res) => {
       return res.status(401).json({ message: 'Unauthorized webhook request' });
     }
 
-    const { text, title, sender: explicitSender, utr: explicitUtr, amount: explicitAmount } = req.body;
+    let rawText = '';
+    let rawTitle = '';
+    let explicitAmount = null;
+    let explicitUtr = null;
+    let explicitSender = null;
 
-    if (!text && !explicitUtr && !explicitAmount) {
+    if (typeof req.body === 'object' && req.body !== null) {
+      rawText = req.body.text || req.body.message || req.body.body || '';
+      rawTitle = req.body.title || '';
+      explicitAmount = req.body.amount;
+      explicitUtr = req.body.utr;
+      explicitSender = req.body.sender;
+    } else if (typeof req.body === 'string') {
+      rawText = req.body;
+    }
+
+    // Fallback to query parameters (100% resilient if MacroDroid uses URL params)
+    if (!rawText && req.query.text) {
+      rawText = req.query.text;
+    }
+    if (!rawTitle && req.query.title) {
+      rawTitle = req.query.title;
+    }
+
+    if (!rawText && !explicitUtr && !explicitAmount) {
       return res.status(400).json({ message: 'Missing notification payload' });
     }
 
-    const parsed = parseUpiNotification(text || '', title || '');
+    const parsed = parseUpiNotification(rawText, rawTitle);
     const amount = explicitAmount ? Number(explicitAmount) : parsed.amount;
     const utr = explicitUtr || parsed.utr;
     const sender = explicitSender || parsed.sender;
@@ -64,8 +86,8 @@ router.post('/webhook/upi', async (req, res) => {
 
     // Log the incoming payment
     const paymentLog = await UpiPaymentLog.create({
-      rawTitle: title || '',
-      rawText: text || JSON.stringify(req.body),
+      rawTitle: rawTitle || '',
+      rawText: rawText || JSON.stringify(req.body || {}),
       amount,
       utr,
       sender,
@@ -83,9 +105,9 @@ router.post('/webhook/upi', async (req, res) => {
       });
     }
 
-    // Strategy B: Match pending reservation created in the last 25 minutes
+    // Strategy B: Match pending reservation created in the last 30 minutes
     if (!matchedReservation) {
-      const windowStart = new Date(Date.now() - 25 * 60 * 1000);
+      const windowStart = new Date(Date.now() - 30 * 60 * 1000);
 
       const pendingList = await Reservation.find({
         status: 'pending',
@@ -141,7 +163,6 @@ router.post('/webhook/upi', async (req, res) => {
       });
     }
 
-    // If no reservation pending yet (diner sent money right before submit), keep paymentLog ready for instant match on submit!
     return res.json({
       success: true,
       matched: false,
@@ -212,31 +233,9 @@ router.post('/', async (req, res) => {
     }
 
     const bookingAmount = Number(amount) || 10;
-    const cleanUpiRef = (upiRef || '').trim();
 
-    // Check if an unmatched payment arrived in the last 15 minutes!
-    const fifteenMinsAgo = new Date(Date.now() - 15 * 60 * 1000);
-    let matchedLog = null;
-
-    if (cleanUpiRef) {
-      matchedLog = await UpiPaymentLog.findOne({
-        utr: cleanUpiRef,
-        matched: false,
-        createdAt: { $gte: fifteenMinsAgo },
-      });
-    }
-
-    if (!matchedLog) {
-      matchedLog = await UpiPaymentLog.findOne({
-        matched: false,
-        amount: bookingAmount,
-        createdAt: { $gte: fifteenMinsAgo },
-      }).sort({ createdAt: -1 });
-    }
-
-    // If payment already arrived via PhonePe webhook, auto-confirm immediately!
-    const isAlreadyPaid = !!matchedLog;
-
+    // Step 1: New reservations ALWAYS start as pending payment!
+    // They NEVER auto-confirm until PhonePe pushes the notification.
     const newReservation = await Reservation.create({
       name: name.trim(),
       email: email.trim().toLowerCase(),
@@ -247,29 +246,13 @@ router.post('/', async (req, res) => {
       notes: (notes || '').trim(),
       amount: bookingAmount,
       paymentMethod: 'UPI',
-      paymentStatus: isAlreadyPaid ? 'verified' : (cleanUpiRef ? 'pending_verification' : 'pending_payment'),
-      upiRef: cleanUpiRef || (matchedLog ? matchedLog.utr : ''),
-      status: isAlreadyPaid ? 'confirmed' : 'pending',
-      confirmedAt: isAlreadyPaid ? new Date() : null,
+      paymentStatus: 'pending_payment',
+      upiRef: '',
+      status: 'pending',
+      confirmedAt: null,
       confirmationEmailSent: false,
       createdAt: new Date(),
     });
-
-    if (matchedLog) {
-      matchedLog.matchedReservationId = newReservation._id;
-      matchedLog.matched = true;
-      await matchedLog.save();
-
-      // Dispatch confirmation email
-      sendReservationEmail(newReservation)
-        .then(async (emailRes) => {
-          if (emailRes && emailRes.success) {
-            await Reservation.findByIdAndUpdate(newReservation._id, { confirmationEmailSent: true });
-            console.log(`[Reservation] Confirmation email sent to ${newReservation.email}`);
-          }
-        })
-        .catch(console.error);
-    }
 
     res.status(201).json(newReservation);
 
@@ -279,7 +262,7 @@ router.post('/', async (req, res) => {
   }
 });
 
-// ==================== 4. SUBMIT UTR FALLBACK (CUSTOMER ENTERED UTR OR CONFIRM BUTTON) ====================
+// ==================== 4. VERIFY PAYMENT / SUBMIT UTR ====================
 // PATCH /api/reservations/:id/submit-utr
 router.patch('/:id/submit-utr', async (req, res) => {
   try {
@@ -291,42 +274,60 @@ router.patch('/:id/submit-utr', async (req, res) => {
       return res.status(404).json({ message: 'Reservation not found' });
     }
 
+    // If webhook already confirmed in background, return immediately
+    if (reservation.status === 'confirmed') {
+      return res.json(reservation);
+    }
+
     const cleanUpiRef = (upiRef || '').trim();
     let matchedLog = null;
 
+    // 1. If diner typed a 12-digit UTR, check if that UTR was recorded in UpiPaymentLog
     if (cleanUpiRef && cleanUpiRef.length >= 6) {
-      // 1. Check if webhook already logged this exact UTR
       matchedLog = await UpiPaymentLog.findOne({
         utr: cleanUpiRef,
         matched: false,
       });
     }
 
-    // 2. If no match yet, check recent unmatched logs for this amount (last 15 mins)
+    // 2. If no UTR was typed, check if an unmatched payment arrived for this diner in the last 15 mins
     if (!matchedLog) {
       const fifteenMinsAgo = new Date(Date.now() - 15 * 60 * 1000);
-      matchedLog = await UpiPaymentLog.findOne({
-        amount: reservation.amount || 10,
+      const recentLogs = await UpiPaymentLog.find({
         matched: false,
+        amount: reservation.amount || 10,
         createdAt: { $gte: fifteenMinsAgo },
       }).sort({ createdAt: -1 });
+
+      if (recentLogs.length > 0) {
+        const dinerNameLower = reservation.name.toLowerCase();
+        const nameMatch = recentLogs.find((l) =>
+          l.sender && (l.sender.toLowerCase().includes(dinerNameLower) || dinerNameLower.includes(l.sender.toLowerCase()))
+        );
+        matchedLog = nameMatch || recentLogs[0];
+      }
     }
 
-    const isVerified = !!matchedLog;
+    // 🚨 STRICT PAYMENT ENFORCEMENT:
+    // If no real PhonePe payment was received, DO NOT CONFIRM!
+    if (!matchedLog) {
+      return res.status(400).json({
+        message: 'Payment of ₹10 not detected yet. If you already completed the transfer in PhonePe/GPay, please wait 5–10 seconds for the bank notification, or enter your 12-digit UTR reference.'
+      });
+    }
 
-    reservation.upiRef = cleanUpiRef || (matchedLog ? matchedLog.utr : 'CONFIRMED_BY_USER');
+    // Valid payment verified! Confirm the booking.
+    reservation.upiRef = cleanUpiRef || matchedLog.utr || 'VERIFIED_VIA_PHONEPE';
     reservation.status = 'confirmed';
-    reservation.paymentStatus = isVerified ? 'verified' : (cleanUpiRef ? 'paid' : 'pending_verification');
+    reservation.paymentStatus = 'verified';
     reservation.confirmedAt = new Date();
     await reservation.save();
 
-    if (matchedLog) {
-      matchedLog.matchedReservationId = reservation._id;
-      matchedLog.matched = true;
-      await matchedLog.save();
-    }
+    matchedLog.matchedReservationId = reservation._id;
+    matchedLog.matched = true;
+    await matchedLog.save();
 
-    // Dispatch email
+    // Dispatch confirmation email
     if (!reservation.confirmationEmailSent) {
       sendReservationEmail(reservation)
         .then(async (emailRes) => {

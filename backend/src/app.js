@@ -45,6 +45,8 @@ app.use(cors({
 
 // Body parser
 app.use(express.json({ limit: '10kb' }));
+app.use(express.urlencoded({ extended: true, limit: '10kb' }));
+app.use(express.text({ type: ['text/*', 'application/json-rpc', 'application/javascript'], limit: '10kb' }));
 app.use(morgan('dev'));
 
 // Rate limiting: Global
