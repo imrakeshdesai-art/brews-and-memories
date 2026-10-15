@@ -5,13 +5,13 @@ function Footer({ onReserveClick }) {
     <footer className="site-footer" style={{ borderTop: '2px solid var(--cream-dark)', marginTop: 40 }}>
       <div className="footer-grid">
         <div className="footer-brand" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <div style={{ width: 60, height: 44, borderRadius: 8, background: 'transparent', overflow: 'hidden' }}>
-              <img src="/logo.png" alt="The Moras Cafe Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+            <div style={{ width: 52, height: 52, borderRadius: '50%', overflow: 'hidden', flexShrink: 0, boxShadow: '0 4px 14px rgba(0,0,0,0.25)' }}>
+              <img src="/images/brand/secondary-badge-light.png" alt="The Moras Cafe Seal" style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block' }} />
             </div>
             <div>
               <div className="footer-brand-name">The Moras Cafe</div>
-              <small style={{ color: 'var(--cream-dark)', letterSpacing: 1, textTransform: 'uppercase', fontSize: '0.7rem' }}>Cafe · Coffee · More</small>
+              <small style={{ color: 'var(--cream-dark)', letterSpacing: 1, textTransform: 'uppercase', fontSize: '0.72rem' }}>Cafe · Coffee · More</small>
             </div>
           </div>
           <p style={{ color: 'rgba(245, 230, 200, 0.75)', fontSize: '0.88rem', lineHeight: 1.6, margin: 0 }}>
