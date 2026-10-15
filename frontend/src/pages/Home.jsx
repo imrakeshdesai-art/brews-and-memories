@@ -458,6 +458,13 @@ function Home({ openReserve }) {
 
       {/* CHAPTER 5: SIGNATURE CAFE ATMOSPHERE (WIDE PHOTOGRAPHIC FEATURE) */}
       <section className="atmosphere-section">
+        {/* Organic Handcrafted Wave Divider - Top Transition from Signatures */}
+        <div className="organic-divider-top" aria-hidden="true">
+          <svg viewBox="0 0 1440 60" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+            <path d="M0,0 L1440,0 L1440,16 C1220,44 1040,8 800,32 C560,56 320,12 0,38 Z" fill="#FAF5EF" />
+          </svg>
+        </div>
+
         <div className="atmosphere-container">
           <span className="atmosphere-kicker">A Tranquil Garden Setting</span>
           <h2 className="atmosphere-heading">
@@ -480,12 +487,19 @@ function Home({ openReserve }) {
             </a>
           </div>
         </div>
+
+        {/* Organic Handcrafted Wave Divider - Bottom Transition to Gallery */}
+        <div className="organic-divider-bottom" aria-hidden="true">
+          <svg viewBox="0 0 1440 60" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+            <path d="M0,60 L1440,60 L1440,36 C1200,12 1000,52 740,22 C480,-4 260,48 0,18 Z" fill="#FAF5EF" />
+          </svg>
+        </div>
       </section>
 
       {/* CHAPTER 6: EDITORIAL ASYMMETRICAL PHOTO GALLERY */}
       <section className="gallery-section">
-        {/* Ambient Botanical Brand Watermark Motif */}
-        <div className="brand-watermark-light" style={{ right: -60, top: -40, width: 440, height: 440 }} aria-hidden="true" />
+        {/* Ambient Botanical Brand Watermark Motif - Centered to prevent clipping */}
+        <div className="brand-watermark-light" style={{ right: -40, top: '50%', transform: 'translateY(-50%)', width: 420, height: 420 }} aria-hidden="true" />
 
         <div className="gallery-container">
           <div className="editorial-header-center">
@@ -568,8 +582,8 @@ function Home({ openReserve }) {
 
       {/* CHAPTER 7: GUEST LOVE & COMMUNITY REVIEWS */}
       <section className="home-reviews-section">
-        {/* Ambient Botanical Brand Watermark Motif */}
-        <div className="brand-watermark-light" style={{ right: -80, bottom: -60, width: 460, height: 460 }} aria-hidden="true" />
+        {/* Ambient Botanical Brand Watermark Motif - Centered to prevent clipping */}
+        <div className="brand-watermark-light" style={{ right: -40, top: '50%', transform: 'translateY(-50%)', width: 420, height: 420 }} aria-hidden="true" />
 
         <div className="editorial-header-center" style={{ position: 'relative', zIndex: 1 }}>
           <span className="editorial-label">Patron Reflections</span>
