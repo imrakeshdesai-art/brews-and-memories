@@ -8,28 +8,28 @@ import useSEO from '../hooks/useSEO';
 const INSTAGRAM_FEED = [
   {
     username: 'hightide.sagar',
-    image: '/images/instagram/hightide_sagar.jpeg',
+    image: '/images/instagram/hightide_sagar.webp',
     likes: 412,
     comments: 63,
     postUrl: 'https://www.instagram.com/reels/DQ05-lUDzup/'
   },
   {
     username: 'behind_ourlens_06',
-    image: '/images/instagram/behind_ourlens_06.jpeg',
+    image: '/images/instagram/behind_ourlens_06.webp',
     likes: 245,
     comments: 34,
     postUrl: 'https://www.instagram.com/reels/DXb9UdHj9jh/'
   },
   {
     username: 'manju.duddagi',
-    image: '/images/instagram/manju_duddagi.jpeg',
+    image: '/images/instagram/manju_duddagi.webp',
     likes: 356,
     comments: 52,
     postUrl: 'https://www.instagram.com/reels/DQssSCUibgo/'
   },
   {
     username: 'mahantesh_loni',
-    image: '/images/instagram/mahantesh_loni.jpeg',
+    image: '/images/instagram/mahantesh_loni.webp',
     likes: 294,
     comments: 21,
     postUrl: 'https://www.instagram.com/reel/DXlAGMzkX4g/?igsh=aXhkN3NlOWlxMXVo'

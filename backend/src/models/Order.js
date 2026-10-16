@@ -20,6 +20,13 @@ const orderSchema = new mongoose.Schema({
     enum: ['pending', 'preparing', 'completed'],
     default: 'pending',
   },
+  idempotencyKey: {
+    type: String,
+    unique: true,
+    sparse: true,
+    trim: true,
+    index: true,
+  },
   createdAt: { type: Date, default: Date.now },
 });
 

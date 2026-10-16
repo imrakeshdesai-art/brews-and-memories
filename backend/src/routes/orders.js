@@ -1,9 +1,11 @@
+const crypto = require('crypto');
 const auth = require('../middleware/auth');
 const checkRole = require('../middleware/checkRole');
 const express = require('express');
 const router = express.Router();
 
 const Order = require('../models/Order');
+const { calculateOrderTotal } = require('../data/menuCatalog');
 const { sendOrderWhatsApp } = require('../utils/whatsapp');
 const { sendOrderEmail } = require('../utils/email');
 
@@ -12,6 +14,7 @@ const { sendOrderEmail } = require('../utils/email');
 router.post('/', async (req, res) => {
   try {
     const { name, phone, email, address, items, total, payment } = req.body;
+    const rawIdempotencyKey = req.body.idempotencyKey || req.headers['x-idempotency-key'] || req.headers['idempotency-key'];
 
     // 🔒 Strong validation
     if (!name || !phone || !address) {
@@ -38,37 +41,62 @@ router.post('/', async (req, res) => {
       return res.status(400).json({ message: 'Invalid phone number' });
     }
 
-    if (!Array.isArray(items) || items.length === 0) {
-      return res.status(400).json({ message: 'No items in order' });
+    // ==================== SERVER-SIDE PRICE & ITEM VALIDATION ====================
+    // Never trust client prices or client totals!
+    const calculation = calculateOrderTotal(items);
+    if (!calculation.valid) {
+      return res.status(400).json({ message: calculation.reason });
     }
 
-    if (items.some(i => !i.name || Number(i.qty) < 1 || Number(i.price) < 0)) {
-      return res.status(400).json({ message: 'Invalid item data' });
+    // Check for client-side price tampering or stale cart mismatch
+    if (total !== undefined && total !== null && total !== '') {
+      const clientTotal = Number(total);
+      if (isNaN(clientTotal) || Math.abs(clientTotal - calculation.total) > 0.01) {
+        return res.status(400).json({
+          message: `Price discrepancy detected: client total ₹${clientTotal} does not match authoritative menu total ₹${calculation.total}. Please refresh your cart.`,
+        });
+      }
     }
 
-    if (Number(total) <= 0) {
-      return res.status(400).json({ message: 'Invalid total amount' });
+    // ==================== PERSISTENT IDEMPOTENCY ====================
+    let idempotencyKey = rawIdempotencyKey ? String(rawIdempotencyKey).trim() : null;
+    if (!idempotencyKey) {
+      // 15-second collision window to protect rapid double-clicks if client omitted key
+      const windowTime = Math.floor(Date.now() / 15000);
+      const fingerprint = `${normalizedPhone}|${address.trim()}|${JSON.stringify(calculation.items)}|${windowTime}`;
+      idempotencyKey = crypto.createHash('sha256').update(fingerprint).digest('hex');
     }
 
-    // Normalize items
-    const normalizedItems = items.map((item) => ({
-      name: String(item.name).trim(),
-      qty: Number(item.qty),
-      price: Number(item.price),
-      variant: item.variant || '',
-    }));
+    // Check if an order with this idempotency key was already created
+    const existingOrder = await Order.findOne({ idempotencyKey });
+    if (existingOrder) {
+      return res.status(200).set('X-Idempotent-Replay', 'true').json(existingOrder);
+    }
 
-    const newOrder = await Order.create({
-      name: name.trim(),
-      phone: normalizedPhone,
-      email: (email || '').trim().toLowerCase(),
-      address: address.trim(),
-      items: normalizedItems,
-      total: Number(total),
-      payment: payment || 'cod',
-      status: 'pending',
-      createdAt: new Date(),
-    });
+    let newOrder;
+    try {
+      newOrder = await Order.create({
+        name: name.trim(),
+        phone: normalizedPhone,
+        email: (email || '').trim().toLowerCase(),
+        address: address.trim(),
+        items: calculation.items,
+        total: calculation.total,
+        payment: payment || 'counter',
+        status: 'pending',
+        idempotencyKey,
+        createdAt: new Date(),
+      });
+    } catch (createErr) {
+      // Concurrency race: an identical order with this idempotency key was written concurrently
+      if (createErr.code === 11000 && (createErr.keyPattern?.idempotencyKey || String(createErr.message).includes('idempotencyKey'))) {
+        const racedOrder = await Order.findOne({ idempotencyKey });
+        if (racedOrder) {
+          return res.status(200).set('X-Idempotent-Replay', 'true').json(racedOrder);
+        }
+      }
+      throw createErr;
+    }
 
     res.status(201).json(newOrder);
 

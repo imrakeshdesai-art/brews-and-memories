@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import { useToast } from './ToastProvider';
@@ -11,6 +11,7 @@ function CheckoutModal({ open, cart, total, payment, setPayment, onClose, onClea
   const [isLoading, setIsLoading] = useState(false);
   const [orderSuccess, setOrderSuccess] = useState(null);
   const [countdown, setCountdown] = useState(5);
+  const idempotencyKeyRef = useRef(null);
   const toast = useToast();
   const navigate = useNavigate();
 
@@ -50,6 +51,11 @@ function CheckoutModal({ open, cart, total, payment, setPayment, onClose, onClea
       setPhone('');
       setEmail('');
       setIsLoading(false);
+      idempotencyKeyRef.current = null;
+    } else if (!idempotencyKeyRef.current) {
+      idempotencyKeyRef.current = typeof crypto !== 'undefined' && crypto.randomUUID
+        ? crypto.randomUUID()
+        : `moras_${Date.now()}_${Math.random().toString(36).substring(2, 10)}`;
     }
   }, [open]);
 
@@ -120,6 +126,12 @@ function CheckoutModal({ open, cart, total, payment, setPayment, onClose, onClea
 
     setIsLoading(true);
     try {
+      if (!idempotencyKeyRef.current) {
+        idempotencyKeyRef.current = typeof crypto !== 'undefined' && crypto.randomUUID
+          ? crypto.randomUUID()
+          : `moras_${Date.now()}_${Math.random().toString(36).substring(2, 10)}`;
+      }
+
       const response = await api.post('/orders', {
         name: name.trim(),
         phone: cleanedPhone,
@@ -128,10 +140,12 @@ function CheckoutModal({ open, cart, total, payment, setPayment, onClose, onClea
         items: cart,
         total,
         payment,
+        idempotencyKey: idempotencyKeyRef.current,
       });
       const order = response.data;
       setOrderSuccess(order);
       onClearCart();
+      idempotencyKeyRef.current = null;
       toast(`Order ${order._id} created successfully`);
     } catch (error) {
       const message = error.response?.data?.message || 'Failed to place order';

@@ -18,6 +18,10 @@ async function startServer() {
   }
   await connectDB(process.env.MONGODB_URI);
 
+  // Synchronize database indexes (creates sparse unique idempotencyKey index safely)
+  const Order = require('./models/Order');
+  await Order.init();
+
   // Seed the admin user
   await seedAdmin();
 

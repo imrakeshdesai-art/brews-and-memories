@@ -216,7 +216,7 @@ function About() {
             }}>
               <div style={{ height: '320px', overflow: 'hidden' }}>
                 <img 
-                  src="/images/instagram/mahantesh_loni.jpeg" 
+                  src="/images/instagram/mahantesh_loni.webp" 
                   alt="Twilight ambience with glowing dreamcatcher" 
                   style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                   loading="lazy"
@@ -242,7 +242,7 @@ function About() {
             }}>
               <div style={{ height: '320px', overflow: 'hidden' }}>
                 <img 
-                  src="/images/instagram/manju_duddagi.jpeg" 
+                  src="/images/instagram/manju_duddagi.webp" 
                   alt="Artistic coffee mural corner in outdoor seating" 
                   style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                   loading="lazy"
