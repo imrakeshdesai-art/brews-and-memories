@@ -22,21 +22,22 @@ const allowedOrigins = [
   'http://localhost:3000',
   'https://brews-and-memories.vercel.app',
   'https://themorascafe.vercel.app',
+  'https://brews-and-memories.pages.dev',
+  'https://themorascafe.com',
+  'https://www.themorascafe.com',
 ];
 
 app.use(cors({
   origin: function (origin, callback) {
 
-    // allow requests with no origin
+    // allow requests with no origin (e.g. mobile apps, server-to-server, curl)
     if (!origin) return callback(null, true);
 
-    // allow vercel & cloudflare pages preview deployments and production origins
+    // strictly allow approved production domains, Vercel previews, and project Cloudflare Pages previews
     if (
       allowedOrigins.includes(origin) ||
-      origin.endsWith('.vercel.app') ||
-      origin.endsWith('.pages.dev') ||
-      origin === 'https://themorascafe.com' ||
-      origin === 'https://www.themorascafe.com'
+      origin.endsWith('.brews-and-memories.pages.dev') ||
+      origin.endsWith('.vercel.app')
     ) {
       return callback(null, true);
     }
