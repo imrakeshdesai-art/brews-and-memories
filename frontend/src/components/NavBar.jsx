@@ -62,10 +62,13 @@ function NavBar({ cartCount, onCartClick, activeTable, onReserveClick, theme, to
             <img src="/logo.png" alt="The Moras Cafe" className="brand-center-img" />
           </NavLink>
 
-          {/* RIGHT NAV WING: Menu, Contact */}
+          {/* RIGHT NAV WING: Menu, Wallpapers, Contact */}
           <nav className="nav-wing nav-wing-right desktop-menu">
             <NavLink to="/menu" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
               Menu
+            </NavLink>
+            <NavLink to="/wallpapers" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
+              Wallpapers
             </NavLink>
             <NavLink to="/#location" className={() => (isContactActive ? 'nav-link active' : 'nav-link')}>
               Contact
@@ -143,6 +146,13 @@ function NavBar({ cartCount, onCartClick, activeTable, onReserveClick, theme, to
           onClick={() => setMenuOpen(false)}
         >
           Moments
+        </NavLink>
+        <NavLink 
+          to="/wallpapers" 
+          className={({ isActive }) => `mobile-nav-link ${isActive ? 'active' : ''}`} 
+          onClick={() => setMenuOpen(false)}
+        >
+          Brand Wallpapers
         </NavLink>
         <a 
           href="https://www.instagram.com/themorascafe/" 

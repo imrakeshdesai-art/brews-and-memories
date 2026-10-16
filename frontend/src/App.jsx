@@ -18,6 +18,7 @@ const Privacy = lazy(() => import('./pages/Privacy'));
 const Terms = lazy(() => import('./pages/Terms'));
 const PrintQR = lazy(() => import('./pages/PrintQR'));
 const Moments = lazy(() => import('./pages/Moments'));
+const Wallpapers = lazy(() => import('./pages/Wallpapers'));
 
 import Footer from './components/Footer';
 import FloatingActions from './components/FloatingActions';
@@ -255,6 +256,7 @@ function App() {
                 <Route path="/privacy" element={<Privacy />} />
                 <Route path="/terms" element={<Terms />} />
                 <Route path="/moments" element={<Moments />} />
+                <Route path="/wallpapers" element={<Wallpapers />} />
                 <Route path="*" element={<Home {...pageProps} />} />
               </Routes>
             </div>

@@ -1,0 +1,3 @@
+# Exclude large wallpaper originals from Vercel deployment storage to prevent 10 GB quota exhaustion.
+# Originals are hosted directly on Cloudflare Pages (unlimited storage) and proxied via vercel.json rewrite.
+frontend/public/wallpapers/originals

@@ -55,6 +55,11 @@ function Footer({ onReserveClick }) {
                 </Link>
               </li>
               <li>
+                <Link to="/wallpapers" style={{ color: '#E6DFD5', textDecoration: 'none', fontSize: '0.92rem', letterSpacing: '0.3px', transition: 'color 0.2s' }}>
+                  Brand Wallpapers (HD)
+                </Link>
+              </li>
+              <li>
                 <Link to="/#location" style={{ color: '#E6DFD5', textDecoration: 'none', fontSize: '0.92rem', letterSpacing: '0.3px', transition: 'color 0.2s' }}>
                   Find Location
                 </Link>

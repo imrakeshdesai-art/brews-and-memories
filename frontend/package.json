@@ -5,6 +5,9 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "postbuild": "node scripts/clean-vercel-dist.mjs",
+    "build:cloudflare": "vite build",
+    "build:vercel": "vite build --mode vercel && node scripts/clean-vercel-dist.mjs --force",
     "preview": "vite preview",
     "serve": "npm run build && node server.js",
     "start": "node server.js"
