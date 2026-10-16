@@ -5,49 +5,49 @@ export const menuData = {
       price: 30,
       emoji: '🍵',
       desc: 'Warm and soothing masala tea',
-      image: '/images/menu/items/Masala Tea.png'
+      image: '/images/menu/items/Masala Tea.webp'
     },
     {
       name: 'Boost',
       price: 30,
       emoji: '☕',
       desc: 'Warm and soothing boost',
-      image: '/images/menu/items/Boost.png'
+      image: '/images/menu/items/Boost.webp'
     },
     {
       name: 'Bournvita',
       price: 30,
       emoji: '☕',
       desc: 'Warm and soothing bournvita',
-      image: '/images/menu/items/Bournvita.png'
+      image: '/images/menu/items/Bournvita.webp'
     },
     {
       name: 'Ginger Tea',
       price: 40,
       emoji: '🍵',
       desc: 'Warm and soothing ginger tea',
-      image: '/images/menu/items/Ginger Tea.png'
+      image: '/images/menu/items/Ginger Tea.webp'
     },
     {
       name: 'Ginger Lemon Tea',
       price: 50,
       emoji: '🍵',
       desc: 'Warm and soothing ginger lemon tea',
-      image: '/images/menu/items/Ginger lemon tea.png'
+      image: '/images/menu/items/Ginger lemon tea.webp'
     },
     {
       name: 'Green Tea',
       price: 40,
       emoji: '🍵',
       desc: 'Warm and soothing green tea',
-      image: '/images/menu/items/Green Tea.png'
+      image: '/images/menu/items/Green Tea.webp'
     },
     {
       name: 'Normal Hot Coffee',
       price: 30,
       emoji: '☕',
       desc: 'Warm and soothing normal hot coffee',
-      image: '/images/menu/items/Normal Hot Coffee.png'
+      image: '/images/menu/items/Normal Hot Coffee.webp'
     },
   ],
   'Cold Beverages': [
@@ -63,49 +63,49 @@ export const menuData = {
       price: 109,
       emoji: '🥤',
       desc: 'Chilled and refreshing chocolate cold coffee',
-      image: '/images/menu/items/Chocolate Cold Coffee.png'
+      image: '/images/menu/items/Chocolate Cold Coffee.webp'
     },
     {
       name: 'Hazelnut Cold Coffee',
       price: 109,
       emoji: '🥤',
       desc: 'Chilled and refreshing hazelnut cold coffee',
-      image: '/images/menu/items/Hazelnut Cold Coffee.png'
+      image: '/images/menu/items/Hazelnut Cold Coffee.webp'
     },
     {
       name: 'Cold Coffee With Vanilla Ice Cream',
       price: 139,
       emoji: '🥤',
       desc: 'Chilled and refreshing cold coffee with vanilla ice cream',
-      image: '/images/menu/items/Cold Coffee With Vanilla Ice Cream.png'
+      image: '/images/menu/items/Cold Coffee With Vanilla Ice Cream.webp'
     },
     {
       name: 'Mint Mojito',
       price: 89,
       emoji: '🍹',
       desc: 'Chilled and refreshing mint mojito',
-      image: '/images/menu/items/Mint Mojito.png'
+      image: '/images/menu/items/Mint Mojito.webp'
     },
     {
       name: 'Blue Lagoon',
       price: 99,
       emoji: '🍹',
       desc: 'Chilled and refreshing blue lagoon',
-      image: '/images/menu/items/Blue Lagoon.png'
+      image: '/images/menu/items/Blue Lagoon.webp'
     },
     {
       name: 'Lemon Soda',
       price: 69,
       emoji: '🍹',
       desc: 'Chilled and refreshing lemon soda',
-      image: '/images/menu/items/Lemon Soda.png'
+      image: '/images/menu/items/Lemon Soda.webp'
     },
     {
       name: 'Butterscotch Mojito',
       price: 99,
       emoji: '🍹',
       desc: 'Chilled and refreshing butterscotch mojito',
-      image: '/images/menu/items/Butterscotch Mojito.png'
+      image: '/images/menu/items/Butterscotch Mojito.webp'
     },
   ],
   'Milk Shakes': [
@@ -114,49 +114,49 @@ export const menuData = {
       price: 109,
       emoji: '🥛',
       desc: 'Creamy and thick vanilla milk shake',
-      image: '/images/menu/items/Vanilla Milk Shake.png'
+      image: '/images/menu/items/Vanilla Milk Shake.webp'
     },
     {
       name: 'Strawberry Milkshake',
       price: 119,
       emoji: '🍓',
       desc: 'Creamy and thick strawberry milkshake',
-      image: '/images/menu/items/Strawberry Milkshake.png'
+      image: '/images/menu/items/Strawberry Milkshake.webp'
     },
     {
       name: 'Butterscotch Milkshake',
       price: 119,
       emoji: '🥛',
       desc: 'Creamy and thick butterscotch milkshake',
-      image: '/images/menu/items/Butterscotch Milkshake.png'
+      image: '/images/menu/items/Butterscotch Milkshake.webp'
     },
     {
       name: 'Mango Milk Shake',
       price: 119,
       emoji: '🥭',
       desc: 'Creamy and thick mango milk shake',
-      image: '/images/menu/items/Mango Milk Shake.png'
+      image: '/images/menu/items/Mango Milk Shake.webp'
     },
     {
       name: 'Chocolate Milk Shake',
       price: 139,
       emoji: '🍫',
       desc: 'Creamy and thick chocolate milk shake',
-      image: '/images/menu/items/Chocolate Milk Shake.png'
+      image: '/images/menu/items/Chocolate Milk Shake.webp'
     },
     {
       name: 'Orange Milk Shake',
       price: 119,
       emoji: '🍊',
       desc: 'Creamy and thick orange milk shake',
-      image: '/images/menu/items/Orange Milk Shake.png'
+      image: '/images/menu/items/Orange Milk Shake.webp'
     },
     {
       name: 'Banana Milk Shake',
       price: 119,
       emoji: '🍌',
       desc: 'Creamy and thick banana milk shake',
-      image: '/images/menu/items/Banana Milk Shake.png'
+      image: '/images/menu/items/Banana Milk Shake.webp'
     },
     {
       name: 'Oreo Milk Shake',
@@ -164,14 +164,14 @@ export const menuData = {
       emoji: '🍪',
       desc: 'Creamy and thick oreo milk shake',
       badge: 'CUSTOMER FAVORITE',
-      image: '/images/menu/items/Oreo Milk Shake.png'
+      image: '/images/menu/items/Oreo Milk Shake.webp'
     },
     {
       name: 'Kit Kat Milk Shake',
       price: 119,
       emoji: '🥛',
       desc: 'Creamy and thick kit kat milk shake',
-      image: '/images/menu/items/Kit Kat Milk Shake.png'
+      image: '/images/menu/items/Kit Kat Milk Shake.webp'
     },
   ],
   'Pizza': [
@@ -318,49 +318,49 @@ export const menuData = {
       emoji: '🍔',
       desc: 'Crispy patty in soft buns with fresh veggies',
       badge: 'CUSTOMER FAVORITE',
-      image: '/images/menu/items/Veg Burger.png'
+      image: '/images/menu/items/Veg Burger.webp'
     },
     {
       name: 'Paneer Burger',
       price: 139,
       emoji: '🍔',
       desc: 'Crispy patty in soft buns with fresh veggies',
-      image: '/images/menu/items/Paneer Burger.png'
+      image: '/images/menu/items/Paneer Burger.webp'
     },
     {
       name: 'Tandoori Paneer Burger',
       price: 109,
       emoji: '🍔',
       desc: 'Crispy patty in soft buns with fresh veggies',
-      image: '/images/menu/items/Tandoori Paneer Burger.png'
+      image: '/images/menu/items/Tandoori Paneer Burger.webp'
     },
     {
       name: 'Corn Burger',
       price: 109,
       emoji: '🌽',
       desc: 'Crispy patty in soft buns with fresh veggies',
-      image: '/images/menu/items/Corn Burger.png'
+      image: '/images/menu/items/Corn Burger.webp'
     },
     {
       name: 'Veg Cheese Burger',
       price: 109,
       emoji: '🧀',
       desc: 'Crispy patty in soft buns with fresh veggies',
-      image: '/images/menu/items/Veg Cheese Burger.png'
+      image: '/images/menu/items/Veg Cheese Burger.webp'
     },
     {
       name: 'Veg Classic Burger',
       price: 109,
       emoji: '🍔',
       desc: 'Crispy patty in soft buns with fresh veggies',
-      image: '/images/menu/items/Veg Classic Burger.png'
+      image: '/images/menu/items/Veg Classic Burger.webp'
     },
     {
       name: 'BBQ Paneer Burger',
       price: 119,
       emoji: '🍔',
       desc: 'Crispy patty in soft buns with fresh veggies',
-      image: '/images/menu/items/BBQ Paneer Burger.png'
+      image: '/images/menu/items/BBQ Paneer Burger.webp'
     },
   ],
   'Sandwiches': [
@@ -369,7 +369,7 @@ export const menuData = {
       price: 99,
       emoji: '🥪',
       desc: 'Freshly toasted sandwich with butter and toppings',
-      image: '/images/menu/items/Veg Sandwich.png'
+      image: '/images/menu/items/Veg Sandwich.webp'
     },
     {
       name: 'Veg Club Sandwich',
@@ -383,63 +383,63 @@ export const menuData = {
       price: 109,
       emoji: '🧀',
       desc: 'Freshly toasted sandwich with butter and toppings',
-      image: '/images/menu/items/Veg Cheese Sandwich.png'
+      image: '/images/menu/items/Veg Cheese Sandwich.webp'
     },
     {
       name: 'Peri Peri Paneer Sandwich',
       price: 129,
       emoji: '🌶️',
       desc: 'Freshly toasted sandwich with butter and toppings',
-      image: '/images/menu/items/Peri Peri Paneer Sandwich.png'
+      image: '/images/menu/items/Peri Peri Paneer Sandwich.webp'
     },
     {
       name: 'Tandoori Paneer Sandwich',
       price: 119,
       emoji: '🥪',
       desc: 'Freshly toasted sandwich with butter and toppings',
-      image: '/images/menu/items/Tandoori Paneer Sandwich.png'
+      image: '/images/menu/items/Tandoori Paneer Sandwich.webp'
     },
     {
       name: 'Burnt Garlic Mushroom Sandwich',
       price: 149,
       emoji: '🧄',
       desc: 'Freshly toasted sandwich with butter and toppings',
-      image: '/images/menu/items/Burnt Garlic Mushroom Sandwich.png'
+      image: '/images/menu/items/Burnt Garlic Mushroom Sandwich.webp'
     },
     {
       name: 'Masala Corn Sandwich',
       price: 129,
       emoji: '🌽',
       desc: 'Freshly toasted sandwich with butter and toppings',
-      image: '/images/menu/items/Masala Corn Sandwich.png'
+      image: '/images/menu/items/Masala Corn Sandwich.webp'
     },
     {
       name: 'Pizza Sandwich',
       price: 199,
       emoji: '🥪',
       desc: 'Freshly toasted sandwich with butter and toppings',
-      image: '/images/menu/items/Pizza Sandwich.png'
+      image: '/images/menu/items/Pizza Sandwich.webp'
     },
     {
       name: 'Surender Sandwich',
       price: 99,
       emoji: '🥪',
       desc: 'Freshly toasted sandwich with butter and toppings',
-      image: '/images/menu/items/Surender Sandwich.png'
+      image: '/images/menu/items/Surender Sandwich.webp'
     },
     {
       name: 'BBQ Paneer Sandwich',
       price: 109,
       emoji: '🥪',
       desc: 'Freshly toasted sandwich with butter and toppings',
-      image: '/images/menu/items/BBQ Paneer Sandwich.png'
+      image: '/images/menu/items/BBQ Paneer Sandwich.webp'
     },
     {
       name: 'Chocolate Sandwich',
       price: 99,
       emoji: '🍫',
       desc: 'Freshly toasted sandwich with butter and toppings',
-      image: '/images/menu/items/Chocolate Sandwich.png'
+      image: '/images/menu/items/Chocolate Sandwich.webp'
     },
   ],
   'Fries': [
@@ -447,14 +447,14 @@ export const menuData = {
       name: 'Salted Fries',
       price: 109,
       emoji: '🍟',
-      image: '/images/menu/items/Salted Fries.png',
+      image: '/images/menu/items/Salted Fries.webp',
       desc: 'Crispy golden French fries tossed with a pinch of sea salt'
     },
     {
       name: 'Peri Peri Fries',
       price: 119,
       emoji: '🌶️',
-      image: '/images/menu/items/Peri Peri Fries.png',
+      image: '/images/menu/items/Peri Peri Fries.webp',
       desc: 'Crispy French fries tossed in a spicy, flavorful peri peri seasoning',
       badge: 'BEST SELLER'
     },
@@ -498,7 +498,7 @@ export const menuData = {
       price: 129,
       emoji: '🥔',
       desc: 'Crispy deep-fried potato fingers tossed in a sweet, spicy, and tangy honey chilli sauce.',
-      image: '/images/menu/items/Honey Chilli Potato.png'
+      image: '/images/menu/items/Honey Chilli Potato.webp'
     },
   ],
   'Rolls': [
@@ -506,28 +506,28 @@ export const menuData = {
       name: 'Paneer Tikka Roll',
       price: 109,
       emoji: '🌯',
-      image: '/images/menu/items/Paneer Tikka Roll.png',
+      image: '/images/menu/items/Paneer Tikka Roll.webp',
       desc: 'Grilled paneer tikka with onions & mint mayo'
     },
     {
       name: 'Paneer Chilli Roll',
       price: 109,
       emoji: '🌶️',
-      image: '/images/menu/items/Paneer Chilli Roll.png',
+      image: '/images/menu/items/Paneer Chilli Roll.webp',
       desc: 'Spicy chilli paneer with capsicum & onions'
     },
     {
       name: 'Mexican Roll',
       price: 109,
       emoji: '🌯',
-      image: '/images/menu/items/Mexican Roll.png',
+      image: '/images/menu/items/Mexican Roll.webp',
       desc: 'Mexican-style vegetables, corn & cheese'
     },
     {
       name: 'Veg Roll',
       price: 109,
       emoji: '🌯',
-      image: '/images/menu/items/Veg Roll.png',
+      image: '/images/menu/items/Veg Roll.webp',
       desc: 'Fresh mixed vegetables with house sauce'
     },
   ],
@@ -587,28 +587,28 @@ export const menuData = {
       name: 'Cheese Garlic Bread',
       price: 109,
       emoji: '🧀',
-      image: '/images/menu/items/Cheese garlic bread.png',
+      image: '/images/menu/items/Cheese garlic bread.webp',
       desc: 'Baked with garlic butter and herbs'
     },
     {
       name: 'Chilli And Corn',
       price: 149,
       emoji: '🌽',
-      image: '/images/menu/items/Chilli and corn garlic bread.png',
+      image: '/images/menu/items/Chilli and corn garlic bread.webp',
       desc: 'Baked with garlic butter and herbs'
     },
     {
       name: 'Premium Garlic Bread (Capsicum & Onion)',
       price: 129,
       emoji: '🧄',
-      image: '/images/menu/items/Premium Garlic Bread (Capsicum & Onion).png',
+      image: '/images/menu/items/Premium Garlic Bread (Capsicum & Onion).webp',
       desc: 'Topped with fresh capsicum and onions'
     },
     {
       name: 'Supreme Garlic Bread',
       price: 149,
       emoji: '🧄',
-      image: '/images/menu/items/Supreme Garlic Bread (Chilli, Corn & Onion).png',
+      image: '/images/menu/items/Supreme Garlic Bread (Chilli, Corn & Onion).webp',
       desc: 'Topped with green chillies, sweet corn, and onions'
     },
   ],

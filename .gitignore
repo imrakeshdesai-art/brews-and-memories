@@ -12,3 +12,9 @@ scratch/
 
 # Agent workspace memory — may contain sensitive context
 .agents/
+
+# Original uncompressed media backup (never deploy)
+assets_backup/
+
+# Sensitive password reset utility
+backend/src/reset_passwords.js

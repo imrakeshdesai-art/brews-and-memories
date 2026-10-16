@@ -30,10 +30,13 @@ app.use(cors({
     // allow requests with no origin
     if (!origin) return callback(null, true);
 
-    // allow vercel preview deployments
+    // allow vercel & cloudflare pages preview deployments and production origins
     if (
       allowedOrigins.includes(origin) ||
-      origin.endsWith('.vercel.app')
+      origin.endsWith('.vercel.app') ||
+      origin.endsWith('.pages.dev') ||
+      origin === 'https://themorascafe.com' ||
+      origin === 'https://www.themorascafe.com'
     ) {
       return callback(null, true);
     }

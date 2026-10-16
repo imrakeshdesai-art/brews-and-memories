@@ -8,12 +8,12 @@ const isLocal =
   window.location.hostname === '127.0.0.1';
 
 // Local: Vite proxy handles /api → localhost:5000, but file protocol needs explicit host
-// Production (Vercel): calls go directly to Render backend
+// Production (Cloudflare Pages / Vercel): calls go directly to Render backend
 const API_BASE = isFileProtocol
   ? 'http://localhost:5000'
   : isLocal
   ? ''
-  : 'https://brews-backend.onrender.com';
+  : (import.meta.env.VITE_API_BASE_URL || 'https://brews-backend.onrender.com');
 
 const api = axios.create({
   baseURL: `${API_BASE}/api`,

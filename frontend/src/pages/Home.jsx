@@ -4,16 +4,16 @@ import { menuData } from '../data/menuData';
 import useSEO from '../hooks/useSEO';
 
 const FEATURED_CATEGORIES = [
-  { image: '/ColdCoffee.png', label: 'Cold Coffee', category: 'Cold Beverages' },
-  { image: '/HotCoffee.png', label: 'Hot Coffee', category: 'Beverages' },
-  { image: '/Milkshake.png', label: 'Milkshakes', category: 'Milk Shakes' },
-  { image: '/Tea & Beverages.png', label: 'Tea & Beverages', category: 'Beverages' },
-  { image: '/Tandoori Paneer Pizza.png', label: 'Pizzas', category: 'Pizza' },
-  { image: '/images/menu/burger.png', label: 'Burgers', category: 'Burgers' },
-  { image: '/Veg Club Sandwich.png', label: 'Sandwiches', category: 'Sandwiches' },
-  { image: '/Maggie.png', label: 'Maggi', category: 'Maggi' },
-  { image: '/momos.png', label: 'Momos', category: 'Momos' },
-  { image: '/Fries & Snacks.png', label: 'Fries & Snacks', category: 'Fries' },
+  { image: '/ColdCoffee.webp', label: 'Cold Coffee', category: 'Cold Beverages' },
+  { image: '/HotCoffee.webp', label: 'Hot Coffee', category: 'Beverages' },
+  { image: '/Milkshake.webp', label: 'Milkshakes', category: 'Milk Shakes' },
+  { image: '/Tea & Beverages.webp', label: 'Tea & Beverages', category: 'Beverages' },
+  { image: '/Tandoori Paneer Pizza.webp', label: 'Pizzas', category: 'Pizza' },
+  { image: '/images/menu/burger.webp', label: 'Burgers', category: 'Burgers' },
+  { image: '/Veg Club Sandwich.webp', label: 'Sandwiches', category: 'Sandwiches' },
+  { image: '/Maggie.webp', label: 'Maggi', category: 'Maggi' },
+  { image: '/momos.webp', label: 'Momos', category: 'Momos' },
+  { image: '/Fries & Snacks.webp', label: 'Fries & Snacks', category: 'Fries' },
 ];
 
 const FAVORITES_CONFIG = [
@@ -21,35 +21,35 @@ const FAVORITES_CONFIG = [
     category: 'Cold Beverages',
     name: 'Cold Coffee',
     badge: 'Customer Favorite',
-    image: '/ColdCoffee.png',
+    image: '/ColdCoffee.webp',
     desc: 'Slow-brewed and blended specialty cold coffee — chilled, rich, and finished with decadent chocolate swirl.'
   },
   {
     category: 'Pizza',
     name: 'Tandoori Paneer Pizza',
     badge: 'Most Ordered',
-    image: '/Tandoori Paneer Pizza.png',
+    image: '/Tandoori Paneer Pizza.webp',
     desc: 'Indian tandoori spiced paneer cubes topped with crisp capsicum, onions, and fresh melted mozzarella.'
   },
   {
     category: 'Sandwiches',
     name: 'Veg Club Sandwich',
     badge: 'Staff Pick',
-    image: '/Veg Club Sandwich.png',
+    image: '/Veg Club Sandwich.webp',
     desc: 'Crispy double-decker toasted sandwich loaded with fresh veggies, butter spreads, and melted cheese.'
   },
   {
     category: 'Fries',
     name: 'Honey Chilli Potato',
     badge: 'Customer Favorite',
-    image: '/Honey Chilli Potato.png',
+    image: '/Honey Chilli Potato.webp',
     desc: 'Crispy deep-fried potato fingers tossed in a sweet, spicy, and tangy honey chilli sauce.'
   },
   {
     category: 'Burgers',
     name: 'Paneer Burger',
     badge: 'Must Try',
-    image: '/images/menu/burger.png',
+    image: '/images/menu/burger.webp',
     desc: 'Crispy paneer patty with fresh lettuce, onions, sliced tomatoes, and creamy signature burger sauces.'
   },
   {
@@ -321,7 +321,7 @@ function Home({ openReserve }) {
               <picture>
                 <source srcSet="/images/instagram/hero_garden_evening.webp" type="image/webp" />
                 <img 
-                  src="/images/instagram/hightide_sagar.jpeg" 
+                  src="/images/instagram/hightide_sagar.webp" 
                   alt="The Moras Cafe authentic open-air garden terrace dining table under warm evening pendant lights in Vijayapura"
                   className="hero-visual-img"
                   loading="eager"
@@ -515,7 +515,7 @@ function Home({ openReserve }) {
             {/* Major Left Feature: Coffee & Music Mural Patio */}
             <div className="gallery-mosaic-feature">
               <img 
-                src="/images/instagram/manju_duddagi.jpeg" 
+                src="/images/instagram/manju_duddagi.webp" 
                 alt="Outdoor seating at The Moras Cafe next to the vibrant coffee and music mural"
                 loading="eager"
                 decoding="async"
@@ -558,7 +558,7 @@ function Home({ openReserve }) {
                 </div>
                 <div className="gallery-mosaic-mini">
                   <img 
-                    src="/Tandoori Paneer Pizza.png" 
+                    src="/Tandoori Paneer Pizza.webp" 
                     alt="Freshly baked artisan pure vegetarian pizza at The Moras Cafe"
                     loading="eager"
                     decoding="async"
