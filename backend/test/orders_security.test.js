@@ -342,6 +342,34 @@ async function runTests() {
         assert.strictEqual(badStatus.status, 400);
       },
     },
+    {
+      name: '10. Strict CORS Enforcement — Only approved origins allowed, wildcard subdomains rejected',
+      fn: async () => {
+        // Approved production Vercel domain -> 200
+        const resVercel = await request('/api/health', {
+          headers: { Origin: 'https://themorascafe.vercel.app' },
+        });
+        assert.strictEqual(resVercel.status, 200);
+
+        // Approved Cloudflare Pages preview domain -> 200
+        const resCF = await request('/api/health', {
+          headers: { Origin: 'https://brews-and-memories.pages.dev' },
+        });
+        assert.strictEqual(resCF.status, 200);
+
+        // Arbitrary unapproved Vercel subdomain -> Rejected with 500 CORS error
+        const resBadVercel = await request('/api/health', {
+          headers: { Origin: 'https://malicious-random-site.vercel.app' },
+        });
+        assert.strictEqual(resBadVercel.status, 500);
+
+        // Arbitrary unapproved Pages subdomain -> Rejected with 500 CORS error
+        const resBadPages = await request('/api/health', {
+          headers: { Origin: 'https://attacker.pages.dev' },
+        });
+        assert.strictEqual(resBadPages.status, 500);
+      },
+    },
   ];
 
   for (const t of tests) {

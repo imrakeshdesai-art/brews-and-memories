@@ -33,11 +33,10 @@ app.use(cors({
     // allow requests with no origin (e.g. mobile apps, server-to-server, curl)
     if (!origin) return callback(null, true);
 
-    // strictly allow approved production domains, Vercel previews, and project Cloudflare Pages previews
+    // Strictly allow approved production domains and project-specific Cloudflare preview subdomains
     if (
       allowedOrigins.includes(origin) ||
-      origin.endsWith('.brews-and-memories.pages.dev') ||
-      origin.endsWith('.vercel.app')
+      origin.endsWith('.brews-and-memories.pages.dev')
     ) {
       return callback(null, true);
     }
