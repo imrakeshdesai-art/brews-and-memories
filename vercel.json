@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/wallpapers/originals/:match*",
-      "destination": "https://brews-and-memories.pages.dev/wallpapers/originals/:match*"
+      "destination": "https://main.brews-and-memories.pages.dev/wallpapers/originals/:match*"
     },
     {
       "source": "/(.*)",
