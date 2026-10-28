@@ -351,6 +351,12 @@ async function runTests() {
         });
         assert.strictEqual(resVercel.status, 200);
 
+        // Approved primary custom domain -> 200
+        const resCustom = await request('/api/health', {
+          headers: { Origin: 'https://themorascafe.in' },
+        });
+        assert.strictEqual(resCustom.status, 200);
+
         // Approved Cloudflare Pages preview domain -> 200
         const resCF = await request('/api/health', {
           headers: { Origin: 'https://brews-and-memories.pages.dev' },

@@ -1,9 +1,12 @@
 {
-  "rewrites": [
+  "redirects": [
     {
-      "source": "/wallpapers/originals/:match*",
-      "destination": "https://main.brews-and-memories.pages.dev/wallpapers/originals/:match*"
-    },
+      "source": "/:path*",
+      "destination": "https://themorascafe.in/:path*",
+      "permanent": true
+    }
+  ],
+  "rewrites": [
     {
       "source": "/(.*)",
       "destination": "/index.html"

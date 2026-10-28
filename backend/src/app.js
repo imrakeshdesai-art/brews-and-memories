@@ -22,6 +22,8 @@ const allowedOrigins = [
   'http://localhost:3000',
   'https://brews-and-memories.vercel.app',
   'https://themorascafe.vercel.app',
+  'https://themorascafe.in',
+  'https://www.themorascafe.in',
   'https://brews-and-memories.pages.dev',
   'https://themorascafe.com',
   'https://www.themorascafe.com',

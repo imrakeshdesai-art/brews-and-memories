@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://themorascafe.vercel.app/sitemap.xml
+Sitemap: https://themorascafe.in/sitemap.xml
