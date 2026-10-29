@@ -24,7 +24,6 @@ const PrintReviewQR = lazy(() => import('./pages/PrintReviewQR'));
 const TrackOrder = lazy(() => import('./pages/TrackOrder'));
 
 import Footer from './components/Footer';
-import FloatingActions from './components/FloatingActions';
 import ReservationModal from './components/ReservationModal';
 
 const defaultCart = [];
@@ -275,7 +274,6 @@ function App() {
           </Suspense>
         </main>
         {!isPrintPage && <Footer onReserveClick={() => setIsReserveOpen(true)} />}
-        {!isPrintPage && <FloatingActions />}
         {!isPrintPage && (
           <CartDrawer
             open={isCartOpen}
