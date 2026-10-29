@@ -193,7 +193,7 @@ function buildItemRows(items) {
 }
 
 // ── HTML Email Template: Order Confirmation ──────────────────────────────────
-function buildCustomerEmailHTML({ name, items, total, payment, address, orderId }) {
+function buildCustomerEmailHTML({ name, items, total, payment, address, orderId, trackingToken }) {
   const isPaid = payment && payment.toLowerCase() === 'online';
   const totalLabel = isPaid ? 'Total Paid' : 'Total to Pay';
   return `
@@ -312,9 +312,19 @@ function buildCustomerEmailHTML({ name, items, total, payment, address, orderId 
                     </tr>
                   </table>
 
+                  <!-- Live Order Tracking CTA -->
+                  ${trackingToken ? `
+                  <div style="text-align:center;margin-bottom:20px">
+                    <a href="https://themorascafe.in/track/${orderId}#token=${trackingToken}" 
+                       style="display:inline-block;background:linear-gradient(135deg,#c3912d,#dfaa38);color:#1a1a1a;text-decoration:none;padding:15px 32px;border-radius:50px;font-weight:800;font-size:15px;letter-spacing:1px;box-shadow:0 4px 14px rgba(195,145,45,0.35);border:2px solid #f5c862">
+                      &#x1F4CD; Track Order Live
+                    </a>
+                  </div>
+                  ` : ''}
+
                   <!-- CTA -->
                   <div style="text-align:center;margin-bottom:32px">
-                    <a href="https://themorascafe.vercel.app" 
+                    <a href="https://themorascafe.in" 
                        style="display:inline-block;background:linear-gradient(135deg,#0f3d3e,#185c5d);color:#fff;text-decoration:none;padding:16px 36px;border-radius:50px;font-weight:800;font-size:15px;letter-spacing:1.5px;box-shadow:0 4px 12px rgba(15,61,62,0.25);border:2px solid #fbbf24">
                       &#x1F355; Order Again
                     </a>
@@ -349,7 +359,7 @@ function buildCustomerEmailHTML({ name, items, total, payment, address, orderId 
 }
 
 // ── Plain-Text Email Template: Order Confirmation ───────────────────────────
-function buildCustomerEmailText({ name, items, total, payment, address, orderId }) {
+function buildCustomerEmailText({ name, items, total, payment, address, orderId, trackingToken }) {
   const isPaid = payment && payment.toLowerCase() === 'online';
   const totalLabel = isPaid ? 'Total Paid' : 'Total to Pay';
   const itemsText = (items || [])
@@ -363,6 +373,8 @@ Hi ${name},
 Your order has been confirmed! Our kitchen crew is preparing your items fresh and piping hot.
 
 Order Reference: ${orderId}
+${trackingToken ? `Track Order Live: https://themorascafe.in/track/${orderId}#token=${trackingToken}
+` : ''}
 Seated At: ${address}
 Payment Method: ${(payment || '').toUpperCase()}
 

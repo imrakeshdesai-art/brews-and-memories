@@ -4737,3 +4737,436 @@ body.theme-dark .site-nav.menu-is-open {
 
 
 
+
+
+/* ==========================================================================
+   Live Customer Order Tracking Styles
+   ========================================================================== */
+
+.track-order-page-wrapper {
+  min-height: calc(100vh - 180px);
+  padding: 40px 16px 80px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  background: var(--cream-light);
+}
+
+.track-order-container {
+  width: 100%;
+  max-width: 600px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.track-order-header {
+  text-align: center;
+  padding: 10px 0 16px;
+}
+
+.track-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  background: var(--cream);
+  color: var(--green);
+  border: 1px solid var(--cream-dark);
+  margin-bottom: 12px;
+}
+
+.track-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--green);
+  margin: 0 0 8px;
+  letter-spacing: -0.02em;
+}
+
+.track-subtitle {
+  font-size: 0.95rem;
+  color: var(--text-light);
+  line-height: 1.5;
+  margin: 0 auto;
+  max-width: 480px;
+}
+
+/* Loading Card */
+.track-loading-card {
+  background: var(--white);
+  border: 1px solid var(--cream-dark);
+  border-radius: var(--radius-lg);
+  padding: 48px 24px;
+  text-align: center;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  color: var(--text-light);
+  font-size: 1rem;
+}
+
+.track-spinner {
+  width: 44px;
+  height: 44px;
+  border: 4px solid var(--cream);
+  border-top-color: var(--green);
+  border-radius: 50%;
+  animation: track-spin 0.9s linear infinite;
+}
+
+@keyframes track-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Error Card */
+.track-error-card {
+  background: var(--white);
+  border: 1px solid var(--cream-dark);
+  border-radius: var(--radius-lg);
+  padding: 36px 24px;
+  text-align: center;
+  box-shadow: var(--shadow);
+}
+
+.track-error-icon {
+  font-size: 3rem;
+  margin-bottom: 12px;
+}
+
+.track-error-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0 0 10px;
+}
+
+.track-error-msg {
+  font-size: 0.92rem;
+  color: var(--text-light);
+  line-height: 1.6;
+  max-width: 440px;
+  margin: 0 auto 20px;
+}
+
+.track-error-actions {
+  display: flex;
+  justify-content: center;
+}
+
+/* Main Content */
+.track-main-content {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* Live Status Banner */
+.track-status-banner {
+  background: var(--white);
+  border: 1px solid var(--cream-dark);
+  border-radius: var(--radius-lg);
+  padding: 22px 24px;
+  box-shadow: var(--shadow);
+}
+
+.track-status-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.pill-pending {
+  background: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fde68a;
+}
+
+.pill-preparing {
+  background: #e0f2fe;
+  color: #0369a1;
+  border: 1px solid #bae6fd;
+}
+
+.pill-completed {
+  background: #d1fae5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+}
+
+.track-pulse-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-light);
+}
+
+.pulse-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #10b981;
+  box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+  animation: pulse-ring 1.8s infinite;
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 7px rgba(16, 185, 129, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+  }
+}
+
+.track-status-desc {
+  font-size: 0.94rem;
+  color: var(--text);
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Stepper Progress Card */
+.track-stepper-card {
+  background: var(--white);
+  border: 1px solid var(--cream-dark);
+  border-radius: var(--radius-lg);
+  padding: 24px 20px;
+  box-shadow: var(--shadow);
+}
+
+.track-stepper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+}
+
+.stepper-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  z-index: 2;
+  flex: 1;
+}
+
+.step-icon-wrap {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--cream);
+  border: 2px solid var(--cream-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  margin-bottom: 8px;
+  transition: all 0.3s ease;
+}
+
+.stepper-step.active .step-icon-wrap {
+  background: var(--green);
+  border-color: var(--green-light);
+  color: #fff;
+  transform: scale(1.08);
+  box-shadow: 0 4px 16px rgba(15, 61, 62, 0.25);
+}
+
+.stepper-step.completed .step-icon-wrap {
+  background: #047857;
+  border-color: #059669;
+  color: #fff;
+}
+
+.step-label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 2px;
+}
+
+.step-time {
+  font-size: 0.72rem;
+  color: var(--text-light);
+}
+
+.stepper-line {
+  flex: 1;
+  height: 3px;
+  background: var(--cream-dark);
+  margin: 0 4px 28px;
+  transition: background 0.4s ease;
+  z-index: 1;
+}
+
+.stepper-line.filled {
+  background: #047857;
+}
+
+/* Info Card */
+.track-info-card {
+  background: var(--white);
+  border: 1px solid var(--cream-dark);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: var(--shadow);
+}
+
+.track-info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.88rem;
+  color: var(--text);
+}
+
+.track-info-row.subtle {
+  font-size: 0.76rem;
+  color: var(--text-light);
+  border-top: 1px dashed var(--cream-dark);
+  padding-top: 8px;
+  margin-top: 2px;
+}
+
+.info-label {
+  font-weight: 600;
+  color: var(--text-light);
+}
+
+.info-value {
+  font-weight: 700;
+  color: var(--text);
+}
+
+.info-value.highlight {
+  color: var(--green);
+}
+
+/* Items Card */
+.track-items-card {
+  background: var(--white);
+  border: 1px solid var(--cream-dark);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  box-shadow: var(--shadow);
+}
+
+.track-items-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--green);
+  margin: 0 0 12px;
+}
+
+.track-items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.track-item-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background: var(--cream-light);
+  border-radius: 8px;
+  border: 1px solid var(--cream-dark);
+}
+
+.track-item-main {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.track-item-name {
+  font-weight: 600;
+  font-size: 0.92rem;
+  color: var(--text);
+}
+
+.track-item-variant {
+  font-size: 0.8rem;
+  color: var(--text-light);
+}
+
+.track-item-qty {
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--green);
+  background: var(--cream);
+  padding: 2px 8px;
+  border-radius: 12px;
+}
+
+/* Actions Section */
+.track-actions-section {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.track-btn {
+  flex: 1;
+  text-align: center;
+  padding: 13px 16px;
+  border-radius: var(--radius);
+  font-weight: 600;
+  text-decoration: none;
+  font-size: 0.92rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+@media (max-width: 600px) {
+  .track-order-page-wrapper {
+    padding: 20px 12px 60px;
+  }
+  .track-title {
+    font-size: 1.8rem;
+  }
+  .track-actions-section {
+    flex-direction: column;
+  }
+  .step-icon-wrap {
+    width: 40px;
+    height: 40px;
+    font-size: 1.1rem;
+  }
+  .step-label {
+    font-size: 0.75rem;
+  }
+}

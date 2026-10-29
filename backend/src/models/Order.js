@@ -27,7 +27,14 @@ const orderSchema = new mongoose.Schema({
     trim: true,
     index: true,
   },
+  trackingTokenHash: {
+    type: String,
+    sparse: true,
+    select: false,
+    index: true,
+  },
   createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now },
 });
 
 module.exports = mongoose.model('Order', orderSchema);

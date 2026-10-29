@@ -21,6 +21,7 @@ const Moments = lazy(() => import('./pages/Moments'));
 const Wallpapers = lazy(() => import('./pages/Wallpapers'));
 const ReviewRedirect = lazy(() => import('./pages/ReviewRedirect'));
 const PrintReviewQR = lazy(() => import('./pages/PrintReviewQR'));
+const TrackOrder = lazy(() => import('./pages/TrackOrder'));
 
 import Footer from './components/Footer';
 import FloatingActions from './components/FloatingActions';
@@ -267,6 +268,7 @@ function App() {
                 <Route path="/terms" element={<Terms />} />
                 <Route path="/moments" element={<Moments />} />
                 <Route path="/wallpapers" element={<Wallpapers />} />
+                <Route path="/track/:orderId" element={<TrackOrder />} />
                 <Route path="*" element={<Home {...pageProps} />} />
               </Routes>
             </div>

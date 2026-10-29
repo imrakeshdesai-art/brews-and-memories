@@ -10,7 +10,6 @@ function CheckoutModal({ open, cart, total, payment, setPayment, onClose, onClea
   const [address, setAddress] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [orderSuccess, setOrderSuccess] = useState(null);
-  const [countdown, setCountdown] = useState(5);
   const idempotencyKeyRef = useRef(null);
   const toast = useToast();
   const navigate = useNavigate();
@@ -23,26 +22,20 @@ function CheckoutModal({ open, cart, total, payment, setPayment, onClose, onClea
     }
   };
 
-  // Handle countdown on order success
-  useEffect(() => {
-    let timer;
-    if (orderSuccess) {
-      setCountdown(5);
-      timer = setInterval(() => {
-        setCountdown((prev) => {
-          if (prev <= 1) {
-            clearInterval(timer);
-            handleClose();
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
+  const handleTrackOrder = () => {
+    const trackingToken = orderSuccess?.trackingToken;
+    const orderId = orderSuccess?._id;
+    onClose();
+    if (onClearSession) onClearSession();
+    if (orderId && trackingToken) {
+      navigate(`/track/${orderId}#token=${trackingToken}`);
+    } else if (orderId) {
+      navigate(`/track/${orderId}`);
+    } else {
+      navigate('/');
     }
-    return () => {
-      if (timer) clearInterval(timer);
-    };
-  }, [orderSuccess]);
+  };
+
 
   useEffect(() => {
     if (!open) {
@@ -173,11 +166,8 @@ function CheckoutModal({ open, cart, total, payment, setPayment, onClose, onClea
               <div className="success-icon">✅</div>
               <div className="success-title">Thank you, {orderSuccess.name}!</div>
               <p style={{ color: 'var(--text-light)', lineHeight: 1.7, marginBottom: 16 }}>
-                Your order has been received and is now in the kitchen.
+                Your order has been received and sent directly to our kitchen.
               </p>
-              <div style={{ margin: '15px 0', padding: '12px', background: '#ecfdf5', color: '#047857', borderRadius: '8px', fontWeight: 'bold', fontSize: '0.9rem', textAlign: 'center', border: '1px solid #a7f3d0' }}>
-                🔄 Deactivating table session and returning to homepage in {countdown}s...
-              </div>
               <div className="order-card" style={{ marginBottom: 20 }}>
                 <div>
                   <strong>Order ID:</strong> {orderSuccess._id}
@@ -186,15 +176,46 @@ function CheckoutModal({ open, cart, total, payment, setPayment, onClose, onClea
                   <strong>Table:</strong> {orderSuccess.address}
                 </div>
                 <div>
-                  <strong>Payment:</strong> {orderSuccess.payment.toUpperCase()}
+                  <strong>Payment:</strong> {orderSuccess.payment?.toUpperCase()}
                 </div>
                 <div>
                   <strong>Total:</strong> ₹{orderSuccess.total}
                 </div>
               </div>
-              <button className="btn-primary" type="button" onClick={handleClose}>
-                Go to Homepage
-              </button>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10, width: '100%' }}>
+                {orderSuccess.trackingToken ? (
+                  <button
+                    className="btn-primary"
+                    type="button"
+                    style={{
+                      background: 'linear-gradient(135deg, var(--green) 0%, var(--green-light) 100%)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: 8,
+                      fontSize: '1rem',
+                      padding: '14px 20px',
+                    }}
+                    onClick={handleTrackOrder}
+                  >
+                    <span>📍</span>
+                    <span>Track Your Order Live</span>
+                  </button>
+                ) : (
+                  <p style={{ fontSize: '0.86rem', color: 'var(--text-light)', textAlign: 'center', lineHeight: 1.5, margin: '2px 0 6px' }}>
+                    A live tracking link may be available in your original order confirmation email.
+                  </p>
+                )}
+                <button
+                  className="btn-secondary"
+                  type="button"
+                  onClick={handleClose}
+                  style={{ width: '100%', padding: '12px' }}
+                >
+                  Return to Menu
+                </button>
+              </div>
             </div>
           ) : (
             <form onSubmit={handleSubmit}>
