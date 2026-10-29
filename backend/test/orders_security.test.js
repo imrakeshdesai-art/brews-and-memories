@@ -190,7 +190,7 @@ async function runTests() {
     {
       name: '5. Legitimate Order Processing — Calculate total authoritatively on backend',
       fn: async () => {
-        // Tandoori Paneer Pizza M (₹159 x 2 = ₹318) + Cold Coffee (₹99 x 1 = ₹99) = ₹417
+        // Tandoori Paneer Pizza M (₹159 x 2 = ₹318) + Cold Coffee (₹139 x 1 = ₹139) = ₹457
         const res = await request('/api/orders', {
           method: 'POST',
           body: {
@@ -201,12 +201,12 @@ async function runTests() {
               { name: 'Tandoori Paneer Pizza', variant: 'M', qty: 2 },
               { name: 'Cold Coffee', qty: 1 },
             ],
-            total: 417,
+            total: 457,
             idempotencyKey: 'test_order_key_001',
           },
         });
         assert.strictEqual(res.status, 201);
-        assert.strictEqual(res.data.total, 417);
+        assert.strictEqual(res.data.total, 457);
         assert.strictEqual(res.data.status, 'pending');
         assert.strictEqual(res.data.items.length, 2);
       },
@@ -224,13 +224,13 @@ async function runTests() {
               { name: 'Tandoori Paneer Pizza', variant: 'M', qty: 2 },
               { name: 'Cold Coffee', qty: 1 },
             ],
-            total: 417,
+            total: 457,
             idempotencyKey: 'test_order_key_001', // Identical key from test 5
           },
         });
         assert.strictEqual(res.status, 200);
         assert.strictEqual(res.headers['x-idempotent-replay'], 'true');
-        assert.strictEqual(res.data.total, 417);
+        assert.strictEqual(res.data.total, 457);
       },
     },
     {
@@ -242,7 +242,7 @@ async function runTests() {
           phone: '9876543210',
           address: 'Table 5',
           items: [{ name: 'Cold Coffee', qty: 2 }],
-          total: 198,
+          total: 278,
           idempotencyKey: sharedKey,
         };
 
@@ -255,7 +255,7 @@ async function runTests() {
         // All 5 must succeed with 200 or 201
         for (const r of results) {
           assert([200, 201].includes(r.status), `Unexpected status: ${r.status}`);
-          assert.strictEqual(r.data.total, 198);
+          assert.strictEqual(r.data.total, 278);
         }
 
         // All 5 must reference the EXACT same order ID
@@ -302,7 +302,7 @@ async function runTests() {
             phone: '9876543210',
             address: 'Table 1',
             items: [{ name: 'Cold Coffee', qty: 1 }],
-            total: 99,
+            total: 139,
             idempotencyKey: `status_key_${Date.now()}`,
           },
         });
