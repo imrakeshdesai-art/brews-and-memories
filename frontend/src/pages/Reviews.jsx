@@ -148,6 +148,27 @@ function Reviews() {
             </div>
           ))}
         </div>
+
+        <div style={{ marginTop: 32, display: 'flex', justifyContent: 'center', gap: 16, flexWrap: 'wrap' }}>
+          <a
+            href="/rate"
+            target="_blank"
+            rel="noreferrer"
+            className="btn-editorial-primary"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 8,
+              padding: '12px 26px',
+              borderRadius: 30,
+              fontWeight: 700,
+              textDecoration: 'none',
+              fontSize: '0.95rem'
+            }}
+          >
+            <span style={{ color: '#c3912d' }}>★★★★★</span> Rate Us on Google ↗
+          </a>
+        </div>
       </div>
     </div>
       

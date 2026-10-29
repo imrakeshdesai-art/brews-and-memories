@@ -19,6 +19,8 @@ const Terms = lazy(() => import('./pages/Terms'));
 const PrintQR = lazy(() => import('./pages/PrintQR'));
 const Moments = lazy(() => import('./pages/Moments'));
 const Wallpapers = lazy(() => import('./pages/Wallpapers'));
+const ReviewRedirect = lazy(() => import('./pages/ReviewRedirect'));
+const PrintReviewQR = lazy(() => import('./pages/PrintReviewQR'));
 
 import Footer from './components/Footer';
 import FloatingActions from './components/FloatingActions';
@@ -225,7 +227,11 @@ function App() {
     onClearSession: handleClearSession,
   };
 
-  const isPrintPage = location.pathname.startsWith('/admin/print-qr');
+  const isPrintPage = 
+    location.pathname.startsWith('/admin/print-qr') || 
+    location.pathname.includes('print-review-qr') ||
+    location.pathname === '/rate' ||
+    location.pathname === '/review';
 
   return (
     <ToastProvider>
@@ -253,6 +259,10 @@ function App() {
                 <Route path="/order/:tableId" element={<TableOrder onSessionStart={handleSessionStart} />} />
                 <Route path="/admin" element={<Admin />} />
                 <Route path="/admin/print-qr/:tableNum" element={<PrintQR />} />
+                <Route path="/admin/print-review-qr" element={<PrintReviewQR />} />
+                <Route path="/print-review-qr" element={<PrintReviewQR />} />
+                <Route path="/rate" element={<ReviewRedirect />} />
+                <Route path="/review" element={<ReviewRedirect />} />
                 <Route path="/privacy" element={<Privacy />} />
                 <Route path="/terms" element={<Terms />} />
                 <Route path="/moments" element={<Moments />} />

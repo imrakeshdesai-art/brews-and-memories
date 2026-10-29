@@ -1034,7 +1034,63 @@ function Admin() {
 
         {activeTab === 'qrs' && (
           <div className="qr-generator-section" style={{ background: 'var(--white)', border: '1px solid var(--cream-dark)', borderRadius: 12, padding: '24px 20px', textAlign: 'left' }}>
-            <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: '1.5rem', color: 'var(--green)', marginBottom: 12 }}>Table QR Codes Generator</h3>
+            {/* GOOGLE REVIEW STANDEE PROMINENT CARD */}
+            <div style={{
+              background: '#0f3d3e',
+              color: '#FAF5EF',
+              borderRadius: 16,
+              padding: '24px 20px',
+              marginBottom: 32,
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              flexWrap: 'wrap',
+              gap: 20,
+              boxShadow: '0 8px 24px rgba(15, 61, 62, 0.2)'
+            }}>
+              <div>
+                <span style={{ color: '#c3912d', textTransform: 'uppercase', letterSpacing: 2, fontSize: '0.75rem', fontWeight: 800, display: 'block', marginBottom: 6 }}>
+                  ★ Customer Reputation &amp; Feedback
+                </span>
+                <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: '1.6rem', margin: '0 0 8px', color: '#FAF5EF' }}>
+                  Google 5-Star Review Standee &amp; QR
+                </h3>
+                <p style={{ margin: 0, fontSize: '0.88rem', color: '#d2dfdf', maxWidth: 520, lineHeight: 1.5 }}>
+                  Printable acrylic tent card &amp; counter QR standee. Scanning opens Google Maps with the 5-star review modal ready to tap and submit.
+                </p>
+              </div>
+              <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                <button
+                  type="button"
+                  onClick={() => window.open('/admin/print-review-qr', '_blank')}
+                  className="btn-primary"
+                  style={{ background: '#c3912d', color: '#1a1a1a', border: 'none', fontWeight: 800, padding: '10px 18px' }}
+                >
+                  🖨️ Print Standee Studio
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    navigator.clipboard.writeText(`${window.location.origin}/rate`);
+                    toast('Review link copied! Share this or encode in your own designs.');
+                  }}
+                  className="btn-outline"
+                  style={{ color: '#FAF5EF', borderColor: '#4a7575', padding: '10px 16px' }}
+                >
+                  📋 Copy /rate Link
+                </button>
+                <a
+                  href="/the-moras-cafe-review-standee.png"
+                  download
+                  className="btn-outline"
+                  style={{ color: '#FAF5EF', borderColor: '#4a7575', padding: '10px 16px', textDecoration: 'none' }}
+                >
+                  📥 Download PNG Card
+                </a>
+              </div>
+            </div>
+
+            <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: '1.5rem', color: 'var(--green)', marginBottom: 12 }}>Table Ordering QR Codes</h3>
             <p style={{ color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: 24 }}>
               Below are the digital ordering QR codes configured for your café tables. 
               You can print these cards or copy the links to generate your own custom layout. 
