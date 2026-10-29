@@ -5217,3 +5217,41 @@ body.theme-dark .site-nav.menu-is-open {
     font-size: 0.75rem;
   }
 }
+
+
+/* ==================== MENU ITEM AVAILABILITY & SOLD-OUT STYLES ==================== */
+.menu-card-badge.sold-out-badge {
+  background: #dc2626 !important;
+  color: #ffffff !important;
+  font-weight: 800;
+  letter-spacing: 0.6px;
+  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.4);
+}
+
+.menu-card-sold-out .menu-card-img {
+  filter: grayscale(45%);
+  opacity: 0.88;
+}
+
+.btn-add.btn-sold-out {
+  background: #f1f5f9 !important;
+  color: #94a3b8 !important;
+  border: 1px solid #cbd5e1 !important;
+  cursor: not-allowed !important;
+  font-size: 0.78rem !important;
+  font-weight: 700 !important;
+  padding: 6px 14px !important;
+  border-radius: 6px !important;
+  width: auto !important;
+  height: auto !important;
+  line-height: normal !important;
+  box-shadow: none !important;
+  pointer-events: none;
+}
+
+.cart-item-sold-out {
+  background: #fff1f2 !important;
+  border-left: 3px solid #e11d48 !important;
+  padding-left: 10px !important;
+  border-radius: 6px;
+}

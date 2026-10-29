@@ -133,6 +133,59 @@ function Admin() {
   const role = useMemo(() => getRoleFromToken(token), [token]);
   const prevPendingCountRef = useRef(0);
 
+  // ================= MENU AVAILABILITY (INVENTORY) STATE =================
+  const [catalogItems, setCatalogItems] = useState([]);
+  const [loadingCatalog, setLoadingCatalog] = useState(false);
+  const [availabilitySearch, setAvailabilitySearch] = useState('');
+  const [availabilityCategory, setAvailabilityCategory] = useState('All');
+  const [showSoldOutOnly, setShowSoldOutOnly] = useState(false);
+  const [togglingKey, setTogglingKey] = useState(null);
+
+  const fetchCatalogAvailability = useCallback(async () => {
+    setLoadingCatalog(true);
+    try {
+      const res = await api.get('/menu/admin/availability');
+      if (res.data?.items) {
+        setCatalogItems(res.data.items);
+      }
+    } catch (err) {
+      toast('Failed to load menu availability: ' + (err.response?.data?.message || err.message));
+    } finally {
+      setLoadingCatalog(false);
+    }
+  }, [toast]);
+
+  useEffect(() => {
+    if (activeTab === 'inventory' && role === 'admin') {
+      fetchCatalogAvailability();
+    }
+  }, [activeTab, role, fetchCatalogAvailability]);
+
+  const handleToggleAvailability = async (item) => {
+    const newStatus = !item.isAvailable;
+    setTogglingKey(item.itemKey);
+
+    // Optimistic UI update
+    setCatalogItems((prev) =>
+      prev.map((it) => (it.itemKey === item.itemKey ? { ...it, isAvailable: newStatus } : it))
+    );
+
+    try {
+      await api.patch(`/menu/admin/availability/${encodeURIComponent(item.itemKey)}`, {
+        isAvailable: newStatus,
+      });
+      toast(`${newStatus ? '✅' : '⚠️'} "${item.name}" is now ${newStatus ? 'Available' : 'Sold Out'}`);
+    } catch (err) {
+      // Rollback on error
+      setCatalogItems((prev) =>
+        prev.map((it) => (it.itemKey === item.itemKey ? { ...it, isAvailable: !newStatus } : it))
+      );
+      toast('Failed to update availability: ' + (err.response?.data?.message || err.message));
+    } finally {
+      setTogglingKey(null);
+    }
+  };
+
   useEffect(() => {
     const currentPendingCount = orders.filter((o) => o.status === 'pending').length;
     if (currentPendingCount > prevPendingCountRef.current && prevPendingCountRef.current > 0) {
@@ -664,6 +717,21 @@ function Admin() {
             }}
           >
             📱 Table QR Codes
+          </button>
+          <button
+            onClick={() => setActiveTab('inventory')}
+            style={{
+              background: 'none',
+              border: 'none',
+              padding: '8px 16px',
+              fontSize: '1rem',
+              fontWeight: 700,
+              color: activeTab === 'inventory' ? 'var(--green)' : 'var(--text-light)',
+              borderBottom: activeTab === 'inventory' ? '3px solid var(--green)' : 'none',
+              cursor: 'pointer'
+            }}
+          >
+            📦 Menu Availability
           </button>
         </div>
 
@@ -1305,6 +1373,150 @@ function Admin() {
                       </tr>
                     ))
                   )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'inventory' && (
+          <div className="admin-inventory-section">
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12, marginBottom: 20 }}>
+              <div>
+                <h3 style={{ margin: 0, fontFamily: "'Playfair Display', serif", fontSize: '1.5rem', color: 'var(--green)' }}>
+                  Menu Availability & Sold-Out Manager
+                </h3>
+                <p style={{ margin: '4px 0 0', color: 'var(--text-light)', fontSize: '0.88rem' }}>
+                  Toggle items Sold Out when ingredients run out. Customer menus update live automatically.
+                </p>
+              </div>
+              <button
+                className="btn-secondary"
+                type="button"
+                onClick={fetchCatalogAvailability}
+                disabled={loadingCatalog}
+                style={{ padding: '8px 16px', fontSize: '0.85rem' }}
+              >
+                {loadingCatalog ? 'Refreshing…' : '🔄 Refresh Status'}
+              </button>
+            </div>
+
+            <div className="admin-stats" style={{ marginBottom: 24 }}>
+              <div className="admin-stat">
+                <div className="admin-stat-num">{catalogItems.length}</div>
+                <div className="admin-stat-label">Total Catalog Items</div>
+              </div>
+              <div className="admin-stat">
+                <div className="admin-stat-num" style={{ color: '#10b981' }}>
+                  {catalogItems.filter((i) => i.isAvailable).length}
+                </div>
+                <div className="admin-stat-label">Currently Available</div>
+              </div>
+              <div className="admin-stat">
+                <div className="admin-stat-num" style={{ color: catalogItems.some((i) => !i.isAvailable) ? '#dc2626' : 'var(--text-light)' }}>
+                  {catalogItems.filter((i) => !i.isAvailable).length}
+                </div>
+                <div className="admin-stat-label">Sold Out Items</div>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center', marginBottom: 20, background: 'var(--white)', padding: '14px 18px', borderRadius: 10, border: '1px solid var(--cream-dark)' }}>
+              <div style={{ flex: '1 1 240px', minWidth: 200 }}>
+                <input
+                  type="text"
+                  placeholder="🔍 Search items by name..."
+                  value={availabilitySearch}
+                  onChange={(e) => setAvailabilitySearch(e.target.value)}
+                  style={{ width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid #cbd5e1', fontSize: '0.9rem' }}
+                />
+              </div>
+              <div style={{ flex: '0 1 200px', minWidth: 160 }}>
+                <select
+                  value={availabilityCategory}
+                  onChange={(e) => setAvailabilityCategory(e.target.value)}
+                  style={{ width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid #cbd5e1', fontSize: '0.9rem', background: '#fff' }}
+                >
+                  <option value="All">All Categories</option>
+                  {[...new Set(catalogItems.map((i) => i.category))].sort().map((cat) => (
+                    <option key={cat} value={cat}>{cat}</option>
+                  ))}
+                </select>
+              </div>
+              <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.88rem', fontWeight: 600, color: 'var(--green)', cursor: 'pointer' }}>
+                <input
+                  type="checkbox"
+                  checked={showSoldOutOnly}
+                  onChange={(e) => setShowSoldOutOnly(e.target.checked)}
+                />
+                Show Sold Out Only
+              </label>
+            </div>
+
+            <div className="table-responsive" style={{ background: 'var(--white)', borderRadius: 12, border: '1px solid var(--cream-dark)', overflow: 'hidden' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.9rem' }}>
+                <thead>
+                  <tr style={{ background: 'var(--cream-light)', borderBottom: '2px solid var(--cream-dark)' }}>
+                    <th style={{ padding: '12px 16px' }}>Item Name</th>
+                    <th style={{ padding: '12px 16px' }}>Category</th>
+                    <th style={{ padding: '12px 16px' }}>Base Price</th>
+                    <th style={{ padding: '12px 16px' }}>Status</th>
+                    <th style={{ padding: '12px 16px', textAlign: 'right' }}>Availability Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {catalogItems
+                    .filter((item) => {
+                      const matchesSearch = item.name.toLowerCase().includes(availabilitySearch.toLowerCase());
+                      const matchesCat = availabilityCategory === 'All' || item.category === availabilityCategory;
+                      const matchesSoldOut = !showSoldOutOnly || !item.isAvailable;
+                      return matchesSearch && matchesCat && matchesSoldOut;
+                    })
+                    .map((item) => (
+                      <tr key={item.itemKey} style={{ borderBottom: '1px solid #f1f5f9', background: item.isAvailable ? 'transparent' : '#fff1f2' }}>
+                        <td style={{ padding: '12px 16px', fontWeight: 600, color: item.isAvailable ? 'var(--green)' : '#991b1b' }}>
+                          {item.name}
+                          {item.multi && <span style={{ fontSize: '0.75rem', color: 'var(--text-light)', marginLeft: 6 }}>(S/M/L)</span>}
+                          {item.tempVariant && <span style={{ fontSize: '0.75rem', color: 'var(--text-light)', marginLeft: 6 }}>(Hot/Cold)</span>}
+                        </td>
+                        <td style={{ padding: '12px 16px', color: 'var(--text-light)' }}>{item.category}</td>
+                        <td style={{ padding: '12px 16px', fontWeight: 700 }}>₹{item.price}</td>
+                        <td style={{ padding: '12px 16px' }}>
+                          {item.isAvailable ? (
+                            <span style={{ background: '#dcfce7', color: '#15803d', padding: '4px 10px', borderRadius: 20, fontSize: '0.78rem', fontWeight: 700 }}>
+                              ● Available
+                            </span>
+                          ) : (
+                            <span style={{ background: '#fee2e2', color: '#b91c1c', padding: '4px 10px', borderRadius: 20, fontSize: '0.78rem', fontWeight: 800 }}>
+                              ✕ SOLD OUT
+                            </span>
+                          )}
+                        </td>
+                        <td style={{ padding: '12px 16px', textAlign: 'right' }}>
+                          <button
+                            type="button"
+                            onClick={() => handleToggleAvailability(item)}
+                            disabled={togglingKey === item.itemKey}
+                            style={{
+                              padding: '6px 14px',
+                              borderRadius: 6,
+                              fontSize: '0.82rem',
+                              fontWeight: 700,
+                              cursor: togglingKey === item.itemKey ? 'wait' : 'pointer',
+                              border: item.isAvailable ? '1px solid #f87171' : '1px solid #34d399',
+                              background: item.isAvailable ? '#fef2f2' : '#ecfdf5',
+                              color: item.isAvailable ? '#dc2626' : '#059669',
+                              transition: 'all 0.15s ease',
+                            }}
+                          >
+                            {togglingKey === item.itemKey
+                              ? 'Saving…'
+                              : item.isAvailable
+                              ? 'Mark Sold Out'
+                              : 'Restore to Available'}
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
                 </tbody>
               </table>
             </div>

@@ -202,7 +202,12 @@ const BEVERAGE_CATEGORIES = [
 
 
 
-function Menu({ addToCart, activeTable, endTableSession, cart = [], updateCartQty }) {
+function Menu({ addToCart, activeTable, endTableSession, cart = [], updateCartQty, unavailableKeys = [], isUnavailable }) {
+  const checkIsSoldOut = (item) => {
+    if (!item || !item.name) return false;
+    if (typeof isUnavailable === 'function') return isUnavailable(item.name);
+    return Array.isArray(unavailableKeys) && unavailableKeys.includes(item.name.trim().toLowerCase());
+  };
 
 
 
@@ -307,8 +312,10 @@ function Menu({ addToCart, activeTable, endTableSession, cart = [], updateCartQt
 
 
   const handleIncrease = (item) => {
-
-
+    if (checkIsSoldOut(item)) {
+      showToast(`⚠️ "${item.name}" is sold out.`);
+      return;
+    }
 
     const cartItem = getCartItem(item);
 
@@ -555,8 +562,10 @@ function Menu({ addToCart, activeTable, endTableSession, cart = [], updateCartQt
 
 
   const handleAdd = (item) => {
-
-
+    if (checkIsSoldOut(item)) {
+      showToast(`⚠️ "${item.name}" is currently sold out.`);
+      return;
+    }
 
     const selected = item.multi
 
@@ -1342,7 +1351,7 @@ function Menu({ addToCart, activeTable, endTableSession, cart = [], updateCartQt
 
 
 
-                <article key={item.name} className="menu-card" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+                <article key={item.name} className={`menu-card ${checkIsSoldOut(item) ? "menu-card-sold-out" : ""}`} style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
 
 
 
@@ -1486,23 +1495,15 @@ function Menu({ addToCart, activeTable, endTableSession, cart = [], updateCartQt
 
 
 
-                    {item.badge && (
-
-
-
-                      <span className="menu-card-badge">
-
-
-
-                        ⭐ {item.badge}
-
-
-
+                    {checkIsSoldOut(item) ? (
+                      <span className="menu-card-badge sold-out-badge">
+                        Sold Out
                       </span>
-
-
-
-                    )}
+                    ) : item.badge ? (
+                      <span className="menu-card-badge">
+                        ⭐ {item.badge}
+                      </span>
+                    ) : null}
 
 
 
@@ -1934,34 +1935,21 @@ function Menu({ addToCart, activeTable, endTableSession, cart = [], updateCartQt
 
 
 
-                          return (
-
-
-
-                            <>
-
-
-
-                              <span style={{ fontSize: '0.8rem', color: 'var(--text-light)', fontWeight: 600 }}>Add to order</span>
-
-
-
-                              <button className="btn-add" type="button" onClick={() => handleAdd(item)} aria-label={`Add ${item.name} to cart`}>
-
-
-
-                                +
-
-
-
+                          if (checkIsSoldOut(item)) {
+                            return (
+                              <button className="btn-add btn-sold-out" type="button" disabled aria-label={`${item.name} is sold out`}>
+                                Sold Out
                               </button>
+                            );
+                          }
 
-
-
+                          return (
+                            <>
+                              <span style={{ fontSize: '0.8rem', color: 'var(--text-light)', fontWeight: 600 }}>Add to order</span>
+                              <button className="btn-add" type="button" onClick={() => handleAdd(item)} aria-label={`Add ${item.name} to cart`}>
+                                +
+                              </button>
                             </>
-
-
-
                           );
 
 

@@ -3,7 +3,21 @@ import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import { useToast } from './ToastProvider';
 
-function CheckoutModal({ open, cart, total, payment, setPayment, onClose, onClearCart, activeTable, tableSessionExpiry, onClearSession }) {
+function CheckoutModal({
+  open,
+  cart,
+  total,
+  payment,
+  setPayment,
+  onClose,
+  onClearCart,
+  activeTable,
+  tableSessionExpiry,
+  onClearSession,
+  unavailableKeys = [],
+  isUnavailable,
+  onRefreshAvailability,
+}) {
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
@@ -119,6 +133,29 @@ function CheckoutModal({ open, cart, total, payment, setPayment, onClose, onClea
 
     setIsLoading(true);
     try {
+      // Revalidate menu availability right before order placement
+      try {
+        const availRes = await api.get('/menu/availability', {
+          headers: { 'Cache-Control': 'no-cache' },
+          params: { _t: Date.now() },
+        });
+        const freshUnavailable = Array.isArray(availRes.data?.unavailableKeys) ? availRes.data.unavailableKeys : [];
+        const soldOutInCart = cart.filter((item) => {
+          const key = String(item.name || '').trim().toLowerCase();
+          return freshUnavailable.includes(key);
+        });
+
+        if (soldOutInCart.length > 0) {
+          const itemNames = soldOutInCart.map((i) => i.name).join(', ');
+          toast(`⚠️ Cannot place order: "${itemNames}" is sold out. Please return to cart and remove it.`);
+          if (onRefreshAvailability) onRefreshAvailability();
+          setIsLoading(false);
+          return;
+        }
+      } catch (checkErr) {
+        console.warn('Live pre-order availability check warning:', checkErr.message);
+      }
+
       if (!idempotencyKeyRef.current) {
         idempotencyKeyRef.current = typeof crypto !== 'undefined' && crypto.randomUUID
           ? crypto.randomUUID()
@@ -141,8 +178,14 @@ function CheckoutModal({ open, cart, total, payment, setPayment, onClose, onClea
       idempotencyKeyRef.current = null;
       toast(`Order ${order._id} created successfully`);
     } catch (error) {
-      const message = error.response?.data?.message || 'Failed to place order';
-      toast(message);
+      if (error.response?.data?.code === 'ITEM_UNAVAILABLE') {
+        const message = error.response.data.message || 'One or more items in your cart are currently sold out.';
+        toast(`⚠️ ${message}`);
+        if (onRefreshAvailability) onRefreshAvailability();
+      } else {
+        const message = error.response?.data?.message || 'Failed to place order';
+        toast(message);
+      }
     } finally {
       setIsLoading(false);
     }

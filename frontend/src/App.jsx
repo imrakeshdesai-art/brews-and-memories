@@ -25,6 +25,7 @@ const TrackOrder = lazy(() => import('./pages/TrackOrder'));
 
 import Footer from './components/Footer';
 import ReservationModal from './components/ReservationModal';
+import useMenuAvailability from './hooks/useMenuAvailability';
 
 const defaultCart = [];
 
@@ -40,6 +41,7 @@ function App() {
     return localStorage.getItem('theme') || 'light';
   });
   const location = useLocation();
+  const { unavailableKeys, unavailableItems, refreshAvailability, isUnavailable } = useMenuAvailability();
 
   useEffect(() => {
     document.body.className = theme === 'dark' ? 'theme-dark' : 'theme-light';
@@ -113,6 +115,11 @@ function App() {
       alert('Your table ordering session has expired. Please scan the QR code on your table again to continue ordering.');
       return;
     }
+    // Prevent adding sold out items
+    if (isUnavailable(item.name)) {
+      alert(`Sorry, "${item.name}" is currently sold out and unavailable.`);
+      return;
+    }
     setCart((current) => {
       const existing = current.find((entry) => entry.name === item.name && entry.variant === item.variant);
       if (existing) {
@@ -131,6 +138,13 @@ function App() {
       handleClearSession();
       alert('Your table ordering session has expired. Please scan the QR code on your table again to continue ordering.');
       return;
+    }
+    if (qty > 0) {
+      const targetItem = cart.find((item) => item.id === id);
+      if (targetItem && isUnavailable(targetItem.name)) {
+        alert(`Sorry, "${targetItem.name}" is currently sold out and cannot be increased.`);
+        return;
+      }
     }
     setCart((current) =>
       current
@@ -225,6 +239,10 @@ function App() {
     tableSessionExpiry,
     endTableSession,
     onClearSession: handleClearSession,
+    unavailableKeys,
+    unavailableItems,
+    refreshAvailability,
+    isUnavailable,
   };
 
   const isPrintPage = 
@@ -284,6 +302,8 @@ function App() {
             onRemove={removeFromCart}
             onCheckout={handleCheckoutOpen}
             activeTable={activeTable}
+            unavailableKeys={unavailableKeys}
+            isUnavailable={isUnavailable}
           />
         )}
         <CheckoutModal
@@ -297,6 +317,9 @@ function App() {
           activeTable={activeTable}
           tableSessionExpiry={tableSessionExpiry}
           onClearSession={handleClearSession}
+          unavailableKeys={unavailableKeys}
+          isUnavailable={isUnavailable}
+          onRefreshAvailability={refreshAvailability}
         />
         <ReservationModal
           open={isReserveOpen}

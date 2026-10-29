@@ -7,6 +7,7 @@ const express = require('express');
 const router = express.Router();
 
 const Order = require('../models/Order');
+const MenuAvailability = require('../models/MenuAvailability');
 const { calculateOrderTotal } = require('../data/menuCatalog');
 const { sendOrderWhatsApp } = require('../utils/whatsapp');
 const { sendOrderEmail } = require('../utils/email');
@@ -20,6 +21,75 @@ const trackLimiter = rateLimit({
   message: { message: 'Too many tracking requests. Please slow down.' },
 });
 
+
+/**
+ * Canonicalizes an array of items for order comparison.
+ * Normalizes item names to lowercase, variants to uppercase, and sorts deterministically.
+ */
+function canonicalizeOrderItems(items) {
+  if (!Array.isArray(items)) return [];
+  return items
+    .map((item) => ({
+      name: String(item.name || '').trim().toLowerCase(),
+      variant: String(item.variant || '').trim().toUpperCase(),
+      qty: Number(item.qty || 0),
+      price: Number(item.price || 0),
+    }))
+    .sort((a, b) => {
+      const nameCmp = a.name.localeCompare(b.name);
+      if (nameCmp !== 0) return nameCmp;
+      const variantCmp = a.variant.localeCompare(b.variant);
+      if (variantCmp !== 0) return variantCmp;
+      return a.qty - b.qty;
+    });
+}
+
+/**
+ * Compares an existing order document against an incoming order payload.
+ * Verifies that customer identity, delivery table, payment mode, calculated total,
+ * and canonical item list (names, variants, quantities) are identical.
+ */
+function isOrderPayloadEquivalent(existingOrder, incoming) {
+  const { name, normalizedPhone, email, address, calculation, payment } = incoming;
+
+  // 1. Customer identity and delivery table
+  const phoneMatch = String(existingOrder.phone || '').trim() === normalizedPhone;
+  const addressMatch = String(existingOrder.address || '').trim() === address.trim();
+  const nameMatch = String(existingOrder.name || '').trim().toLowerCase() === String(name || '').trim().toLowerCase();
+  const emailMatch = String(existingOrder.email || '').trim().toLowerCase() === String(email || '').trim().toLowerCase();
+
+  // 2. Payment method
+  const incomingPayment = String(payment || 'counter').trim().toLowerCase();
+  const existingPayment = String(existingOrder.payment || 'counter').trim().toLowerCase();
+  const paymentMatch = existingPayment === incomingPayment;
+
+  if (!phoneMatch || !addressMatch || !nameMatch || !emailMatch || !paymentMatch) {
+    return false;
+  }
+
+  // 3. Total amount
+  if (Math.abs(Number(existingOrder.total) - Number(calculation.total)) > 0.01) {
+    return false;
+  }
+
+  // 4. Detailed item verification (names, variants, quantities)
+  const existingItems = canonicalizeOrderItems(existingOrder.items);
+  const incomingItems = canonicalizeOrderItems(calculation.items);
+
+  if (existingItems.length !== incomingItems.length) {
+    return false;
+  }
+
+  for (let i = 0; i < existingItems.length; i++) {
+    const a = existingItems[i];
+    const b = incomingItems[i];
+    if (a.name !== b.name || a.variant !== b.variant || a.qty !== b.qty) {
+      return false;
+    }
+  }
+
+  return true;
+}
 
 // ==================== CREATE ORDER ====================
 router.post('/', async (req, res) => {
@@ -81,7 +151,49 @@ router.post('/', async (req, res) => {
     // Check if an order with this idempotency key was already created
     const existingOrder = await Order.findOne({ idempotencyKey });
     if (existingOrder) {
+      // Verify complete payload to enforce idempotency contract
+      const isMatch = isOrderPayloadEquivalent(existingOrder, {
+        name,
+        normalizedPhone,
+        email,
+        address,
+        calculation,
+        payment,
+      });
+
+      if (!isMatch) {
+        return res.status(409).json({
+          message: 'Idempotency key was previously used with different order details.',
+        });
+      }
+
       return res.status(200).set('X-Idempotent-Replay', 'true').json(existingOrder);
+    }
+
+    // ==================== LIVE AVAILABILITY ENFORCEMENT ====================
+    let soldOutDocs = [];
+    if (mongoose.connection.readyState === 1 || MenuAvailability._isMocked) {
+      soldOutDocs = await MenuAvailability.find({ isAvailable: false }).lean();
+    }
+    if (soldOutDocs.length > 0) {
+      const unavailableSet = new Set(soldOutDocs.map((d) => d.itemKey));
+      const unavailableFound = [];
+
+      for (const item of calculation.items) {
+        const itemKey = String(item.name || '').trim().toLowerCase();
+        if (unavailableSet.has(itemKey)) {
+          unavailableFound.push(item.name);
+        }
+      }
+
+      if (unavailableFound.length > 0) {
+        const uniqueNames = [...new Set(unavailableFound)];
+        return res.status(400).json({
+          message: `Item "${uniqueNames.join(', ')}" is currently sold out and unavailable.`,
+          code: 'ITEM_UNAVAILABLE',
+          unavailableItems: uniqueNames,
+        });
+      }
     }
 
     // Generate cryptographically secure 32-byte tracking token (256 bits entropy)
@@ -109,6 +221,19 @@ router.post('/', async (req, res) => {
       if (createErr.code === 11000 && (createErr.keyPattern?.idempotencyKey || String(createErr.message).includes('idempotencyKey'))) {
         const racedOrder = await Order.findOne({ idempotencyKey });
         if (racedOrder) {
+          const isMatch = isOrderPayloadEquivalent(racedOrder, {
+            name,
+            normalizedPhone,
+            email,
+            address,
+            calculation,
+            payment,
+          });
+          if (!isMatch) {
+            return res.status(409).json({
+              message: 'Idempotency key was previously used with different order details.',
+            });
+          }
           return res.status(200).set('X-Idempotent-Replay', 'true').json(racedOrder);
         }
       }
