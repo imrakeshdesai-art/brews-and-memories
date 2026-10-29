@@ -38,9 +38,9 @@ const MENU_CATALOG = {
   },
   "green tea": {
     "name": "Green Tea",
-    "category": "Beverages",
+    "category": "Hot Tea",
     "multi": false,
-    "price": 40
+    "price": 109
   },
   "normal hot coffee": {
     "name": "Normal Hot Coffee",
@@ -49,22 +49,22 @@ const MENU_CATALOG = {
     "price": 30
   },
   "cold coffee": {
-    "name": "Cold Coffee",
-    "category": "Cold Beverages",
+    "name": "Classic Cold Coffee",
+    "category": "Classic Cold",
     "multi": false,
-    "price": 99
+    "price": 139
   },
   "chocolate cold coffee": {
     "name": "Chocolate Cold Coffee",
-    "category": "Cold Beverages",
+    "category": "Classic Cold",
     "multi": false,
-    "price": 109
+    "price": 149
   },
   "hazelnut cold coffee": {
     "name": "Hazelnut Cold Coffee",
-    "category": "Cold Beverages",
+    "category": "Classic Cold",
     "multi": false,
-    "price": 109
+    "price": 149
   },
   "cold coffee with vanilla ice cream": {
     "name": "Cold Coffee With Vanilla Ice Cream",
@@ -74,9 +74,9 @@ const MENU_CATALOG = {
   },
   "mint mojito": {
     "name": "Mint Mojito",
-    "category": "Cold Beverages",
+    "category": "Mojitos",
     "multi": false,
-    "price": 89
+    "price": 119
   },
   "blue lagoon": {
     "name": "Blue Lagoon",
@@ -106,7 +106,7 @@ const MENU_CATALOG = {
     "name": "Strawberry Milkshake",
     "category": "Milk Shakes",
     "multi": false,
-    "price": 119
+    "price": 169
   },
   "butterscotch milkshake": {
     "name": "Butterscotch Milkshake",
@@ -133,22 +133,22 @@ const MENU_CATALOG = {
     "price": 119
   },
   "banana milk shake": {
-    "name": "Banana Milk Shake",
+    "name": "Banana",
     "category": "Milk Shakes",
     "multi": false,
-    "price": 119
+    "price": 179
   },
   "oreo milk shake": {
-    "name": "Oreo Milk Shake",
+    "name": "Oreo",
     "category": "Milk Shakes",
     "multi": false,
-    "price": 119
+    "price": 129
   },
   "kit kat milk shake": {
-    "name": "Kit Kat Milk Shake",
+    "name": "Kit Kat",
     "category": "Milk Shakes",
     "multi": false,
-    "price": 119
+    "price": 129
   },
   "just cheese pizza": {
     "name": "Just Cheese Pizza",
@@ -539,6 +539,322 @@ const MENU_CATALOG = {
     "category": "Combos",
     "multi": false,
     "price": 238
+  },
+  "strawberry matcha": {
+    "name": "Strawberry Matcha",
+    "category": "Matcha (Special)",
+    "multi": false,
+    "price": 249
+  },
+  "mango matcha": {
+    "name": "Mango Matcha",
+    "category": "Matcha (Special)",
+    "multi": false,
+    "price": 249
+  },
+  "mixedberry matcha": {
+    "name": "Mixedberry Matcha",
+    "category": "Matcha (Special)",
+    "multi": false,
+    "price": 259
+  },
+  "coconut & float matcha": {
+    "name": "Coconut & Float Matcha",
+    "category": "Matcha (Special)",
+    "multi": false,
+    "price": 249
+  },
+  "classic lemonade": {
+    "name": "Classic Lemonade",
+    "category": "Mojitos",
+    "multi": false,
+    "price": 99
+  },
+  "green apple": {
+    "name": "Green Apple",
+    "category": "Mojitos",
+    "multi": false,
+    "price": 129
+  },
+  "green apple mojito": {
+    "name": "Green Apple",
+    "category": "Mojitos",
+    "multi": false,
+    "price": 129
+  },
+  "raspberry": {
+    "name": "Raspberry",
+    "category": "Mojitos",
+    "multi": false,
+    "price": 149
+  },
+  "raspberry mojito": {
+    "name": "Raspberry",
+    "category": "Mojitos",
+    "multi": false,
+    "price": 149
+  },
+  "rospberry": {
+    "name": "Raspberry",
+    "category": "Mojitos",
+    "multi": false,
+    "price": 149
+  },
+  "strawberry mojito": {
+    "name": "Strawberry Mojito",
+    "category": "Mojitos",
+    "multi": false,
+    "price": 149
+  },
+  "blue curacao": {
+    "name": "Blue Curacao",
+    "category": "Mojitos",
+    "multi": false,
+    "price": 149
+  },
+  "blue curaco": {
+    "name": "Blue Curacao",
+    "category": "Mojitos",
+    "multi": false,
+    "price": 149
+  },
+  "blue curacao mojito": {
+    "name": "Blue Curacao",
+    "category": "Mojitos",
+    "multi": false,
+    "price": 149
+  },
+  "kit kat": {
+    "name": "Kit Kat",
+    "category": "Milk Shakes",
+    "multi": false,
+    "price": 129
+  },
+  "oreo": {
+    "name": "Oreo",
+    "category": "Milk Shakes",
+    "multi": false,
+    "price": 129
+  },
+  "blue berry": {
+    "name": "Blueberry",
+    "category": "Milk Shakes",
+    "multi": false,
+    "price": 169
+  },
+  "blueberry": {
+    "name": "Blueberry",
+    "category": "Milk Shakes",
+    "multi": false,
+    "price": 169
+  },
+  "blueberry milkshake": {
+    "name": "Blueberry",
+    "category": "Milk Shakes",
+    "multi": false,
+    "price": 169
+  },
+  "dry fruit": {
+    "name": "Dry Fruit",
+    "category": "Milk Shakes",
+    "multi": false,
+    "price": 179
+  },
+  "dry fruit milkshake": {
+    "name": "Dry Fruit",
+    "category": "Milk Shakes",
+    "multi": false,
+    "price": 179
+  },
+  "banana": {
+    "name": "Banana",
+    "category": "Milk Shakes",
+    "multi": false,
+    "price": 179
+  },
+  "iced americano": {
+    "name": "Iced Americano",
+    "category": "Classic Cold",
+    "multi": false,
+    "price": 99
+  },
+  "iced mocha": {
+    "name": "Iced Mocha",
+    "category": "Classic Cold",
+    "multi": false,
+    "price": 159
+  },
+  "orange espresso": {
+    "name": "Orange Espresso",
+    "category": "Classic Cold",
+    "multi": false,
+    "price": 169
+  },
+  "cranberry espresso": {
+    "name": "Cranberry Espresso",
+    "category": "Classic Cold",
+    "multi": false,
+    "price": 169
+  },
+  "cran berry espresso": {
+    "name": "Cranberry Espresso",
+    "category": "Classic Cold",
+    "multi": false,
+    "price": 169
+  },
+  "espresso tonic": {
+    "name": "Espresso Tonic",
+    "category": "Classic Cold",
+    "multi": false,
+    "price": 169
+  },
+  "coconut iced espresso": {
+    "name": "Coconut Iced Espresso",
+    "category": "Classic Cold",
+    "multi": false,
+    "price": 129
+  },
+  "classic cold coffee": {
+    "name": "Classic Cold Coffee",
+    "category": "Classic Cold",
+    "multi": false,
+    "price": 139
+  },
+  "irish cold coffee": {
+    "name": "Irish Cold Coffee",
+    "category": "Classic Cold",
+    "multi": false,
+    "price": 159
+  },
+  "iced latte": {
+    "name": "Iced Latte",
+    "category": "Lattes",
+    "multi": false,
+    "price": 149
+  },
+  "hazelnut latte": {
+    "name": "Hazelnut Latte",
+    "category": "Lattes",
+    "tempVariant": true,
+    "priceHot": 139,
+    "priceCold": 159,
+    "price": 139
+  },
+  "spanish latte": {
+    "name": "Spanish Latte",
+    "category": "Lattes",
+    "tempVariant": true,
+    "priceHot": 139,
+    "priceCold": 179,
+    "price": 139
+  },
+  "vanilla latte": {
+    "name": "Vanilla Latte",
+    "category": "Lattes",
+    "tempVariant": true,
+    "priceHot": 129,
+    "priceCold": 159,
+    "price": 129
+  },
+  "caramel latte": {
+    "name": "Caramel Latte",
+    "category": "Lattes",
+    "tempVariant": true,
+    "priceHot": 139,
+    "priceCold": 169,
+    "price": 139
+  },
+  "matcha latte": {
+    "name": "Matcha Latte",
+    "category": "Lattes",
+    "tempVariant": true,
+    "priceHot": 189,
+    "priceCold": 209,
+    "price": 189
+  },
+  "espresso": {
+    "name": "Espresso",
+    "category": "Classic Hot",
+    "multi": false,
+    "price": 59
+  },
+  "americano": {
+    "name": "Americano",
+    "category": "Classic Hot",
+    "multi": false,
+    "price": 99
+  },
+  "cappuccino": {
+    "name": "Cappuccino",
+    "category": "Classic Hot",
+    "multi": false,
+    "price": 109
+  },
+  "caffe latte": {
+    "name": "Caffe Latte",
+    "category": "Classic Hot",
+    "multi": false,
+    "price": 119
+  },
+  "cortado": {
+    "name": "Cortado",
+    "category": "Classic Hot",
+    "multi": false,
+    "price": 99
+  },
+  "caffe mocha": {
+    "name": "Caffe Mocha",
+    "category": "Classic Hot",
+    "multi": false,
+    "price": 129
+  },
+  "biscoff latte": {
+    "name": "Biscoff Latte",
+    "category": "Classic Hot",
+    "multi": false,
+    "price": 149
+  },
+  "hot chocolate": {
+    "name": "Hot Chocolate",
+    "category": "Classic Hot",
+    "multi": false,
+    "price": 159
+  },
+  "affogato": {
+    "name": "Affogato",
+    "category": "Classic Hot",
+    "multi": false,
+    "price": 139
+  },
+  "lemon iced tea": {
+    "name": "Lemon Iced Tea",
+    "category": "Iced Tea",
+    "multi": false,
+    "price": 139
+  },
+  "peach iced tea": {
+    "name": "Peach Iced Tea",
+    "category": "Iced Tea",
+    "multi": false,
+    "price": 149
+  },
+  "passion fruit ice tea": {
+    "name": "Passion Fruit Iced Tea",
+    "category": "Iced Tea",
+    "multi": false,
+    "price": 149
+  },
+  "passion fruit iced tea": {
+    "name": "Passion Fruit Iced Tea",
+    "category": "Iced Tea",
+    "multi": false,
+    "price": 149
+  },
+  "chamomile tea": {
+    "name": "Chamomile Tea",
+    "category": "Hot Tea",
+    "multi": false,
+    "price": 129
   }
 };
 
@@ -548,6 +864,8 @@ function normalizeVariant(variant) {
   if (['S', 'SMALL'].includes(v)) return 'S';
   if (['M', 'MEDIUM'].includes(v)) return 'M';
   if (['L', 'LARGE'].includes(v)) return 'L';
+  if (['COLD', 'ICED', 'C', 'I'].includes(v)) return 'Cold';
+  if (['HOT', 'H'].includes(v)) return 'Hot';
   return v;
 }
 
@@ -582,7 +900,16 @@ function validateAndPriceItem(itemInput) {
   let unitPrice = 0;
   let finalVariant = '';
 
-  if (catalogItem.multi) {
+  if (catalogItem.tempVariant) {
+    const rawVariant = String(itemInput.variant || '').trim().toUpperCase();
+    if (['COLD', 'ICED', 'C', 'I'].includes(rawVariant)) {
+      finalVariant = 'Cold';
+      unitPrice = catalogItem.priceCold;
+    } else {
+      finalVariant = 'Hot';
+      unitPrice = catalogItem.priceHot;
+    }
+  } else if (catalogItem.multi) {
     finalVariant = normalizeVariant(itemInput.variant);
     if (!['S', 'M', 'L'].includes(finalVariant)) {
       return {

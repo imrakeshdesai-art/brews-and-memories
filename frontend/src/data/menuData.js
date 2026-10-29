@@ -1,179 +1,1315 @@
 export const menuData = {
-  'Beverages': [
+
+
+
+  'Classic Hot': [
+
+
+
     {
-      name: 'Masala Tea',
-      price: 30,
-      emoji: '🍵',
-      desc: 'Warm and soothing masala tea',
-      image: '/images/menu/items/Masala Tea.webp'
-    },
-    {
-      name: 'Boost',
-      price: 30,
+
+
+
+      name: 'Espresso',
+
+
+
+      price: 59,
+
+
+
       emoji: '☕',
-      desc: 'Warm and soothing boost',
-      image: '/images/menu/items/Boost.webp'
+
+
+
+      badge: 'CLASSIC',
+
+
+
+      desc: 'Bold, freshly pulled single espresso shot with rich golden crema'
+
+
+
     },
+
+
+
     {
-      name: 'Bournvita',
-      price: 30,
+
+
+
+      name: 'Americano',
+
+
+
+      price: 99,
+
+
+
       emoji: '☕',
-      desc: 'Warm and soothing bournvita',
-      image: '/images/menu/items/Bournvita.webp'
+
+
+
+      desc: 'Bold double espresso diluted with hot water for an unhurried, rich and clean cup'
+
+
+
     },
+
+
+
     {
-      name: 'Ginger Tea',
-      price: 40,
-      emoji: '🍵',
-      desc: 'Warm and soothing ginger tea',
-      image: '/images/menu/items/Ginger Tea.webp'
-    },
-    {
-      name: 'Ginger Lemon Tea',
-      price: 50,
-      emoji: '🍵',
-      desc: 'Warm and soothing ginger lemon tea',
-      image: '/images/menu/items/Ginger lemon tea.webp'
-    },
-    {
-      name: 'Green Tea',
-      price: 40,
-      emoji: '🍵',
-      desc: 'Warm and soothing green tea',
-      image: '/images/menu/items/Green Tea.webp'
-    },
-    {
-      name: 'Normal Hot Coffee',
-      price: 30,
+
+
+
+      name: 'Cappuccino',
+
+
+
+      price: 109,
+
+
+
       emoji: '☕',
-      desc: 'Warm and soothing normal hot coffee',
-      image: '/images/menu/items/Normal Hot Coffee.webp'
+
+
+
+      badge: 'BESTSELLER',
+
+
+
+      desc: 'Equal balance of espresso, velvety steamed milk, and dense airy microfoam'
+
+
+
     },
-  ],
-  'Cold Beverages': [
+
+
+
     {
-      name: 'Cold Coffee',
-      price: 99,
-      emoji: '🥤',
-      desc: 'Chilled and refreshing cold coffee',
-      image: '/images/menu/items/Cold Coffee.webp'
-    },
-    {
-      name: 'Chocolate Cold Coffee',
-      price: 109,
-      emoji: '🥤',
-      desc: 'Chilled and refreshing chocolate cold coffee',
-      image: '/images/menu/items/Chocolate Cold Coffee.webp'
-    },
-    {
-      name: 'Hazelnut Cold Coffee',
-      price: 109,
-      emoji: '🥤',
-      desc: 'Chilled and refreshing hazelnut cold coffee',
-      image: '/images/menu/items/Hazelnut Cold Coffee.webp'
-    },
-    {
-      name: 'Cold Coffee With Vanilla Ice Cream',
-      price: 139,
-      emoji: '🥤',
-      desc: 'Chilled and refreshing cold coffee with vanilla ice cream',
-      image: '/images/menu/items/Cold Coffee With Vanilla Ice Cream.webp'
-    },
-    {
-      name: 'Mint Mojito',
-      price: 89,
-      emoji: '🍹',
-      desc: 'Chilled and refreshing mint mojito',
-      image: '/images/menu/items/Mint Mojito.webp'
-    },
-    {
-      name: 'Blue Lagoon',
-      price: 99,
-      emoji: '🍹',
-      desc: 'Chilled and refreshing blue lagoon',
-      image: '/images/menu/items/Blue Lagoon.webp'
-    },
-    {
-      name: 'Lemon Soda',
-      price: 69,
-      emoji: '🍹',
-      desc: 'Chilled and refreshing lemon soda',
-      image: '/images/menu/items/Lemon Soda.webp'
-    },
-    {
-      name: 'Butterscotch Mojito',
-      price: 99,
-      emoji: '🍹',
-      desc: 'Chilled and refreshing butterscotch mojito',
-      image: '/images/menu/items/Butterscotch Mojito.webp'
-    },
-  ],
-  'Milk Shakes': [
-    {
-      name: 'Vanilla Milk Shake',
-      price: 109,
-      emoji: '🥛',
-      desc: 'Creamy and thick vanilla milk shake',
-      image: '/images/menu/items/Vanilla Milk Shake.webp'
-    },
-    {
-      name: 'Strawberry Milkshake',
+
+
+
+      name: 'Caffe Latte',
+
+
+
       price: 119,
-      emoji: '🍓',
-      desc: 'Creamy and thick strawberry milkshake',
-      image: '/images/menu/items/Strawberry Milkshake.webp'
+
+
+
+      emoji: '☕',
+
+
+
+      desc: 'Fresh espresso shot blended with plenty of steamed milk and a delicate top foam'
+
+
+
     },
+
+
+
     {
-      name: 'Butterscotch Milkshake',
-      price: 119,
-      emoji: '🥛',
-      desc: 'Creamy and thick butterscotch milkshake',
-      image: '/images/menu/items/Butterscotch Milkshake.webp'
+
+
+
+      name: 'Cortado',
+
+
+
+      price: 99,
+
+
+
+      emoji: '☕',
+
+
+
+      desc: 'Equal parts espresso and warm textured milk to cut the acidity smoothly'
+
+
+
     },
+
+
+
     {
-      name: 'Mango Milk Shake',
-      price: 119,
-      emoji: '🥭',
-      desc: 'Creamy and thick mango milk shake',
-      image: '/images/menu/items/Mango Milk Shake.webp'
-    },
-    {
-      name: 'Chocolate Milk Shake',
-      price: 139,
+
+
+
+      name: 'Caffe Mocha',
+
+
+
+      price: 129,
+
+
+
       emoji: '🍫',
-      desc: 'Creamy and thick chocolate milk shake',
-      image: '/images/menu/items/Chocolate Milk Shake.webp'
+
+
+
+      desc: 'Fresh espresso shot melted with rich chocolate ganache and textured steamed milk'
+
+
+
     },
+
+
+
     {
-      name: 'Orange Milk Shake',
-      price: 119,
-      emoji: '🍊',
-      desc: 'Creamy and thick orange milk shake',
-      image: '/images/menu/items/Orange Milk Shake.webp'
-    },
-    {
-      name: 'Banana Milk Shake',
-      price: 119,
-      emoji: '🍌',
-      desc: 'Creamy and thick banana milk shake',
-      image: '/images/menu/items/Banana Milk Shake.webp'
-    },
-    {
-      name: 'Oreo Milk Shake',
-      price: 119,
+
+
+
+      name: 'Biscoff Latte',
+
+
+
+      price: 149,
+
+
+
       emoji: '🍪',
-      desc: 'Creamy and thick oreo milk shake',
-      badge: 'CUSTOMER FAVORITE',
-      image: '/images/menu/items/Oreo Milk Shake.webp'
+
+
+
+      badge: 'SPECIALTY',
+
+
+
+      desc: 'Caramelized Lotus Biscoff cookie spread melted into warm espresso and microfoam milk'
+
+
+
     },
+
+
+
     {
-      name: 'Kit Kat Milk Shake',
-      price: 119,
-      emoji: '🥛',
-      desc: 'Creamy and thick kit kat milk shake',
-      image: '/images/menu/items/Kit Kat Milk Shake.webp'
+
+
+
+      name: 'Hot Chocolate',
+
+
+
+      price: 159,
+
+
+
+      emoji: '🍫',
+
+
+
+      desc: 'Thick, comforting Belgian dark cocoa melted in creamy textured hot milk'
+
+
+
     },
+
+
+
+    {
+
+
+
+      name: 'Affogato',
+
+
+
+      price: 139,
+
+
+
+      emoji: '🍨',
+
+
+
+      desc: 'A generous scoop of rich vanilla ice cream drowned in a hot, freshly extracted espresso shot'
+
+
+
+    }
+
+
+
   ],
+
+
+
+  'Classic Cold': [
+
+
+
+    {
+
+
+
+      name: 'Iced Americano',
+
+
+
+      price: 99,
+
+
+
+      emoji: '🧊',
+
+
+
+      desc: 'Bold double espresso shot pulled over crystal ice and chilled water'
+
+
+
+    },
+
+
+
+    {
+
+
+
+      name: 'Iced Mocha',
+
+
+
+      price: 159,
+
+
+
+      emoji: '🍫',
+
+
+
+      desc: 'Rich dark chocolate combined with fresh espresso, chilled milk, and ice cubes'
+
+
+
+    },
+
+
+
+    {
+
+
+
+      name: 'Orange Espresso',
+
+
+
+      price: 169,
+
+
+
+      emoji: '🍊',
+
+
+
+      badge: 'SIGNATURE',
+
+
+
+      desc: 'Tangy chilled orange juice layered beneath a freshly pulled aromatic espresso shot'
+
+
+
+    },
+
+
+
+    {
+
+
+
+      name: 'Cranberry Espresso',
+
+
+
+      price: 169,
+
+
+
+      emoji: '🍒',
+
+
+
+      desc: 'Tart ruby cranberry juice topped with crisp espresso for a fruity, energizing kick'
+
+
+
+    },
+
+
+
+    {
+
+
+
+      name: 'Espresso Tonic',
+
+
+
+      price: 169,
+
+
+
+      emoji: '🫧',
+
+
+
+      desc: 'Sparkling tonic water poured with double espresso crema — botanical, crisp, and refreshing'
+
+
+
+    },
+
+
+
+    {
+
+
+
+      name: 'Coconut Iced Espresso',
+
+
+
+      price: 129,
+
+
+
+      emoji: '🥥',
+
+
+
+      desc: 'Refreshing sweet coconut water layered with rich espresso over ice'
+
+
+
+    },
+
+
+
+    {
+
+
+
+      name: 'Classic Cold Coffee',
+
+
+
+      price: 139,
+
+
+
+      emoji: '🥤',
+
+
+
+      badge: 'CUSTOMER FAVORITE',
+
+
+
+      desc: 'The Moras iconic thick cold coffee — slow-blended, rich, and velvety smooth',
+
+
+
+      image: '/images/menu/items/Cold Coffee.webp'
+
+
+
+    },
+
+
+
+    {
+
+
+
+      name: 'Chocolate Cold Coffee',
+
+
+
+      price: 149,
+
+
+
+      emoji: '🍫',
+
+
+
+      desc: 'Cold coffee blended with rich Belgian chocolate drizzle and chilled milk',
+
+
+
+      image: '/images/menu/items/Chocolate Cold Coffee.webp'
+
+
+
+    },
+
+
+
+    {
+
+
+
+      name: 'Hazelnut Cold Coffee',
+
+
+
+      price: 149,
+
+
+
+      emoji: '🌰',
+
+
+
+      desc: 'Chilled coffee infused with aromatic roasted hazelnut praline syrup',
+
+
+
+      image: '/images/menu/items/Hazelnut Cold Coffee.webp'
+
+
+
+    },
+
+
+
+    {
+
+
+
+      name: 'Irish Cold Coffee',
+
+
+
+      price: 159,
+
+
+
+      emoji: '☕',
+
+
+
+      desc: 'Smooth cold coffee infused with creamy non-alcoholic Irish cream essence'
+
+
+
+    }
+
+
+
+  ],
+
+
+
+  'Lattes': [
+
+
+
+    {
+
+
+
+      name: 'Iced Latte',
+
+
+
+      price: 149,
+
+
+
+      emoji: '🧊',
+
+
+
+      desc: 'Smooth chilled milk layered over a fresh double espresso shot from our coffee machine'
+
+
+
+    },
+
+
+
+    {
+
+
+
+      name: 'Hazelnut Latte',
+
+
+
+      tempVariant: true,
+
+
+
+      priceHot: 139,
+
+
+
+      priceCold: 159,
+
+
+
+      price: 139,
+
+
+
+      emoji: '🌰',
+
+
+
+      desc: 'Silky milk and espresso infused with nutty roasted hazelnut (available hot or iced)'
+
+
+
+    },
+
+
+
+    {
+
+
+
+      name: 'Spanish Latte',
+
+
+
+      tempVariant: true,
+
+
+
+      priceHot: 139,
+
+
+
+      priceCold: 179,
+
+
+
+      price: 139,
+
+
+
+      emoji: '🇪🇸',
+
+
+
+      badge: 'POPULAR',
+
+
+
+      desc: 'Rich espresso folded with sweet condensed milk and textured milk (hot or iced)'
+
+
+
+    },
+
+
+
+    {
+
+
+
+      name: 'Vanilla Latte',
+
+
+
+      tempVariant: true,
+
+
+
+      priceHot: 129,
+
+
+
+      priceCold: 159,
+
+
+
+      price: 129,
+
+
+
+      emoji: '🍦',
+
+
+
+      desc: 'Madagascar vanilla harmonized with fresh espresso and textured milk (hot or iced)'
+
+
+
+    },
+
+
+
+    {
+
+
+
+      name: 'Caramel Latte',
+
+
+
+      tempVariant: true,
+
+
+
+      priceHot: 139,
+
+
+
+      priceCold: 169,
+
+
+
+      price: 139,
+
+
+
+      emoji: '🍮',
+
+
+
+      desc: 'Buttery golden caramel swirled into velvety espresso and textured milk (hot or iced)'
+
+
+
+    },
+
+
+
+    {
+
+
+
+      name: 'Matcha Latte',
+
+
+
+      tempVariant: true,
+
+
+
+      priceHot: 189,
+
+
+
+      priceCold: 209,
+
+
+
+      price: 189,
+
+
+
+      emoji: '🍵',
+
+
+
+      desc: 'Artisanal stone-ground matcha whisked into silky textured milk (hot or iced)'
+
+
+
+    }
+
+
+
+  ],
+
+
+
+  'Matcha (Special)': [
+
+
+
+    {
+
+
+
+      name: 'Strawberry Matcha',
+
+
+
+      price: 249,
+
+
+
+      emoji: '🍵',
+
+
+
+      badge: 'TRENDING',
+
+
+
+      desc: 'Layered premium Japanese ceremonial matcha over sweet strawberry puree and cold milk'
+
+
+
+    },
+
+
+
+    {
+
+
+
+      name: 'Mango Matcha',
+
+
+
+      price: 249,
+
+
+
+      emoji: '🥭',
+
+
+
+      desc: 'Tropical Alphonso mango puree balanced with earthy, vibrant stone-ground matcha'
+
+
+
+    },
+
+
+
+    {
+
+
+
+      name: 'Mixedberry Matcha',
+
+
+
+      price: 259,
+
+
+
+      emoji: '🫐',
+
+
+
+      desc: 'Medley of crushed wild berries layered under cold whisked matcha green tea'
+
+
+
+    },
+
+
+
+    {
+
+
+
+      name: 'Coconut & Float Matcha',
+
+
+
+      price: 249,
+
+
+
+      emoji: '🥥',
+
+
+
+      desc: 'Silky coconut milk matcha topped with an artisanal sweet cream float'
+
+
+
+    }
+
+
+
+  ],
+
+
+
+  'Mojitos': [
+
+
+
+    {
+
+
+
+      name: 'Classic Lemonade',
+
+
+
+      price: 99,
+
+
+
+      emoji: '🍋',
+
+
+
+      desc: 'Zesty sparkling freshly squeezed lemon soda with fresh garden mint and cracked ice'
+
+
+
+    },
+
+
+
+    {
+
+
+
+      name: 'Green Apple',
+
+
+
+      price: 129,
+
+
+
+      emoji: '🍏',
+
+
+
+      desc: 'Crisp green apple syrup muddled with mint leaves, lemon chunks, and chilled sparkling soda'
+
+
+
+    },
+
+
+
+    {
+
+
+
+      name: 'Mint Mojito',
+
+
+
+      price: 119,
+
+
+
+      emoji: '🌿',
+
+
+
+      desc: 'Classic crushed garden mint, tangy lime wedges, and effervescent bubbles',
+
+
+
+      image: '/images/menu/items/Mint Mojito.webp'
+
+
+
+    },
+
+
+
+    {
+
+
+
+      name: 'Raspberry',
+
+
+
+      price: 149,
+
+
+
+      emoji: '🍇',
+
+
+
+      desc: 'Sweet and tart wild raspberry infusion with fresh mint and sparkling soda'
+
+
+
+    },
+
+
+
+    {
+
+
+
+      name: 'Strawberry Mojito',
+
+
+
+      price: 149,
+
+
+
+      emoji: '🍓',
+
+
+
+      desc: 'Juicy crushed strawberry puree with zesty lime and effervescent soda'
+
+
+
+    },
+
+
+
+    {
+
+
+
+      name: 'Blue Curacao',
+
+
+
+      price: 149,
+
+
+
+      emoji: '🍹',
+
+
+
+      desc: 'Vibrant citrus blue curacao with sparkling lime and cooling mint',
+
+
+
+      image: '/images/menu/items/Blue Lagoon.webp'
+
+
+
+    }
+
+
+
+  ],
+
+
+
+  'Milk Shakes': [
+
+
+
+    {
+
+
+
+      name: 'Kit Kat',
+
+
+
+      price: 129,
+
+
+
+      emoji: '🍫',
+
+
+
+      badge: 'BESTSELLER',
+
+
+
+      desc: 'Thick creamy milkshake blended with crunchy Kit Kat chocolate bars and chocolate drizzle',
+
+
+
+      image: '/images/menu/items/Kit Kat Milk Shake.webp'
+
+
+
+    },
+
+
+
+    {
+
+
+
+      name: 'Oreo',
+
+
+
+      price: 129,
+
+
+
+      emoji: '🍪',
+
+
+
+      badge: 'CUSTOMER FAVORITE',
+
+
+
+      desc: 'Rich vanilla milkshake blitzed with crunchy dark Oreo cookies and whipped cream',
+
+
+
+      image: '/images/menu/items/Oreo Milk Shake.webp'
+
+
+
+    },
+
+
+
+    {
+
+
+
+      name: 'Blueberry',
+
+
+
+      price: 169,
+
+
+
+      emoji: '🫐',
+
+
+
+      desc: 'Lush wild blueberry shake blended with thick milk and rich vanilla ice cream'
+
+
+
+    },
+
+
+
+    {
+
+
+
+      name: 'Dry Fruit',
+
+
+
+      price: 179,
+
+
+
+      emoji: '🥜',
+
+
+
+      badge: 'PREMIUM',
+
+
+
+      desc: 'Nourishing rich thick shake loaded with almonds, cashews, pistachios, and raisins'
+
+
+
+    },
+
+
+
+    {
+
+
+
+      name: 'Banana',
+
+
+
+      price: 179,
+
+
+
+      emoji: '🍌',
+
+
+
+      desc: 'Naturally sweet ripe bananas blended thick with creamy milk and rich ice cream',
+
+
+
+      image: '/images/menu/items/Banana Milk Shake.webp'
+
+
+
+    },
+
+
+
+    {
+
+
+
+      name: 'Strawberry Milkshake',
+
+
+
+      price: 169,
+
+
+
+      emoji: '🍓',
+
+
+
+      desc: 'Classic thick and luscious strawberry shake with strawberry cream swirl',
+
+
+
+      image: '/images/menu/items/Strawberry Milkshake.webp'
+
+
+
+    }
+
+
+
+  ],
+
+
+
+  'Iced Tea': [
+
+
+
+    {
+
+
+
+      name: 'Lemon Iced Tea',
+
+
+
+      price: 139,
+
+
+
+      emoji: '🍋',
+
+
+
+      desc: 'Chilled steeped black tea infused with fresh lemon and crushed ice'
+
+
+
+    },
+
+
+
+    {
+
+
+
+      name: 'Peach Iced Tea',
+
+
+
+      price: 149,
+
+
+
+      emoji: '🍑',
+
+
+
+      desc: 'Aromatic iced tea delicately infused with sweet orchard peach essence'
+
+
+
+    },
+
+
+
+    {
+
+
+
+      name: 'Passion Fruit Iced Tea',
+
+
+
+      price: 149,
+
+
+
+      emoji: '🌺',
+
+
+
+      desc: 'Exotic tropical passion fruit paired with refreshing chilled black tea'
+
+
+
+    }
+
+
+
+  ],
+
+
+
+  'Hot Tea': [
+
+
+
+    {
+
+
+
+      name: 'Green Tea',
+
+
+
+      price: 109,
+
+
+
+      emoji: '🍵',
+
+
+
+      desc: 'Pure antioxidant-rich whole leaf green tea steeped to gentle perfection',
+
+
+
+      image: '/images/menu/items/Green Tea.webp'
+
+
+
+    },
+
+
+
+    {
+
+
+
+      name: 'Chamomile Tea',
+
+
+
+      price: 129,
+
+
+
+      emoji: '🌼',
+
+
+
+      desc: 'Naturally caffeine-free herbal floral brew known for its soothing aroma and calming warmth'
+
+
+
+    }
+
+
+
+  ],
+
+
+
   'Pizza': [
     {
       name: 'Just Cheese Pizza',
