@@ -47,7 +47,7 @@ This workspace now contains a full-stack upgrade for Brews & Memories Café.
 
 ## Deployment
 
-### Frontend Deployment (Vercel/Netlify)
+### Frontend Deployment (Cloudflare Pages)
 
 **Build locally first:**
 ```bash
@@ -55,11 +55,13 @@ cd frontend
 npm run build
 ```
 
-**Deploy to Vercel:**
-```bash
-npm install -g vercel
-vercel --prod
-```
+**Deploy to Cloudflare Pages:**
+Connect your repository in Cloudflare Pages dashboard:
+- Framework preset: Vite
+- Root directory: `frontend`
+- Build command: `npm run build`
+- Build output directory: `dist`
+- Custom Domain: `themorascafe.in`
 
 **Deploy to Netlify:**
 1. Connect your Git repository to Netlify
@@ -120,7 +122,7 @@ flyctl deploy
 - ✅ Configure `ALLOWED_ORIGINS` with your frontend domain
 - ✅ Use strong `ADMIN_PASSWORD` (never use the default)
 - ✅ Enable HTTPS on backend and frontend
-- ✅ Set up SSL/TLS certificate (automatic on Vercel/Netlify/Render)
+- ✅ Set up SSL/TLS certificate (automatic on Cloudflare/Render)
 - ✅ Monitor backend logs for errors
 - ✅ Test admin login and order workflow in production
 

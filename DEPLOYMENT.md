@@ -6,7 +6,7 @@ This guide walks you through deploying the Brews & Memories app to production.
 
 - Git repository (GitHub, GitLab, or Bitbucket)
 - MongoDB Atlas account (free tier available)
-- Frontend hosting account (Vercel or Netlify)
+- Frontend hosting account (Cloudflare Pages)
 - Backend hosting account (Render, Railway, or Fly.io)
 
 ## Step 1: Prepare Backend Environment
@@ -114,21 +114,20 @@ This guide walks you through deploying the Brews & Memories app to production.
 
 ## Step 3: Deploy Frontend
 
-### Option A: Deploy to Vercel
+### Option A: Deploy to Cloudflare Pages (Production Standard)
 
-1. Go to [vercel.com](https://vercel.com)
-2. Sign up with GitHub
-3. Click "Import Project" and select your repository
-4. Configure:
-   - **Framework:** Vite
-   - **Root Directory:** `frontend`
-   - **Build Command:** `npm run build`
-   - **Output Directory:** `dist`
+1. Go to [dash.cloudflare.com](https://dash.cloudflare.com)
+2. Navigate to **Workers & Pages** → **Create application** → **Pages** → **Connect to Git**
+3. Select the `imrakeshdesai-art/brews-and-memories` repository
+4. Configure Build Settings:
+   - **Framework preset:** Vite
+   - **Root directory:** `frontend`
+   - **Build command:** `npm run build`
+   - **Build output directory:** `dist`
 5. Add Environment Variable:
-   - `VITE_API_BASE_URL` = (your backend URL from step 2)
-   - Example: `https://brews-memories-backend.onrender.com`
-6. Click "Deploy"
-7. **Your frontend is now live** at `https://[project].vercel.app`
+   - `VITE_API_BASE_URL` = `https://brews-backend.onrender.com`
+6. Click **Save and Deploy**
+7. **Custom Domain:** Under **Custom domains**, connect `themorascafe.in`. Cloudflare automatically provisions edge SSL and global CDN caching.
 
 ### Option B: Deploy to Netlify
 
@@ -165,7 +164,7 @@ This guide walks you through deploying the Brews & Memories app to production.
 ## Step 5: Configure Custom Domain (Optional)
 
 ### Frontend Domain
-- **Vercel:** Add domain in Project Settings → Domains
+- **Cloudflare Pages:** Add domain in Project Settings → Custom Domains
 - **Netlify:** Add domain in Site settings → Domain management
 
 ### Backend Domain

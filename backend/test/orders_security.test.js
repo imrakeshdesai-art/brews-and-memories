@@ -345,11 +345,11 @@ async function runTests() {
     {
       name: '10. Strict CORS Enforcement — Only approved origins allowed, wildcard subdomains rejected',
       fn: async () => {
-        // Approved production Vercel domain -> 200
+        // Retired legacy Vercel domain -> 500 (Decommissioned)
         const resVercel = await request('/api/health', {
           headers: { Origin: 'https://themorascafe.vercel.app' },
         });
-        assert.strictEqual(resVercel.status, 200);
+        assert.strictEqual(resVercel.status, 500);
 
         // Approved primary custom domain -> 200
         const resCustom = await request('/api/health', {

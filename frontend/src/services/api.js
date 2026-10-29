@@ -8,7 +8,7 @@ const isLocal =
   window.location.hostname === '127.0.0.1';
 
 // Local: Vite proxy handles /api → localhost:5000, but file protocol needs explicit host
-// Production (Cloudflare Pages / Vercel): calls go directly to Render backend
+// Production (Cloudflare Pages): calls go directly to Render backend
 const API_BASE = isFileProtocol
   ? 'http://localhost:5000'
   : isLocal
