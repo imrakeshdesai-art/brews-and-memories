@@ -8,7 +8,11 @@ const reservationSchema = new mongoose.Schema({
   date: { type: String, required: true },
   time: { type: String, required: true },
   notes: { type: String, default: '', trim: true },
-  amount: { type: Number, default: 10 },
+  eventType: { type: String, default: 'birthday' },
+  birthdayPerson: { type: String, default: '', trim: true },
+  amount: { type: Number, default: 59 }, // Advance booking token
+  packagePrice: { type: Number, default: 199 }, // Birthday setup package price
+  remainingBalance: { type: Number, default: 140 }, // Balance payable on event day (199 - 59)
   paymentMethod: { type: String, default: 'UPI' },
   paymentStatus: {
     type: String,

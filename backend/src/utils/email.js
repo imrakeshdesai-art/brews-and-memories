@@ -392,16 +392,31 @@ https://themorascafe.com
 `;
 }
 
-// ── HTML Table Reservation Email Template ─────────────────────────────────────
-function buildReservationEmailHTML({ name, date, time, guests, notes, amount = 10, upiRef, _id }) {
+// ── HTML Birthday Reservation Email Template ──────────────────────────────────
+function buildReservationEmailHTML(reservationData) {
+  const { 
+    name = 'Guest', 
+    date = '', 
+    time = '', 
+    guests = 1, 
+    notes = '', 
+    amount = 59, 
+    packagePrice = 199,
+    remainingBalance = 140,
+    birthdayPerson = '',
+    upiRef = '', 
+    _id 
+  } = reservationData;
   const refCode = _id ? String(_id).slice(-6).toUpperCase() : 'CONFIRMED';
+  const celebrateWho = birthdayPerson || name;
+
   return `
 <!DOCTYPE html>
 <html>
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Table Reservation Confirmed &mdash; The Moras Cafe</title>
+  <title>Birthday Celebration Confirmed &mdash; The Moras Cafe</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
     body { font-family: 'Plus Jakarta Sans', 'Segoe UI', -apple-system, BlinkMacSystemFont, Arial, sans-serif; }
@@ -428,16 +443,24 @@ function buildReservationEmailHTML({ name, date, time, guests, notes, amount = 1
                     </div>
                   </div>
                   <div style="color:#fbbf24;font-size:12px;letter-spacing:4px;text-transform:uppercase;font-weight:800;margin-bottom:6px">The Moras Cafe</div>
-                  <h1 style="color:#fff;margin:0;font-size:26px;font-weight:800;font-family:'Playfair Display', Georgia, serif;letter-spacing:-0.5px">Table Reserved! &#x1F942;</h1>
-                  <p style="color:rgba(255,255,255,0.85);margin:8px 0 0;font-size:14px;font-style:italic;font-family:'Playfair Display', Georgia, serif">Vijayapura's Cozy Living Room</p>
+                  <h1 style="color:#fff;margin:0;font-size:26px;font-weight:800;font-family:'Playfair Display', Georgia, serif;letter-spacing:-0.5px">Birthday Celebration Confirmed! &#x1F382;&#x2728;</h1>
+                  <p style="color:rgba(255,255,255,0.85);margin:8px 0 0;font-size:14px;font-style:italic;font-family:'Playfair Display', Georgia, serif">Vijayapura's Warm Celebration Sanctuary</p>
                 </div>
 
                 <!-- Body -->
                 <div class="email-body" style="padding:28px">
                   <p style="color:#2d2d2d;font-size:15px;line-height:1.6;margin:0 0 20px;font-family:'Plus Jakarta Sans', Arial, sans-serif">
-                    Dear <strong>${name}</strong>, &#x1F44B;<br/><br/>
-                    We are thrilled to confirm your table reservation at <strong>The Moras Cafe</strong>! Your table is set and our team looks forward to hosting you for an unforgettable time.
+                    Dear <strong>${name}</strong>, &#x1F389;<br/><br/>
+                    We are thrilled to confirm your birthday celebration booking for <strong>${celebrateWho}</strong> at <strong>The Moras Cafe</strong>! Your illuminated "Happy Birthday" stand with glowing lights and celebration area are ready.
                   </p>
+
+                  <!-- Important Bring Cake Notice -->
+                  <div style="background:#fff7ed;border-radius:12px;padding:16px 20px;border:1px solid #fed7aa;margin-bottom:20px">
+                    <div style="font-size:11px;color:#c2410c;text-transform:uppercase;letter-spacing:1.5px;font-weight:800;margin-bottom:4px">&#x1F382; BRING YOUR OWN CAKE (BYOC)</div>
+                    <div style="font-size:13px;color:#9a3412;line-height:1.5">
+                      <strong>Please bring your favorite birthday cake with you!</strong> We do not offer or bake cakes. We provide the illuminated "Happy Birthday" backdrop with ambient lights, cake stand, cutting knife, celebration plates, and party assistance.
+                    </div>
+                  </div>
 
                   <!-- Details Box -->
                   <div class="details-box" style="background:#faf8f5;border-radius:14px;padding:20px;margin-bottom:24px;border:1px solid #e8e2d2;box-shadow:inset 0 1px 3px rgba(0,0,0,0.02)">
@@ -445,12 +468,16 @@ function buildReservationEmailHTML({ name, date, time, guests, notes, amount = 1
                       <tr>
                         <td style="padding-bottom:14px;border-bottom:2px dashed #e8e2d2">
                           <div style="font-size:11px;color:#8e8a7e;letter-spacing:2px;text-transform:uppercase;font-weight:700;margin-bottom:4px">Booking Reference</div>
-                          <div style="font-size:16px;color:#0f3d3e;font-weight:800;font-family:monospace">#TMC-RES-${refCode}</div>
+                          <div style="font-size:16px;color:#0f3d3e;font-weight:800;font-family:monospace">#TMC-BDAY-${refCode}</div>
                         </td>
                       </tr>
                       <tr>
                         <td style="padding-top:14px">
                           <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse">
+                            <tr>
+                              <td style="padding:7px 0;font-size:14px;color:#666">&#x1F389; Celebration For</td>
+                              <td style="padding:7px 0;text-align:right;font-size:15px;font-weight:700;color:#0f3d3e">${celebrateWho}</td>
+                            </tr>
                             <tr>
                               <td style="padding:7px 0;font-size:14px;color:#666">&#x1F4C5; Date</td>
                               <td style="padding:7px 0;text-align:right;font-size:15px;font-weight:700;color:#0f3d3e">${date}</td>
@@ -460,12 +487,20 @@ function buildReservationEmailHTML({ name, date, time, guests, notes, amount = 1
                               <td style="padding:7px 0;text-align:right;font-size:15px;font-weight:700;color:#0f3d3e">${time}</td>
                             </tr>
                             <tr>
-                              <td style="padding:7px 0;font-size:14px;color:#666">&#x1F465; Party Size</td>
-                              <td style="padding:7px 0;text-align:right;font-size:15px;font-weight:700;color:#0f3d3e">${guests} Guests</td>
+                              <td style="padding:7px 0;font-size:14px;color:#666">&#x1F465; Number of People</td>
+                              <td style="padding:7px 0;text-align:right;font-size:15px;font-weight:700;color:#0f3d3e">${guests} People</td>
                             </tr>
                             <tr>
-                              <td style="padding:7px 0;font-size:14px;color:#666">&#x1F4B3; Advance Paid</td>
-                              <td style="padding:7px 0;text-align:right;font-size:15px;font-weight:800;color:#047857">&#x20B9;${amount} (UPI Paid &bull; Redeemable)</td>
+                              <td style="padding:7px 0;font-size:14px;color:#666">&#x1F380; Birthday Setup Fee</td>
+                              <td style="padding:7px 0;text-align:right;font-size:15px;font-weight:700;color:#0f3d3e">&#x20B9;${packagePrice}</td>
+                            </tr>
+                            <tr>
+                              <td style="padding:7px 0;font-size:14px;color:#666">&#x1F4B3; Advance Paid (UPI)</td>
+                              <td style="padding:7px 0;text-align:right;font-size:15px;font-weight:800;color:#047857">&#x20B9;${amount} (Confirmed)</td>
+                            </tr>
+                            <tr>
+                              <td style="padding:7px 0;font-size:14px;color:#666">&#x1F4B0; Balance Due at Cafe</td>
+                              <td style="padding:7px 0;text-align:right;font-size:15px;font-weight:800;color:#c2410c">&#x20B9;${remainingBalance} + food &amp; drinks ordered</td>
                             </tr>
                             ${upiRef ? `
                             <tr>
@@ -483,29 +518,29 @@ function buildReservationEmailHTML({ name, date, time, guests, notes, amount = 1
                     </table>
                   </div>
 
-                  <!-- Info Cards -->
+                  <!-- Billing Formula Card -->
                   <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px;border-collapse:separate;border-spacing:0 8px">
                     <tr>
                       <td style="background:#f0fdf4;border-radius:12px;padding:14px 18px;border:1px solid #bbf7d0">
-                        <div style="font-size:10px;color:#047857;text-transform:uppercase;letter-spacing:1.5px;font-weight:700;margin-bottom:2px">Location</div>
-                        <div style="font-size:14px;font-weight:700;color:#065f46">B.M. Patil Circle, Vijayapura, Karnataka</div>
+                        <div style="font-size:10px;color:#047857;text-transform:uppercase;letter-spacing:1.5px;font-weight:700;margin-bottom:2px">How Your Final Cafe Bill Works</div>
+                        <div style="font-size:13px;color:#065f46;line-height:1.5">
+                          <strong>Final Bill = Total amount of food/drinks you eat in cafe + &#x20B9;140</strong> (which is &#x20B9;199 setup package minus &#x20B9;59 advance already paid).
+                        </div>
                       </td>
                     </tr>
                     <tr>
-                      <td style="background:#fff7ed;border-radius:12px;padding:14px 18px;border:1px solid #fed7aa">
-                        <div style="font-size:10px;color:#c2410c;text-transform:uppercase;letter-spacing:1.5px;font-weight:700;margin-bottom:2px">100% Redeemable Advance</div>
-                        <div style="font-size:13px;color:#9a3412;line-height:1.5">
-                          Your &#x20B9;${amount} reservation fee guarantees your table and will be fully deducted from your cafe food and beverage bill! Tables are held for 15 minutes past the reserved time.
-                        </div>
+                      <td style="background:#faf8f5;border-radius:12px;padding:14px 18px;border:1px solid #e8e2d2">
+                        <div style="font-size:10px;color:#5e5a50;text-transform:uppercase;letter-spacing:1.5px;font-weight:700;margin-bottom:2px">Location</div>
+                        <div style="font-size:14px;font-weight:700;color:#0f3d3e">B.M. Patil Circle, Ring Road, Vijayapura</div>
                       </td>
                     </tr>
                   </table>
 
                   <!-- WhatsApp Button -->
                   <div style="text-align:center;margin-bottom:24px">
-                    <a href="https://wa.me/919945446137?text=Hi%20The%20Moras%20Cafe%2C%20regarding%20my%20table%20reservation%20%23TMC-RES-${refCode}" 
+                    <a href="https://wa.me/919945446137?text=Hi%20The%20Moras%20Cafe%2C%20regarding%20my%20birthday%20booking%20%23TMC-BDAY-${refCode}" 
                        style="display:inline-block;background:linear-gradient(135deg,#0f3d3e,#185c5d);color:#fff;text-decoration:none;padding:14px 28px;border-radius:50px;font-weight:700;font-size:14px;letter-spacing:0.5px;box-shadow:0 4px 12px rgba(15,61,62,0.25);border:2px solid #fbbf24">
-                      &#x1F4AC; WhatsApp Café Host
+                      &#x1F4AC; WhatsApp Birthday Coordinator
                     </a>
                   </div>
 
@@ -522,7 +557,7 @@ function buildReservationEmailHTML({ name, date, time, guests, notes, amount = 1
                 <div style="background:#0f3d3e;padding:20px 28px;text-align:center;border-top:3px solid #fbbf24">
                   <p style="margin:0;font-size:12px;color:rgba(255,255,255,0.7);line-height:1.6">
                     &copy; 2026 The Moras Cafe &middot; Vijayapura<br/>
-                    Follow our memories on Instagram 
+                    Follow our celebrations on Instagram 
                     <a href="https://www.instagram.com/themorascafe/" style="color:#fbbf24;font-weight:700;text-decoration:none">@themorascafe</a>
                   </p>
                 </div>
@@ -537,26 +572,49 @@ function buildReservationEmailHTML({ name, date, time, guests, notes, amount = 1
 </html>`;
 }
 
-// ── Plain-Text Email Template: Table Reservation ──────────────────────────────
-function buildReservationEmailText({ name, date, time, guests, notes, amount = 10, upiRef, _id }) {
+// ── Plain-Text Birthday Email Template ────────────────────────────────────────
+function buildReservationEmailText(reservationData) {
+  const { 
+    name = 'Guest', 
+    date = '', 
+    time = '', 
+    guests = 1, 
+    notes = '', 
+    amount = 59, 
+    packagePrice = 199,
+    remainingBalance = 140,
+    birthdayPerson = '',
+    upiRef = '', 
+    _id 
+  } = reservationData;
   const refCode = _id ? String(_id).slice(-6).toUpperCase() : 'CONFIRMED';
-  return `THE MORAS CAFE — Table Reservation Confirmed!
+  const celebrateWho = birthdayPerson || name;
+
+  return `THE MORAS CAFE — Birthday Celebration Confirmed! 🎂✨
 
 Dear ${name},
 
-We are thrilled to confirm your table reservation at The Moras Cafe!
+We are thrilled to host your birthday celebration for ${celebrateWho} at The Moras Cafe!
 
-Booking Reference: #TMC-RES-${refCode}
+Booking Reference: #TMC-BDAY-${refCode}
+Celebration For: ${celebrateWho}
 Date: ${date}
 Time Slot: ${time}
-Party Size: ${guests} Guests
-Advance Paid: Rs.${amount} (UPI Paid — 100% Redeemable against your cafe bill)
-${upiRef ? `UPI Reference: ${upiRef}\n` : ''}${notes ? `Special Notes: ${notes}\n` : ''}
-Location: B.M. Patil Circle, Ring Rd, Solapur Bypass, Vijayapura, KA 586102
-Host Desk / WhatsApp: +91 99454 46137
+Number of People: ${guests} People
+Birthday Setup Package: Rs.${packagePrice}
+Advance Paid (UPI): Rs.${amount} (Confirmed)
+Balance Setup Fee: Rs.${remainingBalance} (Payable at cafe)
 
-Tables are held for 15 minutes past the reserved time. We look forward to hosting you!
-https://themorascafe.com
+IMPORTANT NOTE (CAKE POLICY):
+🎂 Please bring your own birthday cake with you — we do not offer cakes!
+We provide the illuminated Happy Birthday stand with ambient warm lights, table setup, plates, and cake knife.
+
+BILLING CALCULATION:
+Final Bill = Total amount of food/drinks ordered in cafe + Rs.140 (Rs.199 package - Rs.59 advance already paid).
+
+Location: B.M. Patil Circle, Ring Rd, Solapur Bypass, Vijayapura, KA 586102
+Contact: +91 99454 46137
+WhatsApp: https://wa.me/919945446137?text=Hi%20The%20Moras%20Cafe%2C%20regarding%20my%20birthday%20booking%20%23TMC-BDAY-${refCode}
 `;
 }
 
@@ -664,7 +722,7 @@ async function sendReservationEmail(reservationData) {
     return { success: false, error: 'No customer email provided' };
   }
   const refCode = reservationData._id ? String(reservationData._id).slice(-6).toUpperCase() : 'CONFIRMED';
-  const subject = `Table Reservation Confirmed (#${refCode}) - The Moras Cafe`;
+  const subject = `Birthday Celebration Confirmed (#TMC-BDAY-${refCode}) - The Moras Cafe 🎉`;
   const htmlContent = buildReservationEmailHTML(reservationData);
   const textContent = buildReservationEmailText(reservationData);
   return dispatchEmail({

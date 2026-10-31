@@ -3,13 +3,14 @@ import api from '../services/api';
 import { UPI_CONFIG, buildUpiUri, buildUpiQrUrl } from '../config/upi';
 
 function ReservationModal({ open, onClose }) {
-  const [step, setStep] = useState(1); // 1: Details, 2: UPI ₹10 Payment, 3: Success
+  const [step, setStep] = useState(1); // 1: Details, 2: UPI ₹59 Advance Payment, 3: Success
   const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
-  const [guests, setGuests] = useState('2');
+  const [birthdayPerson, setBirthdayPerson] = useState('');
+  const [guests, setGuests] = useState('4');
   const [date, setDate] = useState('');
   const [time, setTime] = useState('');
+  const [email, setEmail] = useState('');
   const [notes, setNotes] = useState('');
   const [upiRef, setUpiRef] = useState('');
   const [copied, setCopied] = useState(false);
@@ -21,11 +22,12 @@ function ReservationModal({ open, onClose }) {
     if (open) {
       setStep(1);
       setName('');
-      setEmail('');
       setPhone('');
-      setGuests('2');
+      setBirthdayPerson('');
+      setGuests('4');
       setDate('');
       setTime('');
+      setEmail('');
       setNotes('');
       setUpiRef('');
       setCopied(false);
@@ -65,19 +67,13 @@ function ReservationModal({ open, onClose }) {
     };
   }, [open, onClose]);
 
-  // Step 1: Create pending reservation before moving to ₹10 UPI payment
+  // Step 1: Create pending birthday reservation before moving to ₹59 UPI payment
   const handleProceedToPayment = async (e) => {
     e.preventDefault();
     setError('');
 
-    if (!name.trim() || !email.trim() || !phone.trim() || !date || !time) {
-      setError('Please fill in all required fields.');
-      return;
-    }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email.trim())) {
-      setError('Please enter a valid email address for confirmation.');
+    if (!name.trim()) {
+      setError('Please provide the name of the person booking.');
       return;
     }
 
@@ -88,21 +84,38 @@ function ReservationModal({ open, onClose }) {
     }
 
     if (Number(guests) < 1) {
-      setError('Number of guests must be at least 1.');
+      setError('Number of people joining must be at least 1.');
       return;
+    }
+
+    if (!date || !time) {
+      setError('Please select both a date and a time slot.');
+      return;
+    }
+
+    if (email.trim()) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email.trim())) {
+        setError('Please enter a valid email address, or leave it blank.');
+        return;
+      }
     }
 
     setIsSubmitting(true);
     try {
       const res = await api.post('/reservations', {
         name: name.trim(),
-        email: email.trim().toLowerCase(),
         phone: cleanedPhone,
         guests: Number(guests),
         date,
         time,
+        birthdayPerson: birthdayPerson.trim(),
+        email: email.trim().toLowerCase(),
         notes: notes.trim(),
+        eventType: 'birthday',
         amount: UPI_CONFIG.bookingAmount,
+        packagePrice: UPI_CONFIG.birthdayPackagePrice,
+        remainingBalance: UPI_CONFIG.birthdayRemainingBalance,
       });
 
       setCreatedBooking(res.data);
@@ -112,7 +125,7 @@ function ReservationModal({ open, onClose }) {
       if (res.data.status === 'confirmed') {
         setStep(3);
         if (window.trackEvent) {
-          window.trackEvent('reserve_success', { 
+          window.trackEvent('birthday_reserve_success', { 
             guests, 
             date, 
             time, 
@@ -124,7 +137,7 @@ function ReservationModal({ open, onClose }) {
       }
     } catch (err) {
       setIsSubmitting(false);
-      setError(err.response?.data?.message || 'Could not initiate reservation. Please try again.');
+      setError(err.response?.data?.message || 'Could not initiate birthday booking. Please try again.');
     }
   };
 
@@ -141,7 +154,7 @@ function ReservationModal({ open, onClose }) {
           setCreatedBooking((prev) => ({ ...prev, ...res.data }));
           setStep(3);
           if (window.trackEvent) {
-            window.trackEvent('reserve_success', { 
+            window.trackEvent('birthday_reserve_success', { 
               guests: res.data.guests, 
               date: res.data.date, 
               time: res.data.time, 
@@ -176,7 +189,7 @@ function ReservationModal({ open, onClose }) {
       setStep(3);
 
       if (window.trackEvent) {
-        window.trackEvent('reserve_success', { 
+        window.trackEvent('birthday_reserve_success', { 
           guests, 
           date, 
           time, 
@@ -185,7 +198,7 @@ function ReservationModal({ open, onClose }) {
       }
     } catch (err) {
       setIsSubmitting(false);
-      setError(err.response?.data?.message || 'Could not confirm reservation. Please try again.');
+      setError(err.response?.data?.message || 'Could not verify payment yet. If you already completed UPI payment, please enter your 12-digit UTR reference or wait a moment.');
     }
   };
 
@@ -199,34 +212,39 @@ function ReservationModal({ open, onClose }) {
 
   const upiUri = buildUpiUri({
     amount: UPI_CONFIG.bookingAmount,
-    note: `Table Booking - ${name ? name.slice(0, 15) : 'Diner'}`,
+    note: `Birthday Booking - ${name ? name.slice(0, 15) : 'Guest'}`,
   });
   const qrCodeUrl = buildUpiQrUrl(upiUri, 220);
 
   return (
     <div className="modal-backdrop open" role="dialog" aria-modal="true" aria-labelledby="modal-reserve-title">
-      <div className="modal-card" style={{ maxWidth: step === 2 ? 520 : 490 }}>
+      <div className="modal-card" style={{ maxWidth: step === 2 ? 520 : 510, maxHeight: '92vh', overflowY: 'auto' }}>
         
         {/* Modal Header */}
         <div className="modal-header">
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span id="modal-reserve-title" style={{ fontWeight: 700, fontSize: '1.1rem' }}>
-              {step === 1 && '📅 Book a Table'}
-              {step === 2 && '💳 Confirm ₹10 Table Advance'}
-              {step === 3 && '🥂 Reservation Confirmed'}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+            <span id="modal-reserve-title" style={{ fontWeight: 700, fontSize: '1.08rem' }}>
+              {step === 1 && '🎂 Host Birthday Event'}
+              {step === 2 && '💳 Pay ₹59 Booking Advance'}
+              {step === 3 && '🎉 Birthday Celebration Confirmed!'}
             </span>
+            {step === 1 && (
+              <span style={{ fontSize: '0.75rem', background: '#ecfdf5', border: '1px solid #a7f3d0', padding: '2px 8px', borderRadius: 20, color: '#047857', fontWeight: 700 }}>
+                ₹199 Setup Package
+              </span>
+            )}
             {step < 3 && (
-              <span style={{ fontSize: '0.78rem', background: 'rgba(245, 230, 200, 0.2)', padding: '2px 8px', borderRadius: 20, color: 'var(--cream)' }}>
+              <span style={{ fontSize: '0.75rem', background: 'rgba(245, 230, 200, 0.25)', padding: '2px 8px', borderRadius: 20, color: 'var(--cream)' }}>
                 Step {step} of 2
               </span>
             )}
           </div>
-          <button className="btn-secondary" type="button" onClick={onClose} aria-label="Close reservation modal">
+          <button className="btn-secondary" type="button" onClick={onClose} aria-label="Close modal">
             ✕
           </button>
         </div>
 
-        <div className="modal-body" style={{ padding: '22px 24px' }}>
+        <div className="modal-body" style={{ padding: '20px 22px' }}>
           
           {error && (
             <div style={{ background: '#fee2e2', color: '#991b1b', padding: '10px 14px', borderRadius: 8, fontSize: '0.85rem', marginBottom: 16 }}>
@@ -234,14 +252,37 @@ function ReservationModal({ open, onClose }) {
             </div>
           )}
 
-          {/* ================= STEP 1: DINING DETAILS ================= */}
+          {/* ================= STEP 1: BIRTHDAY DETAILS ================= */}
           {step === 1 && (
             <form onSubmit={handleProceedToPayment} style={{ display: 'flex', flexDirection: 'column', gap: 13 }}>
               
+              {/* Highlight Card: Stand with Lights & Transparent Price */}
+              <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 12, padding: '12px 14px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#047857', fontWeight: 800, fontSize: '0.92rem' }}>
+                  <span>✨</span>
+                  <span>Complete Birthday Setup for Just ₹199</span>
+                </div>
+                <p style={{ margin: '4px 0 0', fontSize: '0.82rem', color: '#166534', lineHeight: 1.5 }}>
+                  Includes our dedicated <strong>birthday stand with &ldquo;Happy Birthday&rdquo; backdrop and warm glowing lights</strong>, celebration table setup, plates, and cake cutting knife!
+                </p>
+              </div>
+
+              {/* Crucial Cake Policy Callout */}
+              <div style={{ background: '#fff7ed', border: '1px solid #fed7aa', borderRadius: 12, padding: '12px 14px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#c2410c', fontWeight: 800, fontSize: '0.86rem' }}>
+                  <span>🎂</span>
+                  <span>BRING YOUR OWN CAKE (BYOC)</span>
+                </div>
+                <p style={{ margin: '4px 0 0', fontSize: '0.82rem', color: '#9a3412', lineHeight: 1.5 }}>
+                  <strong>Please bring your favorite birthday cake with you!</strong> We do not offer or sell cakes. We provide the complete illuminated stand, ambiance, plates, and cutlery.
+                </p>
+              </div>
+
+              {/* 1. Name of Person Booking */}
               <div className="form-group">
-                <label htmlFor="modal-reserve-name">Your Full Name *</label>
+                <label htmlFor="modal-bday-name">Name of Person Booking *</label>
                 <input
-                  id="modal-reserve-name"
+                  id="modal-bday-name"
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
@@ -250,24 +291,11 @@ function ReservationModal({ open, onClose }) {
                 />
               </div>
 
+              {/* 2. Mobile Number */}
               <div className="form-group">
-                <label htmlFor="modal-reserve-email">
-                  Email Address * <span style={{ fontWeight: 400, fontSize: '0.78rem', color: 'var(--text-light)' }}>(Confirmation pass sent here)</span>
-                </label>
+                <label htmlFor="modal-bday-phone">Mobile Number *</label>
                 <input
-                  id="modal-reserve-email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="e.g. anand@gmail.com"
-                  required
-                />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="modal-reserve-phone">Mobile Number *</label>
-                <input
-                  id="modal-reserve-phone"
+                  id="modal-bday-phone"
                   type="tel"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
@@ -276,28 +304,58 @@ function ReservationModal({ open, onClose }) {
                 />
               </div>
 
+              {/* 3. Birthday Person Name & Number of People Joining */}
               <div className="form-row">
                 <div className="form-group">
-                  <label htmlFor="modal-reserve-guests">Party Size *</label>
+                  <label htmlFor="modal-bday-person">Birthday Person&apos;s Name</label>
+                  <input
+                    id="modal-bday-person"
+                    type="text"
+                    value={birthdayPerson}
+                    onChange={(e) => setBirthdayPerson(e.target.value)}
+                    placeholder="e.g. Priya"
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="modal-bday-guests">Number of People Joining *</label>
                   <select
-                    id="modal-reserve-guests"
+                    id="modal-bday-guests"
                     value={guests}
                     onChange={(e) => setGuests(e.target.value)}
                   >
-                    <option value="1">1 Person</option>
                     <option value="2">2 People</option>
                     <option value="3">3 People</option>
                     <option value="4">4 People</option>
                     <option value="5">5 People</option>
                     <option value="6">6 People</option>
-                    <option value="7">7+ People</option>
+                    <option value="7">7 People</option>
+                    <option value="8">8 People</option>
+                    <option value="10">10 People</option>
+                    <option value="12">12 People</option>
+                    <option value="15">15+ People</option>
                   </select>
                 </div>
-                
+              </div>
+
+              {/* 4. Date & Time Slot */}
+              <div className="form-row">
                 <div className="form-group">
-                  <label htmlFor="modal-reserve-time">Time Slot *</label>
+                  <label htmlFor="modal-bday-date">Celebration Date *</label>
+                  <input
+                    id="modal-bday-date"
+                    type="date"
+                    value={date}
+                    min={new Date().toISOString().split('T')[0]}
+                    onChange={(e) => setDate(e.target.value)}
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="modal-bday-time">Time Slot *</label>
                   <select
-                    id="modal-reserve-time"
+                    id="modal-bday-time"
                     value={time}
                     onChange={(e) => setTime(e.target.value)}
                     required
@@ -307,35 +365,49 @@ function ReservationModal({ open, onClose }) {
                     <option value="12:30 PM">12:30 PM</option>
                     <option value="2:00 PM">2:00 PM</option>
                     <option value="4:00 PM">4:00 PM</option>
-                    <option value="6:00 PM">6:00 PM</option>
-                    <option value="7:30 PM">7:30 PM</option>
-                    <option value="9:00 PM">9:00 PM</option>
-                    <option value="10:00 PM">10:00 PM</option>
+                    <option value="5:30 PM">5:30 PM</option>
+                    <option value="7:00 PM">7:00 PM</option>
+                    <option value="8:30 PM">8:30 PM</option>
+                    <option value="9:30 PM">9:30 PM</option>
                   </select>
                 </div>
               </div>
 
+              {/* 5. Optional Email */}
               <div className="form-group">
-                <label htmlFor="modal-reserve-date">Reservation Date *</label>
+                <label htmlFor="modal-bday-email">
+                  Email Address <span style={{ fontWeight: 400, fontSize: '0.78rem', color: 'var(--text-light)' }}>(Optional &mdash; for confirmation pass)</span>
+                </label>
                 <input
-                  id="modal-reserve-date"
-                  type="date"
-                  value={date}
-                  min={new Date().toISOString().split('T')[0]}
-                  onChange={(e) => setDate(e.target.value)}
-                  required
+                  id="modal-bday-email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="e.g. anand@gmail.com"
                 />
               </div>
 
+              {/* 6. Special Requests */}
               <div className="form-group">
-                <label htmlFor="modal-reserve-notes">Special Requests (Optional)</label>
+                <label htmlFor="modal-bday-notes">Special Requests / Song requests (Optional)</label>
                 <textarea
-                  id="modal-reserve-notes"
+                  id="modal-bday-notes"
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
-                  placeholder="e.g. Birthday celebration, Garden view, Quiet corner"
+                  placeholder="e.g. Surprise entry, favorite music track, extra seating..."
                   rows={2}
                 />
+              </div>
+
+              {/* Transparent Billing Explanation */}
+              <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 10, padding: '10px 14px', fontSize: '0.82rem', color: '#334155', lineHeight: 1.5 }}>
+                <strong>💰 How Billing Works:</strong>
+                <div style={{ marginTop: 4 }}>
+                  Birthday Setup is <strong>₹199</strong>. Pay only <strong>₹59 advance</strong> now to book your illuminated stand &amp; slot. After your celebration, your café bill is simply:
+                  <div style={{ fontWeight: 700, color: '#0f3d3e', marginTop: 3 }}>
+                    Final Bill = Total amount of food/drinks ordered + ₹140 (₹199 &minus; ₹59 advance)
+                  </div>
+                </div>
               </div>
 
               <button 
@@ -349,18 +421,19 @@ function ReservationModal({ open, onClose }) {
                   justifyContent: 'center', 
                   gap: 8, 
                   padding: '14px',
-                  fontWeight: 700,
-                  fontSize: '1rem'
+                  fontWeight: 800,
+                  fontSize: '1rem',
+                  background: '#0F3D3E'
                 }}
               >
                 {isSubmitting ? (
                   <>
                     <span className="spinner" style={{ width: 16, height: 16, border: '2px solid rgba(255,255,255,0.3)', borderTop: '2px solid #fff', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
-                    <span>Preparing Reservation...</span>
+                    <span>Preparing Birthday Booking...</span>
                   </>
                 ) : (
                   <>
-                    <span>Proceed to Reserve (₹10 Advance)</span>
+                    <span>Proceed to Book (Pay ₹59 Advance)</span>
                     <span>→</span>
                   </>
                 )}
@@ -368,14 +441,15 @@ function ReservationModal({ open, onClose }) {
             </form>
           )}
 
-          {/* ================= STEP 2: ZERO-FEE UPI PAYMENT (₹10) ================= */}
+          {/* ================= STEP 2: ZERO-FEE ₹59 UPI ADVANCE PAYMENT ================= */}
           {step === 2 && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 15 }}>
               
               {/* Summary Chip */}
               <div style={{ background: 'var(--cream-light)', padding: '10px 14px', borderRadius: 10, display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.88rem', border: '1px solid var(--cream-dark)' }}>
                 <div>
-                  <strong>{guests} Guests</strong> &middot; {date} &middot; {time}
+                  <strong>{guests} People</strong> &middot; {date} &middot; {time}
+                  {birthdayPerson && <span style={{ display: 'block', fontSize: '0.8rem', color: 'var(--green)' }}>🎂 For: {birthdayPerson}</span>}
                 </div>
                 <button 
                   type="button" 
@@ -402,17 +476,23 @@ function ReservationModal({ open, onClose }) {
                 textAlign: 'center'
               }}>
                 <span className="live-pulse-dot" />
-                <span>Listening for your ₹10 payment in real-time...</span>
+                <span>Listening for your ₹59 advance payment in real-time...</span>
               </div>
 
-              {/* 100% Redeemable Advance Callout */}
+              {/* Package Breakdown Box */}
               <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 12, padding: '12px 14px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#047857', fontWeight: 700, fontSize: '0.92rem' }}>
-                  <span>✨ 100% Redeemable Token</span>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.88rem', marginBottom: 4 }}>
+                  <span style={{ color: '#166534' }}>Birthday Setup Package (Stand with lights):</span>
+                  <strong>₹199</strong>
                 </div>
-                <p style={{ margin: '4px 0 0', fontSize: '0.82rem', color: '#166534', lineHeight: 1.5 }}>
-                  A nominal <strong>₹10 advance</strong> secures your table and guarantees your seating. <strong>100% of this ₹10 will be deducted from your final cafe bill!</strong>
-                </p>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.92rem', fontWeight: 800, color: '#047857' }}>
+                  <span>Advance Token to Pay Now:</span>
+                  <span>₹59</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.82rem', color: '#555', marginTop: 4, paddingTop: 4, borderTop: '1px dashed #bbf7d0' }}>
+                  <span>Balance setup fee payable after celebration:</span>
+                  <span>₹140</span>
+                </div>
               </div>
 
               {/* Mobile Quick Pay Button */}
@@ -435,7 +515,7 @@ function ReservationModal({ open, onClose }) {
                     boxShadow: '0 4px 14px rgba(15, 61, 62, 0.25)'
                   }}
                 >
-                  <span>⚡ Pay ₹10 via UPI App</span>
+                  <span>⚡ Pay ₹59 via UPI App</span>
                   <span style={{ fontSize: '0.82rem', opacity: 0.85 }}>(GPay / PhonePe / Paytm)</span>
                 </a>
                 <div style={{ fontSize: '0.78rem', color: 'var(--text-light)', marginTop: 6 }}>
@@ -453,15 +533,15 @@ function ReservationModal({ open, onClose }) {
                 boxShadow: '0 2px 12px rgba(0,0,0,0.04)'
               }}>
                 <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--green)', marginBottom: 8 }}>
-                  Or Scan QR to Pay ₹10
+                  Or Scan QR to Pay ₹59 Advance
                 </div>
                 <img 
                   src={qrCodeUrl} 
-                  alt="Scan to Pay ₹10" 
+                  alt="Scan to Pay ₹59 Birthday Advance" 
                   style={{ width: 175, height: 175, borderRadius: 8, border: '1px solid #e8e2d2', margin: '0 auto', display: 'block' }}
                 />
                 <div style={{ fontSize: '0.8rem', color: 'var(--text-light)', marginTop: 8 }}>
-                  Scan with any scanner or UPI app
+                  Scan with any scanner or UPI app (PhonePe, GPay, Paytm)
                 </div>
               </div>
 
@@ -493,11 +573,11 @@ function ReservationModal({ open, onClose }) {
 
               {/* UTR Input (Optional / Recommended) */}
               <div className="form-group">
-                <label htmlFor="modal-reserve-utr" style={{ fontSize: '0.85rem' }}>
+                <label htmlFor="modal-bday-utr" style={{ fontSize: '0.85rem' }}>
                   UPI Ref / UTR / Txn ID <span style={{ fontWeight: 400, fontSize: '0.78rem', color: 'var(--text-light)' }}>(Optional / Recommended)</span>
                 </label>
                 <input
-                  id="modal-reserve-utr"
+                  id="modal-bday-utr"
                   type="text"
                   value={upiRef}
                   onChange={(e) => setUpiRef(e.target.value)}
@@ -525,7 +605,7 @@ function ReservationModal({ open, onClose }) {
                   style={{ 
                     flex: 2, 
                     padding: '12px', 
-                    fontWeight: 700, 
+                    fontWeight: 800, 
                     display: 'flex', 
                     alignItems: 'center', 
                     justifyContent: 'center', 
@@ -539,60 +619,78 @@ function ReservationModal({ open, onClose }) {
                       Verifying Booking...
                     </>
                   ) : (
-                    '✅ I Have Paid ₹10 — Confirm'
+                    '✅ I Have Paid ₹59 — Confirm'
                   )}
                 </button>
               </div>
             </div>
           )}
 
-          {/* ================= STEP 3: SUCCESS & EMAIL SENT ================= */}
+          {/* ================= STEP 3: SUCCESS & EVENT CONFIRMED ================= */}
           {step === 3 && (
-            <div className="order-success" style={{ padding: '16px 0', textAlign: 'center' }}>
-              <div className="success-icon" style={{ fontSize: '3.2rem', marginBottom: 10 }}>🥂</div>
-              <div className="success-title" style={{ fontFamily: 'Playfair Display, serif', fontSize: '1.5rem', color: 'var(--green)' }}>
-                Table Reserved!
+            <div className="order-success" style={{ padding: '12px 0', textAlign: 'center' }}>
+              <div className="success-icon" style={{ fontSize: '3.2rem', marginBottom: 8 }}>🎂✨</div>
+              <div className="success-title" style={{ fontFamily: 'Playfair Display, serif', fontSize: '1.45rem', color: 'var(--green)' }}>
+                Birthday Event Confirmed!
               </div>
-              <p style={{ color: 'var(--text-light)', lineHeight: 1.6, marginTop: 8, fontSize: '0.95rem' }}>
-                Thank you, <strong>{name}</strong>! We have confirmed your table for <strong>{guests} guests</strong> on <strong>{date}</strong> at <strong>{time}</strong>.
+              <p style={{ color: 'var(--text-light)', lineHeight: 1.6, marginTop: 8, fontSize: '0.92rem' }}>
+                Thank you, <strong>{name}</strong>! We are excited to host {birthdayPerson ? <strong>{birthdayPerson}&apos;s</strong> : 'your'} birthday celebration for <strong>{guests} people</strong> on <strong>{date}</strong> at <strong>{time}</strong>.
               </p>
 
+              {/* BYOC Cake Reminder */}
+              <div style={{ background: '#fff7ed', border: '1px solid #fed7aa', borderRadius: 12, padding: '10px 14px', margin: '14px 0', textAlign: 'left' }}>
+                <div style={{ fontSize: '0.8rem', fontWeight: 800, color: '#c2410c' }}>🎂 DON&apos;T FORGET YOUR CAKE!</div>
+                <div style={{ fontSize: '0.8rem', color: '#9a3412', marginTop: 2 }}>
+                  Please bring your favorite birthday cake with you. We will have the glowing Happy Birthday stand with ambient lights, plates, and cake knife ready.
+                </div>
+              </div>
+
               {/* Confirmation Pass Box */}
-              <div className="order-card" style={{ textAlign: 'left', marginTop: 16, padding: '16px 18px', background: 'var(--cream-light)', borderRadius: 12, border: '1px solid var(--cream-dark)' }}>
+              <div className="order-card" style={{ textAlign: 'left', marginTop: 12, padding: '14px 16px', background: 'var(--cream-light)', borderRadius: 12, border: '1px solid var(--cream-dark)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8, borderBottom: '1px dashed var(--cream-dark)', paddingBottom: 8 }}>
-                  <span style={{ fontSize: '0.8rem', color: 'var(--text-light)', textTransform: 'uppercase', letterSpacing: 1 }}>Reference</span>
-                  <strong style={{ fontFamily: 'monospace', color: 'var(--green)' }}>
-                    #TMC-RES-{createdBooking?._id ? String(createdBooking._id).slice(-6).toUpperCase() : 'CONFIRMED'}
+                  <span style={{ fontSize: '0.78rem', color: 'var(--text-light)', textTransform: 'uppercase', letterSpacing: 1 }}>Booking Reference</span>
+                  <strong style={{ fontFamily: 'monospace', color: 'var(--green)', fontSize: '0.95rem' }}>
+                    #TMC-BDAY-{createdBooking?._id ? String(createdBooking._id).slice(-6).toUpperCase() : 'CONFIRMED'}
                   </strong>
                 </div>
-                <div style={{ fontSize: '0.88rem', margin: '4px 0' }}>
-                  <strong>Advance:</strong> ₹10 Paid (UPI &bull; Redeemable against your bill)
+                <div style={{ fontSize: '0.85rem', margin: '4px 0', display: 'flex', justifyContent: 'space-between' }}>
+                  <span>Birthday Setup Package:</span>
+                  <strong>₹199</strong>
                 </div>
-                <div style={{ fontSize: '0.85rem', color: '#047857', fontWeight: 600, marginTop: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <span>✉️</span>
-                  <span>Confirmation email sent to {email}</span>
+                <div style={{ fontSize: '0.85rem', margin: '4px 0', display: 'flex', justifyContent: 'space-between', color: '#047857' }}>
+                  <span>Advance Paid (UPI):</span>
+                  <strong>₹59 (Confirmed)</strong>
                 </div>
+                <div style={{ fontSize: '0.85rem', margin: '4px 0', display: 'flex', justifyContent: 'space-between', color: '#c2410c', fontWeight: 700 }}>
+                  <span>Remaining Setup Balance:</span>
+                  <span>₹140 (Payable at cafe)</span>
+                </div>
+                <div style={{ fontSize: '0.78rem', color: '#64748b', marginTop: 6, paddingTop: 6, borderTop: '1px dashed #cbd5e1' }}>
+                  Final Cafe Bill = Food &amp; drinks ordered + ₹140
+                </div>
+                {email && (
+                  <div style={{ fontSize: '0.82rem', color: '#047857', fontWeight: 600, marginTop: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <span>✉️</span>
+                    <span>Confirmation pass sent to {email}</span>
+                  </div>
+                )}
               </div>
 
-              <div style={{ fontSize: '0.82rem', color: 'var(--text-light)', marginTop: 14 }}>
-                Please arrive 10-15 minutes early. Tables are held for 15 minutes past the reserved time.
-              </div>
-
-              <div style={{ display: 'flex', gap: 10, marginTop: 20 }}>
+              <div style={{ display: 'flex', gap: 10, marginTop: 18 }}>
                 <a 
-                  href={`https://wa.me/919945446137?text=Hi%20The%20Moras%20Cafe%2C%20regarding%20my%20table%20reservation%20%23TMC-RES-${createdBooking?._id ? String(createdBooking._id).slice(-6).toUpperCase() : ''}`}
+                  href={`https://wa.me/919945446137?text=Hi%20The%20Moras%20Cafe%2C%20regarding%20my%20birthday%20booking%20%23TMC-BDAY-${createdBooking?._id ? String(createdBooking._id).slice(-6).toUpperCase() : ''}`}
                   target="_blank"
                   rel="noreferrer"
                   className="btn-secondary"
-                  style={{ flex: 1, padding: '12px', textDecoration: 'none', textAlign: 'center', fontSize: '0.9rem' }}
+                  style={{ flex: 1, padding: '12px', textDecoration: 'none', textAlign: 'center', fontSize: '0.88rem', fontWeight: 700 }}
                 >
-                  💬 WhatsApp Us
+                  💬 WhatsApp Coordinator
                 </a>
                 <button 
                   className="btn-primary" 
                   type="button" 
                   onClick={onClose} 
-                  style={{ flex: 1, padding: '12px', fontSize: '0.9rem' }}
+                  style={{ flex: 1, padding: '12px', fontSize: '0.88rem', fontWeight: 700 }}
                 >
                   Close Window
                 </button>

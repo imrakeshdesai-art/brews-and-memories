@@ -10,8 +10,8 @@ const { sendReservationEmail } = require('../utils/email');
 function parseUpiNotification(text = '', title = '') {
   const fullText = `${title} ${text}`.trim();
   
-  // 1. Extract amount (e.g. ₹10, Rs. 10, Rs 10.00, received 10)
-  let amount = 10;
+  // 1. Extract amount (e.g. ₹59, ₹199, ₹10, Rs. 59, received 59)
+  let amount = 59;
   const amountMatch = fullText.match(/(?:₹|Rs\.?|INR)\s*([0-9]+(?:\.[0-9]+)?)/i) || 
                       fullText.match(/received\s+([0-9]+(?:\.[0-9]+)?)/i);
   if (amountMatch) {
@@ -197,6 +197,10 @@ router.get('/status/:id', async (req, res) => {
       time: reservation.time,
       guests: reservation.guests,
       amount: reservation.amount,
+      packagePrice: reservation.packagePrice || 199,
+      remainingBalance: reservation.remainingBalance || 140,
+      birthdayPerson: reservation.birthdayPerson || '',
+      eventType: reservation.eventType || 'birthday',
       upiRef: reservation.upiRef,
     });
   } catch (err) {
@@ -208,15 +212,34 @@ router.get('/status/:id', async (req, res) => {
 // POST /api/reservations
 router.post('/', async (req, res) => {
   try {
-    const { name, email, phone, guests, date, time, notes, upiRef, amount } = req.body;
+    const { 
+      name, 
+      email, 
+      phone, 
+      guests, 
+      date, 
+      time, 
+      notes, 
+      birthdayPerson, 
+      eventType, 
+      amount,
+      packagePrice,
+      remainingBalance 
+    } = req.body;
 
-    if (!name || !email || !phone || !date || !time) {
-      return res.status(400).json({ message: 'Missing required fields (Name, Email, Phone, Date, Time)' });
+    if (!name || !phone || !date || !time) {
+      return res.status(400).json({ message: 'Missing required fields (Name, Phone, Date, Time)' });
     }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(String(email).trim())) {
-      return res.status(400).json({ message: 'Please provide a valid email address' });
+    let customerEmail = (email || '').trim().toLowerCase();
+    if (customerEmail) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(customerEmail)) {
+        return res.status(400).json({ message: 'Please provide a valid email address' });
+      }
+    } else {
+      // Default fallback email if customer leaves email blank (not required per user request)
+      customerEmail = `${phone.replace(/\D/g, '')}@guest.themorascafe.in`;
     }
 
     const cleanedPhone = String(phone).replace(/\D/g, '');
@@ -229,22 +252,27 @@ router.post('/', async (req, res) => {
     }
 
     if (Number(guests) < 1) {
-      return res.status(400).json({ message: 'Guests must be at least 1' });
+      return res.status(400).json({ message: 'Number of people must be at least 1' });
     }
 
-    const bookingAmount = Number(amount) || 10;
+    const bookingAmount = Number(amount) || 59;
+    const pkgPrice = Number(packagePrice) || 199;
+    const remBalance = Number(remainingBalance) || (pkgPrice - bookingAmount);
 
-    // Step 1: New reservations ALWAYS start as pending payment!
-    // They NEVER auto-confirm until PhonePe pushes the notification.
+    // Step 1: New reservations start as pending payment!
     const newReservation = await Reservation.create({
       name: name.trim(),
-      email: email.trim().toLowerCase(),
+      email: customerEmail,
       phone: normalizedPhone,
       guests: Number(guests),
       date,
       time,
       notes: (notes || '').trim(),
+      birthdayPerson: (birthdayPerson || '').trim(),
+      eventType: eventType || 'birthday',
       amount: bookingAmount,
+      packagePrice: pkgPrice,
+      remainingBalance: remBalance,
       paymentMethod: 'UPI',
       paymentStatus: 'pending_payment',
       upiRef: '',
@@ -290,19 +318,19 @@ router.patch('/:id/submit-utr', async (req, res) => {
       });
     }
 
-    // 2. If no UTR was typed, check if an unmatched payment arrived for this diner in the last 15 mins
+    // 2. If no UTR was typed, check if an unmatched payment arrived for this customer in the last 15 mins
     if (!matchedLog) {
       const fifteenMinsAgo = new Date(Date.now() - 15 * 60 * 1000);
       const recentLogs = await UpiPaymentLog.find({
         matched: false,
-        amount: reservation.amount || 10,
+        amount: reservation.amount || 59,
         createdAt: { $gte: fifteenMinsAgo },
       }).sort({ createdAt: -1 });
 
       if (recentLogs.length > 0) {
-        const dinerNameLower = reservation.name.toLowerCase();
+        const customerNameLower = reservation.name.toLowerCase();
         const nameMatch = recentLogs.find((l) =>
-          l.sender && (l.sender.toLowerCase().includes(dinerNameLower) || dinerNameLower.includes(l.sender.toLowerCase()))
+          l.sender && (l.sender.toLowerCase().includes(customerNameLower) || customerNameLower.includes(l.sender.toLowerCase()))
         );
         matchedLog = nameMatch || recentLogs[0];
       }
@@ -311,8 +339,9 @@ router.patch('/:id/submit-utr', async (req, res) => {
     // 🚨 STRICT PAYMENT ENFORCEMENT:
     // If no real PhonePe payment was received, DO NOT CONFIRM!
     if (!matchedLog) {
+      const advanceRequired = reservation.amount || 59;
       return res.status(400).json({
-        message: 'Payment of ₹10 not detected yet. If you already completed the transfer in PhonePe/GPay, please wait 5–10 seconds for the bank notification, or enter your 12-digit UTR reference.'
+        message: `Advance payment of ₹${advanceRequired} not detected yet. If you already completed the transfer in PhonePe/GPay, please wait 5–10 seconds for the bank notification, or enter your 12-digit UTR reference.`
       });
     }
 

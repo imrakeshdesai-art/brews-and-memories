@@ -68,9 +68,9 @@ function Footer({ onReserveClick }) {
                 <button 
                   onClick={onReserveClick} 
                   style={{ color: '#E6DFD5', textDecoration: 'none', fontSize: '0.92rem', background: 'none', border: 'none', padding: 0, cursor: 'pointer', textAlign: 'left', fontFamily: 'inherit', letterSpacing: '0.3px', transition: 'color 0.2s' }}
-                  aria-label="Book a table popup"
+                  aria-label="Host Birthday Event popup"
                 >
-                  Book a Table
+                  🎂 Host Birthday (₹199)
                 </button>
               </li>
             </ul>

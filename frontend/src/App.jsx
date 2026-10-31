@@ -43,6 +43,14 @@ function App() {
   const location = useLocation();
   const { unavailableKeys, unavailableItems, refreshAvailability, isUnavailable } = useMenuAvailability();
 
+  // Deep link support: auto-open birthday booking modal if URL contains ?reserve=true or ?birthday=true
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    if (params.get('reserve') === 'true' || params.get('reserve') === '1' || params.get('birthday') === 'true') {
+      setIsReserveOpen(true);
+    }
+  }, [location.search]);
+
   useEffect(() => {
     document.body.className = theme === 'dark' ? 'theme-dark' : 'theme-light';
     localStorage.setItem('theme', theme);

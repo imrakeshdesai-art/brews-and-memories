@@ -4,7 +4,10 @@ export const UPI_CONFIG = {
   // Can be overridden via VITE_CAFE_UPI_ID in environment
   upiId: import.meta.env.VITE_CAFE_UPI_ID || 'rockey63616792411@ybl',
   payeeName: 'The Moras Cafe',
-  bookingAmount: 10, // ₹10 nominal commitment advance
+  bookingAmount: 59, // ₹59 birthday advance token
+  birthdayPackagePrice: 199,
+  birthdayAdvance: 59,
+  birthdayRemainingBalance: 140,
   cafePhone: '+919945446137',
 };
 
@@ -16,7 +19,7 @@ export function buildUpiUri({
   upiId = UPI_CONFIG.upiId,
   payeeName = UPI_CONFIG.payeeName,
   amount = UPI_CONFIG.bookingAmount,
-  note = 'Table Booking Advance',
+  note = 'Birthday Booking Advance - The Moras Cafe',
 } = {}) {
   const cleanUpiId = upiId.trim();
   const cleanName = encodeURIComponent(payeeName.trim());

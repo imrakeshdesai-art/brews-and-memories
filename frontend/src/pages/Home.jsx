@@ -362,11 +362,11 @@ const FAQS = [
 
 
 
-    q: 'Do you accept table reservations?',
+    q: 'Do you host birthday celebrations or private parties?',
 
 
 
-    a: 'Yes, we accept table reservations for dates, business meetups, and family dinners. You can reserve online using our quick booking form or reservation modal, or call us directly at +91 99454 46137.'
+    a: 'Yes! We host birthday celebrations for just ₹199 with our dedicated illuminated Happy Birthday backdrop stand with glowing lights, table setup, plates, and cake cutting knife. Please bring your own cake (we do not offer cakes). You can reserve your slot online with a ₹59 advance token!'
 
 
 
@@ -1143,7 +1143,7 @@ function Home({ openReserve }) {
                 Explore Our Menu <span className="btn-arrow" aria-hidden="true">→</span>
               </Link>
               <button type="button" onClick={openReserve} className="btn-editorial-outline">
-                Book a Table
+                🎂 Host Birthday (₹199)
               </button>
             </div>
 
@@ -1759,7 +1759,7 @@ function Home({ openReserve }) {
 
 
 
-              📅 Reserve a Garden Table
+              🎂 Host Birthday Event (₹199)
 
 
 
@@ -2503,7 +2503,7 @@ function Home({ openReserve }) {
 
 
 
-                Book a Table Now
+                🎂 Host Birthday (₹199)
 
 
 

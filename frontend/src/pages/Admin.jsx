@@ -701,7 +701,7 @@ function Admin() {
               cursor: 'pointer'
             }}
           >
-            📅 Table Reservations
+            🎂 Birthday Bookings
           </button>
           <button 
             onClick={() => setActiveTab('qrs')}
@@ -1218,9 +1218,9 @@ function Admin() {
 
         {activeTab === 'reservations' && (
           <div className="admin-table-wrap" style={{ background: 'var(--white)', border: '1px solid var(--cream-dark)', borderRadius: 12, padding: '24px 20px', textAlign: 'left' }}>
-            <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: '1.5rem', color: 'var(--green)', marginBottom: 12 }}>Table Reservations</h3>
+            <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: '1.5rem', color: 'var(--green)', marginBottom: 12 }}>🎂 Birthday Celebration Bookings</h3>
             <p style={{ color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: 24 }}>
-              Below is the list of customer table reservation requests. You can confirm or cancel requests here.
+              Customer birthday event requests. Includes illuminated &ldquo;Happy Birthday&rdquo; stand with lights, guest counts, and ₹59 advance payment tracking.
             </p>
             <div style={{ overflowX: 'auto' }}>
               <table
@@ -1238,10 +1238,10 @@ function Admin() {
                     }}
                   >
                     <th style={{ padding: '12px 14px', textAlign: 'left' }}>Ref ID</th>
-                    <th style={{ padding: '12px 14px', textAlign: 'left' }}>Guest Info</th>
-                    <th style={{ padding: '12px 14px', textAlign: 'center' }}>Party</th>
+                    <th style={{ padding: '12px 14px', textAlign: 'left' }}>Host &amp; Birthday Person</th>
+                    <th style={{ padding: '12px 14px', textAlign: 'center' }}>People</th>
                     <th style={{ padding: '12px 14px', textAlign: 'left' }}>Slot</th>
-                    <th style={{ padding: '12px 14px', textAlign: 'left' }}>₹10 Advance (UPI)</th>
+                    <th style={{ padding: '12px 14px', textAlign: 'left' }}>₹59 Advance / ₹199 Pkg</th>
                     <th style={{ padding: '12px 14px', textAlign: 'left' }}>Special Requests</th>
                     <th style={{ padding: '12px 14px', textAlign: 'left' }}>Status &amp; Email</th>
                   </tr>
@@ -1273,6 +1273,11 @@ function Admin() {
                         </td>
                         <td style={{ padding: '12px 14px' }}>
                           <div style={{ fontWeight: 700, color: 'var(--green)' }}>{r.name}</div>
+                          {r.birthdayPerson && (
+                            <div style={{ fontSize: '0.8rem', color: '#c2410c', fontWeight: 600 }}>
+                              🎂 For: {r.birthdayPerson}
+                            </div>
+                          )}
                           {r.email && (
                             <div style={{ fontSize: '0.8rem', color: 'var(--text-light)' }}>
                               ✉️ {r.email}
@@ -1299,7 +1304,10 @@ function Admin() {
                               fontSize: '0.78rem', 
                               fontWeight: 700 
                             }}>
-                              ₹{r.amount || 10} Paid
+                              ₹{r.amount || 59} Adv Paid
+                            </span>
+                            <span style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: 600, display: 'block', marginTop: 3 }}>
+                              Bal: ₹{r.remainingBalance || 140}
                             </span>
                           </div>
                           {r.upiRef ? (
