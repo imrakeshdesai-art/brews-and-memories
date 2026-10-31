@@ -1212,7 +1212,7 @@ function Admin() {
               Customers scanning these codes will be logged into the respective table session.
             </p>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 16 }}>
-              {Array.from({ length: Number(import.meta.env.VITE_TOTAL_TABLES) || 5 }, (_, i) => {
+              {Array.from({ length: Number(import.meta.env.VITE_TOTAL_TABLES) || 12 }, (_, i) => {
                 const tableNum = i + 1;
                 const tableUrl = `${window.location.origin}/order/table-${tableNum}`;
                 const qrImageUrl = `https://quickchart.io/qr?text=${encodeURIComponent(tableUrl)}&size=250`;

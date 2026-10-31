@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useToast } from '../components/ToastProvider';
 
-const TOTAL_TABLES = Number(import.meta.env.VITE_TOTAL_TABLES) || 5;
+const TOTAL_TABLES = Number(import.meta.env.VITE_TOTAL_TABLES) || 12;
 const VALID_TABLES = Array.from(
   { length: TOTAL_TABLES },
   (_, i) => `table-${i + 1}`

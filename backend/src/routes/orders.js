@@ -103,7 +103,7 @@ router.post('/', async (req, res) => {
     }
 
     // Validate table number structure (e.g. "Table 1" to "Table X")
-    const totalTables = Number(process.env.TOTAL_TABLES) || 5;
+    const totalTables = Number(process.env.TOTAL_TABLES) || 12;
     const allowedTables = Array.from(
       { length: totalTables },
       (_, i) => `Table ${i + 1}`
