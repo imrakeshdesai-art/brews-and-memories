@@ -707,68 +707,54 @@ function Admin() {
 
         </div>
 
-        <div style={{ display: 'flex', gap: 16, borderBottom: '2px solid var(--cream-dark)', marginBottom: 24, paddingBottom: 4 }}>
-          <button 
-            onClick={() => setActiveTab('orders')}
-            style={{
-              background: 'none',
-              border: 'none',
-              padding: '8px 16px',
-              fontSize: '1rem',
-              fontWeight: 700,
-              color: activeTab === 'orders' ? 'var(--green)' : 'var(--text-light)',
-              borderBottom: activeTab === 'orders' ? '3px solid var(--green)' : 'none',
-              cursor: 'pointer'
-            }}
-          >
-            📋 Orders Management
-          </button>
-          <button 
-            onClick={() => setActiveTab('reservations')}
-            style={{
-              background: 'none',
-              border: 'none',
-              padding: '8px 16px',
-              fontSize: '1rem',
-              fontWeight: 700,
-              color: activeTab === 'reservations' ? 'var(--green)' : 'var(--text-light)',
-              borderBottom: activeTab === 'reservations' ? '3px solid var(--green)' : 'none',
-              cursor: 'pointer'
-            }}
-          >
-            🎂 Birthday Bookings
-          </button>
-          <button 
-            onClick={() => setActiveTab('qrs')}
-            style={{
-              background: 'none',
-              border: 'none',
-              padding: '8px 16px',
-              fontSize: '1rem',
-              fontWeight: 700,
-              color: activeTab === 'qrs' ? 'var(--green)' : 'var(--text-light)',
-              borderBottom: activeTab === 'qrs' ? '3px solid var(--green)' : 'none',
-              cursor: 'pointer'
-            }}
-          >
-            📱 Table QR Codes
-          </button>
+        <nav className="admin-tabs-nav" aria-label="Admin Navigation Tabs">
           <button
-            onClick={() => setActiveTab('inventory')}
-            style={{
-              background: 'none',
-              border: 'none',
-              padding: '8px 16px',
-              fontSize: '1rem',
-              fontWeight: 700,
-              color: activeTab === 'inventory' ? 'var(--green)' : 'var(--text-light)',
-              borderBottom: activeTab === 'inventory' ? '3px solid var(--green)' : 'none',
-              cursor: 'pointer'
-            }}
+            type="button"
+            className={`admin-tab-btn ${activeTab === 'orders' ? 'active' : ''}`}
+            onClick={() => setActiveTab('orders')}
           >
-            📦 Menu Availability
+            <span>📋 Orders</span>
+            {stats.count > 0 && (
+              <span className={`admin-tab-badge ${activeTab === 'orders' ? 'badge-active' : 'badge-inactive'}`}>
+                {stats.count}
+              </span>
+            )}
           </button>
-        </div>
+
+          <button
+            type="button"
+            className={`admin-tab-btn ${activeTab === 'reservations' ? 'active' : ''}`}
+            onClick={() => setActiveTab('reservations')}
+          >
+            <span>🎂 Birthdays</span>
+            {reservations.length > 0 && (
+              <span className={`admin-tab-badge ${activeTab === 'reservations' ? 'badge-active' : 'badge-inactive'}`}>
+                {reservations.length}
+              </span>
+            )}
+          </button>
+
+          <button
+            type="button"
+            className={`admin-tab-btn ${activeTab === 'qrs' ? 'active' : ''}`}
+            onClick={() => setActiveTab('qrs')}
+          >
+            <span>📱 Table QRs</span>
+          </button>
+
+          <button
+            type="button"
+            className={`admin-tab-btn ${activeTab === 'inventory' ? 'active' : ''}`}
+            onClick={() => setActiveTab('inventory')}
+          >
+            <span>📦 Menu Stock</span>
+            {catalogItems.some((i) => !i.isAvailable) && (
+              <span className="admin-tab-badge badge-alert">
+                {catalogItems.filter((i) => !i.isAvailable).length} OFF
+              </span>
+            )}
+          </button>
+        </nav>
 
         {activeTab === 'orders' && (
           <>
@@ -1225,7 +1211,7 @@ function Admin() {
               You can print these cards or copy the links to generate your own custom layout. 
               Customers scanning these codes will be logged into the respective table session.
             </p>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 24 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 16 }}>
               {Array.from({ length: Number(import.meta.env.VITE_TOTAL_TABLES) || 5 }, (_, i) => {
                 const tableNum = i + 1;
                 const tableUrl = `${window.location.origin}/order/table-${tableNum}`;
@@ -1547,8 +1533,8 @@ function Admin() {
               </label>
             </div>
 
-            <div className="table-responsive" style={{ background: 'var(--white)', borderRadius: 12, border: '1px solid var(--cream-dark)', overflow: 'hidden' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.9rem' }}>
+            <div className="admin-table-wrap" style={{ background: 'var(--white)', borderRadius: 12, border: '1px solid var(--cream-dark)', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+              <table style={{ width: '100%', minWidth: 620, borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.9rem' }}>
                 <thead>
                   <tr style={{ background: 'var(--cream-light)', borderBottom: '2px solid var(--cream-dark)' }}>
                     <th style={{ padding: '12px 16px' }}>Item Name</th>
