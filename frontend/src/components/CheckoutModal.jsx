@@ -291,27 +291,28 @@ function CheckoutModal({
                 </div>
               </div>
 
-              {/* Quick Add Water Upsell */}
+              {/* Forgot something? Water Upsell */}
               {!cart.some((i) => (i.name || '').toLowerCase().includes('water')) && onAddToCart && (
                 <div style={{
-                  background: '#ecfdf5',
+                  background: 'linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%)',
                   border: '1.5px dashed #059669',
-                  borderRadius: 12,
-                  padding: '12px 14px',
+                  borderRadius: 14,
+                  padding: '12px 16px',
                   marginBottom: 16,
                   display: 'flex',
                   justifyContent: 'space-between',
                   alignItems: 'center',
-                  gap: 10
+                  gap: 12,
+                  boxShadow: '0 2px 8px rgba(5, 150, 105, 0.08)'
                 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                    <span style={{ fontSize: '1.5rem' }}>💧</span>
+                    <span style={{ fontSize: '1.6rem' }}>💧</span>
                     <div>
-                      <div style={{ fontWeight: 800, color: '#065f46', fontSize: '0.9rem' }}>
-                        Add Packaged Water Bottle? <strong>₹20</strong>
+                      <div style={{ fontWeight: 800, color: '#065f46', fontSize: '0.92rem' }}>
+                        Forgot something? Water
                       </div>
-                      <div style={{ fontSize: '0.76rem', color: '#047857', marginTop: 1 }}>
-                        Pure sealed chilled drinking water
+                      <div style={{ fontSize: '0.78rem', color: '#047857', marginTop: 1 }}>
+                        Packaged Drinking Water Bottle &bull; <strong>₹20</strong>
                       </div>
                     </div>
                   </div>
@@ -320,14 +321,15 @@ function CheckoutModal({
                     onClick={() => onAddToCart({ name: 'Packaged Drinking Water', price: 20, emoji: '💧' })}
                     style={{
                       background: '#059669',
-                      color: '#fff',
+                      color: '#ffffff',
                       border: 'none',
-                      padding: '7px 14px',
-                      borderRadius: 8,
+                      padding: '8px 16px',
+                      borderRadius: 20,
                       fontWeight: 800,
-                      fontSize: '0.82rem',
+                      fontSize: '0.84rem',
                       cursor: 'pointer',
-                      whiteSpace: 'nowrap'
+                      whiteSpace: 'nowrap',
+                      boxShadow: '0 2px 6px rgba(5, 150, 105, 0.25)'
                     }}
                   >
                     + Add (₹20)

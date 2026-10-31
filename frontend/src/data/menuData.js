@@ -1,16 +1,4 @@
 export const menuData = {
-  'Essentials': [
-    {
-      name: 'Packaged Drinking Water',
-      price: 20,
-      emoji: '💧',
-      badge: 'ESSENTIAL',
-      desc: 'Pure sealed packaged drinking water bottle (1L / 500ml) served chilled or at room temperature'
-    }
-  ],
-
-
-
   'Classic Hot': [
 
 

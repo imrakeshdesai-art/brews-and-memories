@@ -1319,54 +1319,6 @@ function Menu({ addToCart, activeTable, endTableSession, cart = [], updateCartQt
 
 
 
-      {/* Quick Essentials Bar (Quick 1-tap Add to order) */}
-      <div className="menu-essentials-bar" style={{
-        background: '#0F3D3E',
-        borderRadius: 16,
-        padding: '14px 20px',
-        margin: '10px 0 24px',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        color: '#FAF5EF',
-        boxShadow: '0 4px 18px rgba(15, 61, 62, 0.12)',
-        flexWrap: 'wrap',
-        gap: 12,
-        border: '1px solid #fbbf24'
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <span style={{ fontSize: '1.8rem' }}>💧</span>
-          <div>
-            <div style={{ fontWeight: 800, fontSize: '1rem', display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span>Packaged Drinking Water Bottle</span>
-              <span style={{ background: '#fbbf24', color: '#0f3d3e', fontSize: '0.75rem', padding: '2px 8px', borderRadius: 12, fontWeight: 800 }}>₹20</span>
-            </div>
-            <div style={{ fontSize: '0.82rem', color: '#E6DFD5', marginTop: 2 }}>
-              Add a sealed, pure packaged water bottle to your meal or drink
-            </div>
-          </div>
-        </div>
-        <button 
-          type="button" 
-          onClick={() => handleAddToCart({ name: 'Packaged Drinking Water', price: 20, emoji: '💧' })}
-          style={{
-            background: '#fbbf24',
-            color: '#0f3d3e',
-            border: 'none',
-            padding: '9px 20px',
-            borderRadius: 24,
-            fontWeight: 800,
-            fontSize: '0.9rem',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 6,
-            boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
-          }}
-        >
-          <span>+ Add Water (₹20)</span>
-        </button>
-      </div>
 
       {categoriesToRender.map((category) => {
 
