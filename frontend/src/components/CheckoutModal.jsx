@@ -17,6 +17,7 @@ function CheckoutModal({
   unavailableKeys = [],
   isUnavailable,
   onRefreshAvailability,
+  onAddToCart,
 }) {
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
@@ -253,6 +254,26 @@ function CheckoutModal({
                 <button
                   className="btn-secondary"
                   type="button"
+                  onClick={() => window.print()}
+                  style={{
+                    width: '100%',
+                    padding: '12px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: 8,
+                    fontWeight: 700,
+                    fontSize: '0.92rem',
+                    background: '#f8fafc',
+                    border: '1px solid #cbd5e1'
+                  }}
+                >
+                  <span>🧾</span>
+                  <span>Print Bill Receipt</span>
+                </button>
+                <button
+                  className="btn-secondary"
+                  type="button"
                   onClick={handleClose}
                   style={{ width: '100%', padding: '12px' }}
                 >
@@ -269,6 +290,50 @@ function CheckoutModal({
                   <div style={{ fontSize: '0.72rem', marginTop: 1, color: '#94a3b8' }}>Session encrypted & locked to your device</div>
                 </div>
               </div>
+
+              {/* Quick Add Water Upsell */}
+              {!cart.some((i) => (i.name || '').toLowerCase().includes('water')) && onAddToCart && (
+                <div style={{
+                  background: '#ecfdf5',
+                  border: '1.5px dashed #059669',
+                  borderRadius: 12,
+                  padding: '12px 14px',
+                  marginBottom: 16,
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  gap: 10
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                    <span style={{ fontSize: '1.5rem' }}>💧</span>
+                    <div>
+                      <div style={{ fontWeight: 800, color: '#065f46', fontSize: '0.9rem' }}>
+                        Add Packaged Water Bottle? <strong>₹20</strong>
+                      </div>
+                      <div style={{ fontSize: '0.76rem', color: '#047857', marginTop: 1 }}>
+                        Pure sealed chilled drinking water
+                      </div>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => onAddToCart({ name: 'Packaged Drinking Water', price: 20, emoji: '💧' })}
+                    style={{
+                      background: '#059669',
+                      color: '#fff',
+                      border: 'none',
+                      padding: '7px 14px',
+                      borderRadius: 8,
+                      fontWeight: 800,
+                      fontSize: '0.82rem',
+                      cursor: 'pointer',
+                      whiteSpace: 'nowrap'
+                    }}
+                  >
+                    + Add (₹20)
+                  </button>
+                </div>
+              )}
 
               <div className="order-card">
                 <div className="order-summary-title">Order Summary</div>
@@ -288,7 +353,7 @@ function CheckoutModal({
                 <input id="order-phone" type="tel" value={phone} onChange={(event) => setPhone(event.target.value)} placeholder="+91 XXXXX XXXXX" />
               </div>
               <div className="form-group">
-                <label htmlFor="order-email">Email Address <span style={{color:'#aaa',fontWeight:400,fontSize:'0.85em'}}>(optional — for confirmation)</span></label>
+                <label htmlFor="order-email">Email Address <span style={{color:'#047857',fontWeight:600,fontSize:'0.82em'}}>(Enter to receive official Tax Invoice & Bill Receipt ✉️)</span></label>
                 <input id="order-email" type="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="yourname@gmail.com" />
               </div>
               <div className="form-group">

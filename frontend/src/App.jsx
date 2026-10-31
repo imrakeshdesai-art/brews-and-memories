@@ -328,6 +328,7 @@ function App() {
           unavailableKeys={unavailableKeys}
           isUnavailable={isUnavailable}
           onRefreshAvailability={refreshAvailability}
+          onAddToCart={addToCart}
         />
         <ReservationModal
           open={isReserveOpen}

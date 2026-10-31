@@ -67,6 +67,41 @@ function Admin() {
   const [reservations, setReservations] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [selectedBillOrder, setSelectedBillOrder] = useState(null);
+  const [billEmailInput, setBillEmailInput] = useState('');
+  const [isSendingBillEmail, setIsSendingBillEmail] = useState(false);
+  const [selectedBirthdayBill, setSelectedBirthdayBill] = useState(null);
+  const [birthdayFoodTotal, setBirthdayFoodTotal] = useState('');
+
+  const handlePrintBill = () => {
+    document.body.classList.add('printing-bill');
+    window.print();
+    setTimeout(() => {
+      document.body.classList.remove('printing-bill');
+    }, 500);
+  };
+
+  const handleSendBillEmail = async (orderId, targetEmail) => {
+    if (!targetEmail || !targetEmail.trim()) {
+      toast('Please enter the customer email address');
+      return;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(targetEmail.trim())) {
+      toast('Please enter a valid email address format');
+      return;
+    }
+    setIsSendingBillEmail(true);
+    try {
+      const res = await api.post(`/orders/${orderId}/send-bill`, { email: targetEmail.trim() });
+      toast(res.data.message || 'Bill receipt sent to customer email successfully!');
+      setIsSendingBillEmail(false);
+      setOrders(prev => prev.map(o => o._id === orderId ? { ...o, email: targetEmail.trim() } : o));
+    } catch (err) {
+      setIsSendingBillEmail(false);
+      toast(err.response?.data?.message || 'Failed to send bill email');
+    }
+  };
 
   // ================= FETCH ORDERS =================
   const fetchOrders = async () => {
@@ -1084,6 +1119,32 @@ function Admin() {
 
                       </select>
 
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelectedBillOrder(o);
+                          setBillEmailInput(o.email || '');
+                        }}
+                        style={{
+                          background: '#0F3D3E',
+                          color: '#FAF5EF',
+                          border: 'none',
+                          borderRadius: 6,
+                          padding: '5px 10px',
+                          fontSize: '0.78rem',
+                          fontWeight: 700,
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 4,
+                          marginTop: 6
+                        }}
+                        title="View, Print, or Email Bill Receipt"
+                      >
+                        <span>🧾</span>
+                        <span>Bill Slip</span>
+                      </button>
+
                     </td>
 
                   </tr>
@@ -1354,6 +1415,32 @@ function Admin() {
                               <option value="cancelled">❌ Cancelled</option>
                             </select>
 
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setSelectedBirthdayBill(r);
+                                setBirthdayFoodTotal('');
+                                setBillEmailInput(r.email || '');
+                              }}
+                              style={{
+                                background: '#0F3D3E',
+                                color: '#FAF5EF',
+                                border: 'none',
+                                borderRadius: 6,
+                                padding: '4px 8px',
+                                fontSize: '0.74rem',
+                                fontWeight: 700,
+                                cursor: 'pointer',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: 4
+                              }}
+                              title="Generate Final Bill for Birthday Event"
+                            >
+                              <span>🧾</span>
+                              <span>Final Bill</span>
+                            </button>
+
                             {r.email && (
                               <button
                                 type="button"
@@ -1527,6 +1614,323 @@ function Admin() {
                     ))}
                 </tbody>
               </table>
+            </div>
+          </div>
+        )}
+
+
+        {/* ================= ORDER BILL RECEIPT MODAL ================= */}
+        {selectedBillOrder && (
+          <div className="modal-backdrop open" role="dialog" aria-modal="true" style={{ zIndex: 9999 }}>
+            <div className="modal-card" style={{ maxWidth: 480, maxHeight: '92vh', overflowY: 'auto', padding: 0 }}>
+              
+              {/* Header Controls (no-print) */}
+              <div className="no-print" style={{ padding: '16px 20px', background: 'var(--green)', color: '#FAF5EF', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTopLeftRadius: 14, borderTopRightRadius: 14 }}>
+                <span style={{ fontWeight: 800, fontSize: '1.05rem', display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span>🧾</span>
+                  <span>Order Bill Receipt</span>
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setSelectedBillOrder(null)}
+                  style={{ background: 'none', border: 'none', color: '#FAF5EF', fontSize: '1.2rem', cursor: 'pointer' }}
+                >
+                  ✕
+                </button>
+              </div>
+
+              {/* Action Toolbar (no-print) */}
+              <div className="no-print" style={{ background: '#f8fafc', padding: '12px 20px', borderBottom: '1px solid #e2e8f0', display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                <button
+                  type="button"
+                  onClick={handlePrintBill}
+                  className="btn-primary"
+                  style={{ flex: 1, padding: '10px 14px', fontSize: '0.88rem', fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, background: '#0F3D3E' }}
+                >
+                  <span>🖨️</span>
+                  <span>Print Slip</span>
+                </button>
+                <a
+                  href={`https://wa.me/91${selectedBillOrder.phone}?text=${encodeURIComponent(
+                    `*THE MORAS CAFE — Bill Receipt*\nInvoice: #TMC-INV-${selectedBillOrder._id.slice(-6).toUpperCase()}\nCustomer: ${selectedBillOrder.name}\nTable: ${selectedBillOrder.address}\n\nItems:\n` +
+                    selectedBillOrder.items.map(i => ` - ${i.name}${i.variant ? ` (${i.variant})` : ''} x ${i.qty}: Rs.${i.price * i.qty}`).join('\n') +
+                    `\n\n*Grand Total: Rs.${selectedBillOrder.total}*\nPayment: ${selectedBillOrder.payment?.toUpperCase()}\n\nThank you for dining with The Moras Cafe!`
+                  )}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="btn-secondary"
+                  style={{ flex: 1, padding: '10px 14px', fontSize: '0.88rem', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, textDecoration: 'none' }}
+                >
+                  <span>💬</span>
+                  <span>WhatsApp</span>
+                </a>
+              </div>
+
+              {/* Email Bill to Customer (no-print) */}
+              <div className="no-print" style={{ padding: '12px 20px', background: '#ecfdf5', borderBottom: '1px solid #a7f3d0' }}>
+                <div style={{ fontSize: '0.78rem', color: '#065f46', fontWeight: 700, marginBottom: 4 }}>
+                  ✉️ SEND DIGITAL INVOICE / BILL TO CUSTOMER EMAIL:
+                </div>
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <input
+                    type="email"
+                    value={billEmailInput}
+                    onChange={(e) => setBillEmailInput(e.target.value)}
+                    placeholder="customer@gmail.com"
+                    style={{ flex: 1, padding: '8px 12px', fontSize: '0.85rem', borderRadius: 6, border: '1px solid #a7f3d0' }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => handleSendBillEmail(selectedBillOrder._id, billEmailInput)}
+                    disabled={isSendingBillEmail}
+                    style={{ background: '#047857', color: '#fff', border: 'none', padding: '8px 14px', borderRadius: 6, fontSize: '0.82rem', fontWeight: 800, cursor: 'pointer', whiteSpace: 'nowrap' }}
+                  >
+                    {isSendingBillEmail ? 'Sending…' : 'Send Bill'}
+                  </button>
+                </div>
+              </div>
+
+              {/* The Actual Printable Thermal/A4 Slip */}
+              <div style={{ padding: '20px' }}>
+                <div className="bill-receipt-printable" style={{
+                  background: '#fff',
+                  color: '#1a1a1a',
+                  padding: '24px 20px',
+                  borderRadius: 12,
+                  fontFamily: "'Plus Jakarta Sans', monospace, Arial, sans-serif",
+                  border: '1px solid #e2e8f0',
+                  boxShadow: '0 2px 12px rgba(0,0,0,0.04)'
+                }}>
+                  {/* Cafe Header */}
+                  <div style={{ textAlign: 'center', borderBottom: '2px dashed #cbd5e1', paddingBottom: 14, marginBottom: 12 }}>
+                    <div style={{ width: 52, height: 52, margin: '0 auto 8px', borderRadius: '50%', overflow: 'hidden', border: '2px solid #0F3D3E' }}>
+                      <img src="https://themorascafe.in/images/brand/secondary-badge-light.png" alt="The Moras Cafe" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                    </div>
+                    <div style={{ fontWeight: 900, fontSize: '1.2rem', color: '#0F3D3E', letterSpacing: 0.5 }}>THE MORAS CAFE</div>
+                    <div style={{ fontSize: '0.76rem', color: '#64748b', marginTop: 2 }}>
+                      B.M. Patil Circle, Ring Road, Solapur Bypass, Vijayapura, KA 586102
+                    </div>
+                    <div style={{ fontSize: '0.76rem', color: '#64748b' }}>
+                      Ph: +91 99454 46137 &bull; 100% Pure Vegetarian
+                    </div>
+                    <div style={{ display: 'inline-block', background: '#0F3D3E', color: '#FAF5EF', padding: '2px 10px', borderRadius: 12, fontSize: '0.72rem', fontWeight: 800, marginTop: 6, letterSpacing: 0.5 }}>
+                      TAX INVOICE / BILL RECEIPT
+                    </div>
+                  </div>
+
+                  {/* Order / Invoice Meta */}
+                  <div style={{ fontSize: '0.82rem', borderBottom: '1px solid #e2e8f0', paddingBottom: 8, marginBottom: 10, display: 'flex', flexDirection: 'column', gap: 3 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <span style={{ color: '#64748b' }}>Bill / Inv No:</span>
+                      <strong style={{ fontFamily: 'monospace' }}>#TMC-INV-{selectedBillOrder._id.slice(-6).toUpperCase()}</strong>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <span style={{ color: '#64748b' }}>Date &amp; Time:</span>
+                      <span>{new Date(selectedBillOrder.createdAt).toLocaleString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <span style={{ color: '#64748b' }}>Table / Location:</span>
+                      <strong style={{ color: '#0F3D3E' }}>{selectedBillOrder.address}</strong>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <span style={{ color: '#64748b' }}>Customer:</span>
+                      <strong>{selectedBillOrder.name} ({selectedBillOrder.phone})</strong>
+                    </div>
+                  </div>
+
+                  {/* Itemized Table */}
+                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.84rem', marginBottom: 10 }}>
+                    <thead>
+                      <tr style={{ borderBottom: '1.5px solid #0F3D3E', fontSize: '0.72rem', textTransform: 'uppercase', color: '#475569' }}>
+                        <th style={{ textAlign: 'left', padding: '6px 0' }}>Item</th>
+                        <th style={{ textAlign: 'center', padding: '6px 0' }}>Qty</th>
+                        <th style={{ textAlign: 'right', padding: '6px 0' }}>Rate</th>
+                        <th style={{ textAlign: 'right', padding: '6px 0' }}>Amount</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {selectedBillOrder.items.map((item, idx) => (
+                        <tr key={idx} style={{ borderBottom: '1px dashed #e2e8f0' }}>
+                          <td style={{ padding: '7px 0', fontWeight: 600 }}>
+                            {item.name}
+                            {item.variant ? <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 400 }}> ({item.variant})</span> : ''}
+                          </td>
+                          <td style={{ textAlign: 'center', padding: '7px 0' }}>{item.qty}</td>
+                          <td style={{ textAlign: 'right', padding: '7px 0' }}>₹{item.price}</td>
+                          <td style={{ textAlign: 'right', padding: '7px 0', fontWeight: 700 }}>₹{item.price * item.qty}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+
+                  {/* Totals */}
+                  <div style={{ borderTop: '1.5px solid #0F3D3E', paddingTop: 8, fontSize: '0.85rem' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', padding: '2px 0' }}>
+                      <span style={{ color: '#64748b' }}>Item Subtotal:</span>
+                      <span>₹{selectedBillOrder.total}</span>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', padding: '2px 0', fontSize: '0.78rem', color: '#059669' }}>
+                      <span>GST / Taxes:</span>
+                      <span>Included (₹0.00 Extra)</span>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0 0', marginTop: 4, borderTop: '2px solid #0F3D3E', fontSize: '1.15rem', fontWeight: 900, color: '#0F3D3E' }}>
+                      <span>Grand Total:</span>
+                      <span>₹{selectedBillOrder.total}</span>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 0 0', fontSize: '0.8rem', color: '#64748b' }}>
+                      <span>Payment Method:</span>
+                      <strong style={{ color: '#047857' }}>{selectedBillOrder.payment?.toUpperCase() || 'COUNTER'}</strong>
+                    </div>
+                  </div>
+
+                  {/* Footer Note */}
+                  <div style={{ textAlign: 'center', borderTop: '1.5px dashed #cbd5e1', marginTop: 12, paddingTop: 8, fontSize: '0.72rem', color: '#64748b' }}>
+                    <div>Thank you for visiting The Moras Cafe!</div>
+                    <div style={{ fontStyle: 'italic', marginTop: 2 }}>This is an official computer-generated digital bill.</div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        )}
+
+        {/* ================= BIRTHDAY FINAL BILL GENERATOR MODAL ================= */}
+        {selectedBirthdayBill && (
+          <div className="modal-backdrop open" role="dialog" aria-modal="true" style={{ zIndex: 9999 }}>
+            <div className="modal-card" style={{ maxWidth: 490, maxHeight: '92vh', overflowY: 'auto', padding: 0 }}>
+              
+              {/* Header Controls (no-print) */}
+              <div className="no-print" style={{ padding: '16px 20px', background: 'var(--green)', color: '#FAF5EF', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTopLeftRadius: 14, borderTopRightRadius: 14 }}>
+                <span style={{ fontWeight: 800, fontSize: '1.05rem', display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span>🎂</span>
+                  <span>Birthday Celebration Final Bill</span>
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setSelectedBirthdayBill(null)}
+                  style={{ background: 'none', border: 'none', color: '#FAF5EF', fontSize: '1.2rem', cursor: 'pointer' }}
+                >
+                  ✕
+                </button>
+              </div>
+
+              {/* Calculator Inputs (no-print) */}
+              <div className="no-print" style={{ background: '#f8fafc', padding: '16px 20px', borderBottom: '1px solid #e2e8f0' }}>
+                <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#334155', marginBottom: 4 }}>
+                  Enter Food &amp; Beverage Total Ordered in Café (₹):
+                </label>
+                <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+                  <input
+                    type="number"
+                    min="0"
+                    value={birthdayFoodTotal}
+                    onChange={(e) => setBirthdayFoodTotal(e.target.value)}
+                    placeholder="e.g. 750"
+                    style={{ flex: 1, padding: '10px 14px', fontSize: '1rem', fontWeight: 800, borderRadius: 8, border: '1px solid #cbd5e1' }}
+                  />
+                  <button
+                    type="button"
+                    onClick={handlePrintBill}
+                    className="btn-primary"
+                    style={{ padding: '10px 18px', fontSize: '0.88rem', fontWeight: 800, display: 'flex', alignItems: 'center', gap: 6, background: '#0F3D3E' }}
+                  >
+                    <span>🖨️</span>
+                    <span>Print Slip</span>
+                  </button>
+                </div>
+                <div style={{ fontSize: '0.78rem', color: '#64748b', marginTop: 6 }}>
+                  Formula: Food amount + ₹140 remaining setup balance = Final Bill
+                </div>
+              </div>
+
+              {/* The Actual Printable Birthday Slip */}
+              <div style={{ padding: '20px' }}>
+                <div className="bill-receipt-printable" style={{
+                  background: '#fff',
+                  color: '#1a1a1a',
+                  padding: '24px 20px',
+                  borderRadius: 12,
+                  fontFamily: "'Plus Jakarta Sans', monospace, Arial, sans-serif",
+                  border: '1px solid #e2e8f0',
+                  boxShadow: '0 2px 12px rgba(0,0,0,0.04)'
+                }}>
+                  {/* Cafe Header */}
+                  <div style={{ textAlign: 'center', borderBottom: '2px dashed #cbd5e1', paddingBottom: 14, marginBottom: 12 }}>
+                    <div style={{ width: 52, height: 52, margin: '0 auto 8px', borderRadius: '50%', overflow: 'hidden', border: '2px solid #0F3D3E' }}>
+                      <img src="https://themorascafe.in/images/brand/secondary-badge-light.png" alt="The Moras Cafe" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                    </div>
+                    <div style={{ fontWeight: 900, fontSize: '1.2rem', color: '#0F3D3E', letterSpacing: 0.5 }}>THE MORAS CAFE</div>
+                    <div style={{ fontSize: '0.76rem', color: '#64748b', marginTop: 2 }}>
+                      B.M. Patil Circle, Ring Road, Solapur Bypass, Vijayapura, KA 586102
+                    </div>
+                    <div style={{ fontSize: '0.76rem', color: '#64748b' }}>
+                      Ph: +91 99454 46137 &bull; 100% Pure Vegetarian
+                    </div>
+                    <div style={{ display: 'inline-block', background: '#0F3D3E', color: '#FAF5EF', padding: '2px 10px', borderRadius: 12, fontSize: '0.72rem', fontWeight: 800, marginTop: 6, letterSpacing: 0.5 }}>
+                      BIRTHDAY EVENT FINAL BILL
+                    </div>
+                  </div>
+
+                  {/* Booking Details */}
+                  <div style={{ fontSize: '0.82rem', borderBottom: '1px solid #e2e8f0', paddingBottom: 8, marginBottom: 10, display: 'flex', flexDirection: 'column', gap: 3 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <span style={{ color: '#64748b' }}>Booking Ref:</span>
+                      <strong style={{ fontFamily: 'monospace' }}>#TMC-BDAY-{selectedBirthdayBill._id.slice(-6).toUpperCase()}</strong>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <span style={{ color: '#64748b' }}>Celebrant:</span>
+                      <strong>{selectedBirthdayBill.birthdayPerson || selectedBirthdayBill.name}</strong>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <span style={{ color: '#64748b' }}>Booked By:</span>
+                      <span>{selectedBirthdayBill.name} ({selectedBirthdayBill.phone})</span>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <span style={{ color: '#64748b' }}>Date &amp; Slot:</span>
+                      <span>{selectedBirthdayBill.date} at {selectedBirthdayBill.time} ({selectedBirthdayBill.guests} People)</span>
+                    </div>
+                  </div>
+
+                  {/* Package Breakdown */}
+                  <div style={{ borderBottom: '1px dashed #cbd5e1', paddingBottom: 10, marginBottom: 10, fontSize: '0.84rem' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', padding: '3px 0' }}>
+                      <span>Birthday Setup Package (Stand &amp; Lights):</span>
+                      <strong>₹199</strong>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', padding: '3px 0', color: '#047857' }}>
+                      <span>Advance Token Paid (UPI):</span>
+                      <strong>−₹59 (Paid)</strong>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', padding: '3px 0', color: '#c2410c', fontWeight: 700 }}>
+                      <span>Remaining Setup Balance Due:</span>
+                      <span>₹140</span>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0 0', marginTop: 4, borderTop: '1px dashed #e2e8f0' }}>
+                      <span>Food &amp; Drinks Consumed:</span>
+                      <strong>₹{Number(birthdayFoodTotal) || 0}</strong>
+                    </div>
+                  </div>
+
+                  {/* Final Total */}
+                  <div style={{ fontSize: '0.88rem' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0 0', fontSize: '1.2rem', fontWeight: 900, color: '#0F3D3E', borderTop: '2px solid #0F3D3E' }}>
+                      <span>Final Cafe Bill:</span>
+                      <span>₹{(Number(birthdayFoodTotal) || 0) + 140}</span>
+                    </div>
+                    <div style={{ fontSize: '0.78rem', color: '#64748b', marginTop: 4 }}>
+                      Calculation: ₹{Number(birthdayFoodTotal) || 0} (Food) + ₹140 (Setup Balance)
+                    </div>
+                  </div>
+
+                  {/* Footer Note */}
+                  <div style={{ textAlign: 'center', borderTop: '1.5px dashed #cbd5e1', marginTop: 14, paddingTop: 10, fontSize: '0.72rem', color: '#64748b' }}>
+                    <div>Thank you for celebrating with The Moras Cafe! 🎂✨</div>
+                    <div style={{ fontStyle: 'italic', marginTop: 2 }}>This is an official computer-generated digital bill.</div>
+                  </div>
+                </div>
+              </div>
+
             </div>
           </div>
         )}

@@ -6,6 +6,30 @@
  */
 
 const MENU_CATALOG = {
+  "packaged drinking water": {
+    "name": "Packaged Drinking Water",
+    "category": "Essentials",
+    "multi": false,
+    "price": 20
+  },
+  "water bottle": {
+    "name": "Packaged Drinking Water",
+    "category": "Essentials",
+    "multi": false,
+    "price": 20
+  },
+  "water": {
+    "name": "Packaged Drinking Water",
+    "category": "Essentials",
+    "multi": false,
+    "price": 20
+  },
+  "mineral water": {
+    "name": "Packaged Drinking Water",
+    "category": "Essentials",
+    "multi": false,
+    "price": 20
+  },
   "masala tea": {
     "name": "Masala Tea",
     "category": "Beverages",

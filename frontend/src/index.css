@@ -5333,3 +5333,32 @@ body.theme-dark .site-nav.menu-is-open {
   padding-left: 10px !important;
   border-radius: 6px;
 }
+
+
+/* ==================== BILL RECEIPT THERMAL & SLIP PRINT STYLES ==================== */
+@media print {
+  body.printing-bill * {
+    visibility: hidden;
+  }
+  body.printing-bill .bill-receipt-printable,
+  body.printing-bill .bill-receipt-printable * {
+    visibility: visible;
+  }
+  body.printing-bill .bill-receipt-printable {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100% !important;
+    max-width: 380px !important;
+    margin: 0 auto !important;
+    padding: 10px !important;
+    box-shadow: none !important;
+    border: none !important;
+    background: #fff !important;
+    color: #000 !important;
+    font-size: 13px !important;
+  }
+  body.printing-bill .no-print {
+    display: none !important;
+  }
+}

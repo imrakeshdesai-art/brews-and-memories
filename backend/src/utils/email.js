@@ -179,36 +179,50 @@ function createTransporter() {
 // ── Format items as HTML rows ─────────────────────────────────────────────────
 function buildItemRows(items) {
   return (items || []).map((item) => {
-    const variant = item.variant ? ` <span style="color:#777;font-size:13px;font-weight:normal">(${item.variant})</span>` : '';
+    const variant = item.variant ? ` <span style="color:#777;font-size:12px;font-weight:normal">(${item.variant})</span>` : '';
+    const unitPrice = item.price || 0;
+    const qty = item.qty || 1;
+    const lineTotal = unitPrice * qty;
     return `
       <tr>
-        <td width="70%" style="padding:12px 0;border-bottom:1px solid #e8e2d2;font-size:15px;color:#2d2d2d;font-weight:500;width:70%">
-          ${item.name}${variant} <span style="color:#777;font-size:14px;font-weight:normal">&times; ${item.qty}</span>
+        <td width="65%" style="padding:10px 0;border-bottom:1px solid #e8e2d2;font-size:14px;color:#2d2d2d;font-weight:500;width:65%">
+          <strong>${item.name}</strong>${variant}<br/>
+          <span style="color:#777;font-size:12px">${qty} &times; &#x20B9;${unitPrice}</span>
         </td>
-        <td width="30%" style="padding:12px 0;border-bottom:1px solid #e8e2d2;text-align:right;font-weight:700;color:#0f3d3e;font-size:15px;width:30%;white-space:nowrap">
-          &#x20B9;${item.price * item.qty}
+        <td width="35%" style="padding:10px 0;border-bottom:1px solid #e8e2d2;text-align:right;font-weight:800;color:#0f3d3e;font-size:15px;width:35%;white-space:nowrap">
+          &#x20B9;${lineTotal}
         </td>
       </tr>`;
   }).join('');
 }
 
-// ── HTML Email Template: Order Confirmation ──────────────────────────────────
+// ── HTML Email Template: Tax Invoice & Bill Receipt ───────────────────────────
 function buildCustomerEmailHTML({ name, items, total, payment, address, orderId, trackingToken }) {
-  const isPaid = payment && payment.toLowerCase() === 'online';
-  const totalLabel = isPaid ? 'Total Paid' : 'Total to Pay';
+  const isPaid = payment && (payment.toLowerCase() === 'online' || payment.toLowerCase() === 'upi');
+  const totalLabel = isPaid ? 'Total Paid' : 'Total Amount Due';
+  const refCode = orderId ? String(orderId).slice(-6).toUpperCase() : 'RECEIPT';
+  const dateStr = new Date().toLocaleDateString('en-IN', { 
+    timeZone: 'Asia/Kolkata', 
+    day: 'numeric', 
+    month: 'short', 
+    year: 'numeric', 
+    hour: '2-digit', 
+    minute: '2-digit' 
+  });
+
   return `
 <!DOCTYPE html>
 <html>
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Order Confirmed &mdash; The Moras Cafe</title>
+  <title>Tax Invoice &amp; Bill Receipt &mdash; The Moras Cafe</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
     body { font-family: 'Plus Jakarta Sans', 'Segoe UI', -apple-system, BlinkMacSystemFont, Arial, sans-serif; }
     @media only screen and (max-width: 480px) {
       .email-wrapper { margin: 10px auto !important; border-radius: 8px !important; width: 100% !important; }
-      .email-body { padding: 16px !important; }
+      .email-body { padding: 18px !important; }
       .details-box { padding: 16px !important; }
     }
   </style>
@@ -222,40 +236,75 @@ function buildCustomerEmailHTML({ name, items, total, payment, address, orderId,
             <tr>
               <td>
                 <!-- Header -->
-                <div style="background:linear-gradient(135deg,#0f3d3e 0%,#185c5d 100%);padding:40px 32px;text-align:center;border-bottom:3px solid #fbbf24">
-                  <div style="margin-bottom:16px;text-align:center">
+                <div style="background:linear-gradient(135deg,#0f3d3e 0%,#185c5d 100%);padding:36px 28px;text-align:center;border-bottom:3px solid #fbbf24">
+                  <div style="margin-bottom:14px;text-align:center">
                     <div style="width:72px;height:72px;border-radius:50%;overflow:hidden;margin:0 auto;box-shadow:0 4px 14px rgba(0,0,0,0.35);background-color:#FAF5EF;border:2px solid #fbbf24;display:inline-block">
                       <img src="https://themorascafe.in/images/brand/secondary-badge-light.png" alt="The Moras Cafe Seal" width="72" height="72" style="width:100%;height:100%;object-fit:contain;display:block;border:0" />
                     </div>
                   </div>
-                  <div style="color:#fbbf24;font-size:13px;letter-spacing:4px;text-transform:uppercase;font-weight:800;margin-bottom:8px">The Moras Cafe</div>
-                  <h1 style="color:#fff;margin:0;font-size:28px;font-weight:800;font-family:'Playfair Display', Georgia, serif;letter-spacing:-0.5px">Order Confirmed! &#x1F389;</h1>
-                  <p style="color:rgba(255,255,255,0.85);margin:10px 0 0;font-size:14px;font-style:italic;font-family:'Playfair Display', Georgia, serif">Vijayapura's Premium Cozy Caf&eacute;</p>
+                  <div style="color:#fbbf24;font-size:12px;letter-spacing:4px;text-transform:uppercase;font-weight:800;margin-bottom:6px">The Moras Cafe</div>
+                  <h1 style="color:#fff;margin:0;font-size:26px;font-weight:800;font-family:'Playfair Display', Georgia, serif;letter-spacing:-0.5px">Tax Invoice &amp; Bill Receipt &#x1F9FE;</h1>
+                  <p style="color:rgba(255,255,255,0.85);margin:8px 0 0;font-size:13px;font-family:'Playfair Display', Georgia, serif">Vijayapura's Warm Sanctuary &bull; 100% Pure Vegetarian</p>
                 </div>
 
                 <!-- Body -->
-                <div class="email-body" style="padding:32px">
-                  <p style="color:#2d2d2d;font-size:16px;line-height:1.6;margin:0 0 24px;font-family:'Plus Jakarta Sans', Arial, sans-serif">
-                    Hi <strong>${name}</strong>! &#x1F44B;<br/><br/>
-                    Your order has been confirmed! Our kitchen crew is already preparing your items fresh and piping hot. Here is a summary of your cafe ticket:
+                <div class="email-body" style="padding:28px">
+                  <p style="color:#2d2d2d;font-size:15px;line-height:1.6;margin:0 0 20px;font-family:'Plus Jakarta Sans', Arial, sans-serif">
+                    Dear <strong>${name}</strong>, &#x2728;<br/><br/>
+                    Thank you for dining with <strong>The Moras Cafe</strong>. Here is your official digital bill receipt for your order:
                   </p>
 
-                  <!-- Order Details Box -->
-                  <div class="details-box" style="background:#faf8f5;border-radius:14px;padding:24px;margin-bottom:28px;border:1px solid #e8e2d2;box-shadow:inset 0 1px 3px rgba(0,0,0,0.02)">
+                  <!-- Bill Meta Box -->
+                  <div class="details-box" style="background:#faf8f5;border-radius:14px;padding:20px;margin-bottom:20px;border:1px solid #e8e2d2;box-shadow:inset 0 1px 3px rgba(0,0,0,0.02)">
                     <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;table-layout:fixed;width:100%">
                       <tr>
-                        <td style="padding-bottom:16px;border-bottom:2px dashed #e8e2d2;word-break:break-all;overflow-wrap:break-word">
-                          <div style="font-size:11px;color:#8e8a7e;letter-spacing:2px;text-transform:uppercase;font-weight:700;margin-bottom:4px">Order Reference</div>
-                          <div style="font-size:15px;color:#0f3d3e;font-weight:800;font-family:monospace;word-break:break-all;overflow-wrap:break-word">${orderId}</div>
+                        <td style="padding-bottom:12px;border-bottom:2px dashed #e8e2d2">
+                          <table width="100%" cellpadding="0" cellspacing="0">
+                            <tr>
+                              <td style="font-size:11px;color:#8e8a7e;letter-spacing:1.5px;text-transform:uppercase;font-weight:700">Invoice Reference</td>
+                              <td style="text-align:right;font-size:11px;color:#8e8a7e;letter-spacing:1.5px;text-transform:uppercase;font-weight:700">Date &amp; Time</td>
+                            </tr>
+                            <tr>
+                              <td style="font-size:16px;color:#0f3d3e;font-weight:800;font-family:monospace">#TMC-INV-${refCode}</td>
+                              <td style="text-align:right;font-size:13px;color:#0f3d3e;font-weight:600">${dateStr}</td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="padding:10px 0;border-bottom:1px solid #e8e2d2">
+                          <table width="100%" cellpadding="0" cellspacing="0">
+                            <tr>
+                              <td style="font-size:13px;color:#666">Billed To:</td>
+                              <td style="text-align:right;font-size:13px;font-weight:700;color:#0f3d3e">${name}</td>
+                            </tr>
+                            <tr>
+                              <td style="font-size:13px;color:#666">Seated At:</td>
+                              <td style="text-align:right;font-size:13px;font-weight:700;color:#0f3d3e">${address}</td>
+                            </tr>
+                            <tr>
+                              <td style="font-size:13px;color:#666">Payment Mode:</td>
+                              <td style="text-align:right;font-size:13px;font-weight:700;color:#047857">${(payment || 'Counter').toUpperCase()}</td>
+                            </tr>
+                          </table>
                         </td>
                       </tr>
                       <tr>
                         <td style="padding-top:12px">
+                          <div style="font-size:11px;color:#8e8a7e;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;margin-bottom:8px">Itemized Breakdown</div>
                           <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;table-layout:fixed;width:100%">
                             ${buildItemRows(items)}
                             <tr>
-                              <td width="70%" style="padding:18px 0 0;font-size:16px;font-weight:800;color:#0f3d3e;border-top:2px solid #e8e2d2;width:70%">${totalLabel}</td>
-                              <td width="30%" style="padding:18px 0 0;text-align:right;font-size:22px;font-weight:900;color:#0f3d3e;border-top:2px solid #e8e2d2;width:30%;white-space:nowrap">&#x20B9;${total}</td>
+                              <td width="65%" style="padding:12px 0 4px;font-size:14px;color:#555">Item Subtotal</td>
+                              <td width="35%" style="padding:12px 0 4px;text-align:right;font-size:14px;color:#333;font-weight:600">&#x20B9;${total}</td>
+                            </tr>
+                            <tr>
+                              <td width="65%" style="padding:4px 0 8px;font-size:12px;color:#888">Taxes (GST All Inclusive)</td>
+                              <td width="35%" style="padding:4px 0 8px;text-align:right;font-size:12px;color:#059669;font-weight:600">&#x20B9;0.00</td>
+                            </tr>
+                            <tr>
+                              <td width="65%" style="padding:14px 0 0;font-size:16px;font-weight:800;color:#0f3d3e;border-top:2px solid #0f3d3e">${totalLabel}</td>
+                              <td width="35%" style="padding:14px 0 0;text-align:right;font-size:22px;font-weight:900;color:#0f3d3e;border-top:2px solid #0f3d3e">&#x20B9;${total}</td>
                             </tr>
                           </table>
                         </td>
@@ -263,87 +312,43 @@ function buildCustomerEmailHTML({ name, items, total, payment, address, orderId,
                     </table>
                   </div>
 
-                  <!-- Info Cards -->
-                  <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:28px;border-collapse:separate;border-spacing:0 10px">
-                    <tr>
-                      <td style="background:#f0fdf4;border-radius:14px;padding:18px 24px;border:1px solid #bbf7d0">
-                        <table width="100%" cellpadding="0" cellspacing="0">
-                          <tr>
-                            <td width="48" valign="middle" style="padding-right:16px">
-                              <div style="width:48px;height:48px;background:#dcfce7;border-radius:12px;text-align:center;line-height:48px;font-size:24px">&#x1F4B3;</div>
-                            </td>
-                            <td valign="middle">
-                              <div style="font-size:11px;color:#047857;text-transform:uppercase;letter-spacing:2px;font-weight:700;margin-bottom:2px">Payment Method</div>
-                              <div style="font-size:17px;font-weight:800;color:#065f46">${(payment || '').toUpperCase()}</div>
-                            </td>
-                          </tr>
-                        </table>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td style="background:#fff7ed;border-radius:14px;padding:18px 24px;border:1px solid #fed7aa">
-                        <table width="100%" cellpadding="0" cellspacing="0">
-                          <tr>
-                            <td width="48" valign="middle" style="padding-right:16px">
-                              <div style="width:48px;height:48px;background:#ffedd5;border-radius:12px;text-align:center;line-height:48px;font-size:24px">&#x1FA91;</div>
-                            </td>
-                            <td valign="middle">
-                              <div style="font-size:11px;color:#c2410c;text-transform:uppercase;letter-spacing:2px;font-weight:700;margin-bottom:2px">Seated At</div>
-                              <div style="font-size:17px;font-weight:800;color:#9a3412">${address}</div>
-                            </td>
-                          </tr>
-                        </table>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td style="background:#fdf4ff;border-radius:14px;padding:18px 24px;border:1px solid #e9d5ff">
-                        <table width="100%" cellpadding="0" cellspacing="0">
-                          <tr>
-                            <td width="48" valign="middle" style="padding-right:16px">
-                              <div style="width:48px;height:48px;background:#f3e8ff;border-radius:12px;text-align:center;line-height:48px;font-size:24px">&#x1F550;</div>
-                            </td>
-                            <td valign="middle">
-                              <div style="font-size:11px;color:#7e22ce;text-transform:uppercase;letter-spacing:2px;font-weight:700;margin-bottom:2px">Caf&eacute; Hours</div>
-                              <div style="font-size:17px;font-weight:800;color:#6b21a8">10 AM &ndash; 10:30 PM</div>
-                            </td>
-                          </tr>
-                        </table>
-                      </td>
-                    </tr>
-                  </table>
-
                   <!-- Live Order Tracking CTA -->
                   ${trackingToken ? `
                   <div style="text-align:center;margin-bottom:20px">
                     <a href="https://themorascafe.in/track/${orderId}#token=${trackingToken}" 
-                       style="display:inline-block;background:linear-gradient(135deg,#c3912d,#dfaa38);color:#1a1a1a;text-decoration:none;padding:15px 32px;border-radius:50px;font-weight:800;font-size:15px;letter-spacing:1px;box-shadow:0 4px 14px rgba(195,145,45,0.35);border:2px solid #f5c862">
-                      &#x1F4CD; Track Order Live
+                       style="display:inline-block;background:linear-gradient(135deg,#c3912d,#dfaa38);color:#1a1a1a;text-decoration:none;padding:14px 28px;border-radius:50px;font-weight:800;font-size:14px;letter-spacing:1px;box-shadow:0 4px 14px rgba(195,145,45,0.35);border:2px solid #f5c862">
+                      &#x1F4CD; Live Order Tracking
                     </a>
                   </div>
                   ` : ''}
 
-                  <!-- CTA -->
-                  <div style="text-align:center;margin-bottom:32px">
-                    <a href="https://themorascafe.in" 
-                       style="display:inline-block;background:linear-gradient(135deg,#0f3d3e,#185c5d);color:#fff;text-decoration:none;padding:16px 36px;border-radius:50px;font-weight:800;font-size:15px;letter-spacing:1.5px;box-shadow:0 4px 12px rgba(15,61,62,0.25);border:2px solid #fbbf24">
-                      &#x1F355; Order Again
+                  <!-- Rate Us on Google Banner -->
+                  <div style="background:#fffbeb;border-radius:12px;padding:14px 18px;border:1px solid #fde68a;text-align:center;margin-bottom:20px">
+                    <div style="font-size:14px;font-weight:700;color:#92400e;margin-bottom:4px">&#x2B50; Loved Your Experience?</div>
+                    <div style="font-size:12px;color:#b45309;line-height:1.5;margin-bottom:10px">
+                      Your feedback helps our independent café flourish! Please take 10 seconds to share a 5-star review.
+                    </div>
+                    <a href="https://themorascafe.in/rate" 
+                       style="display:inline-block;background:#0f3d3e;color:#fff;text-decoration:none;padding:8px 20px;border-radius:20px;font-weight:700;font-size:12px">
+                      Write a Google Review &rarr;
                     </a>
                   </div>
 
-                  <!-- Contact Info Box -->
-                  <div style="background:#faf8f5;border-radius:12px;padding:18px;text-align:center;border:1px solid #e8e2d2;margin-bottom:8px">
-                    <p style="color:#5e5a50;font-size:13px;line-height:1.6;margin:0">
-                      &#x1F4CD; Find us at: <strong>B.M. Patil Circle, Vijayapura, Karnataka</strong><br/>
-                      &#x1F4DE; Questions? Ping us on WhatsApp: <a href="https://wa.me/919945446137" style="color:#0f3d3e;font-weight:800;text-decoration:underline">+91 99454 46137</a>
+                  <!-- Café Address & Legal Notice -->
+                  <div style="background:#faf8f5;border-radius:12px;padding:14px;text-align:center;border:1px solid #e8e2d2">
+                    <p style="color:#5e5a50;font-size:12px;line-height:1.6;margin:0">
+                      <strong>The Moras Cafe</strong> &middot; B.M. Patil Circle, Ring Rd, Solapur Bypass, Vijayapura, KA 586102<br/>
+                      &#x1F4DE; Host Desk / WhatsApp: <a href="https://wa.me/919945446137" style="color:#0f3d3e;font-weight:700">+91 99454 46137</a><br/>
+                      <em>This is an official computer-generated digital bill receipt.</em>
                     </p>
                   </div>
                 </div>
 
                 <!-- Footer -->
-                <div style="background:#0f3d3e;padding:24px 32px;text-align:center;border-top:3px solid #fbbf24">
+                <div style="background:#0f3d3e;padding:20px 28px;text-align:center;border-top:3px solid #fbbf24">
                   <p style="margin:0;font-size:12px;color:rgba(255,255,255,0.7);line-height:1.6">
                     &copy; 2026 The Moras Cafe &middot; Vijayapura<br/>
-                    Follow our memories on Instagram 
+                    Follow our journey on Instagram 
                     <a href="https://www.instagram.com/themorascafe/" style="color:#fbbf24;font-weight:700;text-decoration:none">@themorascafe</a>
                   </p>
                 </div>
@@ -358,37 +363,37 @@ function buildCustomerEmailHTML({ name, items, total, payment, address, orderId,
 </html>`;
 }
 
-// ── Plain-Text Email Template: Order Confirmation ───────────────────────────
+// ── Plain-Text Email Template: Tax Invoice & Bill Receipt ─────────────────────
 function buildCustomerEmailText({ name, items, total, payment, address, orderId, trackingToken }) {
-  const isPaid = payment && payment.toLowerCase() === 'online';
-  const totalLabel = isPaid ? 'Total Paid' : 'Total to Pay';
+  const isPaid = payment && (payment.toLowerCase() === 'online' || payment.toLowerCase() === 'upi');
+  const totalLabel = isPaid ? 'Total Paid' : 'Total Amount Due';
+  const refCode = orderId ? String(orderId).slice(-6).toUpperCase() : 'RECEIPT';
   const itemsText = (items || [])
-    .map((i) => ` - ${i.name}${i.variant ? ` (${i.variant})` : ''} x ${i.qty}: Rs.${i.price * i.qty}`)
+    .map((i) => ` - ${i.name}${i.variant ? ` (${i.variant})` : ''} x ${i.qty} @ Rs.${i.price}: Rs.${i.price * i.qty}`)
     .join('\n');
 
-  return `THE MORAS CAFE — Order Confirmed!
+  return `THE MORAS CAFE — TAX INVOICE & BILL RECEIPT 🧾
+===================================================
+Invoice No: #TMC-INV-${refCode}
+Billed To: ${name}
+Location: ${address}
+Payment Method: ${(payment || 'Counter').toUpperCase()}
 
-Hi ${name},
-
-Your order has been confirmed! Our kitchen crew is preparing your items fresh and piping hot.
-
-Order Reference: ${orderId}
-${trackingToken ? `Track Order Live: https://themorascafe.in/track/${orderId}#token=${trackingToken}
-` : ''}
-Seated At: ${address}
-Payment Method: ${(payment || '').toUpperCase()}
-
-Order Summary:
+ORDERED ITEMS:
+---------------------------------------------------
 ${itemsText}
----------------------------------
+---------------------------------------------------
+Item Subtotal: Rs.${total}
+Taxes (GST): Included (Rs.0.00 Extra)
 ${totalLabel}: Rs.${total}
 
-Cafe Hours: 10:00 AM - 10:30 PM
-Address: B.M. Patil Circle, Ring Rd, Solapur Bypass, Vijayapura, KA 586102
-WhatsApp: +91 99454 46137
+${trackingToken ? `Live Order Tracking: https://themorascafe.in/track/${orderId}#token=${trackingToken}\n` : ''}
+Rate Us on Google: https://themorascafe.in/rate
 
+Cafe Address: B.M. Patil Circle, Ring Rd, Solapur Bypass, Vijayapura, KA 586102
+Host Desk / WhatsApp: +91 99454 46137
+*This is an official computer-generated digital bill receipt.*
 Thank you for dining with The Moras Cafe!
-https://themorascafe.com
 `;
 }
 
@@ -703,7 +708,8 @@ async function sendOrderEmail(orderData) {
     console.log('[Email] No customer email provided for order — skipping.');
     return { success: false, error: 'No customer email provided' };
   }
-  const subject = `Order Confirmed (#${String(orderData.orderId).slice(-6)}) - The Moras Cafe`;
+  const refCode = orderData.orderId ? String(orderData.orderId).slice(-6).toUpperCase() : 'RECEIPT';
+  const subject = `Tax Invoice & Bill Receipt (#TMC-INV-${refCode}) - The Moras Cafe 🧾`;
   const htmlContent = buildCustomerEmailHTML(orderData);
   const textContent = buildCustomerEmailText(orderData);
   return dispatchEmail({

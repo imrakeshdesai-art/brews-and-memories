@@ -321,6 +321,54 @@ router.patch('/:id', auth, checkRole(['admin', 'kitchen']), async (req, res) => 
   }
 });
 
+// ==================== SEND BILL RECEIPT TO CUSTOMER EMAIL ====================
+router.post('/:id/send-bill', auth, checkRole(['admin', 'kitchen']), async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { email } = req.body;
+
+    const order = await Order.findById(id);
+    if (!order) {
+      return res.status(404).json({ message: 'Order not found' });
+    }
+
+    const targetEmail = (email || order.email || '').trim().toLowerCase();
+    if (!targetEmail) {
+      return res.status(400).json({ message: 'Customer email address is required to send the bill' });
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(targetEmail)) {
+      return res.status(400).json({ message: 'Please provide a valid email address' });
+    }
+
+    if (!order.email || order.email !== targetEmail) {
+      order.email = targetEmail;
+      await order.save();
+    }
+
+    const result = await sendOrderEmail({
+      name: order.name,
+      email: targetEmail,
+      orderId: order._id,
+      address: order.address,
+      items: order.items,
+      total: order.total,
+      payment: order.payment,
+      trackingToken: '',
+    });
+
+    if (result && result.success === false) {
+      return res.status(500).json({ message: 'Failed to send bill email', error: result.error || result.errors });
+    }
+
+    res.json({ message: `Bill receipt sent successfully to ${targetEmail}`, order });
+  } catch (error) {
+    console.error('Send bill email error:', error);
+    res.status(500).json({ message: 'Could not send bill email' });
+  }
+});
+
 
 
 
