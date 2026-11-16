@@ -94,7 +94,7 @@ app.get('/api/health', async (req, res) => {
   res.json({
     status: 'ok',
     mode: 'mongo',
-    version: 'v-kds-deploy-15',
+    version: 'v-kds-deploy-16',
     serverTime: new Date().toISOString(),
     users: userList,
     envCheck: {
