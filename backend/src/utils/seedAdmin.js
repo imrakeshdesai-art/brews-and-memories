@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const bcrypt = require('bcryptjs');
 
 async function seedAdmin() {
   // 1. Seed Admin
@@ -10,20 +11,17 @@ async function seedAdmin() {
     const adminPassword = rawAdminPassword.trim();
     await User.deleteMany({ role: 'admin', email: { $ne: adminEmail } });
 
-    const existingAdmin = await User.findOne({ email: adminEmail });
-    if (existingAdmin) {
-      existingAdmin.password = adminPassword;
-      existingAdmin.role = 'admin';
-      await existingAdmin.save();
-      console.log(`Synced and updated admin user: ${adminEmail}`);
-    } else {
-      await User.create({
+    const hashedAdminPassword = await bcrypt.hash(adminPassword, 10);
+    await User.findOneAndUpdate(
+      { email: adminEmail },
+      {
         email: adminEmail,
-        password: adminPassword,
+        password: hashedAdminPassword,
         role: 'admin',
-      });
-      console.log(`Created default admin user: ${adminEmail}`);
-    }
+      },
+      { upsert: true, new: true }
+    );
+    console.log(`[SEED] Admin user synced with verified bcrypt hash: ${adminEmail}`);
   } else {
     console.warn('⚠️ WARNING: ADMIN_EMAIL or ADMIN_PASSWORD environment variables are not configured. Admin seeding skipped.');
   }
@@ -35,20 +33,17 @@ async function seedAdmin() {
 
   await User.deleteMany({ role: 'kitchen', email: { $ne: kitchenEmail } });
 
-  const existingKitchen = await User.findOne({ email: kitchenEmail });
-  if (existingKitchen) {
-    existingKitchen.password = kitchenPassword;
-    existingKitchen.role = 'kitchen';
-    await existingKitchen.save();
-    console.log(`Synced and updated kitchen user: ${kitchenEmail}`);
-  } else {
-    await User.create({
+  const hashedKitchenPassword = await bcrypt.hash(kitchenPassword, 10);
+  await User.findOneAndUpdate(
+    { email: kitchenEmail },
+    {
       email: kitchenEmail,
-      password: kitchenPassword,
+      password: hashedKitchenPassword,
       role: 'kitchen',
-    });
-    console.log(`Created default kitchen user: ${kitchenEmail}`);
-  }
+    },
+    { upsert: true, new: true }
+  );
+  console.log(`[SEED] Kitchen staff user synced with verified bcrypt hash: ${kitchenEmail}`);
 }
 
 module.exports = seedAdmin;
