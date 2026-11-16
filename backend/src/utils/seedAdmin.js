@@ -2,21 +2,23 @@ const User = require('../models/User');
 
 async function seedAdmin() {
   // 1. Seed Admin
-  const adminEmail = process.env.ADMIN_EMAIL;
-  const adminPassword = process.env.ADMIN_PASSWORD;
+  const rawAdminEmail = process.env.ADMIN_EMAIL;
+  const rawAdminPassword = process.env.ADMIN_PASSWORD;
 
-  if (adminEmail && adminPassword) {
-    const normalizedAdminEmail = adminEmail.toLowerCase().trim();
-    await User.deleteMany({ role: 'admin', email: { $ne: normalizedAdminEmail } });
+  if (rawAdminEmail && rawAdminPassword) {
+    const adminEmail = rawAdminEmail.toLowerCase().trim();
+    const adminPassword = rawAdminPassword.trim();
+    await User.deleteMany({ role: 'admin', email: { $ne: adminEmail } });
 
-    const existingAdmin = await User.findOne({ email: normalizedAdminEmail });
+    const existingAdmin = await User.findOne({ email: adminEmail });
     if (existingAdmin) {
       existingAdmin.password = adminPassword;
+      existingAdmin.role = 'admin';
       await existingAdmin.save();
       console.log(`Synced and updated admin user: ${adminEmail}`);
     } else {
       await User.create({
-        email: normalizedAdminEmail,
+        email: adminEmail,
         password: adminPassword,
         role: 'admin',
       });
@@ -27,20 +29,21 @@ async function seedAdmin() {
   }
 
   // 2. Seed Kitchen Staff
-  const kitchenEmail = process.env.KITCHEN_EMAIL || 'kitchen@brews-memories.local';
-  const kitchenPassword = process.env.KITCHEN_PASSWORD || 'Kitchen123!';
-  const normalizedKitchenEmail = kitchenEmail.toLowerCase().trim();
+  const kitchenEmail = (process.env.KITCHEN_EMAIL || 'kitchen@brews-memories.local').toLowerCase().trim();
+  const rawKitchenPassword = process.env.KITCHEN_PASSWORD || 'Kitchen123!';
+  const kitchenPassword = rawKitchenPassword.trim();
 
-  await User.deleteMany({ role: 'kitchen', email: { $ne: normalizedKitchenEmail } });
+  await User.deleteMany({ role: 'kitchen', email: { $ne: kitchenEmail } });
 
-  const existingKitchen = await User.findOne({ email: normalizedKitchenEmail });
+  const existingKitchen = await User.findOne({ email: kitchenEmail });
   if (existingKitchen) {
     existingKitchen.password = kitchenPassword;
+    existingKitchen.role = 'kitchen';
     await existingKitchen.save();
     console.log(`Synced and updated kitchen user: ${kitchenEmail}`);
   } else {
     await User.create({
-      email: normalizedKitchenEmail,
+      email: kitchenEmail,
       password: kitchenPassword,
       role: 'kitchen',
     });

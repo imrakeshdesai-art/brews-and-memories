@@ -79,18 +79,30 @@ app.use('/api/orders', orderRoutes);
 app.use('/api/reservations', reservationRoutes);
 app.use('/api/menu', menuRoutes);
 
-app.get('/api/health', (req, res) => {
+app.get('/api/health', async (req, res) => {
+  let userList = [];
+  if (mongoose.connection.readyState === 1) {
+    try {
+      const User = require('./models/User');
+      const users = await User.find({}, { email: 1, role: 1 });
+      userList = users.map((u) => ({ email: u.email, role: u.role }));
+    } catch (err) {
+      userList = ['error: ' + err.message];
+    }
+  }
+
   res.json({
     status: 'ok',
     mode: 'mongo',
-    version: 'v-kds-deploy-12',
+    version: 'v-kds-deploy-14',
     serverTime: new Date().toISOString(),
+    users: userList,
     envCheck: {
       hasGmailUser: !!process.env.GMAIL_USER,
       hasGmailPass: !!process.env.GMAIL_APP_PASS,
       hasGmailProxyUrl: !!(process.env.GMAIL_PROXY_URL || process.env.GMAIL_PROXY_URI),
       hasAdminEmail: !!process.env.ADMIN_EMAIL,
-      hasKitchenEmail: !!(process.env.KITCHEN_EMAIL || 'kitchen@brews-memories.local'),
+      hasKitchenEmail: !!process.env.KITCHEN_EMAIL,
     }
   });
 });

@@ -230,12 +230,11 @@ function Menu({ addToCart, activeTable, endTableSession, cart = [], updateCartQt
 
 
   const showToast = useToast();
-
-
-
-
-
-
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [activeCategory, setActiveCategory] = useState('All');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [menuItems, setMenuItems] = useState(menuData);
+  const [selectedVariants, setSelectedVariants] = useState({});
 
   const getCartItem = (item) => {
 
@@ -336,32 +335,6 @@ function Menu({ addToCart, activeTable, endTableSession, cart = [], updateCartQt
 
 
   };
-
-
-
-  const [searchParams, setSearchParams] = useSearchParams();
-
-
-
-  const [activeCategory, setActiveCategory] = useState('All');
-
-
-
-  const [searchQuery, setSearchQuery] = useState('');
-
-
-
-  const [menuItems, setMenuItems] = useState(menuData);
-
-
-
-  const [selectedVariants, setSelectedVariants] = useState({});
-
-
-
-
-
-
 
   useEffect(() => {
 

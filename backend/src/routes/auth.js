@@ -14,13 +14,18 @@ router.post('/login', async (req, res) => {
       return res.status(400).json({ message: 'Missing credentials' });
     }
 
-    const admin = await User.findOne({ email: String(user).toLowerCase().trim() });
+    const cleanUser = String(user).toLowerCase().trim();
+    const cleanPass = String(pass).trim();
+
+    const admin = await User.findOne({ email: cleanUser });
     if (!admin) {
+      console.warn(`[AUTH] Login failed: User not found for email "${cleanUser}"`);
       return res.status(401).json({ success: false, message: 'Invalid credentials' });
     }
 
-    const isMatch = await admin.comparePassword(pass);
+    const isMatch = await admin.comparePassword(cleanPass);
     if (!isMatch) {
+      console.warn(`[AUTH] Login failed: Password mismatch for email "${cleanUser}"`);
       return res.status(401).json({ success: false, message: 'Invalid credentials' });
     }
 
