@@ -82,10 +82,18 @@ function NavBar({ cartCount, onCartClick, activeTable, onReserveClick, theme, to
                 <span className="dot-live">●</span> {activeTable}
               </span>
             )}
-            {activeTable && (
-              <button className="btn-cart" type="button" onClick={onCartClick} aria-label="Open cart">
-                Cart
-                <span className="cart-badge" aria-live="polite">{cartCount}</span>
+            {(activeTable || cartCount > 0) && (
+              <button 
+                className={`btn-cart ${cartCount > 0 ? 'has-items' : ''}`} 
+                type="button" 
+                onClick={onCartClick} 
+                aria-label={`Open cart with ${cartCount} items`}
+              >
+                <span className="btn-cart-icon" aria-hidden="true">🛒</span>
+                <span className="btn-cart-text">Cart</span>
+                {cartCount > 0 && (
+                  <span className="cart-badge" aria-live="polite">{cartCount}</span>
+                )}
               </button>
             )}
             <button

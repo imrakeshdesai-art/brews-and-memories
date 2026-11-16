@@ -2,6 +2,7 @@ import { Suspense, lazy, useCallback, useEffect, useMemo, useState } from 'react
 import { Route, Routes, useLocation } from 'react-router-dom';
 import NavBar from './components/NavBar';
 import CartDrawer from './components/CartDrawer';
+import MobileCartBar from './components/MobileCartBar';
 import CheckoutModal from './components/CheckoutModal';
 import ToastProvider from './components/ToastProvider';
 import { loadCart, saveCart } from './services/cart';
@@ -272,7 +273,7 @@ function App() {
             toggleTheme={toggleTheme}
           />
         )}
-        <main className="page-shell">
+        <main className={`page-shell ${cartCount > 0 ? 'has-floating-cart' : ''}`}>
           <Suspense fallback={<div className="page-loader">Loading page…</div>}>
             <div key={location.pathname} className="page-fade-in">
               <Routes location={location}>
@@ -300,6 +301,13 @@ function App() {
           </Suspense>
         </main>
         {!isPrintPage && <Footer onReserveClick={() => setIsReserveOpen(true)} />}
+        {!isPrintPage && (
+          <MobileCartBar
+            cartCount={cartCount}
+            cartTotal={cartTotal}
+            onOpenCart={() => setIsCartOpen(true)}
+          />
+        )}
         {!isPrintPage && (
           <CartDrawer
             open={isCartOpen}
