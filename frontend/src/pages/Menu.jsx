@@ -14,7 +14,7 @@ import { reviewsData } from '../data/reviewsData';
 
 
 
-import useToast from '../components/ToastProvider';
+import { useToast } from '../components/ToastProvider';
 import useSEO from '../hooks/useSEO';
 import Breadcrumbs from '../components/Breadcrumbs';
 
