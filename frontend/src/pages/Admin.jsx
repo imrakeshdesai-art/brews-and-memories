@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import api from '../services/api';
+import useSEO from '../hooks/useSEO';
 import {
   saveAdminToken,
   clearAdminToken,
@@ -167,6 +168,11 @@ function Admin() {
 
   const role = useMemo(() => getRoleFromToken(token), [token]);
   const prevPendingCountRef = useRef(0);
+
+  useSEO({
+    title: role === 'kitchen' ? 'Kitchen KDS' : 'Staff Admin Portal',
+    noindex: true,
+  });
 
   // ================= MENU AVAILABILITY (INVENTORY) STATE =================
   const [catalogItems, setCatalogItems] = useState([]);
@@ -481,7 +487,7 @@ function Admin() {
       <div className="kds-dashboard" style={{ padding: '0 4%', color: 'var(--text)' }}>
         <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 28, borderBottom: '2px solid var(--cream-dark)', paddingBottom: 16 }}>
           <div>
-            <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: '2.2rem', color: 'var(--green)', margin: 0 }}>🍳 Kitchen Live Screen</h2>
+            <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: '2.2rem', color: 'var(--green)', margin: 0 }}>🍳 Kitchen Live Screen</h1>
             <p style={{ color: 'var(--text-light)', margin: '4px 0 0', fontSize: '0.9rem' }}>Real-time Kitchen Display System (KDS)</p>
           </div>
           <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
@@ -576,9 +582,9 @@ function Admin() {
               🔐
             </div>
 
-            <h2 className="admin-login-title">
+            <h1 className="admin-login-title" style={{ fontSize: '1.8rem', margin: '0 0 8px', color: 'var(--green)' }}>
               Staff Login
-            </h2>
+            </h1>
 
             <p
               style={{
@@ -691,7 +697,7 @@ function Admin() {
 
         <div className="admin-header">
 
-          <h2>📊 Orders Dashboard</h2>
+          <h1>📊 Orders Dashboard</h1>
 
           <button
             className="btn-outline"

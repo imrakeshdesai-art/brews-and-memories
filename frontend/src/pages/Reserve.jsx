@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '../services/api';
 import useSEO from '../hooks/useSEO';
+import Breadcrumbs from '../components/Breadcrumbs';
 import { UPI_CONFIG, buildUpiUri, buildUpiQrUrl } from '../config/upi';
 
 function Reserve() {
@@ -178,6 +179,9 @@ function Reserve() {
 
   return (
     <section className="section" style={{ minHeight: '85vh', paddingTop: '100px' }}>
+      <div style={{ maxWidth: 1080, margin: '0 auto 16px', padding: '0 16px' }}>
+        <Breadcrumbs items={[{ label: 'Home', path: '/' }, { label: 'Birthday Celebration' }]} />
+      </div>
       
       {/* Header */}
       <div className="section-header" style={{ textAlign: 'center', marginBottom: 36 }}>

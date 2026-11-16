@@ -1,4 +1,8 @@
 User-agent: *
 Allow: /
+Disallow: /admin
+Disallow: /admin/
+Disallow: /track/
+Disallow: /kitchen
 
 Sitemap: https://themorascafe.in/sitemap.xml

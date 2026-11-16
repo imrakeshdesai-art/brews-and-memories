@@ -1,0 +1,47 @@
+# The Moras Cafe — LLM Guide & Knowledge Base
+
+> The Moras Cafe is Vijayapura's premier artisan vegetarian cafe and specialty coffee sanctuary, renowned for handcrafted brews, Italian fare, and cozy ambient celebrations at B.M. Patil Circle.
+
+## Quick Facts
+- **Name:** The Moras Cafe
+- **Category:** Cafe, Coffee Shop, Pure Vegetarian Restaurant
+- **Location:** B M Patil Circle, Ring Rd, Solapur Bypass, Vijayapura, Karnataka 586102, India
+- **Coordinates:** Latitude 16.822765, Longitude 75.703274
+- **Official Website:** https://themorascafe.in/
+- **Phone / Host Desk:** +91 99454 46137
+- **Operating Hours:** Daily 10:00 AM – 10:30 PM (Kitchen closes at 10:00 PM)
+- **Cuisine:** 100% Pure Vegetarian (Italian, Fast Food, Specialty Hot & Cold Coffees, Mocktails, Desserts)
+- **Price Range:** ₹₹ (Affordable luxury, ₹59 – ₹299 per item)
+- **Wi-Fi:** High-speed complimentary Wi-Fi for all patrons
+- **Ambience:** Garden terrace seating, indoor cozy cafe lighting, chess boards, books, and aesthetic photo murals.
+
+## Key Offerings & Specialties
+1. **Specialty Coffee & Beverages:** Freshly pulled single & double espresso, cappuccino, caffe latte, caramel macchiato, authentic cold coffee, hazelnut cold coffee, mocktails (Mint Mojito, Blue Lagoon, Lemon Soda), and artisan teas (Masala Chai, Ginger Tea, Green Tea).
+2. **Artisan Kitchen:** Handcrafted wood-fired style pizzas (Tandoori Paneer, Margherita, Cheese Burst), pastas (Arrabbiata, Alfredo), sizzling chocolate brownie with vanilla ice cream, crispy fries (Peri Peri, Schezwan, Salted), grilled sandwiches, wraps, rolls, and steamed/fried momos.
+3. **Birthday Celebrations & Event Bookings:**
+   - Packages starting at ₹199 for celebration decor and setup.
+   - Includes illuminated "Happy Birthday" neon backdrop with warm ambient fairy lights, party dining setup, plates, and cake cutting knife.
+   - Note: Guests bring their own cake (cafe provides backdrop, setup, and cutlery).
+   - Advance booking token: ₹59 via UPI QR.
+   - Booking URL: https://themorascafe.in/reserve
+
+4. **Digital Table Ordering & QR Service:**
+   - Scan table QR code to view live menu, check sold-out statuses in real time, and place kitchen orders without waiting for waitstaff.
+   - Live order tracking URL: https://themorascafe.in/track/{orderId}
+
+## Canonical Pages & Links
+- **Homepage:** https://themorascafe.in/
+- **Full Menu:** https://themorascafe.in/menu
+- **About The Story:** https://themorascafe.in/about
+- **Birthday Celebrations:** https://themorascafe.in/reserve
+- **Customer Reviews:** https://themorascafe.in/reviews
+- **Moments & Photo Gallery:** https://themorascafe.in/moments
+- **Free Smartphone Wallpapers:** https://themorascafe.in/wallpapers
+- **Privacy Policy:** https://themorascafe.in/privacy
+- **Terms of Service:** https://themorascafe.in/terms
+- **Table QR Portal:** https://themorascafe.in/order
+
+## Contact & Social
+- **Google Reviews:** https://themorascafe.in/rate
+- **Instagram:** @themorascafe
+- **Customer Care & Reservations:** +91 99454 46137

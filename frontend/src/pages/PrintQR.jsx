@@ -1,9 +1,15 @@
 import React, { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import useSEO from '../hooks/useSEO';
 
 function PrintQR() {
   const { tableNum } = useParams();
   const navigate = useNavigate();
+
+  useSEO({
+    title: `Print Table ${tableNum} QR Card`,
+    noindex: true,
+  });
   
   const tableUrl = `${window.location.origin}/order/table-${tableNum}`;
   const qrImageUrl = `https://quickchart.io/qr?text=${encodeURIComponent(tableUrl)}&size=250`;
@@ -414,6 +420,10 @@ function PrintQR() {
       >
         ← Back to Admin
       </button>
+
+      <h1 style={{ position: 'absolute', width: 1, height: 1, padding: 0, margin: -1, overflow: 'hidden', clip: 'rect(0, 0, 0, 0)', whiteSpace: 'nowrap', border: 0 }}>
+        Print Table {tableNum} QR Card
+      </h1>
 
       <div className="scene">
         {/* FRONT */}

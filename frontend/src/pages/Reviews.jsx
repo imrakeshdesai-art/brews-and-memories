@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { reviewsData } from '../data/reviewsData';
 import useSEO from '../hooks/useSEO';
+import Breadcrumbs from '../components/Breadcrumbs';
 
 function StatCounter({ targetValue, duration = 2000 }) {
   const [count, setCount] = useState(0);
@@ -81,6 +82,9 @@ function Reviews() {
 
   return (
     <div className="reviews-editorial-page" style={{ background: '#FAF5EF', minHeight: '100vh', padding: '60px 5% 80px' }}>
+      <div style={{ maxWidth: 1100, margin: '0 auto 16px' }}>
+        <Breadcrumbs items={[{ label: 'Home', path: '/' }, { label: 'Customer Reviews' }]} />
+      </div>
       <div className="section-header" style={{ marginBottom: 44, textAlign: 'center' }}>
         <span className="hero-editorial-kicker" style={{ color: '#b45309' }}>Guest Reflections</span>
         <h1 className="hero-editorial-title" style={{ fontSize: 'clamp(2.4rem, 5vw, 4rem)', marginTop: 12 }}>

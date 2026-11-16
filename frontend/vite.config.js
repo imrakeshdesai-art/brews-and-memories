@@ -17,12 +17,29 @@ export default defineConfig(() => {
     },
     build: {
       outDir: 'dist',
-      sourcemap: false, // Disable source maps in production
+      sourcemap: false, // Strict: disable production source maps
       minify: 'terser',
+      terserOptions: {
+        compress: {
+          drop_console: true,
+          drop_debugger: true,
+        },
+      },
       rollupOptions: {
         output: {
-          manualChunks: {
-            'vendor': ['react', 'react-dom', 'react-router-dom', 'axios'],
+          manualChunks(id) {
+            if (id.includes('node_modules')) {
+              if (id.includes('react') || id.includes('react-dom') || id.includes('react-router-dom')) {
+                return 'react-core';
+              }
+              if (id.includes('gsap')) {
+                return 'gsap-vendor';
+              }
+              if (id.includes('axios')) {
+                return 'network-vendor';
+              }
+              return 'vendor';
+            }
           },
         },
       },

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import useSEO from '../hooks/useSEO';
+import Breadcrumbs from '../components/Breadcrumbs';
 
 const instagramWidgetUrl = import.meta.env.VITE_INSTAGRAM_WIDGET_URL || 'b16a01b6-838f-4360-88fc-9a34d2927446';
 
@@ -147,6 +148,9 @@ export default function Moments() {
         textAlign: 'center'
       }}>
         <div style={{ maxWidth: 800, margin: '0 auto' }}>
+          <div style={{ marginBottom: 16 }}>
+            <Breadcrumbs items={[{ label: 'Home', path: '/' }, { label: 'Moments Gallery' }]} />
+          </div>
           <span style={{ 
             color: '#fbbf24', 
             textTransform: 'uppercase', 

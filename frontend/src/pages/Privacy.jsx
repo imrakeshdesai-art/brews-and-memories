@@ -1,5 +1,6 @@
 ﻿import React from 'react';
 import useSEO from '../hooks/useSEO';
+import Breadcrumbs from '../components/Breadcrumbs';
 
 function Privacy() {
   useSEO({
@@ -9,6 +10,9 @@ function Privacy() {
 
   return (
     <section className="section" style={{ padding: '120px 20px 80px', minHeight: '80vh', background: 'var(--cream-light)' }}>
+      <div style={{ maxWidth: 800, margin: '0 auto 16px' }}>
+        <Breadcrumbs items={[{ label: 'Home', path: '/' }, { label: 'Privacy Policy' }]} />
+      </div>
       <div className="section-header" style={{ textAlign: 'center', marginBottom: 40 }}>
         <span className="section-label" style={{ textTransform: 'uppercase', letterSpacing: 2, fontSize: '0.8rem', fontWeight: 800, color: 'var(--green)' }}>Security & Trust</span>
         <h1 className="section-title" style={{ fontFamily: "'Playfair Display', serif", fontSize: '2.5rem', color: 'var(--green)', margin: '10px 0 16px' }}>Privacy Policy</h1>

@@ -14,11 +14,9 @@ import { reviewsData } from '../data/reviewsData';
 
 
 
-import { useToast } from '../components/ToastProvider';
-
-
-
+import useToast from '../components/ToastProvider';
 import useSEO from '../hooks/useSEO';
+import Breadcrumbs from '../components/Breadcrumbs';
 
 
 
@@ -712,8 +710,9 @@ function Menu({ addToCart, activeTable, endTableSession, cart = [], updateCartQt
 
 
     <section className="section" id="menu" style={{ position: 'relative', overflow: 'hidden' }}>
-
-
+      <div style={{ maxWidth: 1200, margin: '0 auto 16px', padding: '0 16px', position: 'relative', zIndex: 2 }}>
+        <Breadcrumbs items={[{ label: 'Home', path: '/' }, { label: 'Menu' }]} />
+      </div>
 
       {/* Ambient Botanical Brand Watermark Motif */}
 

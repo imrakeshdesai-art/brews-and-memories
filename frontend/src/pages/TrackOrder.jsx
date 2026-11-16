@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import api from '../services/api';
 import useSEO from '../hooks/useSEO';
+import Breadcrumbs from '../components/Breadcrumbs';
 
 const POLL_INTERVAL_MS = 12000;
 
@@ -170,6 +171,9 @@ export default function TrackOrder() {
   return (
     <div className="track-order-page-wrapper">
       <div className="track-order-container">
+        <div style={{ marginBottom: 16 }}>
+          <Breadcrumbs items={[{ label: 'Home', path: '/' }, { label: 'Track Order' }]} />
+        </div>
         {/* Header */}
         <header className="track-order-header">
           <span className="track-badge">Live Kitchen Status</span>

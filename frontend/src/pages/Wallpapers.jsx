@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import useSEO from '../hooks/useSEO';
+import Breadcrumbs from '../components/Breadcrumbs';
 import { wallpapers, wallpaperEditions } from '../data/wallpapers';
 
 export default function Wallpapers() {
@@ -57,6 +58,9 @@ export default function Wallpapers() {
       {/* Hero Header */}
       <section className="wallpapers-hero">
         <div className="wallpapers-hero-container">
+          <div style={{ marginBottom: 16 }}>
+            <Breadcrumbs items={[{ label: 'Home', path: '/' }, { label: 'Brand Wallpapers' }]} />
+          </div>
           <span className="wallpapers-tag">Official Café Collection</span>
           <h1 className="wallpapers-title">Brand Wallpapers</h1>
           <p className="wallpapers-subtitle">

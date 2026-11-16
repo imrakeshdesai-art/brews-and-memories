@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useToast } from '../components/ToastProvider';
+import useSEO from '../hooks/useSEO';
 
 const TOTAL_TABLES = Number(import.meta.env.VITE_TOTAL_TABLES) || 12;
 const VALID_TABLES = Array.from(
@@ -27,6 +28,12 @@ function TableOrder({ onSessionStart }) {
         .map(word => word.charAt(0).toUpperCase() + word.slice(1))
         .join(' ')
     : '';
+
+  useSEO({
+    title: normalizedTable ? `Order at ${normalizedTable}` : 'Table Ordering',
+    description: 'Scan your table QR code to order fresh coffee, beverages, pizza, and vegetarian specials directly to your table at The Moras Cafe.',
+    noindex: true,
+  });
 
   // Handle device session binding validation
   useEffect(() => {
@@ -70,7 +77,7 @@ function TableOrder({ onSessionStart }) {
       <section className="section" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh', padding: '120px 20px 80px' }}>
         <div className="card" style={{ maxWidth: 450, width: '100%', textAlign: 'center', background: 'var(--white)', border: '1px solid var(--cream-dark)', borderRadius: 16, padding: '40px 30px', boxShadow: 'var(--shadow-lg)' }}>
           <div style={{ fontSize: '4rem', marginBottom: 20 }}>📱</div>
-          <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: '2rem', color: 'var(--green)', margin: '0 0 16px' }}>Table QR Required</h2>
+          <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: '2rem', color: 'var(--green)', margin: '0 0 16px' }}>Table QR Required</h1>
           <div style={{ width: 60, height: 3, background: 'var(--green)', margin: '0 auto 20px' }} />
           <p style={{ color: 'var(--text-light)', lineHeight: 1.7, fontSize: '0.95rem', marginBottom: 24 }}>
             To place an order, please scan the QR code available on your table.
@@ -93,7 +100,7 @@ function TableOrder({ onSessionStart }) {
       <section className="section" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh', padding: '120px 20px 80px' }}>
         <div className="card" style={{ maxWidth: 450, width: '100%', textAlign: 'center', background: 'var(--white)', border: '1px solid var(--red)', borderRadius: 16, padding: '40px 30px', boxShadow: 'var(--shadow-lg)' }}>
           <div style={{ fontSize: '4rem', marginBottom: 20 }}>⚠️</div>
-          <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: '2rem', color: 'var(--red)', margin: '0 0 16px' }}>Invalid Table QR Code</h2>
+          <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: '2rem', color: 'var(--red)', margin: '0 0 16px' }}>Invalid Table QR Code</h1>
           <div style={{ width: 60, height: 3, background: 'var(--red)', margin: '0 auto 20px' }} />
           <p style={{ color: 'var(--text-light)', lineHeight: 1.7, fontSize: '0.95rem', marginBottom: 24 }}>
             Please contact staff.
@@ -116,7 +123,7 @@ function TableOrder({ onSessionStart }) {
       <section className="section" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh', padding: '120px 20px 80px', background: 'var(--cream-light)' }}>
         <div className="card" style={{ maxWidth: 450, width: '100%', textAlign: 'center', background: 'var(--white)', border: '2px solid var(--red)', borderRadius: 16, padding: '40px 30px', boxShadow: 'var(--shadow-lg)' }}>
           <div style={{ fontSize: '4rem', marginBottom: 20 }}>🔒</div>
-          <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: '2rem', color: 'var(--red)', margin: '0 0 16px' }}>Shared Link Blocked</h2>
+          <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: '2rem', color: 'var(--red)', margin: '0 0 16px' }}>Shared Link Blocked</h1>
           <div style={{ width: 60, height: 3, background: 'var(--red)', margin: '0 auto 20px' }} />
           <p style={{ color: 'var(--text-light)', lineHeight: 1.7, fontSize: '0.95rem', marginBottom: 20 }}>
             For security and to prevent remote ordering, this session is bound to the specific device that physically scanned the QR code.
@@ -143,9 +150,9 @@ function TableOrder({ onSessionStart }) {
           <img src="/images/brand/secondary-badge-dark.png" alt="The Moras Cafe Seal" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
         </div>
         <span style={{ textTransform: 'uppercase', letterSpacing: 2, fontSize: '0.8rem', fontWeight: 800, color: 'var(--green)' }}>The Moras Cafe</span>
-        <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: '2.2rem', color: 'var(--green)', margin: '8px 0 16px' }}>
+        <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: '2.2rem', color: 'var(--green)', margin: '8px 0 16px' }}>
           Welcome to <span style={{ color: '#fbbf24' }}>{normalizedTable}</span>
-        </h2>
+        </h1>
         <div style={{ width: 60, height: 3, background: 'var(--green)', margin: '0 auto 20px' }} />
         <p style={{ color: 'var(--text-light)', lineHeight: 1.7, fontSize: '0.95rem', marginBottom: 28 }}>
           Your digital ordering session is ready. Add items to your cart, and we will prepare and deliver them directly to your table.
