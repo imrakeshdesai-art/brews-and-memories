@@ -1,4 +1,5 @@
 const express = require('express');
+const mongoose = require('mongoose');
 const helmet = require('helmet');
 const cors = require('cors');
 const morgan = require('morgan');
@@ -92,6 +93,15 @@ app.get('/api/health', (req, res) => {
       hasKitchenEmail: !!(process.env.KITCHEN_EMAIL || 'kitchen@brews-memories.local'),
     }
   });
+});
+
+app.get('/api/health/ready', (req, res) => {
+  const isDbReady = mongoose.connection.readyState === 1;
+  if (isDbReady) {
+    res.status(200).json({ status: 'ready', db: 'connected', timestamp: new Date().toISOString() });
+  } else {
+    res.status(503).json({ status: 'not_ready', db: 'disconnected', timestamp: new Date().toISOString() });
+  }
 });
 
 app.use((req, res) => {

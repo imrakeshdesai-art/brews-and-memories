@@ -5,6 +5,7 @@ import CartDrawer from './components/CartDrawer';
 import MobileCartBar from './components/MobileCartBar';
 import CheckoutModal from './components/CheckoutModal';
 import ToastProvider from './components/ToastProvider';
+import ErrorBoundary from './components/ErrorBoundary';
 import { loadCart, saveCart } from './services/cart';
 import './index.css';
 
@@ -275,31 +276,33 @@ function App() {
           />
         )}
         <main className={`page-shell ${cartCount > 0 ? 'has-floating-cart' : ''}`}>
-          <Suspense fallback={<div className="page-loader">Loading page…</div>}>
-            <div key={location.pathname} className="page-fade-in">
-              <Routes location={location}>
-                <Route path="/" element={<Home {...pageProps} />} />
-                <Route path="/about" element={<About />} />
-                <Route path="/menu" element={<Menu {...pageProps} />} />
-                <Route path="/reviews" element={<Reviews />} />
-                <Route path="/reserve" element={<Reserve />} />
-                <Route path="/order" element={<TableOrder />} />
-                <Route path="/order/:tableId" element={<TableOrder onSessionStart={handleSessionStart} />} />
-                <Route path="/admin" element={<Admin />} />
-                <Route path="/admin/print-qr/:tableNum" element={<PrintQR />} />
-                <Route path="/admin/print-review-qr" element={<PrintReviewQR />} />
-                <Route path="/print-review-qr" element={<PrintReviewQR />} />
-                <Route path="/rate" element={<ReviewRedirect />} />
-                <Route path="/review" element={<ReviewRedirect />} />
-                <Route path="/privacy" element={<Privacy />} />
-                <Route path="/terms" element={<Terms />} />
-                <Route path="/moments" element={<Moments />} />
-                <Route path="/wallpapers" element={<Wallpapers />} />
-                <Route path="/track/:orderId" element={<TrackOrder />} />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </div>
-          </Suspense>
+          <ErrorBoundary resetKey={location.pathname}>
+            <Suspense fallback={<div className="page-loader">Loading page…</div>}>
+              <div key={location.pathname} className="page-fade-in">
+                <Routes location={location}>
+                  <Route path="/" element={<Home {...pageProps} />} />
+                  <Route path="/about" element={<About />} />
+                  <Route path="/menu" element={<Menu {...pageProps} />} />
+                  <Route path="/reviews" element={<Reviews />} />
+                  <Route path="/reserve" element={<Reserve />} />
+                  <Route path="/order" element={<TableOrder />} />
+                  <Route path="/order/:tableId" element={<TableOrder onSessionStart={handleSessionStart} />} />
+                  <Route path="/admin" element={<Admin />} />
+                  <Route path="/admin/print-qr/:tableNum" element={<PrintQR />} />
+                  <Route path="/admin/print-review-qr" element={<PrintReviewQR />} />
+                  <Route path="/print-review-qr" element={<PrintReviewQR />} />
+                  <Route path="/rate" element={<ReviewRedirect />} />
+                  <Route path="/review" element={<ReviewRedirect />} />
+                  <Route path="/privacy" element={<Privacy />} />
+                  <Route path="/terms" element={<Terms />} />
+                  <Route path="/moments" element={<Moments />} />
+                  <Route path="/wallpapers" element={<Wallpapers />} />
+                  <Route path="/track/:orderId" element={<TrackOrder />} />
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </div>
+            </Suspense>
+          </ErrorBoundary>
         </main>
         {!isPrintPage && <Footer onReserveClick={() => setIsReserveOpen(true)} />}
         {!isPrintPage && (

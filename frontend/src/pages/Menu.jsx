@@ -524,10 +524,28 @@ function Menu({ addToCart, activeTable, endTableSession, cart = [], updateCartQt
 
 
     return [activeCategory];
-
-
-
   }, [activeCategory]);
+
+  const totalItemsCount = useMemo(() => {
+    return categoriesToRender.reduce((sum, cat) => sum + (menuItems[cat]?.length || 0), 0);
+  }, [categoriesToRender, menuItems]);
+
+  const atmosphereVibe = useMemo(() => {
+    const now = new Date();
+    const utcHours = now.getUTCHours();
+    const istHours = (utcHours + 5 + Math.floor((now.getUTCMinutes() + 30) / 60)) % 24;
+    if (istHours >= 10 && istHours < 12) {
+      return { dot: '#10b981', text: 'Morning Brews & Fresh Espresso' };
+    } else if (istHours >= 12 && istHours < 17) {
+      return { dot: '#10b981', text: 'Afternoon Bites & Chilled Brews' };
+    } else if (istHours >= 17 && istHours < 22) {
+      return { dot: '#f59e0b', text: 'Evening Terrace Lights & Warm Pizzas' };
+    } else if (istHours >= 22 && istHours < 23) {
+      return { dot: '#f59e0b', text: 'Last Orders Until 10:30 PM' };
+    } else {
+      return { dot: '#94a3b8', text: 'Kitchen Reopens at 10:00 AM' };
+    }
+  }, []);
 
 
 
@@ -736,12 +754,24 @@ function Menu({ addToCart, activeTable, endTableSession, cart = [], updateCartQt
 
         <h1 className="section-title">Crafted with <em>Love</em></h1>
 
-
-
         <div className="section-divider" />
 
-
-
+        <div style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: 7,
+          background: 'var(--cream-light, #faf8f5)',
+          border: '1px solid var(--cream-dark, #e8e2d2)',
+          borderRadius: 20,
+          padding: '4px 14px',
+          fontSize: '0.82rem',
+          color: 'var(--green, #0F3D3E)',
+          fontWeight: 600,
+          marginTop: 10
+        }}>
+          <span style={{ display: 'inline-block', width: 8, height: 8, borderRadius: '50%', background: atmosphereVibe.dot }} />
+          <span>{atmosphereVibe.text}</span>
+        </div>
       </div>
 
 
@@ -2000,11 +2030,108 @@ function Menu({ addToCart, activeTable, endTableSession, cart = [], updateCartQt
 
       })}
 
+      {totalItemsCount === 0 && (
+        <div
+          className="menu-empty-state"
+          style={{
+            textAlign: 'center',
+            padding: '50px 24px',
+            maxWidth: 540,
+            margin: '20px auto 40px',
+            background: 'var(--white, #ffffff)',
+            border: '1.5px solid var(--cream-dark, #e8e2d2)',
+            borderRadius: 20,
+            boxShadow: '0 8px 28px rgba(15, 61, 62, 0.06)',
+          }}
+        >
+          <div style={{ fontSize: '3rem', marginBottom: 12 }} aria-hidden="true">
+            ☕🔍
+          </div>
+          <h3
+            style={{
+              fontFamily: "'Playfair Display', serif",
+              fontSize: '1.6rem',
+              color: 'var(--green, #0F3D3E)',
+              margin: '0 0 10px',
+            }}
+          >
+            No Dishes Found
+          </h3>
+          <p
+            style={{
+              color: 'var(--text-light, #666)',
+              fontSize: '0.95rem',
+              margin: '0 auto 20px',
+              maxWidth: 440,
+              lineHeight: 1.6,
+            }}
+          >
+            {searchQuery ? (
+              <>
+                We couldn&rsquo;t find anything matching &ldquo;<strong>{searchQuery}</strong>&rdquo;. Try searching for coffee, pizza, or tap a favorite below:
+              </>
+            ) : (
+              <>No items are available in this category right now.</>
+            )}
+          </p>
 
+          <div
+            style={{
+              display: 'flex',
+              gap: 8,
+              justifyContent: 'center',
+              flexWrap: 'wrap',
+              marginBottom: 20,
+            }}
+          >
+            {['Cold Coffee', 'Tandoori Paneer Pizza', 'Peri Peri Fries', 'Sizzling Brownie', 'Momos'].map(
+              (fav) => (
+                <button
+                  key={fav}
+                  type="button"
+                  onClick={() => {
+                    setSearchQuery(fav);
+                    setActiveCategory('All');
+                  }}
+                  style={{
+                    background: 'var(--cream-light, #faf8f5)',
+                    border: '1px solid var(--cream-dark, #e8e2d2)',
+                    borderRadius: 20,
+                    padding: '7px 14px',
+                    fontSize: '0.84rem',
+                    color: 'var(--green, #0F3D3E)',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    transition: 'all 0.15s ease',
+                  }}
+                >
+                  ✨ {fav}
+                </button>
+              )
+            )}
+          </div>
 
-
-
-
+          {searchQuery && (
+            <button
+              type="button"
+              className="btn-outline"
+              onClick={() => {
+                setSearchQuery('');
+                setActiveCategory('All');
+              }}
+              style={{
+                padding: '10px 22px',
+                fontSize: '0.9rem',
+                borderColor: 'var(--green, #0F3D3E)',
+                color: 'var(--green, #0F3D3E)',
+                fontWeight: 700,
+              }}
+            >
+              Clear Search &amp; View All
+            </button>
+          )}
+        </div>
+      )}
 
       {/* Bottom Content Wrapper (Freshness Promise) */}
 

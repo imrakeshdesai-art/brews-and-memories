@@ -90,6 +90,22 @@ textarea {
 
 button {
   cursor: pointer;
+  touch-action: manipulation;
+}
+
+/* Accessible focus-visible state (Vercel Interface Guidelines) */
+:focus-visible {
+  outline: 2px solid #fbbf24;
+  outline-offset: 2px;
+}
+
+/* Prevent awkward single-word wrapping (orphans) on responsive screens */
+h1, h2, h3, .section-title, .hero-editorial-title {
+  text-wrap: balance;
+}
+
+p, .section-subtitle, .hero-editorial-desc {
+  text-wrap: pretty;
 }
 
 .page-shell {
@@ -370,8 +386,16 @@ body.theme-dark .site-nav.menu-is-open {
   justify-content: center;
   gap: 8px;
   border-radius: 10px;
-  transition: var(--transition);
+  transition: transform 0.12s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.2s ease, box-shadow 0.2s ease;
   border: none;
+  user-select: none;
+}
+
+.btn-primary:active,
+.btn-outline:active,
+.btn-secondary:active,
+.btn-cart:active {
+  transform: translateY(1px) scale(0.98);
 }
 
 .btn-primary {
@@ -1147,16 +1171,26 @@ body.theme-dark .site-nav.menu-is-open {
 }
 
 .qty-button {
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   border: 1px solid var(--cream-dark);
   background: var(--white);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  touch-action: manipulation;
+  transition: background-color 0.15s ease, transform 0.1s ease;
 }
 
 .qty-button:hover {
   background: var(--green);
   color: #fff;
+}
+
+.qty-button:active {
+  transform: scale(0.9);
 }
 
 .cart-summary {
