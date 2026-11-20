@@ -24,16 +24,7 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ success: false, message: 'Invalid credentials' });
     }
 
-    let isMatch = await admin.comparePassword(cleanPass);
-
-    // Self-healing fallback for kitchen staff: if password matches standard default Kitchen123!, re-sync hash
-    if (!isMatch && admin.role === 'kitchen' && cleanPass === 'Kitchen123!') {
-      console.log(`[AUTH] Self-healing kitchen password re-sync for "${cleanUser}"`);
-      const newHash = await bcrypt.hash('Kitchen123!', 10);
-      await User.updateOne({ _id: admin._id }, { $set: { password: newHash } });
-      isMatch = true;
-    }
-
+    const isMatch = await admin.comparePassword(cleanPass);
     if (!isMatch) {
       console.warn(`[AUTH] Login failed: Password mismatch for email "${cleanUser}"`);
       return res.status(401).json({ success: false, message: 'Invalid credentials' });

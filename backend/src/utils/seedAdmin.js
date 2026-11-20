@@ -27,10 +27,12 @@ async function seedAdmin() {
   }
 
   // 2. Seed Kitchen Staff
-  const kitchenEmail = (process.env.KITCHEN_EMAIL || 'kitchen@brews-memories.local').toLowerCase().trim();
+  const kitchenEmail = (process.env.KITCHEN_EMAIL || 'rakeshdesai2909@gmail.com').toLowerCase().trim();
   const rawKitchenPassword = process.env.KITCHEN_PASSWORD || 'Kitchen123!';
   const kitchenPassword = rawKitchenPassword.trim();
 
+  // Purge old dummy email and any non-matching kitchen roles
+  await User.deleteMany({ email: 'kitchen@brews-memories.local' });
   await User.deleteMany({ role: 'kitchen', email: { $ne: kitchenEmail } });
 
   const hashedKitchenPassword = await bcrypt.hash(kitchenPassword, 10);
