@@ -181,7 +181,7 @@ router.post('/reserve', passReservationLimiter, async (req, res) => {
       const isStillReserved = existing.reservationStatus === 'RESERVED' && existing.expiresAt > now;
 
       if (isPaid || isStillReserved) {
-        const qrPayload = buildPassQrPayload(existing.passId, existing.qrToken);
+        const qrPayload = buildPassQrPayload(existing.passId, existing.qrToken, req);
         const qrCodeDataUrl = await generateQrCodeDataUrl(qrPayload);
 
         return res.status(409).json({
@@ -239,7 +239,7 @@ router.post('/reserve', passReservationLimiter, async (req, res) => {
         existing.expiresAt = new Date(Date.now() + settings.reservationExpiryHours * 60 * 60 * 1000);
         await existing.save();
 
-        const qrPayload = buildPassQrPayload(existing.passId, existing.qrToken);
+        const qrPayload = buildPassQrPayload(existing.passId, existing.qrToken, req);
         const qrCodeDataUrl = await generateQrCodeDataUrl(qrPayload);
 
         return res.status(200).json({
@@ -313,7 +313,7 @@ router.post('/reserve', passReservationLimiter, async (req, res) => {
     });
 
     // 9. Generate Single Official QR Data URL Immediately
-    const qrPayload = buildPassQrPayload(passId, qrToken);
+    const qrPayload = buildPassQrPayload(passId, qrToken, req);
     const qrCodeDataUrl = await generateQrCodeDataUrl(qrPayload);
 
     return res.status(201).json({
@@ -384,7 +384,7 @@ router.get('/lookup', async (req, res) => {
       return res.status(404).json({ success: false, message: 'Audience pass not found' });
     }
 
-    const qrPayload = buildPassQrPayload(pass.passId, pass.qrToken);
+    const qrPayload = buildPassQrPayload(pass.passId, pass.qrToken, req);
     const qrCodeDataUrl = await generateQrCodeDataUrl(qrPayload);
 
     return res.json({
@@ -424,16 +424,55 @@ router.get('/lookup', async (req, res) => {
 // =========================================================================
 router.post('/verify-qr', auth, checkRole(['admin', 'kitchen']), async (req, res) => {
   try {
-    const { token, qrToken, passId } = req.body || {};
-    const rawToken = token || qrToken;
+    const { token, qrToken, passId, mobileNumber } = req.body || {};
+    let rawToken = token || qrToken;
+    let rawPassId = passId;
+
+    // Handle full URL pasted or scanned by camera / hardware scanner
+    if (rawToken && (rawToken.includes('token=') || rawToken.startsWith('http'))) {
+      try {
+        const parsed = new URL(rawToken.startsWith('http') ? rawToken : `https://${rawToken}`);
+        const t = parsed.searchParams.get('token');
+        const p = parsed.searchParams.get('passId');
+        if (t) rawToken = t;
+        if (p && !rawPassId) rawPassId = p;
+      } catch (e) {}
+    }
+
+    if (rawPassId && (rawPassId.includes('token=') || rawPassId.startsWith('http'))) {
+      try {
+        const parsed = new URL(rawPassId.startsWith('http') ? rawPassId : `https://${rawPassId}`);
+        const t = parsed.searchParams.get('token');
+        const p = parsed.searchParams.get('passId');
+        if (t && !rawToken) rawToken = t;
+        if (p) rawPassId = p;
+      } catch (e) {}
+    }
 
     let query = { eventId: 'moras-live-2026' };
-    if (rawToken) {
+    if (rawToken && rawToken.length === 64) {
       query.qrTokenHash = hashQrToken(rawToken);
-    } else if (passId) {
-      query.passId = String(passId).trim().toUpperCase();
+    } else if (rawPassId) {
+      const cleanPassId = String(rawPassId).trim();
+      const normMobile = normalizeIndianMobile(cleanPassId);
+      if (cleanPassId.toUpperCase().startsWith('ML-')) {
+        query.passId = cleanPassId.toUpperCase();
+      } else if (normMobile) {
+        query.normalizedMobileNumber = normMobile;
+      } else {
+        query.passId = cleanPassId.toUpperCase();
+      }
+    } else if (mobileNumber) {
+      const normMobile = normalizeIndianMobile(String(mobileNumber));
+      if (normMobile) {
+        query.normalizedMobileNumber = normMobile;
+      } else {
+        return res.status(400).json({ success: false, message: 'Invalid mobile number format' });
+      }
+    } else if (rawToken) {
+      query.qrTokenHash = hashQrToken(rawToken);
     } else {
-      return res.status(400).json({ success: false, message: 'QR token or passId is required' });
+      return res.status(400).json({ success: false, message: 'QR token, passId, or mobile number is required' });
     }
 
     const pass = await MorasLiveAudiencePass.findOne(query);
@@ -567,7 +606,7 @@ router.post('/collect-payment', auth, checkRole(['admin']), async (req, res) => 
       notes: notes || '',
     });
 
-    const qrPayload = buildPassQrPayload(pass.passId, pass.qrToken);
+    const qrPayload = buildPassQrPayload(pass.passId, pass.qrToken, req);
 
     return res.json({
       success: true,

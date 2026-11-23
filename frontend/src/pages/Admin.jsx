@@ -490,6 +490,8 @@ function Admin() {
         } catch (e) {
           body.token = raw;
         }
+      } else if (/^[6-9]\d{9}$/.test(raw.replace(/\D/g, ''))) {
+        body.mobileNumber = raw.replace(/\D/g, '');
       } else {
         body.passId = raw;
       }

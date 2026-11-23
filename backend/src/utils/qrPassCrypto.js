@@ -39,10 +39,36 @@ async function generateQrCodeDataUrl(content) {
 
 /**
  * Constructs the secure pass check/verify payload URL for the QR code.
- * Encoding: https://themorascafe.vercel.app/moras-live/passes?passId=ML-0001&token=...
+ * Encoding: https://themorascafe.in/moras-live/passes?passId=ML-0001&token=...
  */
-function buildPassQrPayload(passId, qrToken) {
-  const baseUrl = process.env.FRONTEND_URL || 'https://themorascafe.vercel.app';
+function buildPassQrPayload(passId, qrToken, req) {
+  let baseUrl = process.env.FRONTEND_URL;
+  // Strictly reject decommissioned Vercel domain if present in env
+  if (baseUrl && baseUrl.includes('vercel.app')) {
+    baseUrl = null;
+  }
+
+  // Attempt dynamic detection from request origin/referer if valid
+  if (!baseUrl && req) {
+    const origin = typeof req.get === 'function' ? req.get('origin') : (req.headers && req.headers.origin);
+    const referer = typeof req.get === 'function' ? req.get('referer') : (req.headers && req.headers.referer);
+    const candidate = origin || referer;
+    if (candidate) {
+      try {
+        const parsed = new URL(candidate);
+        if (parsed.origin && !parsed.origin.includes('vercel.app')) {
+          baseUrl = parsed.origin;
+        }
+      } catch (e) {}
+    }
+  }
+
+  // Fallback to official production domain
+  if (!baseUrl || baseUrl.includes('vercel.app')) {
+    baseUrl = 'https://themorascafe.in';
+  }
+
+  baseUrl = baseUrl.replace(/\/+$/, '');
   return `${baseUrl}/moras-live/passes?passId=${encodeURIComponent(passId)}&token=${encodeURIComponent(qrToken)}`;
 }
 
