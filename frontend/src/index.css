@@ -5433,7 +5433,7 @@ body.theme-dark .site-nav.menu-is-open {
 /* ==================== ADMIN DASHBOARD MOBILE & TABS ENHANCEMENTS ==================== */
 .admin-tabs-nav {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: 12px;
   margin-bottom: 24px;
 }

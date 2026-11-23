@@ -227,6 +227,133 @@ function Admin() {
     }
   };
 
+  // ================= MORAS LIVE EVENT REGISTRATIONS STATE & ACTIONS =================
+  const [morasLiveRegistrations, setMorasLiveRegistrations] = useState([]);
+  const [morasLiveStats, setMorasLiveStats] = useState({
+    total: 0,
+    performers: 0,
+    audience: 0,
+    pending: 0,
+    confirmed: 0,
+  });
+  const [morasLiveLoading, setMorasLiveLoading] = useState(false);
+  const [morasLiveRoleFilter, setMorasLiveRoleFilter] = useState('');
+  const [morasLiveStatusFilter, setMorasLiveStatusFilter] = useState('');
+  const [morasLiveSearch, setMorasLiveSearch] = useState('');
+  const [selectedLiveParticipant, setSelectedLiveParticipant] = useState(null);
+  const [updatingLiveId, setUpdatingLiveId] = useState(null);
+  const [adminNoteDraft, setAdminNoteDraft] = useState('');
+
+  const fetchMorasLiveStats = useCallback(async () => {
+    try {
+      const res = await api.get('/moras-live/stats');
+      if (res.data?.success && res.data?.stats) {
+        setMorasLiveStats(res.data.stats);
+      }
+    } catch (err) {
+      console.warn('Failed to fetch Moras Live stats:', err.message);
+    }
+  }, []);
+
+  const fetchMorasLiveRegistrations = useCallback(async () => {
+    setMorasLiveLoading(true);
+    try {
+      const params = {};
+      if (morasLiveRoleFilter) params.role = morasLiveRoleFilter;
+      if (morasLiveStatusFilter) params.status = morasLiveStatusFilter;
+      if (morasLiveSearch.trim()) params.search = morasLiveSearch.trim();
+
+      const res = await api.get('/moras-live/registrations', { params });
+      if (res.data?.success && res.data?.registrations) {
+        setMorasLiveRegistrations(res.data.registrations);
+      }
+    } catch (err) {
+      toast('Failed to load MORAS LIVE registrations: ' + (err.response?.data?.message || err.message));
+    } finally {
+      setMorasLiveLoading(false);
+    }
+  }, [morasLiveRoleFilter, morasLiveStatusFilter, morasLiveSearch, toast]);
+
+  useEffect(() => {
+    if (activeTab === 'moras-live' && role === 'admin') {
+      fetchMorasLiveRegistrations();
+      fetchMorasLiveStats();
+    }
+  }, [activeTab, role, fetchMorasLiveRegistrations, fetchMorasLiveStats]);
+
+  useEffect(() => {
+    if (role === 'admin') {
+      fetchMorasLiveStats();
+    }
+  }, [role, fetchMorasLiveStats]);
+
+  const handleUpdateLiveStatus = async (id, newStatus, adminNotes) => {
+    setUpdatingLiveId(id);
+    try {
+      const res = await api.patch(`/moras-live/registrations/${id}/status`, {
+        status: newStatus,
+        ...(adminNotes !== undefined ? { adminNotes } : {}),
+      });
+      if (res.data?.success) {
+        toast(`Status updated to "${newStatus}"`);
+        setMorasLiveRegistrations((prev) =>
+          prev.map((r) => (r._id === id || r.registrationId === id ? res.data.registration : r))
+        );
+        if (
+          selectedLiveParticipant &&
+          (selectedLiveParticipant._id === id || selectedLiveParticipant.registrationId === id)
+        ) {
+          setSelectedLiveParticipant(res.data.registration);
+        }
+        fetchMorasLiveStats();
+      }
+    } catch (err) {
+      toast('Failed to update status: ' + (err.response?.data?.message || err.message));
+    } finally {
+      setUpdatingLiveId(null);
+    }
+  };
+
+  const handleDeleteLiveRegistration = async (id, name) => {
+    if (!window.confirm(`Are you sure you want to delete registration for ${name}? This cannot be undone.`)) {
+      return;
+    }
+    try {
+      const res = await api.delete(`/moras-live/registrations/${id}`);
+      if (res.data?.success) {
+        toast(`Registration deleted for ${name}`);
+        setMorasLiveRegistrations((prev) => prev.filter((r) => r._id !== id && r.registrationId !== id));
+        if (
+          selectedLiveParticipant &&
+          (selectedLiveParticipant._id === id || selectedLiveParticipant.registrationId === id)
+        ) {
+          setSelectedLiveParticipant(null);
+        }
+        fetchMorasLiveStats();
+      }
+    } catch (err) {
+      toast('Failed to delete registration: ' + (err.response?.data?.message || err.message));
+    }
+  };
+
+  const handleExportLiveCSV = async () => {
+    try {
+      const res = await api.get('/moras-live/export', { responseType: 'blob' });
+      const blob = new Blob([res.data], { type: 'text/csv;charset=utf-8;' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `moras_live_registrations_${new Date().toISOString().slice(0, 10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+      toast('Exported registrations to CSV successfully!');
+    } catch (err) {
+      toast('Failed to export CSV: ' + (err.response?.data?.message || err.message));
+    }
+  };
+
   useEffect(() => {
     const currentPendingCount = orders.filter((o) => o.status === 'pending').length;
     if (currentPendingCount > prevPendingCountRef.current && prevPendingCountRef.current > 0) {
@@ -757,6 +884,19 @@ function Admin() {
             {catalogItems.some((i) => !i.isAvailable) && (
               <span className="admin-tab-badge badge-alert">
                 {catalogItems.filter((i) => !i.isAvailable).length} OFF
+              </span>
+            )}
+          </button>
+
+          <button
+            type="button"
+            className={`admin-tab-btn ${activeTab === 'moras-live' ? 'active' : ''}`}
+            onClick={() => setActiveTab('moras-live')}
+          >
+            <span>🎤 MORAS LIVE</span>
+            {morasLiveStats.total > 0 && (
+              <span className={`admin-tab-badge ${activeTab === 'moras-live' ? 'badge-active' : 'badge-inactive'}`}>
+                {morasLiveStats.total}
               </span>
             )}
           </button>
@@ -1607,6 +1747,937 @@ function Admin() {
                 </tbody>
               </table>
             </div>
+          </div>
+        )}
+
+        {/* ================= MORAS LIVE EVENT REGISTRATIONS ================= */}
+        {activeTab === 'moras-live' && role === 'admin' && (
+          <div className="moras-live-admin-section" style={{ textAlign: 'left' }}>
+            {/* Header Toolbar */}
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                flexWrap: 'wrap',
+                gap: 16,
+                marginBottom: 20,
+                background: '#123F3D',
+                padding: '20px 24px',
+                borderRadius: 14,
+                color: '#F5E8D0',
+                border: '1px solid rgba(197, 168, 128, 0.3)',
+              }}
+            >
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <span style={{ fontSize: '1.8rem' }}>🎤</span>
+                  <div>
+                    <h3
+                      style={{
+                        margin: 0,
+                        fontSize: '1.45rem',
+                        fontFamily: "'Playfair Display', serif",
+                        letterSpacing: '0.04em',
+                        color: '#F5E8D0',
+                      }}
+                    >
+                      MORAS LIVE — Registrations
+                    </h3>
+                    <p style={{ margin: '4px 0 0', fontSize: '0.85rem', color: '#c5a880' }}>
+                      Official event registration &amp; curation portal • <em>YOUR MIC. YOUR MOMENT.</em>
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+                <a
+                  href="/moras-live/register"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 6,
+                    padding: '8px 14px',
+                    borderRadius: 8,
+                    background: 'rgba(245, 232, 208, 0.12)',
+                    color: '#F5E8D0',
+                    border: '1px solid rgba(245, 232, 208, 0.3)',
+                    fontSize: '0.84rem',
+                    fontWeight: 600,
+                    textDecoration: 'none',
+                  }}
+                >
+                  <span>🔗</span> View Form
+                </a>
+                <button
+                  type="button"
+                  onClick={() => {
+                    fetchMorasLiveRegistrations();
+                    fetchMorasLiveStats();
+                  }}
+                  disabled={morasLiveLoading}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 6,
+                    padding: '8px 14px',
+                    borderRadius: 8,
+                    background: 'rgba(245, 232, 208, 0.12)',
+                    color: '#F5E8D0',
+                    border: '1px solid rgba(245, 232, 208, 0.3)',
+                    fontSize: '0.84rem',
+                    fontWeight: 600,
+                    cursor: morasLiveLoading ? 'wait' : 'pointer',
+                  }}
+                >
+                  <span>🔄</span> Refresh
+                </button>
+                <button
+                  type="button"
+                  onClick={handleExportLiveCSV}
+                  disabled={morasLiveRegistrations.length === 0}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 6,
+                    padding: '8px 16px',
+                    borderRadius: 8,
+                    background: '#c5a880',
+                    color: '#123F3D',
+                    border: 'none',
+                    fontSize: '0.86rem',
+                    fontWeight: 800,
+                    cursor: morasLiveRegistrations.length === 0 ? 'not-allowed' : 'pointer',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
+                  }}
+                >
+                  <span>📥</span> Export CSV
+                </button>
+              </div>
+            </div>
+
+            {/* 5 Summary Stat Cards */}
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
+                gap: 12,
+                marginBottom: 24,
+              }}
+            >
+              <div
+                style={{
+                  background: 'var(--white)',
+                  padding: '16px 18px',
+                  borderRadius: 12,
+                  border: '1px solid var(--cream-dark)',
+                  boxShadow: '0 2px 6px rgba(0,0,0,0.03)',
+                }}
+              >
+                <div style={{ fontSize: '0.78rem', textTransform: 'uppercase', color: 'var(--text-light)', fontWeight: 700, letterSpacing: '0.05em' }}>
+                  Total Registrations
+                </div>
+                <div style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--green)', marginTop: 4 }}>
+                  {morasLiveStats.total || 0}
+                </div>
+              </div>
+
+              <div
+                style={{
+                  background: 'var(--white)',
+                  padding: '16px 18px',
+                  borderRadius: 12,
+                  border: '1px solid var(--cream-dark)',
+                  boxShadow: '0 2px 6px rgba(0,0,0,0.03)',
+                }}
+              >
+                <div style={{ fontSize: '0.78rem', textTransform: 'uppercase', color: '#8B0000', fontWeight: 700, letterSpacing: '0.05em' }}>
+                  🎤 Performers
+                </div>
+                <div style={{ fontSize: '1.75rem', fontWeight: 800, color: '#8B0000', marginTop: 4 }}>
+                  {morasLiveStats.performers || 0}
+                </div>
+              </div>
+
+              <div
+                style={{
+                  background: 'var(--white)',
+                  padding: '16px 18px',
+                  borderRadius: 12,
+                  border: '1px solid var(--cream-dark)',
+                  boxShadow: '0 2px 6px rgba(0,0,0,0.03)',
+                }}
+              >
+                <div style={{ fontSize: '0.78rem', textTransform: 'uppercase', color: '#1e40af', fontWeight: 700, letterSpacing: '0.05em' }}>
+                  👥 Audience
+                </div>
+                <div style={{ fontSize: '1.75rem', fontWeight: 800, color: '#1e40af', marginTop: 4 }}>
+                  {morasLiveStats.audience || 0}
+                </div>
+              </div>
+
+              <div
+                style={{
+                  background: 'var(--white)',
+                  padding: '16px 18px',
+                  borderRadius: 12,
+                  border: '1px solid var(--cream-dark)',
+                  boxShadow: '0 2px 6px rgba(0,0,0,0.03)',
+                }}
+              >
+                <div style={{ fontSize: '0.78rem', textTransform: 'uppercase', color: '#b45309', fontWeight: 700, letterSpacing: '0.05em' }}>
+                  ⏳ Pending Reviews
+                </div>
+                <div style={{ fontSize: '1.75rem', fontWeight: 800, color: '#b45309', marginTop: 4 }}>
+                  {morasLiveStats.pending || 0}
+                </div>
+              </div>
+
+              <div
+                style={{
+                  background: 'var(--white)',
+                  padding: '16px 18px',
+                  borderRadius: 12,
+                  border: '1px solid var(--cream-dark)',
+                  boxShadow: '0 2px 6px rgba(0,0,0,0.03)',
+                }}
+              >
+                <div style={{ fontSize: '0.78rem', textTransform: 'uppercase', color: '#047857', fontWeight: 700, letterSpacing: '0.05em' }}>
+                  ✅ Confirmed
+                </div>
+                <div style={{ fontSize: '1.75rem', fontWeight: 800, color: '#047857', marginTop: 4 }}>
+                  {morasLiveStats.confirmed || 0}
+                </div>
+              </div>
+            </div>
+
+            {/* Filter and Search Bar */}
+            <div
+              style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: 12,
+                alignItems: 'center',
+                marginBottom: 18,
+                background: 'var(--white)',
+                padding: '14px 18px',
+                borderRadius: 12,
+                border: '1px solid var(--cream-dark)',
+              }}
+            >
+              <div style={{ flex: '1 1 220px', minWidth: 200 }}>
+                <input
+                  type="text"
+                  placeholder="🔍 Search by name, mobile, or ID..."
+                  value={morasLiveSearch}
+                  onChange={(e) => setMorasLiveSearch(e.target.value)}
+                  style={{
+                    width: '100%',
+                    padding: '9px 14px',
+                    borderRadius: 8,
+                    border: '1px solid #cbd5e1',
+                    fontSize: '0.88rem',
+                    background: '#fff',
+                    boxSizing: 'border-box',
+                  }}
+                />
+              </div>
+
+              <div style={{ flex: '0 1 180px', minWidth: 150 }}>
+                <select
+                  value={morasLiveRoleFilter}
+                  onChange={(e) => setMorasLiveRoleFilter(e.target.value)}
+                  style={{
+                    width: '100%',
+                    padding: '9px 12px',
+                    borderRadius: 8,
+                    border: '1px solid #cbd5e1',
+                    fontSize: '0.86rem',
+                    background: '#fff',
+                    boxSizing: 'border-box',
+                  }}
+                >
+                  <option value="">All Roles</option>
+                  <option value="Singer">Singer</option>
+                  <option value="Rapper">Rapper</option>
+                  <option value="Poet / Spoken Word Artist">Poet / Spoken Word</option>
+                  <option value="Comedian">Comedian</option>
+                  <option value="Dancer">Dancer</option>
+                  <option value="Beatboxer">Beatboxer</option>
+                  <option value="Musician / Instrumentalist">Musician / Instrumentalist</option>
+                  <option value="Freestyle Artist">Freestyle Artist</option>
+                  <option value="Content Creator">Content Creator</option>
+                  <option value="Audience / Attendee">Audience / Attendee</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+
+              <div style={{ flex: '0 1 160px', minWidth: 140 }}>
+                <select
+                  value={morasLiveStatusFilter}
+                  onChange={(e) => setMorasLiveStatusFilter(e.target.value)}
+                  style={{
+                    width: '100%',
+                    padding: '9px 12px',
+                    borderRadius: 8,
+                    border: '1px solid #cbd5e1',
+                    fontSize: '0.86rem',
+                    background: '#fff',
+                    boxSizing: 'border-box',
+                  }}
+                >
+                  <option value="">All Statuses</option>
+                  <option value="New">New</option>
+                  <option value="Reviewed">Reviewed</option>
+                  <option value="Confirmed">Confirmed</option>
+                  <option value="Rejected">Rejected</option>
+                  <option value="Cancelled">Cancelled</option>
+                </select>
+              </div>
+
+              {(morasLiveSearch || morasLiveRoleFilter || morasLiveStatusFilter) && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMorasLiveSearch('');
+                    setMorasLiveRoleFilter('');
+                    setMorasLiveStatusFilter('');
+                  }}
+                  style={{
+                    padding: '8px 12px',
+                    borderRadius: 8,
+                    border: '1px solid #cbd5e1',
+                    background: '#f8fafc',
+                    color: '#64748b',
+                    fontSize: '0.82rem',
+                    cursor: 'pointer',
+                    fontWeight: 600,
+                  }}
+                >
+                  ✕ Clear Filters
+                </button>
+              )}
+            </div>
+
+            {/* Registrations Table */}
+            <div
+              className="admin-table-wrap"
+              style={{
+                background: 'var(--white)',
+                borderRadius: 12,
+                border: '1px solid var(--cream-dark)',
+                overflowX: 'auto',
+                WebkitOverflowScrolling: 'touch',
+              }}
+            >
+              {morasLiveLoading ? (
+                <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-light)' }}>
+                  Loading registrations…
+                </div>
+              ) : morasLiveRegistrations.length === 0 ? (
+                <div style={{ padding: '48px 20px', textAlign: 'center', color: 'var(--text-light)' }}>
+                  <div style={{ fontSize: '2.5rem', marginBottom: 10 }}>🎤</div>
+                  <h4 style={{ margin: '0 0 6px', fontSize: '1.1rem', color: 'var(--green)' }}>
+                    No registrations found
+                  </h4>
+                  <p style={{ margin: 0, fontSize: '0.85rem' }}>
+                    {morasLiveSearch || morasLiveRoleFilter || morasLiveStatusFilter
+                      ? 'No registrations match your current filters. Try resetting the filters.'
+                      : 'New registrations submitted via /moras-live/register will appear here.'}
+                  </p>
+                </div>
+              ) : (
+                <table
+                  style={{
+                    width: '100%',
+                    minWidth: 840,
+                    borderCollapse: 'collapse',
+                    textAlign: 'left',
+                    fontSize: '0.88rem',
+                  }}
+                >
+                  <thead>
+                    <tr style={{ background: 'var(--cream-light)', borderBottom: '2px solid var(--cream-dark)' }}>
+                      <th style={{ padding: '12px 14px', width: 110 }}>Reg ID</th>
+                      <th style={{ padding: '12px 14px' }}>Participant</th>
+                      <th style={{ padding: '12px 14px' }}>Role</th>
+                      <th style={{ padding: '12px 14px' }}>Contact</th>
+                      <th style={{ padding: '12px 14px' }}>Pitch / Details</th>
+                      <th style={{ padding: '12px 14px', width: 135 }}>Status</th>
+                      <th style={{ padding: '12px 14px', textAlign: 'right', width: 130 }}>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {morasLiveRegistrations.map((reg) => {
+                      const isPerformer = reg.participationRole !== 'Audience / Attendee';
+                      return (
+                        <tr
+                          key={reg._id || reg.registrationId}
+                          style={{
+                            borderBottom: '1px solid #f1f5f9',
+                            background: reg.registrationStatus === 'New' ? '#fffbeb' : 'transparent',
+                            transition: 'background 0.15s ease',
+                          }}
+                        >
+                          <td style={{ padding: '12px 14px', verticalAlign: 'top' }}>
+                            <span
+                              style={{
+                                fontFamily: 'monospace',
+                                fontWeight: 700,
+                                fontSize: '0.82rem',
+                                color: 'var(--green)',
+                                background: '#f0fdf4',
+                                padding: '3px 6px',
+                                borderRadius: 4,
+                                border: '1px solid #bbf7d0',
+                                display: 'inline-block',
+                              }}
+                            >
+                              {reg.registrationId}
+                            </span>
+                            <div style={{ fontSize: '0.72rem', color: 'var(--text-light)', marginTop: 4 }}>
+                              {new Date(reg.createdAt).toLocaleDateString('en-IN', {
+                                month: 'short',
+                                day: 'numeric',
+                              })}
+                            </div>
+                          </td>
+
+                          <td style={{ padding: '12px 14px', verticalAlign: 'top' }}>
+                            <div style={{ fontWeight: 700, color: 'var(--green)', fontSize: '0.92rem' }}>
+                              {reg.fullName}
+                            </div>
+                            {reg.instagramUsername && (
+                              <a
+                                href={`https://instagram.com/${reg.instagramUsername.replace(/^@/, '')}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                style={{
+                                  fontSize: '0.78rem',
+                                  color: '#e11d48',
+                                  textDecoration: 'none',
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: 3,
+                                  marginTop: 3,
+                                }}
+                              >
+                                📸 @{reg.instagramUsername.replace(/^@/, '')}
+                              </a>
+                            )}
+                          </td>
+
+                          <td style={{ padding: '12px 14px', verticalAlign: 'top' }}>
+                            <span
+                              style={{
+                                display: 'inline-block',
+                                padding: '3px 8px',
+                                borderRadius: 6,
+                                fontSize: '0.75rem',
+                                fontWeight: 700,
+                                background: isPerformer ? '#fdf2f8' : '#eff6ff',
+                                color: isPerformer ? '#9d174d' : '#1d4ed8',
+                                border: isPerformer ? '1px solid #fbcfe8' : '1px solid #bfdbfe',
+                              }}
+                            >
+                              {reg.participationRole}
+                            </span>
+                            {reg.otherRole && (
+                              <div style={{ fontSize: '0.76rem', color: '#64748b', marginTop: 4, fontStyle: 'italic' }}>
+                                &quot;{reg.otherRole}&quot;
+                              </div>
+                            )}
+                          </td>
+
+                          <td style={{ padding: '12px 14px', verticalAlign: 'top' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                              <a
+                                href={`tel:${reg.mobileNumber}`}
+                                style={{ color: 'var(--green)', fontWeight: 600, textDecoration: 'none', fontSize: '0.84rem' }}
+                              >
+                                {reg.mobileNumber}
+                              </a>
+                              <a
+                                href={`https://wa.me/91${reg.mobileNumber}?text=${encodeURIComponent(
+                                  `Hi ${reg.fullName}! Greetings from THE MORAS CAFE regarding your MORAS LIVE registration (${reg.registrationId}).`
+                                )}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                title="Message on WhatsApp"
+                                style={{
+                                  textDecoration: 'none',
+                                  fontSize: '0.9rem',
+                                  lineHeight: 1,
+                                }}
+                              >
+                                💬
+                              </a>
+                            </div>
+                            <div style={{ fontSize: '0.78rem', color: '#64748b', marginTop: 3 }}>
+                              <a
+                                href={`mailto:${reg.email}`}
+                                style={{ color: 'inherit', textDecoration: 'none' }}
+                              >
+                                {reg.email}
+                              </a>
+                            </div>
+                          </td>
+
+                          <td style={{ padding: '12px 14px', verticalAlign: 'top', maxWidth: 220 }}>
+                            {reg.performanceDescription ? (
+                              <p
+                                style={{
+                                  margin: 0,
+                                  fontSize: '0.8rem',
+                                  color: '#334155',
+                                  lineHeight: 1.35,
+                                  display: '-webkit-box',
+                                  WebkitLineClamp: 2,
+                                  WebkitBoxOrient: 'vertical',
+                                  overflow: 'hidden',
+                                }}
+                                title={reg.performanceDescription}
+                              >
+                                {reg.performanceDescription}
+                              </p>
+                            ) : (
+                              <span style={{ fontSize: '0.78rem', color: '#94a3b8', fontStyle: 'italic' }}>
+                                No pitch specified
+                              </span>
+                            )}
+                            {reg.adminNotes && (
+                              <div
+                                style={{
+                                  marginTop: 4,
+                                  fontSize: '0.72rem',
+                                  color: '#0369a1',
+                                  background: '#f0f9ff',
+                                  padding: '2px 6px',
+                                  borderRadius: 4,
+                                  borderLeft: '2px solid #0284c7',
+                                }}
+                              >
+                                📝 {reg.adminNotes}
+                              </div>
+                            )}
+                          </td>
+
+                          <td style={{ padding: '12px 14px', verticalAlign: 'top' }}>
+                            <select
+                              value={reg.registrationStatus}
+                              onChange={(e) => handleUpdateLiveStatus(reg._id || reg.registrationId, e.target.value)}
+                              disabled={updatingLiveId === (reg._id || reg.registrationId)}
+                              style={{
+                                padding: '4px 8px',
+                                borderRadius: 6,
+                                fontSize: '0.78rem',
+                                fontWeight: 700,
+                                border: '1px solid #cbd5e1',
+                                background:
+                                  reg.registrationStatus === 'Confirmed'
+                                    ? '#dcfce7'
+                                    : reg.registrationStatus === 'Reviewed'
+                                    ? '#f3e8ff'
+                                    : reg.registrationStatus === 'Rejected'
+                                    ? '#fee2e2'
+                                    : reg.registrationStatus === 'Cancelled'
+                                    ? '#f3f4f6'
+                                    : '#fef3c7',
+                                color:
+                                  reg.registrationStatus === 'Confirmed'
+                                    ? '#15803d'
+                                    : reg.registrationStatus === 'Reviewed'
+                                    ? '#6b21a8'
+                                    : reg.registrationStatus === 'Rejected'
+                                    ? '#b91c1c'
+                                    : reg.registrationStatus === 'Cancelled'
+                                    ? '#4b5563'
+                                    : '#92400e',
+                                cursor: 'pointer',
+                              }}
+                            >
+                              <option value="New">New</option>
+                              <option value="Reviewed">Reviewed</option>
+                              <option value="Confirmed">Confirmed</option>
+                              <option value="Rejected">Rejected</option>
+                              <option value="Cancelled">Cancelled</option>
+                            </select>
+                          </td>
+
+                          <td style={{ padding: '12px 14px', verticalAlign: 'top', textAlign: 'right' }}>
+                            <div style={{ display: 'inline-flex', gap: 6 }}>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setSelectedLiveParticipant(reg);
+                                  setAdminNoteDraft(reg.adminNotes || '');
+                                }}
+                                title="View full details &amp; curate"
+                                style={{
+                                  padding: '5px 9px',
+                                  borderRadius: 6,
+                                  fontSize: '0.78rem',
+                                  fontWeight: 600,
+                                  border: '1px solid #cbd5e1',
+                                  background: '#f8fafc',
+                                  color: 'var(--green)',
+                                  cursor: 'pointer',
+                                }}
+                              >
+                                View
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  handleDeleteLiveRegistration(reg._id || reg.registrationId, reg.fullName)
+                                }
+                                title="Delete registration"
+                                style={{
+                                  padding: '5px 8px',
+                                  borderRadius: 6,
+                                  fontSize: '0.78rem',
+                                  border: '1px solid #fecaca',
+                                  background: '#fff1f2',
+                                  color: '#dc2626',
+                                  cursor: 'pointer',
+                                }}
+                              >
+                                🗑️
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              )}
+            </div>
+
+            {/* Individual Participant Detail & Review Modal */}
+            {selectedLiveParticipant && (
+              <div
+                className="modal-backdrop open"
+                role="dialog"
+                aria-modal="true"
+                style={{ zIndex: 9999 }}
+              >
+                <div
+                  className="modal-card"
+                  style={{
+                    maxWidth: 540,
+                    maxHeight: '92vh',
+                    overflowY: 'auto',
+                    padding: 0,
+                    borderRadius: 16,
+                  }}
+                >
+                  {/* Modal Header */}
+                  <div
+                    style={{
+                      padding: '18px 24px',
+                      background: '#123F3D',
+                      color: '#F5E8D0',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      borderTopLeftRadius: 16,
+                      borderTopRightRadius: 16,
+                    }}
+                  >
+                    <div>
+                      <div style={{ fontSize: '0.74rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#c5a880' }}>
+                        MORAS LIVE • REGISTRATION DETAILS
+                      </div>
+                      <h3
+                        style={{
+                          margin: '4px 0 0',
+                          fontSize: '1.25rem',
+                          fontFamily: "'Playfair Display', serif",
+                          color: '#F5E8D0',
+                        }}
+                      >
+                        {selectedLiveParticipant.fullName}
+                      </h3>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setSelectedLiveParticipant(null)}
+                      style={{
+                        background: 'none',
+                        border: 'none',
+                        color: '#F5E8D0',
+                        fontSize: '1.4rem',
+                        cursor: 'pointer',
+                        lineHeight: 1,
+                      }}
+                    >
+                      ✕
+                    </button>
+                  </div>
+
+                  {/* Modal Body */}
+                  <div style={{ padding: '24px', background: '#fff' }}>
+                    {/* Key Info Grid */}
+                    <div
+                      style={{
+                        display: 'grid',
+                        gridTemplateColumns: '1fr 1fr',
+                        gap: 14,
+                        paddingBottom: 18,
+                        borderBottom: '1px solid #e2e8f0',
+                        marginBottom: 18,
+                      }}
+                    >
+                      <div>
+                        <div style={{ fontSize: '0.74rem', color: '#64748b', textTransform: 'uppercase', fontWeight: 600 }}>
+                          Registration ID
+                        </div>
+                        <div style={{ fontFamily: 'monospace', fontWeight: 700, fontSize: '0.95rem', color: 'var(--green)', marginTop: 2 }}>
+                          {selectedLiveParticipant.registrationId}
+                        </div>
+                      </div>
+
+                      <div>
+                        <div style={{ fontSize: '0.74rem', color: '#64748b', textTransform: 'uppercase', fontWeight: 600 }}>
+                          Submitted At
+                        </div>
+                        <div style={{ fontSize: '0.88rem', fontWeight: 600, color: '#334155', marginTop: 2 }}>
+                          {new Date(selectedLiveParticipant.createdAt).toLocaleString('en-IN', {
+                            dateStyle: 'medium',
+                            timeStyle: 'short',
+                          })}
+                        </div>
+                      </div>
+
+                      <div>
+                        <div style={{ fontSize: '0.74rem', color: '#64748b', textTransform: 'uppercase', fontWeight: 600 }}>
+                          Role
+                        </div>
+                        <div style={{ fontSize: '0.9rem', fontWeight: 700, color: '#8B0000', marginTop: 2 }}>
+                          {selectedLiveParticipant.participationRole}
+                          {selectedLiveParticipant.otherRole && ` (${selectedLiveParticipant.otherRole})`}
+                        </div>
+                      </div>
+
+                      <div>
+                        <div style={{ fontSize: '0.74rem', color: '#64748b', textTransform: 'uppercase', fontWeight: 600 }}>
+                          Instagram
+                        </div>
+                        <div style={{ fontSize: '0.88rem', fontWeight: 600, marginTop: 2 }}>
+                          {selectedLiveParticipant.instagramUsername ? (
+                            <a
+                              href={`https://instagram.com/${selectedLiveParticipant.instagramUsername.replace(/^@/, '')}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              style={{ color: '#e11d48', textDecoration: 'none' }}
+                            >
+                              @{selectedLiveParticipant.instagramUsername.replace(/^@/, '')}
+                            </a>
+                          ) : (
+                            <span style={{ color: '#94a3b8' }}>Not provided</span>
+                          )}
+                        </div>
+                      </div>
+
+                      <div>
+                        <div style={{ fontSize: '0.74rem', color: '#64748b', textTransform: 'uppercase', fontWeight: 600 }}>
+                          Mobile Phone
+                        </div>
+                        <div style={{ fontSize: '0.88rem', fontWeight: 700, color: 'var(--green)', marginTop: 2 }}>
+                          <a href={`tel:${selectedLiveParticipant.mobileNumber}`} style={{ color: 'inherit', textDecoration: 'none' }}>
+                            {selectedLiveParticipant.mobileNumber}
+                          </a>
+                        </div>
+                      </div>
+
+                      <div>
+                        <div style={{ fontSize: '0.74rem', color: '#64748b', textTransform: 'uppercase', fontWeight: 600 }}>
+                          Email Address
+                        </div>
+                        <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#334155', marginTop: 2, wordBreak: 'break-all' }}>
+                          <a href={`mailto:${selectedLiveParticipant.email}`} style={{ color: 'inherit', textDecoration: 'none' }}>
+                            {selectedLiveParticipant.email}
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Performance Showcase Description */}
+                    <div style={{ marginBottom: 20 }}>
+                      <div style={{ fontSize: '0.78rem', color: '#475569', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.04em', marginBottom: 6 }}>
+                        Showcase Pitch / Performance Description
+                      </div>
+                      <div
+                        style={{
+                          background: '#f8fafc',
+                          padding: '14px 16px',
+                          borderRadius: 10,
+                          border: '1px solid #e2e8f0',
+                          fontSize: '0.88rem',
+                          lineHeight: 1.5,
+                          color: selectedLiveParticipant.performanceDescription ? '#1e293b' : '#94a3b8',
+                          whiteSpace: 'pre-wrap',
+                        }}
+                      >
+                        {selectedLiveParticipant.performanceDescription || 'No performance description provided (Audience or attendee).'}
+                      </div>
+                    </div>
+
+                    {/* Status Changer */}
+                    <div style={{ marginBottom: 20 }}>
+                      <div style={{ fontSize: '0.78rem', color: '#475569', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.04em', marginBottom: 8 }}>
+                        Registration Status
+                      </div>
+                      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                        {['New', 'Reviewed', 'Confirmed', 'Rejected', 'Cancelled'].map((st) => (
+                          <button
+                            key={st}
+                            type="button"
+                            onClick={() =>
+                              handleUpdateLiveStatus(
+                                selectedLiveParticipant._id || selectedLiveParticipant.registrationId,
+                                st,
+                                adminNoteDraft
+                              )
+                            }
+                            disabled={updatingLiveId === (selectedLiveParticipant._id || selectedLiveParticipant.registrationId)}
+                            style={{
+                              padding: '7px 12px',
+                              borderRadius: 8,
+                              fontSize: '0.8rem',
+                              fontWeight: 700,
+                              cursor: 'pointer',
+                              border:
+                                selectedLiveParticipant.registrationStatus === st
+                                  ? '2px solid #123F3D'
+                                  : '1px solid #cbd5e1',
+                              background:
+                                selectedLiveParticipant.registrationStatus === st
+                                  ? '#123F3D'
+                                  : '#f8fafc',
+                              color:
+                                selectedLiveParticipant.registrationStatus === st
+                                  ? '#F5E8D0'
+                                  : '#475569',
+                              transition: 'all 0.15s ease',
+                            }}
+                          >
+                            {st}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Admin Curation Notes */}
+                    <div style={{ marginBottom: 20 }}>
+                      <div style={{ fontSize: '0.78rem', color: '#475569', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.04em', marginBottom: 6 }}>
+                        Admin Internal Notes
+                      </div>
+                      <textarea
+                        rows={3}
+                        placeholder="Add internal notes about audition, timeslot, stage needs..."
+                        value={adminNoteDraft}
+                        onChange={(e) => setAdminNoteDraft(e.target.value)}
+                        style={{
+                          width: '100%',
+                          padding: '10px 12px',
+                          borderRadius: 8,
+                          border: '1px solid #cbd5e1',
+                          fontSize: '0.86rem',
+                          fontFamily: 'inherit',
+                          boxSizing: 'border-box',
+                        }}
+                      />
+                      <button
+                        type="button"
+                        onClick={() =>
+                          handleUpdateLiveStatus(
+                            selectedLiveParticipant._id || selectedLiveParticipant.registrationId,
+                            selectedLiveParticipant.registrationStatus,
+                            adminNoteDraft
+                          )
+                        }
+                        disabled={updatingLiveId === (selectedLiveParticipant._id || selectedLiveParticipant.registrationId)}
+                        style={{
+                          marginTop: 8,
+                          padding: '6px 14px',
+                          borderRadius: 6,
+                          background: 'var(--green)',
+                          color: '#fff',
+                          border: 'none',
+                          fontSize: '0.8rem',
+                          fontWeight: 700,
+                          cursor: 'pointer',
+                        }}
+                      >
+                        Save Note
+                      </button>
+                    </div>
+
+                    {/* Direct Contact Actions */}
+                    <div
+                      style={{
+                        display: 'flex',
+                        gap: 10,
+                        paddingTop: 16,
+                        borderTop: '1px solid #e2e8f0',
+                        flexWrap: 'wrap',
+                      }}
+                    >
+                      <a
+                        href={`https://wa.me/91${selectedLiveParticipant.mobileNumber}?text=${encodeURIComponent(
+                          `Hi ${selectedLiveParticipant.fullName}!\nGreetings from THE MORAS CAFE.\n\nWe have received your registration for *MORAS LIVE* (ID: ${selectedLiveParticipant.registrationId}) as a *${selectedLiveParticipant.participationRole}*.\n\nWe'll be sharing details regarding stage schedule and admission soon. Stay tuned!\n\nBest,\nThe Moras Cafe Team`
+                        )}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{
+                          flex: 1,
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: 8,
+                          padding: '10px 16px',
+                          borderRadius: 8,
+                          background: '#25D366',
+                          color: '#fff',
+                          textDecoration: 'none',
+                          fontWeight: 700,
+                          fontSize: '0.88rem',
+                        }}
+                      >
+                        <span>💬</span> WhatsApp Participant
+                      </a>
+
+                      <button
+                        type="button"
+                        onClick={() =>
+                          handleDeleteLiveRegistration(
+                            selectedLiveParticipant._id || selectedLiveParticipant.registrationId,
+                            selectedLiveParticipant.fullName
+                          )
+                        }
+                        style={{
+                          padding: '10px 14px',
+                          borderRadius: 8,
+                          border: '1px solid #fecaca',
+                          background: '#fff1f2',
+                          color: '#dc2626',
+                          fontWeight: 700,
+                          fontSize: '0.86rem',
+                          cursor: 'pointer',
+                        }}
+                      >
+                        🗑️ Delete
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         )}
 

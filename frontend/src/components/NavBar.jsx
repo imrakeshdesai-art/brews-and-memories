@@ -62,10 +62,13 @@ function NavBar({ cartCount, onCartClick, activeTable, onReserveClick, theme, to
             <img src="/logo.png" alt="The Moras Cafe" className="brand-center-img" />
           </NavLink>
 
-          {/* RIGHT NAV WING: Menu, Wallpapers, Contact */}
+          {/* RIGHT NAV WING: Menu, MORAS LIVE, Wallpapers, Contact */}
           <nav className="nav-wing nav-wing-right desktop-menu">
             <NavLink to="/menu" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
               Menu
+            </NavLink>
+            <NavLink to="/moras-live/register" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
+              MORAS LIVE
             </NavLink>
             <NavLink to="/wallpapers" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
               Wallpapers
@@ -140,6 +143,13 @@ function NavBar({ cartCount, onCartClick, activeTable, onReserveClick, theme, to
           onClick={() => setMenuOpen(false)}
         >
           Menu
+        </NavLink>
+        <NavLink 
+          to="/moras-live/register" 
+          className={({ isActive }) => `mobile-nav-link ${isActive ? 'active' : ''}`} 
+          onClick={() => setMenuOpen(false)}
+        >
+          🎤 MORAS LIVE
         </NavLink>
         <NavLink 
           to="/reviews" 

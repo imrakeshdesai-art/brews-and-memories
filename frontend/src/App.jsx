@@ -24,6 +24,7 @@ const Wallpapers = lazy(() => import('./pages/Wallpapers'));
 const ReviewRedirect = lazy(() => import('./pages/ReviewRedirect'));
 const PrintReviewQR = lazy(() => import('./pages/PrintReviewQR'));
 const TrackOrder = lazy(() => import('./pages/TrackOrder'));
+const MorasLiveRegister = lazy(() => import('./pages/MorasLiveRegister'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
 import Footer from './components/Footer';
@@ -298,6 +299,8 @@ function App() {
                   <Route path="/moments" element={<Moments />} />
                   <Route path="/wallpapers" element={<Wallpapers />} />
                   <Route path="/track/:orderId" element={<TrackOrder />} />
+                  <Route path="/moras-live/register" element={<MorasLiveRegister />} />
+                  <Route path="/moras-live" element={<MorasLiveRegister />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </div>
