@@ -173,8 +173,11 @@ async function runTests() {
       });
       if (filter.paymentStatus) filtered = filtered.filter((p) => p.paymentStatus === filter.paymentStatus);
       if (filter.reservationStatus) filtered = filtered.filter((p) => p.reservationStatus === filter.reservationStatus);
+      if (filter.isTest !== undefined) filtered = filtered.filter((p) => Boolean(p.isTest) === filter.isTest);
+      if (filter.passId?.$in) filtered = filtered.filter((p) => filter.passId.$in.includes(p.passId));
 
       const chain = {
+        select: () => Promise.resolve(filtered),
         sort: () => chain,
         skip: (s) => ({
           limit: (l) => Promise.resolve(filtered.slice(s, s + l)),
@@ -215,11 +218,29 @@ async function runTests() {
       return Promise.resolve(item);
     };
 
+    MorasLiveAudiencePass.deleteMany = (query = {}) => {
+      const initialCount = mockPasses.length;
+      if (query.passId?.$in) {
+        mockPasses = mockPasses.filter((p) => !query.passId.$in.includes(p.passId));
+      } else if (query.isTest !== undefined) {
+        mockPasses = mockPasses.filter((p) => Boolean(p.isTest) !== query.isTest);
+      }
+      return Promise.resolve({ deletedCount: initialCount - mockPasses.length });
+    };
+
     // Mock MorasLivePayment
     MorasLivePayment.find = (filter = {}) => {
       let filtered = [...mockPayments];
       if (filter.paymentStatus) filtered = filtered.filter((p) => p.paymentStatus === filter.paymentStatus);
       return Promise.resolve(filtered);
+    };
+
+    MorasLivePayment.deleteMany = (query = {}) => {
+      const initialCount = mockPayments.length;
+      if (query.passId?.$in) {
+        mockPayments = mockPayments.filter((p) => !query.passId.$in.includes(p.passId));
+      }
+      return Promise.resolve({ deletedCount: initialCount - mockPayments.length });
     };
 
     MorasLivePayment.create = (doc) => {
@@ -872,7 +893,54 @@ async function runTests() {
       console.log('  ✅ PASS: 25. Admin Pass Revocation — Successfully revoked ticket and cancelled reservation');
     }
 
-    console.log('\n🎉 ALL 25 MORAS LIVE Audience Pass Tests Passed Successfully!\n');
+    // 26. Classify Pass as Test / Genuine
+    {
+      const classifyRes = await makeRequest(server, {
+        hostname: 'localhost',
+        port,
+        path: '/api/moras-live/passes/admin/classify-test',
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${adminToken}`,
+        },
+      }, {
+        passId: 'ML-0099',
+        isTest: true,
+      });
+
+      assert.strictEqual(classifyRes.status, 200);
+      assert.strictEqual(classifyRes.body.success, true);
+      assert.strictEqual(classifyRes.body.pass.isTest, true);
+      console.log('  ✅ PASS: 26. Admin Pass Classification — Explicitly marked pass as test record');
+    }
+
+    // 27. Delete Test Records (Genuine Records Untouched)
+    {
+      const initialTotal = mockPasses.length;
+      const deleteRes = await makeRequest(server, {
+        hostname: 'localhost',
+        port,
+        path: '/api/moras-live/passes/admin/delete-tests',
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${adminToken}`,
+        },
+      }, {
+        passIds: ['ML-0099'],
+      });
+
+      assert.strictEqual(deleteRes.status, 200);
+      assert.strictEqual(deleteRes.body.success, true);
+      assert.strictEqual(deleteRes.body.deletedCount, 1);
+      assert.deepStrictEqual(deleteRes.body.deletedPassIds, ['ML-0099']);
+      assert.strictEqual(mockPasses.length, initialTotal - 1);
+      assert.ok(!mockPasses.some((p) => p.passId === 'ML-0099'));
+      console.log('  ✅ PASS: 27. Delete Test Records — Deleted test record with full audit trail while preserving genuine passes');
+    }
+
+    console.log('\n🎉 ALL 27 MORAS LIVE Audience Pass Tests Passed Successfully!\n');
   } finally {
     server.close();
   }

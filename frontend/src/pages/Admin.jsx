@@ -386,20 +386,11 @@ function Admin() {
   const [isProcessingCappuccino, setIsProcessingCappuccino] = useState(false);
   const [isProcessingEntry, setIsProcessingEntry] = useState(false);
 
-  // Settings Modal State
-  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
-  const [settingsDraft, setSettingsDraft] = useState({
-    approvedPassPrice: 149,
-    proposedPassPrice: 149,
-    priceConfirmed: false,
-    eventDate: '',
-    eventStartTime: '',
-    eventEndTime: '',
-    reservationsEnabled: true,
-    paymentCollectionEnabled: false,
-    reservationExpiryHours: 24,
-  });
-  const [isSavingSettings, setIsSavingSettings] = useState(false);
+  // Delete Test Records State
+  const [isDeleteTestsModalOpen, setIsDeleteTestsModalOpen] = useState(false);
+  const [selectedTestPassIds, setSelectedTestPassIds] = useState([]);
+  const [deleteStep, setDeleteStep] = useState(1);
+  const [isDeletingTests, setIsDeletingTests] = useState(false);
 
   const fetchMorasPassStats = useCallback(async () => {
     try {
@@ -414,28 +405,6 @@ function Admin() {
       }
     } catch (err) {
       console.warn('Failed to fetch pass stats:', err.message);
-    }
-  }, []);
-
-  const fetchMorasPassSettings = useCallback(async () => {
-    try {
-      const res = await api.get('/moras-live/passes/admin/settings');
-      if (res.data?.success && res.data?.settings) {
-        setMorasEventSettings(res.data.settings);
-        setSettingsDraft({
-          approvedPassPrice: res.data.settings.approvedPassPrice || 149,
-          proposedPassPrice: res.data.settings.proposedPassPrice || 149,
-          priceConfirmed: !!res.data.settings.priceConfirmed,
-          eventDate: res.data.settings.eventDate || '',
-          eventStartTime: res.data.settings.eventStartTime || '',
-          eventEndTime: res.data.settings.eventEndTime || '',
-          reservationsEnabled: res.data.settings.reservationsEnabled !== false,
-          paymentCollectionEnabled: !!res.data.settings.paymentCollectionEnabled,
-          reservationExpiryHours: res.data.settings.reservationExpiryHours || 24,
-        });
-      }
-    } catch (err) {
-      console.warn('Failed to fetch pass settings:', err.message);
     }
   }, []);
 
@@ -461,10 +430,9 @@ function Admin() {
   useEffect(() => {
     if (activeTab === 'moras-live-passes') {
       fetchMorasPassStats();
-      fetchMorasPassSettings();
       fetchMorasPasses();
     }
-  }, [activeTab, fetchMorasPassStats, fetchMorasPassSettings, fetchMorasPasses]);
+  }, [activeTab, fetchMorasPassStats, fetchMorasPasses]);
 
   const handleVerifyPass = async (queryOverride) => {
     const raw = (queryOverride || scannerInput).trim();
@@ -712,20 +680,62 @@ function Admin() {
     }
   };
 
-  const handleSaveEventSettings = async () => {
-    setIsSavingSettings(true);
+  const handleOpenDeleteTestsModal = () => {
+    // Pre-select passes marked as isTest or allow manual selection
+    const initialSelected = (morasPasses || []).filter((p) => p.isTest).map((p) => p.passId);
+    setSelectedTestPassIds(initialSelected);
+    setDeleteStep(1);
+    setIsDeleteTestsModalOpen(true);
+  };
+
+  const handleToggleSelectTestPass = (passId) => {
+    setSelectedTestPassIds((prev) =>
+      prev.includes(passId) ? prev.filter((id) => id !== passId) : [...prev, passId]
+    );
+  };
+
+  const handleToggleClassifyTest = async (passId, currentIsTest) => {
     try {
-      const res = await api.patch('/moras-live/passes/admin/settings', settingsDraft);
+      const res = await api.patch('/moras-live/passes/admin/classify-test', {
+        passId,
+        isTest: !currentIsTest,
+      });
       if (res.data?.success) {
-        toast('MORAS LIVE event settings updated successfully!');
-        setMorasEventSettings(res.data.settings);
-        setIsSettingsModalOpen(false);
-        fetchMorasPassStats();
+        toast(`Pass ${passId} marked as ${!currentIsTest ? 'TEST' : 'GENUINE'}`);
+        setMorasPasses((prev) =>
+          prev.map((p) => (p.passId === passId ? { ...p, isTest: !currentIsTest } : p))
+        );
       }
     } catch (err) {
-      toast('Failed to save settings: ' + (err.response?.data?.message || err.message));
+      toast('Failed to update pass classification: ' + (err.response?.data?.message || err.message));
+    }
+  };
+
+  const handleExecuteDeleteTests = async () => {
+    if (selectedTestPassIds.length === 0) {
+      toast('Please select at least one test record to delete.');
+      return;
+    }
+    setIsDeletingTests(true);
+    try {
+      const res = await api.post('/moras-live/passes/admin/delete-tests', {
+        passIds: selectedTestPassIds,
+      });
+      if (res.data?.success) {
+        toast(`🗑️ DELETED: ${res.data.deletedCount} test record(s) removed.`);
+        setIsDeleteTestsModalOpen(false);
+        setSelectedTestPassIds([]);
+        setDeleteStep(1);
+        if (scannedPass && selectedTestPassIds.includes(scannedPass.passId)) {
+          setScannedPass(null);
+        }
+        fetchMorasPassStats();
+        fetchMorasPasses();
+      }
+    } catch (err) {
+      toast('Failed to delete test records: ' + (err.response?.data?.message || err.message));
     } finally {
-      setIsSavingSettings(false);
+      setIsDeletingTests(false);
     }
   };
 
@@ -3117,19 +3127,22 @@ function Admin() {
                 {role === 'admin' && (
                   <button
                     type="button"
-                    onClick={() => setIsSettingsModalOpen(true)}
+                    onClick={handleOpenDeleteTestsModal}
                     style={{
                       padding: '8px 14px',
                       borderRadius: 8,
-                      background: '#F5E8D0',
-                      color: '#123F3D',
+                      background: '#DC2626',
+                      color: '#FFFFFF',
                       border: 'none',
                       fontSize: '0.84rem',
                       fontWeight: 700,
                       cursor: 'pointer',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 6,
                     }}
                   >
-                    ⚙️ Event &amp; Pricing Settings
+                    <span>🗑️</span> Delete Test Records
                   </button>
                 )}
 
@@ -3154,7 +3167,6 @@ function Admin() {
                   type="button"
                   onClick={() => {
                     fetchMorasPassStats();
-                    fetchMorasPassSettings();
                     fetchMorasPasses();
                   }}
                   disabled={morasPassLoading}
@@ -3174,84 +3186,30 @@ function Admin() {
               </div>
             </div>
 
-            {/* Pricing Approval Status Alert */}
-            {morasEventSettings && !morasEventSettings.priceConfirmed ? (
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  flexWrap: 'wrap',
-                  gap: 12,
-                  background: '#FFFBEB',
-                  border: '1.5px solid #F59E0B',
-                  borderRadius: 12,
-                  padding: '14px 20px',
-                  marginBottom: 20,
-                  color: '#92400E',
-                }}
-              >
-                <div>
-                  <div style={{ fontWeight: 800, fontSize: '0.95rem' }}>
-                    ⚠️ TICKET PRICE UNCONFIRMED (₹{morasEventSettings.proposedPassPrice || 149} Draft)
-                  </div>
-                  <div style={{ fontSize: '0.85rem', marginTop: 2, color: '#78350F' }}>
-                    Payment collection at the café is <strong>disabled</strong> until an administrator explicitly approves the final ticket price.
-                  </div>
-                </div>
-
-                {role === 'admin' && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setSettingsDraft((prev) => ({
-                        ...prev,
-                        priceConfirmed: true,
-                        approvedPassPrice: prev.proposedPassPrice || 149,
-                        paymentCollectionEnabled: true,
-                      }));
-                      setIsSettingsModalOpen(true);
-                    }}
-                    style={{
-                      padding: '8px 16px',
-                      background: '#15803D',
-                      color: '#FFF',
-                      border: 'none',
-                      borderRadius: 8,
-                      fontWeight: 800,
-                      fontSize: '0.86rem',
-                      cursor: 'pointer',
-                    }}
-                  >
-                    Approve Final Price (₹{morasEventSettings.proposedPassPrice || 149})
-                  </button>
-                )}
+            {/* Approved Business Rules Policy Banner */}
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                flexWrap: 'wrap',
+                gap: 12,
+                background: '#F0FDF4',
+                border: '1.5px solid #86EFAC',
+                borderRadius: 12,
+                padding: '12px 20px',
+                marginBottom: 20,
+                color: '#166534',
+                fontSize: '0.88rem',
+              }}
+            >
+              <div>
+                <strong>✅ MORAS LIVE Official Pass Policy:</strong> ₹149 per pass • Payment collected at event entrance (Cash or verified UPI) • Strict 60-pass capacity.
               </div>
-            ) : (
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  flexWrap: 'wrap',
-                  gap: 12,
-                  background: '#F0FDF4',
-                  border: '1.5px solid #86EFAC',
-                  borderRadius: 12,
-                  padding: '12px 20px',
-                  marginBottom: 20,
-                  color: '#166534',
-                  fontSize: '0.88rem',
-                }}
-              >
-                <div>
-                  <strong>✅ Approved Ticket Price:</strong> ₹{morasEventSettings?.approvedPassPrice || 149} per pass • Physical payment collection is <strong>ACTIVE</strong>.
-                </div>
-                <div style={{ fontSize: '0.82rem', color: '#15803D' }}>
-                  Complimentary Cappuccino included with each confirmed pass.
-                </div>
+              <div style={{ fontSize: '0.82rem', color: '#15803D' }}>
+                ☕ One complimentary hot Cappuccino included with each confirmed pass.
               </div>
-            )}
+            </div>
 
             {/* 10 Operational Summary Stat Cards */}
             <div
@@ -3907,7 +3865,22 @@ function Admin() {
                       {morasPasses.map((pass) => (
                         <tr key={pass.passId} style={{ borderBottom: '1px solid #F1F5F9' }}>
                           <td style={{ padding: '10px 12px', fontFamily: 'monospace', fontWeight: 800, color: '#123F3D' }}>
-                            #{pass.passId}
+                            <span>#{pass.passId}</span>
+                            {pass.isTest && (
+                              <span
+                                style={{
+                                  marginLeft: 6,
+                                  padding: '2px 6px',
+                                  borderRadius: 4,
+                                  background: '#FEF3C7',
+                                  color: '#92400E',
+                                  fontSize: '0.68rem',
+                                  fontWeight: 800,
+                                }}
+                              >
+                                🧪 TEST
+                              </span>
+                            )}
                           </td>
                           <td style={{ padding: '10px 12px', fontWeight: 700, color: '#0F172A' }}>
                             {pass.customerName}
@@ -3986,6 +3959,26 @@ function Admin() {
                                 </button>
                               )}
 
+                              {role === 'admin' && (
+                                <button
+                                  type="button"
+                                  onClick={() => handleToggleClassifyTest(pass.passId, pass.isTest)}
+                                  style={{
+                                    padding: '4px 8px',
+                                    borderRadius: 6,
+                                    background: pass.isTest ? '#FEF3C7' : '#F1F5F9',
+                                    color: pass.isTest ? '#92400E' : '#475569',
+                                    border: '1px solid #CBD5E1',
+                                    fontSize: '0.72rem',
+                                    fontWeight: 700,
+                                    cursor: 'pointer',
+                                  }}
+                                  title={pass.isTest ? 'Classified as test. Click to mark as genuine.' : 'Click to classify as test record'}
+                                >
+                                  {pass.isTest ? '🧪 Test' : 'Set Test'}
+                                </button>
+                              )}
+
                               {role === 'admin' && pass.ticketStatus !== 'REVOKED' && (
                                 <button
                                   type="button"
@@ -4014,8 +4007,8 @@ function Admin() {
               )}
             </div>
 
-            {/* EVENT & PRICING SETTINGS MODAL (Admin Only) */}
-            {isSettingsModalOpen && role === 'admin' && (
+            {/* DELETE TEST RECORDS MODAL (Admin Only) */}
+            {isDeleteTestsModalOpen && role === 'admin' && (
               <div
                 style={{
                   position: 'fixed',
@@ -4035,86 +4028,248 @@ function Admin() {
                   style={{
                     background: '#FFFFFF',
                     borderRadius: 16,
-                    maxWidth: 500,
+                    maxWidth: 580,
                     width: '100%',
-                    padding: '24px',
-                    boxShadow: '0 20px 40px rgba(0,0,0,0.2)',
+                    maxHeight: '90vh',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    boxShadow: '0 20px 40px rgba(0,0,0,0.25)',
+                    overflow: 'hidden',
                   }}
                 >
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-                    <h3 style={{ margin: 0, color: '#123F3D' }}>⚙️ MORAS LIVE Settings</h3>
+                  {/* Modal Header */}
+                  <div
+                    style={{
+                      padding: '20px 24px',
+                      background: deleteStep === 2 ? '#991B1B' : '#123F3D',
+                      color: '#FAF5EF',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                    }}
+                  >
+                    <div>
+                      <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800 }}>
+                        {deleteStep === 1 ? '🗑️ Delete Test Records' : '⚠️ Confirm Permanent Deletion'}
+                      </h3>
+                      <div style={{ fontSize: '0.8rem', color: deleteStep === 2 ? '#FEE2E2' : '#C5A880', marginTop: 2 }}>
+                        {deleteStep === 1
+                          ? 'Select only verified test reservations to delete'
+                          : 'Second Confirmation — This action cannot be undone'}
+                      </div>
+                    </div>
                     <button
                       type="button"
-                      onClick={() => setIsSettingsModalOpen(false)}
-                      style={{ background: 'none', border: 'none', fontSize: '1.2rem', cursor: 'pointer' }}
+                      onClick={() => setIsDeleteTestsModalOpen(false)}
+                      style={{ background: 'none', border: 'none', color: '#FAF5EF', fontSize: '1.3rem', cursor: 'pointer' }}
                     >
                       ✕
                     </button>
                   </div>
 
-                  {/* Price Approval Section */}
-                  <div style={{ background: '#F8FAFC', padding: '16px', borderRadius: 10, marginBottom: 16, border: '1px solid #E2E8F0' }}>
-                    <label style={{ display: 'block', fontWeight: 700, fontSize: '0.88rem', color: '#123F3D', marginBottom: 6 }}>
-                      Approved Ticket Price (₹)
-                    </label>
-                    <input
-                      type="number"
-                      min={0}
-                      value={settingsDraft.approvedPassPrice}
-                      onChange={(e) => setSettingsDraft({ ...settingsDraft, approvedPassPrice: Number(e.target.value) })}
-                      style={{ width: '100%', padding: '10px', borderRadius: 6, border: '1px solid #CBD5E1', fontSize: '1rem', boxSizing: 'border-box' }}
-                    />
+                  {/* Modal Body */}
+                  <div style={{ padding: '24px', overflowY: 'auto', flex: 1 }}>
+                    {deleteStep === 1 ? (
+                      <div>
+                        <div
+                          style={{
+                            background: '#FFFBEB',
+                            border: '1px solid #FDE68A',
+                            borderRadius: 10,
+                            padding: '12px 16px',
+                            marginBottom: 16,
+                            fontSize: '0.84rem',
+                            color: '#92400E',
+                            lineHeight: 1.5,
+                          }}
+                        >
+                          <strong>🛡️ Data Protection Notice:</strong>
+                          <br />
+                          Select only reservations created for internal testing. Genuine customer records, confirmed passes, payments, and QR credentials will remain completely untouched.
+                        </div>
 
-                    <div style={{ marginTop: 12 }}>
-                      <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: '0.88rem', fontWeight: 700, color: '#15803D', cursor: 'pointer' }}>
-                        <input
-                          type="checkbox"
-                          checked={settingsDraft.priceConfirmed}
-                          onChange={(e) => setSettingsDraft({ ...settingsDraft, priceConfirmed: e.target.checked })}
-                        />
-                        <span>Confirm Price &amp; Enable In-Person Payments</span>
-                      </label>
-                      <small style={{ color: '#64748B', display: 'block', marginTop: 4 }}>
-                        When checked, staff can collect physical payments at the café.
-                      </small>
-                    </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                          <span style={{ fontSize: '0.88rem', fontWeight: 800, color: '#123F3D' }}>
+                            Audience Passes Directory ({morasPasses.length} total)
+                          </span>
+                          <span style={{ fontSize: '0.82rem', fontWeight: 700, color: selectedTestPassIds.length > 0 ? '#DC2626' : '#64748B' }}>
+                            {selectedTestPassIds.length} test record(s) selected
+                          </span>
+                        </div>
+
+                        {morasPasses.length === 0 ? (
+                          <div style={{ textAlign: 'center', padding: '30px', color: '#94A3B8' }}>
+                            No passes found in database.
+                          </div>
+                        ) : (
+                          <div style={{ maxHeight: 280, overflowY: 'auto', border: '1px solid #E2E8F0', borderRadius: 8 }}>
+                            {morasPasses.map((p) => {
+                              const isChecked = selectedTestPassIds.includes(p.passId);
+                              return (
+                                <label
+                                  key={p.passId}
+                                  style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: 12,
+                                    padding: '10px 14px',
+                                    borderBottom: '1px solid #F1F5F9',
+                                    background: isChecked ? '#FEF2F2' : '#FFFFFF',
+                                    cursor: 'pointer',
+                                    transition: 'background 0.15s ease',
+                                  }}
+                                >
+                                  <input
+                                    type="checkbox"
+                                    checked={isChecked}
+                                    onChange={() => handleToggleSelectTestPass(p.passId)}
+                                    style={{ width: 18, height: 18, cursor: 'pointer' }}
+                                  />
+                                  <div style={{ flex: 1, minWidth: 0 }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                                      <span style={{ fontFamily: 'monospace', fontWeight: 800, color: '#123F3D', fontSize: '0.88rem' }}>
+                                        #{p.passId}
+                                      </span>
+                                      <strong style={{ fontSize: '0.88rem', color: '#0F172A' }}>
+                                        {p.customerName}
+                                      </strong>
+                                      {p.isTest && (
+                                        <span style={{ background: '#FEF3C7', color: '#92400E', padding: '1px 5px', borderRadius: 4, fontSize: '0.66rem', fontWeight: 800 }}>
+                                          TEST
+                                        </span>
+                                      )}
+                                    </div>
+                                    <div style={{ fontSize: '0.78rem', color: '#64748B', marginTop: 2 }}>
+                                      +91 {p.normalizedMobileNumber} • {p.email} • {p.paymentStatus}
+                                    </div>
+                                  </div>
+                                </label>
+                              );
+                            })}
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <div>
+                        {/* Step 2: Explicit Confirmation Warning */}
+                        <div
+                          style={{
+                            background: '#FEF2F2',
+                            border: '1.5px solid #DC2626',
+                            borderRadius: 12,
+                            padding: '18px 20px',
+                            color: '#991B1B',
+                            marginBottom: 20,
+                          }}
+                        >
+                          <div style={{ fontWeight: 800, fontSize: '1rem', display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                            <span>⚠️</span> FINAL DELETION CONFIRMATION
+                          </div>
+                          <p style={{ margin: '0 0 12px', fontSize: '0.86rem', lineHeight: 1.5 }}>
+                            You are about to permanently delete <strong>{selectedTestPassIds.length}</strong> test reservation(s):
+                          </p>
+                          <div
+                            style={{
+                              background: '#FFFFFF',
+                              border: '1px solid #FECACA',
+                              borderRadius: 8,
+                              padding: '10px 14px',
+                              fontFamily: 'monospace',
+                              fontWeight: 700,
+                              fontSize: '0.88rem',
+                              color: '#B91C1C',
+                              marginBottom: 14,
+                              wordBreak: 'break-all',
+                            }}
+                          >
+                            {selectedTestPassIds.join(', ')}
+                          </div>
+                          <ul style={{ margin: 0, paddingLeft: 18, fontSize: '0.82rem', lineHeight: 1.6 }}>
+                            <li>The selected audience pass documents will be permanently purged from MongoDB.</li>
+                            <li>Any associated test payment ledger records will be removed.</li>
+                            <li><strong>{selectedTestPassIds.length} slot(s)</strong> will be restored to available capacity.</li>
+                            <li>This action is permanently logged to the system audit trail.</li>
+                            <li><strong>Genuine customer passes remain 100% safe and untouched.</strong></li>
+                          </ul>
+                        </div>
+                      </div>
+                    )}
                   </div>
 
-                  {/* Reservation Expiry Window */}
-                  <div style={{ marginBottom: 16 }}>
-                    <label style={{ display: 'block', fontWeight: 700, fontSize: '0.88rem', color: '#123F3D', marginBottom: 6 }}>
-                      Unpaid Reservation Expiry Window (Hours)
-                    </label>
-                    <input
-                      type="number"
-                      min={1}
-                      max={72}
-                      value={settingsDraft.reservationExpiryHours}
-                      onChange={(e) => setSettingsDraft({ ...settingsDraft, reservationExpiryHours: Number(e.target.value) })}
-                      style={{ width: '100%', padding: '10px', borderRadius: 6, border: '1px solid #CBD5E1', fontSize: '1rem', boxSizing: 'border-box' }}
-                    />
-                    <small style={{ color: '#64748B', display: 'block', marginTop: 4 }}>
-                      Reservations not paid within this window expire to free up slots for other attendees.
-                    </small>
-                  </div>
+                  {/* Modal Footer Controls */}
+                  <div
+                    style={{
+                      padding: '16px 24px',
+                      background: '#F8FAFC',
+                      borderTop: '1px solid #E2E8F0',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                    }}
+                  >
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (deleteStep === 2) {
+                          setDeleteStep(1);
+                        } else {
+                          setIsDeleteTestsModalOpen(false);
+                        }
+                      }}
+                      style={{
+                        padding: '10px 18px',
+                        borderRadius: 8,
+                        background: '#FFFFFF',
+                        border: '1px solid #CBD5E1',
+                        color: '#475569',
+                        fontWeight: 600,
+                        fontSize: '0.86rem',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      {deleteStep === 2 ? '← Back to Selection' : 'Cancel'}
+                    </button>
 
-                  {/* Action Buttons */}
-                  <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end', marginTop: 24 }}>
-                    <button
-                      type="button"
-                      onClick={() => setIsSettingsModalOpen(false)}
-                      style={{ padding: '10px 18px', borderRadius: 8, background: '#F1F5F9', border: '1px solid #CBD5E1', cursor: 'pointer' }}
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      type="button"
-                      onClick={handleSaveEventSettings}
-                      disabled={isSavingSettings}
-                      style={{ padding: '10px 22px', borderRadius: 8, background: '#123F3D', color: '#FAF5EF', border: 'none', fontWeight: 700, cursor: 'pointer' }}
-                    >
-                      {isSavingSettings ? 'Saving…' : 'Save Settings'}
-                    </button>
+                    {deleteStep === 1 ? (
+                      <button
+                        type="button"
+                        onClick={() => setDeleteStep(2)}
+                        disabled={selectedTestPassIds.length === 0}
+                        style={{
+                          padding: '10px 22px',
+                          borderRadius: 8,
+                          background: selectedTestPassIds.length > 0 ? '#DC2626' : '#94A3B8',
+                          color: '#FFFFFF',
+                          border: 'none',
+                          fontWeight: 700,
+                          fontSize: '0.86rem',
+                          cursor: selectedTestPassIds.length > 0 ? 'pointer' : 'not-allowed',
+                        }}
+                      >
+                        Proceed to Confirmation ({selectedTestPassIds.length}) →
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={handleExecuteDeleteTests}
+                        disabled={isDeletingTests}
+                        style={{
+                          padding: '10px 24px',
+                          borderRadius: 8,
+                          background: '#B91C1C',
+                          color: '#FFFFFF',
+                          border: 'none',
+                          fontWeight: 800,
+                          fontSize: '0.88rem',
+                          cursor: isDeletingTests ? 'wait' : 'pointer',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: 8,
+                        }}
+                      >
+                        {isDeletingTests ? 'Deleting Records…' : `🔴 Yes, Permanently Delete ${selectedTestPassIds.length} Test Record(s)`}
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>

@@ -156,6 +156,11 @@ const morasLiveAudiencePassSchema = new mongoose.Schema(
       errorReason: { type: String, default: '' },
       retryCount: { type: Number, default: 0 },
     },
+    isTest: {
+      type: Boolean,
+      default: false,
+      index: true,
+    },
     ipAddress: {
       type: String,
       default: '',

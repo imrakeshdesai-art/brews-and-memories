@@ -1290,4 +1290,110 @@ router.get('/admin/export', auth, checkRole(['admin']), async (req, res) => {
   }
 });
 
+// =========================================================================
+// 14. ADMIN: CLASSIFY RECORD AS TEST / GENUINE
+// PATCH /api/moras-live/passes/admin/classify-test
+// =========================================================================
+router.patch('/admin/classify-test', auth, checkRole(['admin']), async (req, res) => {
+  try {
+    const { passId, isTest } = req.body;
+    if (!passId) return res.status(400).json({ success: false, message: 'passId is required' });
+
+    const cleanPassId = String(passId).trim().toUpperCase();
+    const pass = await MorasLiveAudiencePass.findOneAndUpdate(
+      { passId: cleanPassId, eventId: 'moras-live-2026' },
+      { $set: { isTest: Boolean(isTest) } },
+      { new: true }
+    );
+    if (!pass) return res.status(404).json({ success: false, message: 'Pass not found' });
+
+    return res.json({
+      success: true,
+      message: `Pass ${pass.passId} is now marked as ${pass.isTest ? 'TEST' : 'GENUINE'}.`,
+      pass,
+    });
+  } catch (error) {
+    console.error('[MORAS LIVE PASSES] Classify test error:', error);
+    return res.status(500).json({ success: false, message: 'Failed to classify test pass' });
+  }
+});
+
+// =========================================================================
+// 15. ADMIN: DELETE EXPLICITLY CLASSIFIED TEST RECORDS
+// POST /api/moras-live/passes/admin/delete-tests
+// =========================================================================
+router.post('/admin/delete-tests', auth, checkRole(['admin']), async (req, res) => {
+  try {
+    const { passIds, deleteMarkedOnly } = req.body || {};
+
+    let targetPassIds = [];
+    if (Array.isArray(passIds) && passIds.length > 0) {
+      targetPassIds = passIds.map((p) => String(p).trim().toUpperCase()).filter(Boolean);
+    } else if (deleteMarkedOnly) {
+      const markedPasses = await MorasLiveAudiencePass.find({
+        eventId: 'moras-live-2026',
+        isTest: true,
+      }).select('passId');
+      targetPassIds = markedPasses.map((p) => p.passId);
+    }
+
+    if (targetPassIds.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'No test records specified or found for deletion. Please select explicit test pass IDs.',
+      });
+    }
+
+    // Find the records first to audit and capture details before deletion
+    const recordsToDelete = await MorasLiveAudiencePass.find({
+      eventId: 'moras-live-2026',
+      passId: { $in: targetPassIds },
+    });
+
+    if (recordsToDelete.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'No matching records found to delete.',
+      });
+    }
+
+    const deletedIds = recordsToDelete.map((r) => r.passId);
+
+    // 1. Delete associated test payment records
+    const paymentDeleteResult = await MorasLivePayment.deleteMany({
+      passId: { $in: deletedIds },
+    });
+
+    // 2. Delete test audience passes
+    const passDeleteResult = await MorasLiveAudiencePass.deleteMany({
+      eventId: 'moras-live-2026',
+      passId: { $in: deletedIds },
+    });
+
+    const adminEmail = req.user?.email || 'admin';
+    const auditLog = {
+      action: 'DELETE_TEST_RECORDS',
+      admin: adminEmail,
+      timestamp: new Date().toISOString(),
+      deletedPassCount: passDeleteResult.deletedCount,
+      deletedPaymentCount: paymentDeleteResult.deletedCount,
+      deletedPassIds: deletedIds,
+      summary: `Admin ${adminEmail} permanently deleted ${passDeleteResult.deletedCount} test pass(es) [${deletedIds.join(', ')}]`,
+    };
+
+    console.log('[AUDIT - MORAS LIVE TEST DELETION]', JSON.stringify(auditLog));
+
+    return res.json({
+      success: true,
+      message: `Successfully deleted ${passDeleteResult.deletedCount} test record(s). Genuine customer records remain untouched.`,
+      audit: auditLog,
+      deletedCount: passDeleteResult.deletedCount,
+      deletedPassIds: deletedIds,
+    });
+  } catch (error) {
+    console.error('[MORAS LIVE PASSES] Delete test records error:', error);
+    return res.status(500).json({ success: false, message: 'Failed to delete test records' });
+  }
+});
+
 module.exports = router;
