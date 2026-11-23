@@ -405,7 +405,12 @@ function Admin() {
     try {
       const res = await api.get('/moras-live/passes/admin/stats');
       if (res.data?.success && res.data?.stats) {
-        setMorasPassStats(res.data.stats);
+        const s = res.data.stats;
+        setMorasPassStats({
+          ...s,
+          upiCollections: typeof s.upiCollections === 'object' ? (s.upiCollections?.total || 0) : (Number(s.upiCollections) || 0),
+          cashCollections: typeof s.cashCollections === 'object' ? (s.cashCollections?.total || 0) : (Number(s.cashCollections) || 0),
+        });
       }
     } catch (err) {
       console.warn('Failed to fetch pass stats:', err.message);
@@ -3200,11 +3205,11 @@ function Admin() {
               {/* 2. Available Passes */}
               <div style={{ background: '#FFFFFF', padding: '14px 16px', borderRadius: 10, border: '1px solid #E2E8F0', boxShadow: '0 2px 6px rgba(0,0,0,0.03)' }}>
                 <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', color: '#64748B', fontWeight: 700 }}>Available Passes</div>
-                <div style={{ fontSize: '1.6rem', fontWeight: 900, color: morasPassStats.availablePasses > 0 ? '#15803D' : '#DC2626', marginTop: 4 }}>
-                  {morasPassStats.availablePasses}
+                <div style={{ fontSize: '1.6rem', fontWeight: 900, color: (morasPassStats.availablePasses ?? 60) > 0 ? '#15803D' : '#DC2626', marginTop: 4 }}>
+                  {morasPassStats.availablePasses ?? 60}
                 </div>
-                <div style={{ fontSize: '0.72rem', color: morasPassStats.availablePasses > 0 ? '#166534' : '#DC2626' }}>
-                  {morasPassStats.availablePasses > 0 ? 'Remaining slots' : 'SOLD OUT'}
+                <div style={{ fontSize: '0.72rem', color: (morasPassStats.availablePasses ?? 60) > 0 ? '#166534' : '#DC2626' }}>
+                  {(morasPassStats.availablePasses ?? 60) > 0 ? 'Remaining slots' : 'SOLD OUT'}
                 </div>
               </div>
 
@@ -3239,7 +3244,7 @@ function Admin() {
               <div style={{ background: '#FFFFFF', padding: '14px 16px', borderRadius: 10, border: '1px solid #E2E8F0', boxShadow: '0 2px 6px rgba(0,0,0,0.03)' }}>
                 <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', color: '#64748B', fontWeight: 700 }}>UPI Collections</div>
                 <div style={{ fontSize: '1.6rem', fontWeight: 900, color: '#2563EB', marginTop: 4 }}>
-                  ₹{morasPassStats.upiCollections || 0}
+                  ₹{typeof morasPassStats.upiCollections === 'object' ? (morasPassStats.upiCollections?.total || 0) : (morasPassStats.upiCollections || 0)}
                 </div>
                 <div style={{ fontSize: '0.72rem', color: '#64748B' }}>Verified with UTR</div>
               </div>
@@ -3248,7 +3253,7 @@ function Admin() {
               <div style={{ background: '#FFFFFF', padding: '14px 16px', borderRadius: 10, border: '1px solid #E2E8F0', boxShadow: '0 2px 6px rgba(0,0,0,0.03)' }}>
                 <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', color: '#64748B', fontWeight: 700 }}>Cash Collections</div>
                 <div style={{ fontSize: '1.6rem', fontWeight: 900, color: '#059669', marginTop: 4 }}>
-                  ₹{morasPassStats.cashCollections || 0}
+                  ₹{typeof morasPassStats.cashCollections === 'object' ? (morasPassStats.cashCollections?.total || 0) : (morasPassStats.cashCollections || 0)}
                 </div>
                 <div style={{ fontSize: '0.72rem', color: '#64748B' }}>Counter register</div>
               </div>
@@ -3553,7 +3558,7 @@ function Admin() {
                         <div style={{ color: '#166534', fontSize: '0.85rem', background: '#F0FDF4', padding: '10px 12px', borderRadius: 8 }}>
                           <strong>✅ ALREADY REDEEMED</strong>
                           <div style={{ fontSize: '0.78rem', color: '#666', marginTop: 4 }}>
-                            Redeemed at: {new Date(scannedPass.cappuccinoRedeemedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            Redeemed at: {scannedPass.cappuccinoRedeemedAt ? new Date(scannedPass.cappuccinoRedeemedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Recently'}
                           </div>
                         </div>
                       ) : (
@@ -3604,7 +3609,7 @@ function Admin() {
                         <div style={{ color: '#166534', fontSize: '0.85rem', background: '#F0FDF4', padding: '10px 12px', borderRadius: 8 }}>
                           <strong>✅ CHECKED IN / ADMITTED</strong>
                           <div style={{ fontSize: '0.78rem', color: '#666', marginTop: 4 }}>
-                            Admitted at: {new Date(scannedPass.entryCheckedInAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            Admitted at: {scannedPass.entryCheckedInAt ? new Date(scannedPass.entryCheckedInAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Recently'}
                           </div>
                         </div>
                       ) : scannedPass.paymentStatus !== 'PAID' ? (
@@ -3724,7 +3729,7 @@ function Admin() {
               {/* Table */}
               {morasPassLoading ? (
                 <div style={{ textAlign: 'center', padding: '40px', color: '#666' }}>Loading passes…</div>
-              ) : morasPasses.length === 0 ? (
+              ) : !Array.isArray(morasPasses) || morasPasses.length === 0 ? (
                 <div style={{ textAlign: 'center', padding: '40px', color: '#94A3B8' }}>No audience passes found.</div>
               ) : (
                 <div style={{ overflowX: 'auto' }}>
