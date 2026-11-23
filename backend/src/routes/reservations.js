@@ -462,4 +462,35 @@ router.post('/:id/resend-email', auth, checkRole(['admin']), async (req, res) =>
   }
 });
 
+// ==================== 8. DELETE ALL TEST RESERVATIONS (ADMIN) ====================
+// DELETE /api/reservations/clean-all-tests (requires auth)
+router.delete('/clean-all-tests', auth, checkRole(['admin']), async (req, res) => {
+  try {
+    const result = await Reservation.deleteMany({});
+    await UpiPaymentLog.deleteMany({});
+    console.log(`[ADMIN] Purged all reservations (${result.deletedCount} records deleted)`);
+    res.json({ success: true, message: 'All reservations deleted successfully', count: result.deletedCount });
+  } catch (error) {
+    console.error('Clean reservations error:', error);
+    res.status(500).json({ success: false, message: 'Could not delete reservations', error: error.message });
+  }
+});
+
+// ==================== 9. DELETE SINGLE RESERVATION (ADMIN) ====================
+// DELETE /api/reservations/:id (requires auth)
+router.delete('/:id', auth, checkRole(['admin']), async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deleted = await Reservation.findByIdAndDelete(id);
+    if (!deleted) {
+      return res.status(404).json({ success: false, message: 'Reservation not found' });
+    }
+    console.log(`[ADMIN] Deleted reservation #${id}`);
+    res.json({ success: true, message: 'Reservation deleted successfully', id });
+  } catch (error) {
+    console.error('Delete reservation error:', error);
+    res.status(500).json({ success: false, message: 'Could not delete reservation' });
+  }
+});
+
 module.exports = router;

@@ -423,10 +423,27 @@ router.get('/track/:id', trackLimiter, async (req, res) => {
 router.delete('/clean-all-tests', auth, checkRole(['admin']), async (req, res) => {
   try {
     const result = await Order.deleteMany({});
-    res.json({ message: 'All test orders deleted successfully', count: result.deletedCount });
+    console.log(`[ADMIN] Purged all orders (${result.deletedCount} orders deleted)`);
+    res.json({ success: true, message: 'All test orders deleted successfully', count: result.deletedCount });
   } catch (error) {
     console.error('Clean orders error:', error);
-    res.status(500).json({ message: 'Could not delete test orders', error: error.message });
+    res.status(500).json({ success: false, message: 'Could not delete test orders', error: error.message });
+  }
+});
+
+// ==================== DELETE SINGLE ORDER ====================
+router.delete('/:id', auth, checkRole(['admin']), async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deleted = await Order.findByIdAndDelete(id);
+    if (!deleted) {
+      return res.status(404).json({ success: false, message: 'Order not found' });
+    }
+    console.log(`[ADMIN] Deleted order #${id}`);
+    res.json({ success: true, message: 'Order deleted successfully', id });
+  } catch (error) {
+    console.error('Delete order error:', error);
+    res.status(500).json({ success: false, message: 'Could not delete order', error: error.message });
   }
 });
 

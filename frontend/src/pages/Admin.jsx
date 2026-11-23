@@ -893,6 +893,62 @@ function Admin() {
     }
   };
 
+  // ================= DELETE SINGLE ORDER =================
+  const handleDeleteSingleOrder = async (id, customerName) => {
+    if (!window.confirm(`Delete order #${id.slice(-6).toUpperCase()} for ${customerName || 'customer'}? This cannot be undone.`)) {
+      return;
+    }
+    try {
+      await api.delete(`/orders/${id}`);
+      setOrders((prev) => prev.filter((o) => o._id !== id));
+      toast('Order deleted successfully');
+    } catch (err) {
+      toast(err.response?.data?.message || 'Could not delete order');
+    }
+  };
+
+  // ================= CLEAR ALL TEST ORDERS =================
+  const handleClearAllOrders = async () => {
+    if (!window.confirm(`Are you sure you want to permanently delete ALL ${orders.length} orders? All test records will be removed.`)) {
+      return;
+    }
+    try {
+      const res = await api.delete('/orders/clean-all-tests');
+      setOrders([]);
+      toast(res.data?.message || 'All test orders deleted successfully');
+    } catch (err) {
+      toast(err.response?.data?.message || 'Could not delete test orders');
+    }
+  };
+
+  // ================= DELETE SINGLE RESERVATION =================
+  const handleDeleteSingleReservation = async (id, guestName) => {
+    if (!window.confirm(`Delete birthday booking #${id.slice(-6).toUpperCase()} for ${guestName || 'guest'}? This cannot be undone.`)) {
+      return;
+    }
+    try {
+      await api.delete(`/reservations/${id}`);
+      setReservations((prev) => prev.filter((r) => r._id !== id));
+      toast('Birthday booking deleted successfully');
+    } catch (err) {
+      toast(err.response?.data?.message || 'Could not delete reservation');
+    }
+  };
+
+  // ================= CLEAR ALL TEST RESERVATIONS =================
+  const handleClearAllReservations = async () => {
+    if (!window.confirm(`Are you sure you want to permanently delete ALL ${reservations.length} birthday celebration bookings? All test records will be removed.`)) {
+      return;
+    }
+    try {
+      const res = await api.delete('/reservations/clean-all-tests');
+      setReservations([]);
+      toast(res.data?.message || 'All test reservations deleted successfully');
+    } catch (err) {
+      toast(err.response?.data?.message || 'Could not delete test reservations');
+    }
+  };
+
   // ================= STATS =================
   const stats = useMemo(() => ({
     totalRevenue: orders.reduce(
@@ -1415,6 +1471,34 @@ function Admin() {
         )}
 
         <div className="admin-table-wrap">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14, flexWrap: 'wrap', gap: 10 }}>
+            <div style={{ fontWeight: 800, fontSize: '1.08rem', color: 'var(--green)' }}>
+              All Café Orders ({orders.length})
+            </div>
+            {orders.length > 0 && (
+              <button
+                type="button"
+                onClick={handleClearAllOrders}
+                style={{
+                  padding: '7px 14px',
+                  borderRadius: 8,
+                  background: '#FEE2E2',
+                  color: '#DC2626',
+                  border: '1px solid #FECACA',
+                  fontWeight: 700,
+                  fontSize: '0.82rem',
+                  cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 6
+                }}
+                title="Delete all previous test orders from database"
+              >
+                <span>🗑️</span>
+                <span>Clear All Test Orders</span>
+              </button>
+            )}
+          </div>
 
           <table
             style={{
@@ -1465,6 +1549,10 @@ function Admin() {
                   Status
                 </th>
 
+                <th style={{ padding: '12px 14px', textAlign: 'center' }}>
+                  Actions
+                </th>
+
               </tr>
 
             </thead>
@@ -1475,7 +1563,7 @@ function Admin() {
 
                 <tr>
                   <td
-                    colSpan="8"
+                    colSpan="9"
                     style={{
                       padding: 32,
                       textAlign: 'center',
@@ -1490,7 +1578,7 @@ function Admin() {
 
                 <tr>
                   <td
-                    colSpan="8"
+                    colSpan="9"
                     style={{
                       padding: 32,
                       textAlign: 'center',
@@ -1675,6 +1763,30 @@ function Admin() {
 
                     </td>
 
+                    <td style={{ padding: '12px 14px', textAlign: 'center' }}>
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteSingleOrder(o._id, o.name)}
+                        style={{
+                          background: '#FEE2E2',
+                          color: '#DC2626',
+                          border: '1px solid #FECACA',
+                          borderRadius: 6,
+                          padding: '5px 10px',
+                          fontSize: '0.76rem',
+                          fontWeight: 700,
+                          cursor: 'pointer',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: 4
+                        }}
+                        title="Permanently delete this order"
+                      >
+                        <span>🗑️</span>
+                        <span>Delete</span>
+                      </button>
+                    </td>
+
                   </tr>
 
                 ))
@@ -1807,10 +1919,40 @@ function Admin() {
 
         {activeTab === 'reservations' && (
           <div className="admin-table-wrap" style={{ background: 'var(--white)', border: '1px solid var(--cream-dark)', borderRadius: 12, padding: '24px 20px', textAlign: 'left' }}>
-            <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: '1.5rem', color: 'var(--green)', marginBottom: 12 }}>🎂 Birthday Celebration Bookings</h3>
-            <p style={{ color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: 24 }}>
-              Customer birthday event requests. Includes illuminated &ldquo;Happy Birthday&rdquo; stand with lights, guest counts, and ₹59 advance payment tracking.
-            </p>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, flexWrap: 'wrap', gap: 10 }}>
+              <div>
+                <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: '1.5rem', color: 'var(--green)', margin: '0 0 4px' }}>
+                  🎂 Birthday Celebration Bookings ({reservations.length})
+                </h3>
+                <p style={{ color: 'var(--text-light)', fontSize: '0.88rem', margin: 0 }}>
+                  Customer requests. Contact customers via Phone/WhatsApp to collect ₹59 advance online, then mark Confirmed to dispatch email confirmation.
+                </p>
+              </div>
+              {reservations.length > 0 && (
+                <button
+                  type="button"
+                  onClick={handleClearAllReservations}
+                  style={{
+                    padding: '8px 14px',
+                    borderRadius: 8,
+                    background: '#FEE2E2',
+                    color: '#DC2626',
+                    border: '1px solid #FECACA',
+                    fontWeight: 700,
+                    fontSize: '0.82rem',
+                    cursor: 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 6
+                  }}
+                  title="Delete all previous test birthday bookings from database"
+                >
+                  <span>🗑️</span>
+                  <span>Clear All Test Bookings</span>
+                </button>
+              )}
+            </div>
+
             <div style={{ overflowX: 'auto' }}>
               <table
                 style={{
@@ -1832,7 +1974,7 @@ function Admin() {
                     <th style={{ padding: '12px 14px', textAlign: 'left' }}>Slot</th>
                     <th style={{ padding: '12px 14px', textAlign: 'left' }}>₹59 Advance / ₹199 Pkg</th>
                     <th style={{ padding: '12px 14px', textAlign: 'left' }}>Special Requests</th>
-                    <th style={{ padding: '12px 14px', textAlign: 'left' }}>Status &amp; Email</th>
+                    <th style={{ padding: '12px 14px', textAlign: 'left' }}>Status &amp; Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -1872,8 +2014,34 @@ function Admin() {
                               ✉️ {r.email}
                             </div>
                           )}
-                          <div style={{ fontSize: '0.8rem', color: 'var(--text-light)' }}>
-                            📞 {r.phone}
+                          <div style={{ fontSize: '0.82rem', marginTop: 4, display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+                            <a 
+                              href={`tel:+91${r.phone.replace(/\D/g, '')}`} 
+                              style={{ color: '#166534', fontWeight: 700, textDecoration: 'none' }}
+                              title="Call customer directly"
+                            >
+                              📞 +91 {r.phone}
+                            </a>
+                            <a
+                              href={`https://wa.me/91${r.phone.replace(/\D/g, '')}?text=Hi%20${encodeURIComponent(r.name)}%2C%20greetings%20from%20The%20Moras%20Cafe!%20Regarding%20your%20birthday%20booking%20for%20${encodeURIComponent(r.date)}%20at%20${encodeURIComponent(r.time)}...`}
+                              target="_blank"
+                              rel="noreferrer"
+                              style={{
+                                background: '#25D366',
+                                color: '#fff',
+                                padding: '2px 7px',
+                                borderRadius: 4,
+                                fontSize: '0.72rem',
+                                fontWeight: 700,
+                                textDecoration: 'none',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: 3
+                              }}
+                              title="Chat on WhatsApp to collect advance"
+                            >
+                              <span>💬</span> WhatsApp
+                            </a>
                           </div>
                         </td>
                         <td style={{ padding: '12px 14px', textAlign: 'center', fontWeight: 700 }}>
@@ -1886,14 +2054,14 @@ function Admin() {
                         <td style={{ padding: '12px 14px' }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                             <span style={{ 
-                              background: '#dcfce7', 
-                              color: '#15803d', 
+                              background: r.status === 'confirmed' ? '#dcfce7' : '#fef3c7', 
+                              color: r.status === 'confirmed' ? '#15803d' : '#92400e', 
                               padding: '2px 8px', 
                               borderRadius: 12, 
                               fontSize: '0.78rem', 
                               fontWeight: 700 
                             }}>
-                              ₹{r.amount || 59} Adv Paid
+                              {r.status === 'confirmed' ? '✅ ₹59 Adv Received' : '⏳ Awaiting ₹59 Adv'}
                             </span>
                             <span style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: 600, display: 'block', marginTop: 3 }}>
                               Bal: ₹{r.remainingBalance || 140}
@@ -1905,7 +2073,7 @@ function Admin() {
                             </div>
                           ) : (
                             <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: 4 }}>
-                              UPI Direct
+                              {r.status === 'confirmed' ? 'Online UPI' : 'Pending contact'}
                             </div>
                           )}
                         </td>
@@ -1991,6 +2159,28 @@ function Admin() {
                                 {r.confirmationEmailSent ? '✓ Sent (Resend)' : '✉️ Send Email'}
                               </button>
                             )}
+
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteSingleReservation(r._id, r.name)}
+                              style={{
+                                background: '#FEE2E2',
+                                color: '#DC2626',
+                                border: '1px solid #FECACA',
+                                borderRadius: 6,
+                                padding: '3px 8px',
+                                fontSize: '0.72rem',
+                                cursor: 'pointer',
+                                fontWeight: 700,
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: 4
+                              }}
+                              title="Permanently delete this reservation"
+                            >
+                              <span>🗑️</span>
+                              <span>Delete</span>
+                            </button>
                           </div>
                         </td>
                       </tr>
