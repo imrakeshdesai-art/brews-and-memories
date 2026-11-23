@@ -4557,7 +4557,7 @@ function Admin() {
                     </div>
                     <div style={{ fontWeight: 900, fontSize: '1.2rem', color: '#0F3D3E', letterSpacing: 0.5 }}>THE MORAS CAFE</div>
                     <div style={{ fontSize: '0.76rem', color: '#64748b', marginTop: 2 }}>
-                      B.M. Patil Circle, Ring Road, Solapur Bypass, Vijayapura, KA 586102
+                      At Udayshree Sports Academy, Solapur Rd, Adarsh Nagar, Vijayapura, KA 586103
                     </div>
                     <div style={{ fontSize: '0.76rem', color: '#64748b' }}>
                       Ph: +91 99454 46137 &bull; 100% Pure Vegetarian
@@ -4711,7 +4711,7 @@ function Admin() {
                     </div>
                     <div style={{ fontWeight: 900, fontSize: '1.2rem', color: '#0F3D3E', letterSpacing: 0.5 }}>THE MORAS CAFE</div>
                     <div style={{ fontSize: '0.76rem', color: '#64748b', marginTop: 2 }}>
-                      B.M. Patil Circle, Ring Road, Solapur Bypass, Vijayapura, KA 586102
+                      At Udayshree Sports Academy, Solapur Rd, Adarsh Nagar, Vijayapura, KA 586103
                     </div>
                     <div style={{ fontSize: '0.76rem', color: '#64748b' }}>
                       Ph: +91 99454 46137 &bull; 100% Pure Vegetarian

@@ -1768,33 +1768,12 @@ function Home({ openReserve }) {
 
 
             <a 
-
-
-
-              href="https://www.google.com/maps/dir/?api=1&destination=16.822765,75.703274" 
-
-
-
+              href="https://www.google.com/maps/dir/?api=1&destination=16.8637374,75.7159199&destination_place_id=ChIJJb8cUnFVxjsRmcC9k4FMA4w" 
               target="_blank" 
-
-
-
               rel="noreferrer" 
-
-
-
               className="btn-atmosphere-outline"
-
-
-
             >
-
-
-
               📍 Get Directions ↗
-
-
-
             </a>
 
 
@@ -2412,189 +2391,55 @@ function Home({ openReserve }) {
 
 
                 <div>
-
-
-
                   <strong>Location</strong>
-
-
-
-                  <div>B M Patil Circle, Ring Rd, Solapur Bypass, Vijayapura, KA 586102</div>
-
-
-
+                  <div><a href="https://www.google.com/maps/place/The+Moras+Cafe/@16.8637374,75.7159199,17z/data=!4m6!3m5!1s0x3bc65571521cbf25:0x8c034c8193bdc099!8m2!3d16.8637374!4d75.7159199!16s%2Fg%2F11ypw9h6gl" target="_blank" rel="noreferrer" style={{ color: 'inherit', textDecoration: 'none' }}>At Udayshree Sports Academy, Solapur Rd, Adarsh Nagar, Vijayapura, KA 586103</a></div>
                 </div>
-
-
-
               </div>
 
-
-
               <div className="visit-info-item">
-
-
-
                 <span className="info-icon">🕒</span>
-
-
-
                 <div>
-
-
-
                   <strong>Opening Hours</strong>
-
-
-
                   <div>Open Daily · 10:00 AM – 10:30 PM (All 7 Days)</div>
-
-
-
                 </div>
-
-
-
               </div>
-
-
 
               <div className="visit-info-item">
-
-
-
                 <span className="info-icon">📞</span>
-
-
-
                 <div>
-
-
-
                   <strong>Phone / Reservations</strong>
-
-
-
                   <div><a href="tel:+919945446137">+91 99454 46137</a></div>
-
-
-
                 </div>
-
-
-
               </div>
-
-
-
             </div>
-
-
-
-
-
-
 
             <div style={{ marginTop: 24, display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-
-
-
               <button type="button" onClick={openReserve} className="btn-editorial-primary">
-
-
-
                 🎂 Host Birthday (₹199)
-
-
-
               </button>
 
-
-
               <a 
-
-
-
-                href="https://www.google.com/maps/dir/?api=1&destination=16.822765,75.703274"
-
-
-
+                href="https://www.google.com/maps/dir/?api=1&destination=16.8637374,75.7159199&destination_place_id=ChIJJb8cUnFVxjsRmcC9k4FMA4w"
                 target="_blank"
-
-
-
                 rel="noreferrer"
-
-
-
                 className="btn-editorial-outline"
-
-
-
               >
-
-
-
                 Get Directions ↗
-
-
-
               </a>
-
-
-
             </div>
-
-
 
           </div>
 
-
-
-
-
-
-
           <div className="visit-map-frame">
-
-
-
             <iframe
-
-
-
               title="The Moras Cafe Location Map"
-
-
-
-              src="https://maps.google.com/maps?q=16.822765,75.703274&hl=en&z=16&output=embed"
-
-
-
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3818.6672323315995!2d75.71334497492196!3d16.86373738393529!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bc65571521cbf25%3A0x8c034c8193bdc099!2sThe%20Moras%20Cafe!5e0!3m2!1sen!2sin!4v1732400000000!5m2!1sen!2sin"
               width="100%"
-
-
-
               height="100%"
-
-
-
               style={{ border: 0, minHeight: 360 }}
-
-
-
               allowFullScreen=""
-
-
-
               loading="lazy"
-
-
-
               referrerPolicy="no-referrer-when-downgrade"
-
-
-
             />
 
 

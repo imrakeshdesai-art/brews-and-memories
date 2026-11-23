@@ -99,7 +99,16 @@ function Footer({ onReserveClick }) {
             </li>
             <li style={{ fontSize: '0.92rem', color: '#DDD6CA' }}>
               <strong style={{ color: '#FAF5EF', display: 'block', marginBottom: 2 }}>Address:</strong>
-              <div style={{ lineHeight: 1.5 }}>B M Patil Circle, Ring Rd, Solapur Bypass, Vijayapura, KA 586102</div>
+              <div style={{ lineHeight: 1.5 }}>
+                <a 
+                  href="https://www.google.com/maps/place/The+Moras+Cafe/@16.8637374,75.7159199,17z/data=!4m6!3m5!1s0x3bc65571521cbf25:0x8c034c8193bdc099!8m2!3d16.8637374!4d75.7159199!16s%2Fg%2F11ypw9h6gl" 
+                  target="_blank" 
+                  rel="noreferrer" 
+                  style={{ color: '#DDD6CA', textDecoration: 'none' }}
+                >
+                  At Udayshree Sports Academy, Solapur Rd, Adarsh Nagar, Vijayapura, KA 586103
+                </a>
+              </div>
             </li>
             <li style={{ fontSize: '0.92rem', color: '#DDD6CA' }}>
               <strong style={{ color: '#FAF5EF', display: 'block', marginBottom: 2 }}>Reservations &amp; Enquiries:</strong>
