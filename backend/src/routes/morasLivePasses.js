@@ -301,6 +301,7 @@ router.post('/reserve', passReservationLimiter, async (req, res) => {
             eventStartTime: settings.eventStartTime,
           },
           qrDataUrl: qrCodeDataUrl,
+          qrPayload,
           secureAccessUrl,
         });
 
@@ -418,7 +419,46 @@ router.get('/secure-view', async (req, res) => {
 });
 
 // =========================================================================
-// 3B. DEPRECATED PUBLIC LOOKUP (DISABLED FOR PASS PRIVACY & ANTI-SCRAPING)
+// 3B. NATIVE QR IMAGE RENDER (HTTPS PNG STREAM FOR EMAIL & PUBLIC PREVIEWS)
+// GET /api/moras-live/passes/qr-image
+// =========================================================================
+router.get('/qr-image', async (req, res) => {
+  try {
+    const { passId, token } = req.query;
+    if (!passId || !token) {
+      return res.status(400).send('passId and token are required');
+    }
+    const cleanPassId = String(passId).trim().toUpperCase();
+    const pass = await MorasLiveAudiencePass.findOne({
+      eventId: 'moras-live-2026',
+      passId: cleanPassId,
+      qrTokenHash: hashQrToken(String(token)),
+    });
+    if (!pass) {
+      return res.status(404).send('Pass not found or invalid token');
+    }
+    const qrPayload = buildPassQrPayload(pass.passId, pass.qrToken, req);
+    const QRCode = require('qrcode');
+    const buffer = await QRCode.toBuffer(qrPayload, {
+      errorCorrectionLevel: 'M',
+      margin: 2,
+      width: 320,
+      color: {
+        dark: '#123F3D',
+        light: '#FFFFFF',
+      },
+    });
+    res.set('Content-Type', 'image/png');
+    res.set('Cache-Control', 'public, max-age=86400');
+    return res.send(buffer);
+  } catch (err) {
+    console.error('[MORAS LIVE PASSES] QR image render error:', err);
+    return res.status(500).send('Failed to render QR image');
+  }
+});
+
+// =========================================================================
+// 3C. DEPRECATED PUBLIC LOOKUP (DISABLED FOR PASS PRIVACY & ANTI-SCRAPING)
 // GET /api/moras-live/passes/lookup
 // =========================================================================
 router.get('/lookup', async (req, res) => {

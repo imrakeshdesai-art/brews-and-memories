@@ -722,13 +722,18 @@ async function sendOrderEmail(orderData) {
 }
 
 // ── MORAS LIVE Audience Pass Email ───────────────────────────────────────────
-function buildMorasLivePassEmailHTML({ pass, qrDataUrl, secureAccessUrl }) {
-  const name = pass.name || 'Valued Guest';
+function buildMorasLivePassEmailHTML({ pass, qrDataUrl, qrPayload, secureAccessUrl }) {
+  const name = pass.customerName || pass.name || 'Valued Guest';
   const passId = pass.passId || 'ML-XXXX';
-  const mobile = pass.mobileNumber || '';
-  const price = pass.approvedPassPrice != null ? pass.approvedPassPrice : 149;
+  const mobile = pass.normalizedMobileNumber || pass.mobileNumber || '';
+  const price = pass.approvedPassPrice != null ? pass.approvedPassPrice : (pass.payableAmount || 149);
   const eventName = pass.eventName || 'MORAS LIVE';
   const venue = pass.venue || 'THE MORAS CAFE, Solapur Rd, Vijayapura';
+
+  // Email clients (Gmail, Yahoo, Outlook) block data:image/png;base64 URIs.
+  // We use a high-resolution, CDN-backed HTTPS image URL so Gmail proxies and displays it cleanly.
+  const payloadUrl = qrPayload || pass.passUrl || secureAccessUrl || `https://themorascafe.in/moras-live/passes?passId=${passId}`;
+  const httpsQrUrl = `https://quickchart.io/qr?text=${encodeURIComponent(payloadUrl)}&size=300&dark=0f3d3e&margin=2`;
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -774,10 +779,9 @@ function buildMorasLivePassEmailHTML({ pass, qrDataUrl, secureAccessUrl }) {
                   <!-- QR Code Card -->
                   <div style="background:#faf8f5;border-radius:14px;padding:24px 20px;text-align:center;border:1px solid #e8e2d2;margin-bottom:24px">
                     <div style="font-size:11px;color:#8e8a7e;letter-spacing:2px;text-transform:uppercase;font-weight:700;margin-bottom:6px">Official Entry QR Code</div>
-                    ${qrDataUrl ? `
                     <div style="margin:12px auto 14px;display:inline-block;padding:10px;background:#ffffff;border-radius:12px;border:2px solid #0f3d3e;box-shadow:0 2px 10px rgba(0,0,0,0.06)">
-                      <img src="${qrDataUrl}" alt="MORAS LIVE Pass QR" width="180" height="180" style="display:block;width:180px;height:180px;border:0" />
-                    </div>` : ''}
+                      <img src="${httpsQrUrl}" alt="MORAS LIVE Pass QR - ${passId}" width="180" height="180" style="display:block;width:180px;height:180px;border:0;margin:0 auto" />
+                    </div>
                     <div style="font-size:18px;font-weight:800;color:#0f3d3e;font-family:monospace;letter-spacing:2px">${passId}</div>
                     <div style="font-size:12px;color:#666;margin-top:4px">Valid for 1 Individual Admission &middot; Non-transferable</div>
                     
@@ -851,10 +855,10 @@ function buildMorasLivePassEmailHTML({ pass, qrDataUrl, secureAccessUrl }) {
 }
 
 function buildMorasLivePassEmailText({ pass, secureAccessUrl }) {
-  const name = pass.name || 'Valued Guest';
+  const name = pass.customerName || pass.name || 'Valued Guest';
   const passId = pass.passId || 'ML-XXXX';
-  const mobile = pass.mobileNumber || '';
-  const price = pass.approvedPassPrice != null ? pass.approvedPassPrice : 149;
+  const mobile = pass.normalizedMobileNumber || pass.mobileNumber || '';
+  const price = pass.approvedPassPrice != null ? pass.approvedPassPrice : (pass.payableAmount || 149);
   const eventName = pass.eventName || 'MORAS LIVE';
   const venue = pass.venue || 'THE MORAS CAFE, Solapur Rd, Vijayapura';
 
@@ -889,20 +893,21 @@ THE MORAS CAFE, Vijayapura
 `;
 }
 
-async function sendMorasLivePassEmail({ pass, qrDataUrl, secureAccessUrl }) {
+async function sendMorasLivePassEmail({ pass, qrDataUrl, qrPayload, secureAccessUrl }) {
   if (!pass || !pass.email) {
     console.log('[Email] No customer email provided for MORAS LIVE pass — skipping.');
     return { success: false, error: 'No customer email provided', method: 'skipped' };
   }
   const passId = pass.passId || 'PASS';
+  const name = pass.customerName || pass.name || 'Valued Guest';
   const subject = `MORAS LIVE Pass Reserved (#${passId}) — Payment Due at Entry 🎟️`;
-  const htmlContent = buildMorasLivePassEmailHTML({ pass, qrDataUrl, secureAccessUrl });
+  const htmlContent = buildMorasLivePassEmailHTML({ pass, qrDataUrl, qrPayload, secureAccessUrl });
   const textContent = buildMorasLivePassEmailText({ pass, secureAccessUrl });
 
   try {
     const result = await dispatchEmail({
       to: pass.email,
-      toName: pass.name,
+      toName: name,
       subject,
       htmlContent,
       textContent,
