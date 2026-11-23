@@ -10,7 +10,6 @@ const PARTICIPATION_ROLES = [
   'Musician / Instrumentalist',
   'Freestyle Artist',
   'Content Creator',
-  'Audience / Attendee',
   'Other',
 ];
 

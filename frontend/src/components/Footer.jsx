@@ -66,7 +66,7 @@ function Footer({ onReserveClick }) {
               </li>
               <li>
                 <Link to="/moras-live/register" style={{ color: '#FBBF24', textDecoration: 'none', fontSize: '0.92rem', letterSpacing: '0.3px', fontWeight: 700, transition: 'color 0.2s' }}>
-                  🎤 MORAS LIVE (Event Registration)
+                  🎤 MORAS LIVE (Performer Registration)
                 </Link>
               </li>
               <li>

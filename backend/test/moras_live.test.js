@@ -93,7 +93,9 @@ async function runTests() {
         filtered = filtered.filter((r) => r.registrationStatus === filter.registrationStatus);
       }
       if (filter.participationRole) {
-        if (typeof filter.participationRole === 'object' && filter.participationRole.$ne) {
+        if (typeof filter.participationRole === 'object' && filter.participationRole.$in) {
+          filtered = filtered.filter((r) => filter.participationRole.$in.includes(r.participationRole));
+        } else if (typeof filter.participationRole === 'object' && filter.participationRole.$ne) {
           filtered = filtered.filter((r) => r.participationRole !== filter.participationRole.$ne);
         } else {
           filtered = filtered.filter((r) => r.participationRole === filter.participationRole);
@@ -148,9 +150,14 @@ async function runTests() {
     };
 
     MorasLiveRegistration.aggregate = (pipeline) => {
+      let filtered = [...mockRegistrations];
+      if (pipeline[0]?.$match?.participationRole?.$in) {
+        filtered = filtered.filter((r) => pipeline[0].$match.participationRole.$in.includes(r.participationRole));
+      }
+      const groupStage = pipeline.find((p) => p.$group) || pipeline[0];
       const counts = {};
-      const field = pipeline[0].$group._id.replace('$', '');
-      mockRegistrations.forEach((r) => {
+      const field = groupStage.$group._id.replace('$', '');
+      filtered.forEach((r) => {
         const key = r[field] || 'Unknown';
         counts[key] = (counts[key] || 0) + 1;
       });
@@ -211,12 +218,12 @@ async function runTests() {
       console.log('  ✅ PASS: 1. Successful Performer Registration — Generates unique ID & normalizes data');
     }
 
-    // 2. Successful Audience Registration
+    // 2. Strict Performer Guard: Reject Audience / Attendee Registration Attempts
     {
       const payload = {
-        fullName: 'Pooja Patil',
+        fullName: 'Rejected Audience User',
         mobileNumber: '09845012345',
-        email: 'pooja@test-moras-live.com',
+        email: 'audience@test-moras-live.com',
         participationRole: 'Audience / Attendee',
       };
 
@@ -228,10 +235,29 @@ async function runTests() {
         headers: { 'Content-Type': 'application/json' },
       }, payload);
 
-      assert.strictEqual(res.status, 201);
-      assert.strictEqual(res.body.registration.mobileNumber, '9845012345', 'Should strip leading 0');
-      assert.strictEqual(res.body.registration.participationRole, 'Audience / Attendee');
-      console.log('  ✅ PASS: 2. Successful Audience Registration — Handles attendee role smoothly');
+      assert.strictEqual(res.status, 400, 'Audience registration must be rejected with 400');
+      assert.strictEqual(res.body.field, 'participationRole');
+      console.log('  ✅ PASS: 2. Performer Guard — Strictly rejects Audience/Attendee registrations (400)');
+
+      // Now register valid second performer (Poet)
+      const validPayload = {
+        fullName: 'Pooja Patil',
+        mobileNumber: '09845012345',
+        email: 'pooja@test-moras-live.com',
+        participationRole: 'Poet / Spoken Word Artist',
+      };
+
+      const validRes = await makeRequest(server, {
+        hostname: 'localhost',
+        port,
+        path: '/api/moras-live/register',
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      }, validPayload);
+
+      assert.strictEqual(validRes.status, 201);
+      assert.strictEqual(validRes.body.registration.mobileNumber, '9845012345', 'Should strip leading 0');
+      assert.strictEqual(validRes.body.registration.participationRole, 'Poet / Spoken Word Artist');
     }
 
     // 3. Successful Other Role with custom specification
@@ -425,7 +451,7 @@ async function runTests() {
       console.log(`  ✅ PASS: 12. Admin Registrations Listing — Fetched ${res.body.registrations.length} registered entries`);
     }
 
-    // 13. Admin GET /api/moras-live/stats aggregates metrics
+    // 13. Admin GET /api/moras-live/stats aggregates metrics (Performer-only)
     {
       const res = await makeRequest(server, {
         hostname: 'localhost',
@@ -437,9 +463,9 @@ async function runTests() {
       assert.strictEqual(res.status, 200);
       assert.strictEqual(res.body.success, true);
       assert.ok(res.body.stats.total >= 3);
-      assert.ok(res.body.stats.performers >= 2);
-      assert.ok(res.body.stats.audience >= 1);
-      console.log('  ✅ PASS: 13. Summary Statistics — Correctly computes total, performers, audience, & pending counts');
+      assert.ok(res.body.stats.performers >= 3);
+      assert.strictEqual(res.body.stats.audience, undefined, 'Audience field must not exist in stats');
+      console.log('  ✅ PASS: 13. Summary Statistics — Correctly computes performer metrics without audience counters');
     }
 
     // 14. Admin PATCH status update
@@ -509,7 +535,43 @@ async function runTests() {
       }
     }
 
-    console.log('\n🎉 ALL 16 MORAS LIVE Backend Tests Passed Successfully!\n');
+    // 17. Verify All 10 Approved Performer Categories
+    {
+      const APPROVED_ROLES = [
+        'Singer',
+        'Rapper',
+        'Poet / Spoken Word Artist',
+        'Comedian',
+        'Dancer',
+        'Beatboxer',
+        'Musician / Instrumentalist',
+        'Freestyle Artist',
+        'Content Creator',
+        'Other',
+      ];
+
+      for (let i = 0; i < APPROVED_ROLES.length; i++) {
+        const role = APPROVED_ROLES[i];
+        const res = await makeRequest(server, {
+          hostname: 'localhost',
+          port,
+          path: '/api/moras-live/register',
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+        }, {
+          fullName: `Artist Test ${i + 1}`,
+          mobileNumber: `987654000${i}`,
+          email: `artist_${i + 1}@test-moras-live.com`,
+          participationRole: role,
+          otherRole: role === 'Other' ? 'Live Beatmaker' : '',
+        });
+
+        assert.strictEqual(res.status, 201, `Category "${role}" should be accepted with 201`);
+      }
+      console.log('  ✅ PASS: 17. Approved Categories Verification — All 10 performer roles successfully registered');
+    }
+
+    console.log('\n🎉 ALL 17 MORAS LIVE Backend Tests Passed Successfully!\n');
   } finally {
     server.close();
   }

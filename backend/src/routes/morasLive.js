@@ -90,17 +90,17 @@ router.post('/register', registrationLimiter, async (req, res) => {
       });
     }
 
-    // 4. Participation Role Validation
+    // 4. Participation Role Validation (Performer & Creative Talent only)
     const cleanRole = typeof participationRole === 'string' ? participationRole.trim() : '';
     if (!cleanRole || !PARTICIPATION_ROLES.includes(cleanRole)) {
       return res.status(400).json({
         success: false,
         field: 'participationRole',
-        message: `Please select a valid role from the list.`,
+        message: 'Please select a valid performer category from the list. (This form is strictly for performers and creative talent).',
       });
     }
 
-    // 5. If Other, otherRole is required
+    // 5. If Other, otherRole is required to specify creative talent
     let cleanOtherRole = '';
     if (cleanRole === 'Other') {
       cleanOtherRole = typeof otherRole === 'string' ? otherRole.trim() : '';
@@ -108,7 +108,7 @@ router.post('/register', registrationLimiter, async (req, res) => {
         return res.status(400).json({
           success: false,
           field: 'otherRole',
-          message: 'Please specify your participation category (2 to 100 characters).',
+          message: 'Please specify your creative talent (2 to 100 characters).',
         });
       }
     }
@@ -140,7 +140,7 @@ router.post('/register', registrationLimiter, async (req, res) => {
       return res.status(409).json({
         success: false,
         duplicate: true,
-        message: `You are already registered for MORAS LIVE with Registration ID: ${existing.registrationId}. Our curation team will contact you once line-ups and entry details are finalized!`,
+        message: `You are already registered for MORAS LIVE with Registration ID: ${existing.registrationId}. Our team will get in touch with you regarding performance coordination!`,
         registrationId: existing.registrationId,
         existingRegistration: {
           registrationId: existing.registrationId,
@@ -172,7 +172,8 @@ router.post('/register', registrationLimiter, async (req, res) => {
     return res.status(201).json({
       success: true,
       message: "YOU'RE ON THE LIST!",
-      subheading: "Thank you for registering for MORAS LIVE. We've received your details and look forward to having you with us.",
+      subheading:
+        'Thank you for registering for MORAS LIVE. Our team will get in touch with you regarding performance coordination and further event details.',
       registrationId: registration.registrationId,
       registration: {
         registrationId: registration.registrationId,
@@ -247,28 +248,34 @@ router.get('/registrations', auth, checkRole(['admin']), async (req, res) => {
 // GET /api/moras-live/stats
 router.get('/stats', auth, checkRole(['admin']), async (req, res) => {
   try {
-    const total = await MorasLiveRegistration.countDocuments({});
+    // Only count approved performer roles (preserving any historical records without counting them as performers)
     const performers = await MorasLiveRegistration.countDocuments({
-      participationRole: { $ne: 'Audience / Attendee' },
+      participationRole: { $in: PARTICIPATION_ROLES },
     });
-    const audience = await MorasLiveRegistration.countDocuments({
-      participationRole: 'Audience / Attendee',
-    });
+    const total = performers;
     const pendingReviews = await MorasLiveRegistration.countDocuments({
+      participationRole: { $in: PARTICIPATION_ROLES },
       registrationStatus: 'New',
     });
+    const reviewed = await MorasLiveRegistration.countDocuments({
+      participationRole: { $in: PARTICIPATION_ROLES },
+      registrationStatus: 'Reviewed',
+    });
     const confirmed = await MorasLiveRegistration.countDocuments({
+      participationRole: { $in: PARTICIPATION_ROLES },
       registrationStatus: 'Confirmed',
     });
 
-    // Breakdown by Role
+    // Breakdown by Role (approved performer categories)
     const roleAggregation = await MorasLiveRegistration.aggregate([
+      { $match: { participationRole: { $in: PARTICIPATION_ROLES } } },
       { $group: { _id: '$participationRole', count: { $sum: 1 } } },
       { $sort: { count: -1 } },
     ]);
 
-    // Breakdown by Status
+    // Breakdown by Status (approved performer categories)
     const statusAggregation = await MorasLiveRegistration.aggregate([
+      { $match: { participationRole: { $in: PARTICIPATION_ROLES } } },
       { $group: { _id: '$registrationStatus', count: { $sum: 1 } } },
       { $sort: { count: -1 } },
     ]);
@@ -278,8 +285,9 @@ router.get('/stats', auth, checkRole(['admin']), async (req, res) => {
       stats: {
         total,
         performers,
-        audience,
         pendingReviews,
+        pending: pendingReviews,
+        reviewed,
         confirmed,
         byRole: roleAggregation.map((item) => ({ role: item._id, count: item.count })),
         byStatus: statusAggregation.map((item) => ({ status: item._id, count: item.count })),

@@ -1859,11 +1859,11 @@ function Admin() {
               </div>
             </div>
 
-            {/* 5 Summary Stat Cards */}
+            {/* 4 Summary Stat Cards (Performer Focus) */}
             <div
               style={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
                 gap: 12,
                 marginBottom: 24,
               }}
@@ -1877,45 +1877,11 @@ function Admin() {
                   boxShadow: '0 2px 6px rgba(0,0,0,0.03)',
                 }}
               >
-                <div style={{ fontSize: '0.78rem', textTransform: 'uppercase', color: 'var(--text-light)', fontWeight: 700, letterSpacing: '0.05em' }}>
-                  Total Registrations
+                <div style={{ fontSize: '0.78rem', textTransform: 'uppercase', color: '#123F3D', fontWeight: 700, letterSpacing: '0.05em' }}>
+                  🎤 Total Performers
                 </div>
                 <div style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--green)', marginTop: 4 }}>
-                  {morasLiveStats.total || 0}
-                </div>
-              </div>
-
-              <div
-                style={{
-                  background: 'var(--white)',
-                  padding: '16px 18px',
-                  borderRadius: 12,
-                  border: '1px solid var(--cream-dark)',
-                  boxShadow: '0 2px 6px rgba(0,0,0,0.03)',
-                }}
-              >
-                <div style={{ fontSize: '0.78rem', textTransform: 'uppercase', color: '#8B0000', fontWeight: 700, letterSpacing: '0.05em' }}>
-                  🎤 Performers
-                </div>
-                <div style={{ fontSize: '1.75rem', fontWeight: 800, color: '#8B0000', marginTop: 4 }}>
-                  {morasLiveStats.performers || 0}
-                </div>
-              </div>
-
-              <div
-                style={{
-                  background: 'var(--white)',
-                  padding: '16px 18px',
-                  borderRadius: 12,
-                  border: '1px solid var(--cream-dark)',
-                  boxShadow: '0 2px 6px rgba(0,0,0,0.03)',
-                }}
-              >
-                <div style={{ fontSize: '0.78rem', textTransform: 'uppercase', color: '#1e40af', fontWeight: 700, letterSpacing: '0.05em' }}>
-                  👥 Audience
-                </div>
-                <div style={{ fontSize: '1.75rem', fontWeight: 800, color: '#1e40af', marginTop: 4 }}>
-                  {morasLiveStats.audience || 0}
+                  {morasLiveStats.performers || morasLiveStats.total || 0}
                 </div>
               </div>
 
@@ -1945,8 +1911,25 @@ function Admin() {
                   boxShadow: '0 2px 6px rgba(0,0,0,0.03)',
                 }}
               >
+                <div style={{ fontSize: '0.78rem', textTransform: 'uppercase', color: '#7e22ce', fontWeight: 700, letterSpacing: '0.05em' }}>
+                  📝 Under Review
+                </div>
+                <div style={{ fontSize: '1.75rem', fontWeight: 800, color: '#7e22ce', marginTop: 4 }}>
+                  {morasLiveStats.reviewed || 0}
+                </div>
+              </div>
+
+              <div
+                style={{
+                  background: 'var(--white)',
+                  padding: '16px 18px',
+                  borderRadius: 12,
+                  border: '1px solid var(--cream-dark)',
+                  boxShadow: '0 2px 6px rgba(0,0,0,0.03)',
+                }}
+              >
                 <div style={{ fontSize: '0.78rem', textTransform: 'uppercase', color: '#047857', fontWeight: 700, letterSpacing: '0.05em' }}>
-                  ✅ Confirmed
+                  ✅ Confirmed Acts
                 </div>
                 <div style={{ fontSize: '1.75rem', fontWeight: 800, color: '#047857', marginTop: 4 }}>
                   {morasLiveStats.confirmed || 0}
@@ -2000,7 +1983,7 @@ function Admin() {
                     boxSizing: 'border-box',
                   }}
                 >
-                  <option value="">All Roles</option>
+                  <option value="">All Categories</option>
                   <option value="Singer">Singer</option>
                   <option value="Rapper">Rapper</option>
                   <option value="Poet / Spoken Word Artist">Poet / Spoken Word</option>
@@ -2010,7 +1993,6 @@ function Admin() {
                   <option value="Musician / Instrumentalist">Musician / Instrumentalist</option>
                   <option value="Freestyle Artist">Freestyle Artist</option>
                   <option value="Content Creator">Content Creator</option>
-                  <option value="Audience / Attendee">Audience / Attendee</option>
                   <option value="Other">Other</option>
                 </select>
               </div>
@@ -2523,7 +2505,7 @@ function Admin() {
                           whiteSpace: 'pre-wrap',
                         }}
                       >
-                        {selectedLiveParticipant.performanceDescription || 'No performance description provided (Audience or attendee).'}
+                        {selectedLiveParticipant.performanceDescription || 'No performance description provided.'}
                       </div>
                     </div>
 
@@ -2630,7 +2612,7 @@ function Admin() {
                     >
                       <a
                         href={`https://wa.me/91${selectedLiveParticipant.mobileNumber}?text=${encodeURIComponent(
-                          `Hi ${selectedLiveParticipant.fullName}!\nGreetings from THE MORAS CAFE.\n\nWe have received your registration for *MORAS LIVE* (ID: ${selectedLiveParticipant.registrationId}) as a *${selectedLiveParticipant.participationRole}*.\n\nWe'll be sharing details regarding stage schedule and admission soon. Stay tuned!\n\nBest,\nThe Moras Cafe Team`
+                          `Hi ${selectedLiveParticipant.fullName}!\nGreetings from THE MORAS CAFE.\n\nWe have received your registration for *MORAS LIVE* (ID: ${selectedLiveParticipant.registrationId}) as a *${selectedLiveParticipant.participationRole}*.\n\nOur team will be in touch with you regarding performance coordination and stage schedule soon. Stay tuned!\n\nBest,\nThe Moras Cafe Team`
                         )}`}
                         target="_blank"
                         rel="noopener noreferrer"

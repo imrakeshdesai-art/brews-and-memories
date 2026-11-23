@@ -15,15 +15,14 @@ const PARTICIPATION_ROLES = [
   'Musician / Instrumentalist',
   'Freestyle Artist',
   'Content Creator',
-  'Audience / Attendee',
   'Other',
 ];
 
 export default function MorasLiveRegister() {
   useSEO({
-    title: 'MORAS LIVE — Official Event Registration | The Moras Cafe',
+    title: 'MORAS LIVE — Official Performer Registration | The Moras Cafe',
     description:
-      "Register for MORAS LIVE — an open stage celebration of poetry, music, rap, comedy, and creative expression at The Moras Cafe. Your mic. Your moment.",
+      "Register as a performer for MORAS LIVE — an open stage celebration of poetry, music, rap, comedy, and creative expression at The Moras Cafe in Vijayapura. Your mic. Your moment.",
     canonical: '/moras-live/register',
   });
 
@@ -44,7 +43,6 @@ export default function MorasLiveRegister() {
   const [submissionSuccess, setSubmissionSuccess] = useState(null);
   const [copiedId, setCopiedId] = useState(false);
 
-  const isPerformer = formData.participationRole !== 'Audience / Attendee';
   const isOther = formData.participationRole === 'Other';
 
   const handleChange = (e) => {
@@ -96,7 +94,7 @@ export default function MorasLiveRegister() {
 
     // 4. Other Role
     if (isOther && !formData.otherRole.trim()) {
-      newErrors.otherRole = 'Please specify your creative role';
+      newErrors.otherRole = 'Please specify your creative talent';
     }
 
     setErrors(newErrors);
@@ -262,31 +260,31 @@ export default function MorasLiveRegister() {
               background: 'var(--white, #ffffff)',
               border: '1px solid var(--cream-dark, #e8d4a8)',
               borderRadius: 16,
-              padding: '20px 24px',
+              padding: '22px 26px',
               boxShadow: 'var(--shadow, 0 8px 32px rgba(15, 61, 62, 0.08))',
               textAlign: 'left',
             }}
           >
-            <h2
-              style={{
-                fontFamily: "'Playfair Display', serif",
-                fontSize: '1.25rem',
-                color: '#123F3D',
-                margin: '0 0 8px',
-                fontWeight: 700,
-              }}
-            >
-              BE A PART OF SOMETHING CREATIVE.
-            </h2>
             <p
               style={{
                 color: 'var(--text-light, #6b4c35)',
                 fontSize: '0.96rem',
+                lineHeight: 1.65,
+                margin: '0 0 12px',
+              }}
+            >
+              Have a talent you'd love to showcase? We're opening our stage to Vijayapura's creative community. Whether you're a singer, rapper, poet, comedian, dancer, musician or content creator, we'd love to hear from you.
+            </p>
+            <p
+              style={{
+                color: '#123F3D',
+                fontSize: '0.96rem',
                 lineHeight: 1.6,
+                fontWeight: 700,
                 margin: 0,
               }}
             >
-              Whether you’re here to perform, express yourself, or simply experience the vibrant café atmosphere, we’d love to have you with us. Register your interest below and become a part of MORAS LIVE.
+              Register your interest and become a part of MORAS LIVE.
             </p>
           </div>
         </header>
@@ -324,7 +322,7 @@ export default function MorasLiveRegister() {
                 marginBottom: 12,
               }}
             >
-              Official Registration Confirmed
+              Official Performer Registration Confirmed
             </span>
 
             <h2
@@ -348,7 +346,7 @@ export default function MorasLiveRegister() {
                 margin: '0 auto 24px',
               }}
             >
-              Thank you for registering for MORAS LIVE, <strong>{submissionSuccess.registration?.fullName || formData.fullName}</strong>. We've received your details and look forward to having you with us.
+              Thank you for registering for MORAS LIVE. Our team will get in touch with you regarding performance coordination and further event details.
             </p>
 
             {/* Registration ID Badge */}
@@ -414,7 +412,7 @@ export default function MorasLiveRegister() {
               }}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
-                <span style={{ color: 'var(--text-light)' }}>Role:</span>
+                <span style={{ color: 'var(--text-light)' }}>Performer Role:</span>
                 <strong style={{ color: '#123F3D' }}>
                   {submissionSuccess.registration?.participationRole}
                   {submissionSuccess.registration?.otherRole ? ` (${submissionSuccess.registration.otherRole})` : ''}
@@ -428,23 +426,6 @@ export default function MorasLiveRegister() {
                 <span style={{ color: 'var(--text-light)' }}>Email:</span>
                 <strong style={{ color: '#123F3D' }}>{submissionSuccess.registration?.email}</strong>
               </div>
-            </div>
-
-            {/* Note on Paid Entry */}
-            <div
-              style={{
-                background: 'rgba(139, 0, 0, 0.05)',
-                border: '1px solid rgba(139, 0, 0, 0.2)',
-                borderRadius: 12,
-                padding: '14px 18px',
-                fontSize: '0.86rem',
-                color: '#8B0000',
-                lineHeight: 1.5,
-                maxWidth: 540,
-                margin: '0 auto 28px',
-              }}
-            >
-              <strong>Event Schedule & Entry Note:</strong> MORAS LIVE is a ticketed gathering. Official event dates, stage slots, and entry ticketing will be communicated via WhatsApp and Email to registered participants before public release.
             </div>
 
             {/* Action Buttons */}
@@ -478,7 +459,7 @@ export default function MorasLiveRegister() {
                   cursor: 'pointer',
                 }}
               >
-                Register Another Person
+                Register Another Performer
               </button>
             </div>
           </div>
@@ -496,6 +477,25 @@ export default function MorasLiveRegister() {
               boxShadow: 'var(--shadow, 0 8px 32px rgba(15, 61, 62, 0.08))',
             }}
           >
+            {/* Form Section Header */}
+            <div style={{ marginBottom: 24, paddingBottom: 16, borderBottom: '1px solid var(--cream-dark, #e8d4a8)' }}>
+              <h2
+                style={{
+                  fontFamily: "'Playfair Display', serif",
+                  fontSize: '1.45rem',
+                  color: '#123F3D',
+                  margin: '0 0 6px',
+                  fontWeight: 800,
+                  letterSpacing: '0.5px',
+                }}
+              >
+                PERFORMER REGISTRATION
+              </h2>
+              <p style={{ margin: 0, color: 'var(--text-light, #6b4c35)', fontSize: '0.94rem', lineHeight: 1.5 }}>
+                Tell us a little about yourself and the talent you'd like to showcase.
+              </p>
+            </div>
+
             {/* Top error alert banner */}
             {errors.duplicate && (
               <div
@@ -544,7 +544,7 @@ export default function MorasLiveRegister() {
                   marginBottom: 8,
                 }}
               >
-                1. How would you like to participate? <span style={{ color: '#8B0000' }}>*</span>
+                1. Participation Role <span style={{ color: '#8B0000' }}>*</span>
               </label>
 
               <select
@@ -575,9 +575,7 @@ export default function MorasLiveRegister() {
               </select>
 
               <small style={{ display: 'block', color: 'var(--text-light, #6b4c35)', marginTop: 6, fontSize: '0.82rem' }}>
-                {isPerformer
-                  ? '🎤 Performer slot — showcase your craft on our curated stage.'
-                  : '👥 Audience entry — enjoy live acoustics, stories, and café vibes.'}
+                🎤 Performer slot — showcase your craft on our curated stage.
               </small>
             </div>
 
@@ -594,7 +592,7 @@ export default function MorasLiveRegister() {
                     marginBottom: 8,
                   }}
                 >
-                  Specify Your Creative Role <span style={{ color: '#8B0000' }}>*</span>
+                  Specify Your Creative Talent <span style={{ color: '#8B0000' }}>*</span>
                 </label>
                 <input
                   type="text"
@@ -728,7 +726,7 @@ export default function MorasLiveRegister() {
                 </span>
               ) : (
                 <small style={{ color: 'var(--text-light, #6b4c35)', fontSize: '0.82rem', marginTop: 4, display: 'block' }}>
-                  We will share stage slot confirmation & entry details via WhatsApp.
+                  Our team will contact you regarding performance coordination and event details via WhatsApp.
                 </small>
               )}
             </div>
@@ -844,7 +842,7 @@ export default function MorasLiveRegister() {
                   marginBottom: 8,
                 }}
               >
-                {isPerformer ? '6. What would you like to showcase at MORAS LIVE?' : '6. Any notes or favorite performances you hope to see?'}{' '}
+                6. What would you like to showcase at MORAS LIVE?{' '}
                 <span style={{ color: 'var(--text-light)', fontWeight: 500 }}>(Optional)</span>
               </label>
               <textarea
@@ -853,11 +851,7 @@ export default function MorasLiveRegister() {
                 value={formData.performanceDescription}
                 onChange={handleChange}
                 rows={3}
-                placeholder={
-                  isPerformer
-                    ? 'Tell us briefly about your style, song/poem language, track vs acoustic instrument needs, etc.'
-                    : 'Any favorite genres or vibes you are looking forward to?'
-                }
+                placeholder="Tell us briefly about your style, song/poem language, track vs acoustic instrument needs, etc."
                 maxLength={1000}
                 style={{
                   width: '100%',
@@ -872,35 +866,6 @@ export default function MorasLiveRegister() {
                   resize: 'vertical',
                 }}
               />
-            </div>
-
-            {/* ================= IMPORTANT PAID ENTRY NOTICE ================= */}
-            <div
-              className="moras-live-notice-card"
-              style={{
-                background: 'rgba(18, 63, 61, 0.04)',
-                border: '1.5px solid rgba(18, 63, 61, 0.15)',
-                borderRadius: 14,
-                padding: '16px 20px',
-                marginBottom: 24,
-                fontSize: '0.88rem',
-                color: '#123F3D',
-                lineHeight: 1.55,
-              }}
-            >
-              <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
-                <span style={{ fontSize: '1.2rem', lineHeight: 1 }} aria-hidden="true">
-                  🎟️
-                </span>
-                <div>
-                  <strong style={{ display: 'block', marginBottom: 4, color: '#123F3D' }}>
-                    Notice Regarding Event Entry & Ticketing
-                  </strong>
-                  <span>
-                    MORAS LIVE is a curated, ticketed experience. Official event dates, stage schedules, and entry passes are currently being finalized. Registering today places you on our priority list for performer curation and early access without requiring payment now.
-                  </span>
-                </div>
-              </div>
             </div>
 
             {/* PRIVACY NOTICE */}
@@ -946,7 +911,7 @@ export default function MorasLiveRegister() {
                 </>
               ) : (
                 <>
-                  <span>REGISTER FOR MORAS LIVE</span>
+                  <span>REGISTER AS A PERFORMER</span>
                   <span aria-hidden="true">→</span>
                 </>
               )}
