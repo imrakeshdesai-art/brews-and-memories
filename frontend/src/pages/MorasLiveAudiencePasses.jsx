@@ -4,6 +4,7 @@ import useSEO from '../hooks/useSEO';
 import Breadcrumbs from '../components/Breadcrumbs';
 import api from '../services/api';
 import { useToast } from '../components/ToastProvider';
+import { AUDIENCE_PASSES_ANNOUNCED } from '../config/eventsConfig';
 
 export default function MorasLiveAudiencePasses() {
   useSEO({
@@ -335,9 +336,17 @@ export default function MorasLiveAudiencePasses() {
               display: 'inline-flex',
               alignItems: 'center',
               gap: 12,
-              background: inventory.isSoldOut ? 'rgba(139,0,0,0.85)' : 'rgba(255, 255, 255, 0.1)',
+              background: !AUDIENCE_PASSES_ANNOUNCED
+                ? 'rgba(251, 191, 36, 0.15)'
+                : inventory.isSoldOut
+                ? 'rgba(139,0,0,0.85)'
+                : 'rgba(255, 255, 255, 0.1)',
               backdropFilter: 'blur(8px)',
-              border: inventory.isSoldOut ? '1px solid #FF6B6B' : '1px solid rgba(245, 232, 208, 0.35)',
+              border: !AUDIENCE_PASSES_ANNOUNCED
+                ? '1px solid rgba(251, 191, 36, 0.45)'
+                : inventory.isSoldOut
+                ? '1px solid #FF6B6B'
+                : '1px solid rgba(245, 232, 208, 0.35)',
               borderRadius: 30,
               padding: '8px 20px',
               color: '#FAF5EF',
@@ -348,13 +357,19 @@ export default function MorasLiveAudiencePasses() {
                 width: 10,
                 height: 10,
                 borderRadius: '50%',
-                background: inventory.isSoldOut ? '#FF6B6B' : '#4ADE80',
-                boxShadow: inventory.isSoldOut ? '0 0 10px #FF6B6B' : '0 0 10px #4ADE80',
+                background: !AUDIENCE_PASSES_ANNOUNCED ? '#FBBF24' : inventory.isSoldOut ? '#FF6B6B' : '#4ADE80',
+                boxShadow: !AUDIENCE_PASSES_ANNOUNCED
+                  ? '0 0 10px #FBBF24'
+                  : inventory.isSoldOut
+                  ? '0 0 10px #FF6B6B'
+                  : '0 0 10px #4ADE80',
                 display: 'inline-block',
               }}
             />
             <span style={{ fontWeight: 800, fontSize: '0.95rem', letterSpacing: 0.5 }}>
-              {inventory.isSoldOut ? (
+              {!AUDIENCE_PASSES_ANNOUNCED ? (
+                '📢 PASS DISTRIBUTION ANNOUNCING SOON · CAPACITY: 60 PASSES'
+              ) : inventory.isSoldOut ? (
                 'SOLD OUT — ALL 60 PASSES RESERVED'
               ) : (
                 <>
@@ -730,7 +745,103 @@ export default function MorasLiveAudiencePasses() {
               marginBottom: 30,
             }}
           >
-            {inventory.isSoldOut ? (
+            {!AUDIENCE_PASSES_ANNOUNCED ? (
+              <div style={{ textAlign: 'center', padding: '36px 16px' }}>
+                <div style={{ fontSize: '3.2rem', marginBottom: 12 }}>🎟️</div>
+                <div
+                  style={{
+                    fontSize: '0.82rem',
+                    fontWeight: 700,
+                    letterSpacing: 2,
+                    textTransform: 'uppercase',
+                    color: '#8B0000',
+                    marginBottom: 8,
+                  }}
+                >
+                  OFFICIAL ANNOUNCEMENT PENDING
+                </div>
+                <h2
+                  style={{
+                    margin: '0 0 14px',
+                    color: '#123F3D',
+                    fontFamily: "'Playfair Display', serif",
+                    fontSize: 'clamp(1.6rem, 3.5vw, 2.1rem)',
+                    fontWeight: 800,
+                  }}
+                >
+                  Audience Passes Opening Soon
+                </h2>
+                <p
+                  style={{
+                    color: '#555',
+                    maxWidth: 540,
+                    margin: '0 auto 24px',
+                    lineHeight: 1.65,
+                    fontSize: '1rem',
+                  }}
+                >
+                  Official audience pass distribution for <strong>MORAS LIVE</strong> has not officially opened yet.
+                  Stay tuned on Instagram{' '}
+                  <a
+                    href="https://instagram.com/themorascafe"
+                    target="_blank"
+                    rel="noreferrer"
+                    style={{ color: '#8B0000', fontWeight: 700 }}
+                  >
+                    @themorascafe
+                  </a>{' '}
+                  for the official release date and time announcement.
+                </p>
+
+                <div
+                  style={{
+                    background: '#FAF5EF',
+                    border: '1px solid #EADDCF',
+                    borderRadius: 14,
+                    padding: '24px 20px',
+                    maxWidth: 520,
+                    margin: '0 auto',
+                    textAlign: 'center',
+                  }}
+                >
+                  <div
+                    style={{
+                      fontSize: '0.84rem',
+                      color: '#7A6B62',
+                      marginBottom: 6,
+                      fontWeight: 700,
+                      letterSpacing: 1,
+                      textTransform: 'uppercase',
+                    }}
+                  >
+                    ARE YOU AN ARTIST OR CREATOR?
+                  </div>
+                  <div style={{ fontSize: '1rem', color: '#123F3D', fontWeight: 700, marginBottom: 16 }}>
+                    Performer registrations are opening! Showcase your singing, rap, poetry, comedy, or music on the Moras stage.
+                  </div>
+                  <Link
+                    to="/moras-live/register"
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 8,
+                      background: '#123F3D',
+                      color: '#FAF5EF',
+                      padding: '12px 26px',
+                      borderRadius: 10,
+                      fontWeight: 700,
+                      fontSize: '0.94rem',
+                      textDecoration: 'none',
+                      letterSpacing: '0.5px',
+                      boxShadow: '0 4px 14px rgba(18, 63, 61, 0.25)',
+                    }}
+                  >
+                    <span>🎤 REGISTER AS A PERFORMER</span>
+                    <span>→</span>
+                  </Link>
+                </div>
+              </div>
+            ) : inventory.isSoldOut ? (
               <div style={{ textAlign: 'center', padding: '40px 20px' }}>
                 <div style={{ fontSize: '3rem', marginBottom: 12 }}>🔒</div>
                 <h2 style={{ color: '#8B0000', margin: '0 0 12px' }}>ALL 60 AUDIENCE PASSES HAVE BEEN RESERVED</h2>

@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { AUDIENCE_PASSES_ANNOUNCED } from '../config/eventsConfig';
 
 function Footer({ onReserveClick }) {
   return (
@@ -69,11 +70,13 @@ function Footer({ onReserveClick }) {
                   🎤 MORAS LIVE (Performer Registration)
                 </Link>
               </li>
-              <li>
-                <Link to="/moras-live/passes" style={{ color: '#FBBF24', textDecoration: 'none', fontSize: '0.92rem', letterSpacing: '0.3px', fontWeight: 700, transition: 'color 0.2s' }}>
-                  🎟️ MORAS LIVE (Audience Passes)
-                </Link>
-              </li>
+              {AUDIENCE_PASSES_ANNOUNCED && (
+                <li>
+                  <Link to="/moras-live/passes" style={{ color: '#FBBF24', textDecoration: 'none', fontSize: '0.92rem', letterSpacing: '0.3px', fontWeight: 700, transition: 'color 0.2s' }}>
+                    🎟️ MORAS LIVE (Audience Passes)
+                  </Link>
+                </li>
+              )}
               <li>
                 <button 
                   onClick={onReserveClick} 

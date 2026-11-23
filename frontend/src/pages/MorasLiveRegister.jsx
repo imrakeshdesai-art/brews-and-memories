@@ -4,6 +4,7 @@ import useSEO from '../hooks/useSEO';
 import Breadcrumbs from '../components/Breadcrumbs';
 import api from '../services/api';
 import { useToast } from '../components/ToastProvider';
+import { AUDIENCE_PASSES_ANNOUNCED } from '../config/eventsConfig';
 
 const PARTICIPATION_ROLES = [
   'Singer',
@@ -788,13 +789,45 @@ export default function MorasLiveRegister() {
           >
             Limited to 60 individual passes. Each pass includes one complimentary cappuccino.
           </p>
-          <Link
-            to="/moras-live/passes"
-            className="moras-audience-cta"
-          >
-            <span>RESERVE YOUR AUDIENCE PASS</span>
-            <span aria-hidden="true">→</span>
-          </Link>
+          {AUDIENCE_PASSES_ANNOUNCED ? (
+            <Link
+              to="/moras-live/passes"
+              className="moras-audience-cta"
+            >
+              <span>RESERVE YOUR AUDIENCE PASS</span>
+              <span aria-hidden="true">→</span>
+            </Link>
+          ) : (
+            <div
+              style={{
+                display: 'inline-flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: 8,
+              }}
+            >
+              <div
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  padding: '10px 22px',
+                  background: '#F5EBE1',
+                  border: '1px solid #E2D2C3',
+                  borderRadius: 30,
+                  color: '#123F3D',
+                  fontWeight: 700,
+                  fontSize: '0.92rem',
+                  letterSpacing: '0.5px',
+                }}
+              >
+                <span>🎟️ Audience Passes Opening Soon</span>
+              </div>
+              <span style={{ fontSize: '0.84rem', color: '#7A6B62', marginTop: 2 }}>
+                Audience pass distribution will be announced soon. Stay tuned!
+              </span>
+            </div>
+          )}
         </aside>
       </div>
     </section>

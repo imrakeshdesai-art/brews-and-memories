@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
+import { AUDIENCE_PASSES_ANNOUNCED } from '../config/eventsConfig';
 
 function NavBar({ cartCount, onCartClick, activeTable, onReserveClick, theme, toggleTheme }) {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -151,13 +152,15 @@ function NavBar({ cartCount, onCartClick, activeTable, onReserveClick, theme, to
         >
           🎤 MORAS LIVE (Performers)
         </NavLink>
-        <NavLink 
-          to="/moras-live/passes" 
-          className={({ isActive }) => `mobile-nav-link ${isActive ? 'active' : ''}`} 
-          onClick={() => setMenuOpen(false)}
-        >
-          🎟️ Audience Passes (60 Max)
-        </NavLink>
+        {AUDIENCE_PASSES_ANNOUNCED && (
+          <NavLink 
+            to="/moras-live/passes" 
+            className={({ isActive }) => `mobile-nav-link ${isActive ? 'active' : ''}`} 
+            onClick={() => setMenuOpen(false)}
+          >
+            🎟️ Audience Passes (60 Max)
+          </NavLink>
+        )}
         <NavLink 
           to="/reviews" 
           className={({ isActive }) => `mobile-nav-link ${isActive ? 'active' : ''}`} 
