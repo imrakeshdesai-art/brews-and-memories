@@ -255,36 +255,27 @@ export default function MorasLiveRegister() {
             }}
           />
 
-          <div
-            style={{
-              background: 'var(--white, #ffffff)',
-              border: '1px solid var(--cream-dark, #e8d4a8)',
-              borderRadius: 16,
-              padding: '22px 26px',
-              boxShadow: 'var(--shadow, 0 8px 32px rgba(15, 61, 62, 0.08))',
-              textAlign: 'left',
-            }}
-          >
+          <div className="moras-live-intro-card">
             <p
               style={{
-                color: 'var(--text-light, #6b4c35)',
-                fontSize: '0.96rem',
-                lineHeight: 1.65,
-                margin: '0 0 12px',
+                color: '#4A3B32',
+                fontSize: 'clamp(0.98rem, 1.8vw, 1.05rem)',
+                lineHeight: 1.7,
+                margin: '0 0 14px',
               }}
             >
-              Have a talent you'd love to showcase? We're opening our stage to Vijayapura's creative community. Whether you're a singer, rapper, poet, comedian, dancer, musician or content creator, we'd love to hear from you.
+              Have a talent you'd love to showcase? MORAS LIVE is opening its stage to Vijayapura's creative community. Whether you're a singer, rapper, poet, comedian, dancer, beatboxer, musician or freestyle artist, we'd love to hear from you.
             </p>
             <p
               style={{
                 color: '#123F3D',
-                fontSize: '0.96rem',
+                fontSize: 'clamp(0.98rem, 1.8vw, 1.05rem)',
                 lineHeight: 1.6,
                 fontWeight: 700,
                 margin: 0,
               }}
             >
-              Register your interest and become a part of MORAS LIVE.
+              Register your interest and take your first step towards becoming part of MORAS LIVE.
             </p>
           </div>
         </header>
@@ -469,20 +460,13 @@ export default function MorasLiveRegister() {
             onSubmit={handleSubmit}
             className="moras-live-form"
             noValidate
-            style={{
-              background: 'var(--white, #ffffff)',
-              border: '1px solid var(--cream-dark, #e8d4a8)',
-              borderRadius: 20,
-              padding: 'clamp(20px, 4vw, 36px)',
-              boxShadow: 'var(--shadow, 0 8px 32px rgba(15, 61, 62, 0.08))',
-            }}
           >
             {/* Form Section Header */}
-            <div style={{ marginBottom: 24, paddingBottom: 16, borderBottom: '1px solid var(--cream-dark, #e8d4a8)' }}>
+            <div style={{ marginBottom: 26, paddingBottom: 16, borderBottom: '1.5px solid var(--cream-dark, #E8D4A8)' }}>
               <h2
                 style={{
                   fontFamily: "'Playfair Display', serif",
-                  fontSize: '1.45rem',
+                  fontSize: 'clamp(1.4rem, 3vw, 1.65rem)',
                   color: '#123F3D',
                   margin: '0 0 6px',
                   fontWeight: 800,
@@ -491,7 +475,7 @@ export default function MorasLiveRegister() {
               >
                 PERFORMER REGISTRATION
               </h2>
-              <p style={{ margin: 0, color: 'var(--text-light, #6b4c35)', fontSize: '0.94rem', lineHeight: 1.5 }}>
+              <p style={{ margin: 0, color: 'var(--text-light, #6B4C35)', fontSize: '0.96rem', lineHeight: 1.55 }}>
                 Tell us a little about yourself and the talent you'd like to showcase.
               </p>
             </div>
@@ -501,12 +485,12 @@ export default function MorasLiveRegister() {
               <div
                 role="alert"
                 style={{
-                  background: '#fef2f2',
-                  border: '1px solid #fecaca',
+                  background: '#FEF2F2',
+                  border: '1.5px solid #FECACA',
                   borderRadius: 12,
                   padding: '14px 18px',
-                  color: '#991b1b',
-                  fontSize: '0.92rem',
+                  color: '#991B1B',
+                  fontSize: '0.94rem',
                   lineHeight: 1.5,
                   marginBottom: 24,
                 }}
@@ -519,12 +503,13 @@ export default function MorasLiveRegister() {
               <div
                 role="alert"
                 style={{
-                  background: '#fef2f2',
-                  border: '1px solid #fecaca',
+                  background: '#FEF2F2',
+                  border: '1.5px solid #FECACA',
                   borderRadius: 12,
                   padding: '14px 18px',
-                  color: '#991b1b',
-                  fontSize: '0.92rem',
+                  color: '#991B1B',
+                  fontSize: '0.94rem',
+                  lineHeight: 1.5,
                   marginBottom: 24,
                 }}
               >
@@ -533,18 +518,12 @@ export default function MorasLiveRegister() {
             )}
 
             {/* FIELD 1: PARTICIPATION ROLE */}
-            <div className="form-group" style={{ marginBottom: 22 }}>
+            <div className="moras-form-group">
               <label
                 htmlFor="participationRole"
-                style={{
-                  display: 'block',
-                  fontWeight: 700,
-                  color: '#123F3D',
-                  fontSize: '0.94rem',
-                  marginBottom: 8,
-                }}
+                className="moras-label"
               >
-                1. Participation Role <span style={{ color: '#8B0000' }}>*</span>
+                1. Participation Role <span className="moras-label-required">*</span>
               </label>
 
               <select
@@ -553,19 +532,8 @@ export default function MorasLiveRegister() {
                 value={formData.participationRole}
                 onChange={handleChange}
                 required
-                style={{
-                  width: '100%',
-                  padding: '13px 16px',
-                  borderRadius: 10,
-                  border: `1.5px solid ${errors.participationRole ? '#dc2626' : 'var(--cream-dark, #e8d4a8)'}`,
-                  background: 'var(--cream-light, #fdf8f0)',
-                  color: 'var(--text, #2c1810)',
-                  fontSize: '1rem',
-                  fontFamily: 'inherit',
-                  outline: 'none',
-                  cursor: 'pointer',
-                  appearance: 'auto',
-                }}
+                className={`moras-select ${errors.participationRole ? 'has-error' : ''}`}
+                style={{ cursor: 'pointer', appearance: 'auto' }}
               >
                 {PARTICIPATION_ROLES.map((role) => (
                   <option key={role} value={role}>
@@ -574,25 +542,19 @@ export default function MorasLiveRegister() {
                 ))}
               </select>
 
-              <small style={{ display: 'block', color: 'var(--text-light, #6b4c35)', marginTop: 6, fontSize: '0.82rem' }}>
+              <small className="moras-helper-text">
                 🎤 Performer slot — showcase your craft on our curated stage.
               </small>
             </div>
 
             {/* FIELD 1.1: CONDITIONAL OTHER ROLE */}
             {isOther && (
-              <div className="form-group" style={{ marginBottom: 22 }}>
+              <div className="moras-form-group">
                 <label
                   htmlFor="otherRole"
-                  style={{
-                    display: 'block',
-                    fontWeight: 700,
-                    color: '#123F3D',
-                    fontSize: '0.94rem',
-                    marginBottom: 8,
-                  }}
+                  className="moras-label"
                 >
-                  Specify Your Creative Talent <span style={{ color: '#8B0000' }}>*</span>
+                  Specify Your Creative Talent <span className="moras-label-required">*</span>
                 </label>
                 <input
                   type="text"
@@ -603,39 +565,23 @@ export default function MorasLiveRegister() {
                   placeholder="e.g. Magic / Illusionist, Storyteller, Beat Producer"
                   required
                   maxLength={100}
-                  style={{
-                    width: '100%',
-                    padding: '13px 16px',
-                    borderRadius: 10,
-                    border: `1.5px solid ${errors.otherRole ? '#dc2626' : 'var(--cream-dark, #e8d4a8)'}`,
-                    background: 'var(--cream-light, #fdf8f0)',
-                    color: 'var(--text, #2c1810)',
-                    fontSize: '1rem',
-                    fontFamily: 'inherit',
-                    outline: 'none',
-                  }}
+                  className={`moras-input ${errors.otherRole ? 'has-error' : ''}`}
                 />
                 {errors.otherRole && (
-                  <span style={{ color: '#dc2626', fontSize: '0.82rem', marginTop: 4, display: 'block' }}>
-                    {errors.otherRole}
+                  <span className="moras-error-text">
+                    ⚠️ {errors.otherRole}
                   </span>
                 )}
               </div>
             )}
 
             {/* FIELD 2: FULL NAME */}
-            <div className="form-group" style={{ marginBottom: 22 }}>
+            <div className="moras-form-group">
               <label
                 htmlFor="fullName"
-                style={{
-                  display: 'block',
-                  fontWeight: 700,
-                  color: '#123F3D',
-                  fontSize: '0.94rem',
-                  marginBottom: 8,
-                }}
+                className="moras-label"
               >
-                2. Full Name <span style={{ color: '#8B0000' }}>*</span>
+                2. Full Name <span className="moras-label-required">*</span>
               </label>
               <input
                 type="text"
@@ -647,54 +593,25 @@ export default function MorasLiveRegister() {
                 required
                 autoComplete="name"
                 maxLength={100}
-                style={{
-                  width: '100%',
-                  padding: '13px 16px',
-                  borderRadius: 10,
-                  border: `1.5px solid ${errors.fullName ? '#dc2626' : 'var(--cream-dark, #e8d4a8)'}`,
-                  background: 'var(--cream-light, #fdf8f0)',
-                  color: 'var(--text, #2c1810)',
-                  fontSize: '1rem',
-                  fontFamily: 'inherit',
-                  outline: 'none',
-                }}
+                className={`moras-input ${errors.fullName ? 'has-error' : ''}`}
               />
               {errors.fullName && (
-                <span style={{ color: '#dc2626', fontSize: '0.82rem', marginTop: 4, display: 'block' }}>
-                  {errors.fullName}
+                <span className="moras-error-text">
+                  ⚠️ {errors.fullName}
                 </span>
               )}
             </div>
 
             {/* FIELD 3: MOBILE NUMBER */}
-            <div className="form-group" style={{ marginBottom: 22 }}>
+            <div className="moras-form-group">
               <label
                 htmlFor="mobileNumber"
-                style={{
-                  display: 'block',
-                  fontWeight: 700,
-                  color: '#123F3D',
-                  fontSize: '0.94rem',
-                  marginBottom: 8,
-                }}
+                className="moras-label"
               >
-                3. Mobile Number (WhatsApp) <span style={{ color: '#8B0000' }}>*</span>
+                3. Mobile Number (WhatsApp) <span className="moras-label-required">*</span>
               </label>
               <div style={{ display: 'flex', alignItems: 'center' }}>
-                <span
-                  style={{
-                    background: 'var(--cream, #f5e6c8)',
-                    border: '1.5px solid var(--cream-dark, #e8d4a8)',
-                    borderRight: 'none',
-                    borderRadius: '10px 0 0 10px',
-                    padding: '13px 14px',
-                    fontSize: '0.95rem',
-                    fontWeight: 700,
-                    color: '#123F3D',
-                    whiteSpace: 'nowrap',
-                    userSelect: 'none',
-                  }}
-                >
+                <span className="moras-prefix-badge">
                   🇮🇳 +91
                 </span>
                 <input
@@ -707,43 +624,27 @@ export default function MorasLiveRegister() {
                   required
                   autoComplete="tel"
                   maxLength={15}
-                  style={{
-                    flex: 1,
-                    padding: '13px 16px',
-                    borderRadius: '0 10px 10px 0',
-                    border: `1.5px solid ${errors.mobileNumber ? '#dc2626' : 'var(--cream-dark, #e8d4a8)'}`,
-                    background: 'var(--cream-light, #fdf8f0)',
-                    color: 'var(--text, #2c1810)',
-                    fontSize: '1rem',
-                    fontFamily: 'inherit',
-                    outline: 'none',
-                  }}
+                  className={`moras-input moras-input-with-prefix ${errors.mobileNumber ? 'has-error' : ''}`}
                 />
               </div>
               {errors.mobileNumber ? (
-                <span style={{ color: '#dc2626', fontSize: '0.82rem', marginTop: 4, display: 'block' }}>
-                  {errors.mobileNumber}
+                <span className="moras-error-text">
+                  ⚠️ {errors.mobileNumber}
                 </span>
               ) : (
-                <small style={{ color: 'var(--text-light, #6b4c35)', fontSize: '0.82rem', marginTop: 4, display: 'block' }}>
+                <small className="moras-helper-text">
                   Our team will contact you regarding performance coordination and event details via WhatsApp.
                 </small>
               )}
             </div>
 
             {/* FIELD 4: EMAIL ADDRESS */}
-            <div className="form-group" style={{ marginBottom: 22 }}>
+            <div className="moras-form-group">
               <label
                 htmlFor="email"
-                style={{
-                  display: 'block',
-                  fontWeight: 700,
-                  color: '#123F3D',
-                  fontSize: '0.94rem',
-                  marginBottom: 8,
-                }}
+                className="moras-label"
               >
-                4. Email Address <span style={{ color: '#8B0000' }}>*</span>
+                4. Email Address <span className="moras-label-required">*</span>
               </label>
               <input
                 type="email"
@@ -755,52 +656,27 @@ export default function MorasLiveRegister() {
                 required
                 autoComplete="email"
                 maxLength={150}
-                style={{
-                  width: '100%',
-                  padding: '13px 16px',
-                  borderRadius: 10,
-                  border: `1.5px solid ${errors.email ? '#dc2626' : 'var(--cream-dark, #e8d4a8)'}`,
-                  background: 'var(--cream-light, #fdf8f0)',
-                  color: 'var(--text, #2c1810)',
-                  fontSize: '1rem',
-                  fontFamily: 'inherit',
-                  outline: 'none',
-                }}
+                className={`moras-input ${errors.email ? 'has-error' : ''}`}
               />
               {errors.email && (
-                <span style={{ color: '#dc2626', fontSize: '0.82rem', marginTop: 4, display: 'block' }}>
-                  {errors.email}
+                <span className="moras-error-text">
+                  ⚠️ {errors.email}
                 </span>
               )}
             </div>
 
             {/* OPTIONAL FIELD 5: INSTAGRAM USERNAME */}
-            <div className="form-group" style={{ marginBottom: 22 }}>
+            <div className="moras-form-group">
               <label
                 htmlFor="instagramUsername"
-                style={{
-                  display: 'block',
-                  fontWeight: 700,
-                  color: '#123F3D',
-                  fontSize: '0.94rem',
-                  marginBottom: 8,
-                }}
+                className="moras-label"
               >
-                5. Instagram Handle <span style={{ color: 'var(--text-light)', fontWeight: 500 }}>(Optional)</span>
+                5. Instagram Handle <span className="moras-label-optional">(Optional)</span>
               </label>
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 <span
-                  style={{
-                    background: 'var(--cream, #f5e6c8)',
-                    border: '1.5px solid var(--cream-dark, #e8d4a8)',
-                    borderRight: 'none',
-                    borderRadius: '10px 0 0 10px',
-                    padding: '13px 14px',
-                    fontSize: '1rem',
-                    fontWeight: 700,
-                    color: '#8B0000',
-                    userSelect: 'none',
-                  }}
+                  className="moras-prefix-badge"
+                  style={{ color: '#8B0000', fontSize: '1.05rem', fontWeight: 800 }}
                 >
                   @
                 </span>
@@ -812,97 +688,46 @@ export default function MorasLiveRegister() {
                   onChange={handleChange}
                   placeholder="your_handle"
                   maxLength={60}
-                  style={{
-                    flex: 1,
-                    padding: '13px 16px',
-                    borderRadius: '0 10px 10px 0',
-                    border: '1.5px solid var(--cream-dark, #e8d4a8)',
-                    background: 'var(--cream-light, #fdf8f0)',
-                    color: 'var(--text, #2c1810)',
-                    fontSize: '1rem',
-                    fontFamily: 'inherit',
-                    outline: 'none',
-                  }}
+                  className="moras-input moras-input-with-prefix"
                 />
               </div>
-              <small style={{ color: 'var(--text-light, #6b4c35)', fontSize: '0.82rem', marginTop: 4, display: 'block' }}>
-                Allows our curation team to feature your art & tag you in event highlights.
+              <small className="moras-helper-text">
+                Share your Instagram profile so our team can discover your work and feature your talent in MORAS LIVE promotions.
               </small>
             </div>
 
             {/* OPTIONAL FIELD 6: PERFORMANCE DESCRIPTION */}
-            <div className="form-group" style={{ marginBottom: 28 }}>
+            <div className="moras-form-group" style={{ marginBottom: 28 }}>
               <label
                 htmlFor="performanceDescription"
-                style={{
-                  display: 'block',
-                  fontWeight: 700,
-                  color: '#123F3D',
-                  fontSize: '0.94rem',
-                  marginBottom: 8,
-                }}
+                className="moras-label"
               >
                 6. What would you like to showcase at MORAS LIVE?{' '}
-                <span style={{ color: 'var(--text-light)', fontWeight: 500 }}>(Optional)</span>
+                <span className="moras-label-optional">(Optional)</span>
               </label>
               <textarea
                 id="performanceDescription"
                 name="performanceDescription"
                 value={formData.performanceDescription}
                 onChange={handleChange}
-                rows={3}
-                placeholder="Tell us briefly about your style, song/poem language, track vs acoustic instrument needs, etc."
+                rows={4}
+                placeholder="Tell us briefly about your style, performance, preferred language, and any specific requirements such as musical instruments or equipment."
                 maxLength={1000}
-                style={{
-                  width: '100%',
-                  padding: '13px 16px',
-                  borderRadius: 10,
-                  border: '1.5px solid var(--cream-dark, #e8d4a8)',
-                  background: 'var(--cream-light, #fdf8f0)',
-                  color: 'var(--text, #2c1810)',
-                  fontSize: '0.95rem',
-                  fontFamily: 'inherit',
-                  outline: 'none',
-                  resize: 'vertical',
-                }}
+                className="moras-textarea"
+                style={{ resize: 'vertical', minHeight: 100 }}
               />
             </div>
 
             {/* PRIVACY NOTICE */}
-            <p
-              style={{
-                fontSize: '0.8rem',
-                color: 'var(--text-light, #6b4c35)',
-                lineHeight: 1.5,
-                margin: '0 0 24px',
-                textAlign: 'center',
-              }}
-            >
+            <div className="moras-privacy-box">
               🔒 <strong>Privacy Assurance:</strong> Your contact information will be used solely for MORAS LIVE registration, schedule updates, and communication by The Moras Cafe team.
-            </p>
+            </div>
 
             {/* SUBMIT BUTTON */}
             <button
               type="submit"
               disabled={isSubmitting}
-              className="btn-primary"
-              style={{
-                width: '100%',
-                padding: '16px 28px',
-                borderRadius: 30,
-                fontSize: '1.05rem',
-                fontWeight: 800,
-                letterSpacing: 1.2,
-                textTransform: 'uppercase',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 10,
-                cursor: isSubmitting ? 'not-allowed' : 'pointer',
-                opacity: isSubmitting ? 0.75 : 1,
-                boxShadow: '0 8px 24px rgba(18, 63, 61, 0.2)',
-                transition: 'all 0.2s ease',
-              }}
+              className="moras-submit-btn"
             >
               {isSubmitting ? (
                 <>
@@ -917,15 +742,15 @@ export default function MorasLiveRegister() {
               )}
             </button>
 
-            <div style={{ textAlign: 'center', marginTop: 18 }}>
+            <div style={{ textAlign: 'center', marginTop: 20 }}>
               <span
                 style={{
                   fontFamily: "'Playfair Display', serif",
                   fontStyle: 'italic',
-                  fontSize: '0.88rem',
+                  fontSize: '0.92rem',
                   color: '#8B0000',
-                  fontWeight: 600,
-                  letterSpacing: 1,
+                  fontWeight: 700,
+                  letterSpacing: 1.2,
                 }}
               >
                 BREWED WITH CHARACTER.
@@ -935,38 +760,42 @@ export default function MorasLiveRegister() {
         )}
 
         {/* Audience Pass Callout */}
-        <div
-          style={{
-            marginTop: 26,
-            background: '#F5E8D0',
-            border: '1px solid #D4C3A3',
-            borderRadius: 14,
-            padding: '18px 20px',
-            textAlign: 'center',
-          }}
+        <aside
+          className="moras-audience-card"
+          aria-label="Audience Pass Reservation"
         >
-          <div style={{ fontSize: '0.98rem', fontWeight: 800, color: '#123F3D', marginBottom: 4 }}>
-            🎟️ Attending as an Audience Member?
-          </div>
-          <p style={{ margin: '0 auto 10px', fontSize: '0.85rem', color: '#555' }}>
-            Audience admission is limited to strictly 60 passes and includes 1 complimentary hot Cappuccino!
+          <h3
+            style={{
+              fontFamily: "'Playfair Display', serif",
+              fontSize: 'clamp(1.15rem, 2.5vw, 1.35rem)',
+              fontWeight: 800,
+              color: '#123F3D',
+              margin: '0 0 8px',
+              letterSpacing: '0.8px',
+              textTransform: 'uppercase',
+            }}
+          >
+            ATTENDING AS AN AUDIENCE MEMBER?
+          </h3>
+          <p
+            style={{
+              margin: '0 auto 18px',
+              fontSize: 'clamp(0.92rem, 1.8vw, 1rem)',
+              color: '#4A3B32',
+              lineHeight: 1.55,
+              maxWidth: 520,
+            }}
+          >
+            Limited to 60 individual passes. Each pass includes one complimentary cappuccino.
           </p>
           <Link
             to="/moras-live/passes"
-            style={{
-              display: 'inline-block',
-              background: '#123F3D',
-              color: '#FAF5EF',
-              padding: '8px 18px',
-              borderRadius: 8,
-              fontSize: '0.84rem',
-              fontWeight: 700,
-              textDecoration: 'none',
-            }}
+            className="moras-audience-cta"
           >
-            Reserve Audience Pass (60 Max) →
+            <span>RESERVE YOUR AUDIENCE PASS</span>
+            <span aria-hidden="true">→</span>
           </Link>
-        </div>
+        </aside>
       </div>
     </section>
   );

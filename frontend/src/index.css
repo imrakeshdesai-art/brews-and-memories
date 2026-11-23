@@ -5679,3 +5679,246 @@ body.theme-dark .mobile-cart-bar {
   background: linear-gradient(135deg, #133c3d 0%, #0c2627 100%) !important;
   border-color: #FBBF24 !important;
 }
+
+/* =========================================================================
+   MORAS LIVE — Performer Registration Styling & Mobile Optimization
+   ========================================================================= */
+.moras-live-page {
+  background-color: var(--cream-light, #FAF5EF);
+  min-height: calc(100vh - 120px);
+}
+
+.moras-live-container {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 0 16px 60px;
+  position: relative;
+  z-index: 2;
+}
+
+.moras-live-intro-card {
+  background: #FFFFFF;
+  border: 1.5px solid var(--cream-dark, #E8D4A8);
+  border-radius: 18px;
+  padding: clamp(20px, 4vw, 28px);
+  box-shadow: 0 8px 30px rgba(18, 63, 61, 0.06);
+  text-align: left;
+}
+
+.moras-live-form {
+  background: #FFFFFF;
+  border: 1.5px solid var(--cream-dark, #E8D4A8);
+  border-radius: 20px;
+  padding: clamp(22px, 4.5vw, 38px);
+  box-shadow: 0 10px 36px rgba(18, 63, 61, 0.08);
+}
+
+.moras-form-group {
+  margin-bottom: 24px;
+}
+
+.moras-label {
+  display: block;
+  font-weight: 700;
+  color: #123F3D;
+  font-size: 0.98rem;
+  margin-bottom: 8px;
+  letter-spacing: 0.2px;
+}
+
+.moras-label-required {
+  color: #8B0000;
+  margin-left: 3px;
+  font-weight: 800;
+}
+
+.moras-label-optional {
+  color: #786455;
+  font-weight: 500;
+  font-size: 0.88rem;
+  margin-left: 4px;
+}
+
+.moras-input,
+.moras-select,
+.moras-textarea {
+  width: 100%;
+  min-height: 48px;
+  padding: 13px 16px;
+  border-radius: 10px;
+  border: 1.5px solid var(--cream-dark, #E8D4A8);
+  background: var(--cream-light, #FDF8F0);
+  color: var(--text, #2C1810);
+  font-size: 1rem !important; /* Prevents iOS Safari auto-zoom */
+  font-family: inherit;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.2s ease;
+}
+
+.moras-input::placeholder,
+.moras-textarea::placeholder {
+  color: #9C8475;
+  opacity: 0.9;
+}
+
+.moras-input:focus,
+.moras-select:focus,
+.moras-textarea:focus {
+  border-color: #123F3D !important;
+  box-shadow: 0 0 0 3.5px rgba(18, 63, 61, 0.14) !important;
+  background-color: #FFFFFF !important;
+}
+
+.moras-input.has-error,
+.moras-select.has-error,
+.moras-textarea.has-error {
+  border-color: #DC2626 !important;
+  background-color: #FFFAFA !important;
+}
+
+.moras-input.has-error:focus,
+.moras-select.has-error:focus,
+.moras-textarea.has-error:focus {
+  box-shadow: 0 0 0 3.5px rgba(220, 38, 38, 0.15) !important;
+}
+
+.moras-helper-text {
+  display: block;
+  color: #6B4C35;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  margin-top: 6px;
+}
+
+.moras-error-text {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: #DC2626;
+  font-size: 0.88rem;
+  font-weight: 600;
+  margin-top: 6px;
+  line-height: 1.4;
+}
+
+.moras-prefix-badge {
+  background: var(--cream, #F5E6C8);
+  border: 1.5px solid var(--cream-dark, #E8D4A8);
+  border-right: none;
+  border-radius: 10px 0 0 10px;
+  padding: 13px 14px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #123F3D;
+  white-space: nowrap;
+  user-select: none;
+  display: inline-flex;
+  align-items: center;
+}
+
+.moras-input-with-prefix {
+  flex: 1;
+  min-width: 0; /* Critical for flex child on small mobile viewports */
+  border-radius: 0 10px 10px 0 !important;
+}
+
+.moras-privacy-box {
+  background: rgba(18, 63, 61, 0.03);
+  border: 1px solid rgba(18, 63, 61, 0.08);
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: 0.88rem;
+  color: #6B4C35;
+  line-height: 1.55;
+  margin: 0 0 26px;
+  text-align: center;
+}
+
+.moras-submit-btn {
+  width: 100%;
+  min-height: 54px;
+  padding: 16px 28px;
+  border-radius: 30px;
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  background: #123F3D !important;
+  color: #FAF5EF !important;
+  border: none;
+  box-shadow: 0 8px 24px rgba(18, 63, 61, 0.22);
+  transition: transform 0.12s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.moras-submit-btn:hover:not(:disabled) {
+  background: #174E4F !important;
+  transform: translateY(-1px);
+  box-shadow: 0 10px 28px rgba(18, 63, 61, 0.28);
+}
+
+.moras-submit-btn:active:not(:disabled) {
+  transform: translateY(1px) scale(0.99);
+}
+
+.moras-audience-card {
+  margin-top: 32px;
+  background: #F5E8D0;
+  border: 1.5px solid #D4C3A3;
+  border-radius: 18px;
+  padding: clamp(20px, 4vw, 28px);
+  text-align: center;
+  box-shadow: 0 6px 20px rgba(18, 63, 61, 0.05);
+}
+
+.moras-audience-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #123F3D;
+  color: #FAF5EF;
+  padding: 13px 26px;
+  border-radius: 24px;
+  font-size: 0.92rem;
+  font-weight: 800;
+  text-decoration: none;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  box-shadow: 0 4px 14px rgba(18, 63, 61, 0.18);
+  transition: all 0.2s ease;
+}
+
+.moras-audience-cta:hover {
+  background: #174E4F;
+  color: #FFFFFF;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(18, 63, 61, 0.26);
+}
+
+.moras-audience-cta:active {
+  transform: translateY(1px);
+}
+
+/* Responsiveness down to 360px */
+@media (max-width: 480px) {
+  .moras-live-header {
+    margin-bottom: 24px !important;
+  }
+  .moras-form-group {
+    margin-bottom: 20px;
+  }
+  .moras-submit-btn {
+    font-size: 0.98rem;
+    padding: 14px 20px;
+  }
+  .moras-audience-cta {
+    width: 100%;
+    justify-content: center;
+    box-sizing: border-box;
+  }
+}
