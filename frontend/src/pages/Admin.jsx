@@ -582,13 +582,80 @@ function Admin() {
             ...prev,
             entryCheckedIn: true,
             entryCheckedInAt: res.data.checkedInAt || new Date().toISOString(),
+            checkedInBy: res.data.checkedInBy || '',
           }));
         }
         fetchMorasPassStats();
         fetchMorasPasses();
       }
     } catch (err) {
-      toast(err.response?.data?.message || 'Door check-in denied');
+      const data = err.response?.data;
+      if (data?.alreadyCheckedIn) {
+        toast(`🚫 ALREADY CHECKED IN: Attendee was already admitted at ${data.checkedInAt ? new Date(data.checkedInAt).toLocaleTimeString() : 'earlier'}`);
+        if (scannedPass && scannedPass.passId === targetPassId) {
+          setScannedPass((prev) => ({
+            ...prev,
+            entryCheckedIn: true,
+            entryCheckedInAt: data.checkedInAt || new Date().toISOString(),
+            checkedInBy: data.checkedInBy || '',
+          }));
+        }
+      } else {
+        toast(data?.message || 'Door check-in denied');
+      }
+    } finally {
+      setIsProcessingEntry(false);
+    }
+  };
+
+  const handleEntranceAdmit = async (targetPassId) => {
+    if (!targetPassId) return;
+    if (scannedPass?.paymentStatus !== 'PAID') {
+      if (paymentMethodChoice === 'UPI' && (!upiUtrInput || upiUtrInput.trim().length < 4)) {
+        toast('Please enter a valid UPI Transaction Reference / UTR');
+        return;
+      }
+    }
+
+    setIsProcessingEntry(true);
+    try {
+      const res = await api.post('/moras-live/passes/entrance-admit', {
+        passId: targetPassId,
+        paymentMethod: paymentMethodChoice,
+        upiTransactionReference: paymentMethodChoice === 'UPI' ? upiUtrInput.trim() : '',
+      });
+
+      if (res.data?.success) {
+        toast(`✅ ADMITTED: Entry approved for ${res.data.customerName || targetPassId}!`);
+        if (scannedPass && scannedPass.passId === targetPassId) {
+          setScannedPass((prev) => ({
+            ...prev,
+            paymentStatus: 'PAID',
+            paidAmount: res.data.paidAmount || 149,
+            entryCheckedIn: true,
+            entryCheckedInAt: res.data.checkedInAt || new Date().toISOString(),
+            checkedInBy: res.data.checkedInBy || '',
+          }));
+        }
+        setUpiUtrInput('');
+        fetchMorasPassStats();
+        fetchMorasPasses();
+      }
+    } catch (err) {
+      const data = err.response?.data;
+      if (data?.alreadyCheckedIn) {
+        toast(`🚫 ALREADY CHECKED IN: Attendee was already admitted at ${data.checkedInAt ? new Date(data.checkedInAt).toLocaleTimeString() : 'earlier'}`);
+        if (scannedPass && scannedPass.passId === targetPassId) {
+          setScannedPass((prev) => ({
+            ...prev,
+            entryCheckedIn: true,
+            entryCheckedInAt: data.checkedInAt || new Date().toISOString(),
+            checkedInBy: data.checkedInBy || '',
+          }));
+        }
+      } else {
+        toast(data?.message || 'Entrance admission failed');
+      }
     } finally {
       setIsProcessingEntry(false);
     }
@@ -1216,7 +1283,7 @@ function Admin() {
           >
             <span>🎟️ Passes &amp; QR</span>
             <span className={`admin-tab-badge ${activeTab === 'moras-live-passes' ? 'badge-active' : 'badge-inactive'}`}>
-              {morasPassStats.confirmedPaidPasses}/60
+              {(morasPassStats?.confirmedPaidPasses || 0)}/60
             </span>
           </button>
         </nav>
@@ -3277,6 +3344,26 @@ function Admin() {
                 </div>
                 <div style={{ fontSize: '0.72rem', color: '#64748B' }}>Admitted attendees</div>
               </div>
+
+              {/* 10. Emails Delivered */}
+              <div style={{ background: '#FFFFFF', padding: '14px 16px', borderRadius: 10, border: '1px solid #E2E8F0', boxShadow: '0 2px 6px rgba(0,0,0,0.03)' }}>
+                <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', color: '#64748B', fontWeight: 700 }}>✉️ Emails Sent</div>
+                <div style={{ fontSize: '1.6rem', fontWeight: 900, color: '#0284C7', marginTop: 4 }}>
+                  {morasPassStats.emailsSent || 0}
+                </div>
+                <div style={{ fontSize: '0.72rem', color: '#64748B' }}>Confirmation dispatched</div>
+              </div>
+
+              {/* 11. Email Failures */}
+              <div style={{ background: '#FFFFFF', padding: '14px 16px', borderRadius: 10, border: '1px solid #E2E8F0', boxShadow: '0 2px 6px rgba(0,0,0,0.03)' }}>
+                <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', color: '#64748B', fontWeight: 700 }}>⚠️ Email Failures</div>
+                <div style={{ fontSize: '1.6rem', fontWeight: 900, color: (morasPassStats.emailsFailed || 0) > 0 ? '#DC2626' : '#10B981', marginTop: 4 }}>
+                  {morasPassStats.emailsFailed || 0}
+                </div>
+                <div style={{ fontSize: '0.72rem', color: (morasPassStats.emailsFailed || 0) > 0 ? '#DC2626' : '#64748B' }}>
+                  {(morasPassStats.emailsFailed || 0) > 0 ? 'Delivery issues' : 'All delivered'}
+                </div>
+              </div>
             </div>
 
             {/* ACTION DESK & SCANNER (The central operational tool for Cashier & Kitchen) */}
@@ -3608,18 +3695,87 @@ function Admin() {
                       </div>
 
                       {scannedPass.entryCheckedIn ? (
-                        <div style={{ color: '#166534', fontSize: '0.85rem', background: '#F0FDF4', padding: '10px 12px', borderRadius: 8 }}>
-                          <strong>✅ CHECKED IN / ADMITTED</strong>
-                          <div style={{ fontSize: '0.78rem', color: '#666', marginTop: 4 }}>
-                            Admitted at: {scannedPass.entryCheckedInAt ? new Date(scannedPass.entryCheckedInAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Recently'}
+                        <div style={{ color: '#991B1B', fontSize: '0.88rem', background: '#FEF2F2', border: '1.5px solid #DC2626', padding: '12px 14px', borderRadius: 8 }}>
+                          <div style={{ fontWeight: 800, fontSize: '0.92rem', display: 'flex', alignItems: 'center', gap: 6 }}>
+                            <span>🚫</span> ALREADY CHECKED IN
+                          </div>
+                          <div style={{ fontSize: '0.8rem', marginTop: 4 }}>
+                            Attendee was previously admitted at {scannedPass.entryCheckedInAt ? new Date(scannedPass.entryCheckedInAt).toLocaleString() : 'earlier'} {scannedPass.checkedInBy ? `by ${scannedPass.checkedInBy}` : ''}.
                           </div>
                         </div>
                       ) : scannedPass.paymentStatus !== 'PAID' ? (
-                        <div style={{ color: '#DC2626', fontSize: '0.85rem', background: '#FEF2F2', padding: '10px 12px', borderRadius: 8 }}>
-                          <strong>⛔ ENTRY DENIED</strong>
-                          <div style={{ fontSize: '0.78rem', marginTop: 2 }}>
-                            Payment has not been completed. Attendee must pay at cashier desk before entry.
+                        <div>
+                          <div style={{ color: '#B45309', fontSize: '0.84rem', background: '#FEF3C7', padding: '10px 12px', borderRadius: 8, marginBottom: 12 }}>
+                            <strong>⏳ Payment of ₹149 Due at Entrance</strong>
+                            <div style={{ fontSize: '0.78rem', marginTop: 2 }}>
+                              Collect ₹149 (Cash or UPI) at door to admit guest.
+                            </div>
                           </div>
+
+                          <div style={{ display: 'flex', gap: 12, marginBottom: 10 }}>
+                            <label style={{ fontSize: '0.85rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 4 }}>
+                              <input
+                                type="radio"
+                                name="entrancePayMethod"
+                                value="CASH"
+                                checked={paymentMethodChoice === 'CASH'}
+                                onChange={() => setPaymentMethodChoice('CASH')}
+                              />
+                              Cash ₹149
+                            </label>
+                            <label style={{ fontSize: '0.85rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 4 }}>
+                              <input
+                                type="radio"
+                                name="entrancePayMethod"
+                                value="UPI"
+                                checked={paymentMethodChoice === 'UPI'}
+                                onChange={() => setPaymentMethodChoice('UPI')}
+                              />
+                              UPI ₹149
+                            </label>
+                          </div>
+
+                          {paymentMethodChoice === 'UPI' && (
+                            <div style={{ marginBottom: 10 }}>
+                              <input
+                                type="text"
+                                placeholder="Enter UPI UTR / Ref..."
+                                value={upiUtrInput}
+                                onChange={(e) => setUpiUtrInput(e.target.value)}
+                                style={{
+                                  width: '100%',
+                                  padding: '8px 12px',
+                                  borderRadius: 6,
+                                  border: '1px solid #CBD5E1',
+                                  fontSize: '0.85rem',
+                                  boxSizing: 'border-box',
+                                  marginBottom: 6,
+                                }}
+                              />
+                              <small style={{ color: '#B45309', fontSize: '0.75rem', display: 'block', fontWeight: 600 }}>
+                                ⚠️ Verify credit received in cafe merchant account before admitting.
+                              </small>
+                            </div>
+                          )}
+
+                          <button
+                            type="button"
+                            onClick={() => handleEntranceAdmit(scannedPass.passId)}
+                            disabled={isProcessingEntry}
+                            style={{
+                              width: '100%',
+                              padding: '10px',
+                              borderRadius: 6,
+                              background: '#15803D',
+                              color: '#FAF5EF',
+                              border: 'none',
+                              fontWeight: 800,
+                              fontSize: '0.86rem',
+                              cursor: 'pointer',
+                            }}
+                          >
+                            {isProcessingEntry ? 'Processing Admission…' : '🎟️ Collect ₹149 & Admit (Check-In)'}
+                          </button>
                         </div>
                       ) : (
                         <div>

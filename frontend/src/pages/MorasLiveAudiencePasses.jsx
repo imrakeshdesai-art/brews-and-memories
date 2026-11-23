@@ -42,11 +42,6 @@ export default function MorasLiveAudiencePasses() {
   const [copiedId, setCopiedId] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
 
-  // Lookup State
-  const [lookupQuery, setLookupQuery] = useState('');
-  const [isLookingUp, setIsLookingUp] = useState(false);
-  const [activeTab, setActiveTab] = useState('reserve'); // 'reserve' | 'lookup'
-
   // Fetch Public Settings & Live Inventory
   const fetchSettings = async () => {
     try {
@@ -67,27 +62,26 @@ export default function MorasLiveAudiencePasses() {
     fetchSettings();
   }, []);
 
-  // Handle URL params for direct pass lookup (e.g. /moras-live/passes?passId=ML-0001&token=...)
+  // Handle URL params for secure email access link or scanned QR code (e.g. /moras-live/passes?passId=ML-0001&access=... or &token=...)
   useEffect(() => {
     const urlPassId = searchParams.get('passId');
+    const urlAccess = searchParams.get('access');
     const urlToken = searchParams.get('token');
-    const urlMobile = searchParams.get('mobile');
 
-    if (urlPassId || urlToken || urlMobile) {
-      lookupPass({ passId: urlPassId, token: urlToken, mobileNumber: urlMobile });
+    if (urlPassId && (urlAccess || urlToken)) {
+      loadSecurePass(urlPassId, urlAccess, urlToken);
     }
   }, [searchParams]);
 
-  // Lookup Pass Helper
-  const lookupPass = async (params) => {
-    setIsLookingUp(true);
+  // Secure Pass Retrieval via high-entropy email token or QR token
+  const loadSecurePass = async (passId, access, token) => {
     try {
-      const queryParams = new URLSearchParams();
-      if (params.passId) queryParams.set('passId', params.passId);
-      if (params.token) queryParams.set('token', params.token);
-      if (params.mobileNumber) queryParams.set('mobileNumber', params.mobileNumber);
+      const params = new URLSearchParams();
+      params.set('passId', passId);
+      if (access) params.set('access', access);
+      if (token) params.set('token', token);
 
-      const res = await api.get(`/moras-live/passes/lookup?${queryParams.toString()}`);
+      const res = await api.get(`/moras-live/passes/secure-view?${params.toString()}`);
       if (res.data?.success && res.data?.pass) {
         setConfirmedPass(res.data.pass);
         setQrCodeDataUrl(res.data.qrCodeDataUrl || '');
@@ -95,26 +89,10 @@ export default function MorasLiveAudiencePasses() {
         toast(`Pass ${res.data.pass.passId} loaded successfully`);
       }
     } catch (err) {
-      toast(err.response?.data?.message || 'Pass not found. Please check your Pass ID or Mobile Number.');
-    } finally {
-      setIsLookingUp(false);
-    }
-  };
-
-  const handleManualLookup = (e) => {
-    e.preventDefault();
-    const query = lookupQuery.trim();
-    if (!query) {
-      toast('Please enter your Pass ID (e.g. ML-0001) or 10-digit mobile number');
-      return;
-    }
-
-    if (/^[6-9]\d{9}$/.test(query.replace(/\D/g, ''))) {
-      lookupPass({ mobileNumber: query.replace(/\D/g, '') });
-    } else if (query.toUpperCase().startsWith('ML-')) {
-      lookupPass({ passId: query.toUpperCase() });
-    } else {
-      lookupPass({ passId: query });
+      toast(
+        err.response?.data?.message ||
+          'Invalid or expired secure pass link. Please open your pass from your official email.'
+      );
     }
   };
 
@@ -391,57 +369,6 @@ export default function MorasLiveAudiencePasses() {
 
       {/* Main Content Area */}
       <div style={{ maxWidth: 760, margin: '0 auto', padding: '30px 16px 0' }}>
-        {/* Toggle between Register and Find Existing Pass */}
-        {!confirmedPass && (
-          <div
-            style={{
-              display: 'flex',
-              background: '#EAE1D2',
-              borderRadius: 12,
-              padding: 4,
-              marginBottom: 26,
-              border: '1px solid rgba(18, 63, 61, 0.15)',
-            }}
-          >
-            <button
-              type="button"
-              onClick={() => setActiveTab('reserve')}
-              style={{
-                flex: 1,
-                padding: '12px 16px',
-                borderRadius: 9,
-                border: 'none',
-                background: activeTab === 'reserve' ? '#123F3D' : 'transparent',
-                color: activeTab === 'reserve' ? '#F5E8D0' : '#4A5568',
-                fontWeight: 700,
-                fontSize: '0.95rem',
-                cursor: 'pointer',
-                transition: 'all 0.2s',
-              }}
-            >
-              🎟️ Reserve New Pass (1 Person = 1 Pass)
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveTab('lookup')}
-              style={{
-                flex: 1,
-                padding: '12px 16px',
-                borderRadius: 9,
-                border: 'none',
-                background: activeTab === 'lookup' ? '#123F3D' : 'transparent',
-                color: activeTab === 'lookup' ? '#F5E8D0' : '#4A5568',
-                fontWeight: 700,
-                fontSize: '0.95rem',
-                cursor: 'pointer',
-                transition: 'all 0.2s',
-              }}
-            >
-              🔍 View My Reserved Pass / QR
-            </button>
-          </div>
-        )}
-
         {/* ======================================================== */}
         {/* 1. CONFIRMED PASS VIEW (SINGLE QR LIFECYCLE DISPLAY) */}
         {/* ======================================================== */}
@@ -508,49 +435,37 @@ export default function MorasLiveAudiencePasses() {
               {/* Status Banner */}
               <div
                 style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  flexWrap: 'wrap',
-                  gap: 12,
-                  padding: '14px 18px',
-                  borderRadius: 10,
+                  padding: '16px 20px',
+                  borderRadius: 12,
                   background:
                     confirmedPass.paymentStatus === 'PAID'
                       ? 'rgba(74, 222, 128, 0.15)'
-                      : 'rgba(251, 191, 36, 0.15)',
+                      : '#FEF3C7',
                   border:
                     confirmedPass.paymentStatus === 'PAID'
                       ? '1px solid #22C55E'
                       : '1px solid #F59E0B',
                   marginBottom: 24,
+                  textAlign: 'center',
                 }}
               >
-                <div>
-                  <div style={{ fontSize: '0.78rem', fontWeight: 700, textTransform: 'uppercase', color: '#6B7280' }}>
-                    Pass Status
-                  </div>
-                  <div
-                    style={{
-                      fontSize: '1.05rem',
-                      fontWeight: 800,
-                      color: confirmedPass.paymentStatus === 'PAID' ? '#15803D' : '#B45309',
-                    }}
-                  >
-                    {confirmedPass.paymentStatus === 'PAID' ? '✅ CONFIRMED & ACTIVE' : '⏳ PAYMENT PENDING AT CAFÉ'}
-                  </div>
+                <div
+                  style={{
+                    fontSize: '0.9rem',
+                    fontWeight: 800,
+                    textTransform: 'uppercase',
+                    letterSpacing: 1,
+                    color: confirmedPass.paymentStatus === 'PAID' ? '#15803D' : '#92400E',
+                  }}
+                >
+                  {confirmedPass.paymentStatus === 'PAID'
+                    ? '✅ PASS CONFIRMED & ACTIVE'
+                    : '🎟️ RESERVATION CONFIRMED — PAYMENT DUE AT EVENT ENTRY'}
                 </div>
-
-                <div style={{ textAlign: 'right' }}>
-                  <div style={{ fontSize: '0.78rem', fontWeight: 700, textTransform: 'uppercase', color: '#6B7280' }}>
-                    Payable Amount
-                  </div>
-                  <div style={{ fontSize: '1.25rem', fontWeight: 900, color: '#123F3D' }}>
-                    ₹{confirmedPass.payableAmount || 149}
-                    <small style={{ fontSize: '0.75rem', fontWeight: 600, color: '#666', marginLeft: 4 }}>
-                      (Pay at Cafe)
-                    </small>
-                  </div>
+                <div style={{ fontSize: '0.92rem', color: '#4B5563', marginTop: 6, lineHeight: 1.5 }}>
+                  {confirmedPass.paymentStatus === 'PAID'
+                    ? 'Your pass is confirmed. Please present your QR code at the event entrance.'
+                    : 'Your MORAS LIVE pass is reserved. Please present your QR code at the event entrance and pay ₹149 by cash or UPI to receive entry.'}
                 </div>
               </div>
 
@@ -558,19 +473,19 @@ export default function MorasLiveAudiencePasses() {
               <div
                 style={{
                   textAlign: 'center',
-                  padding: '20px 10px',
+                  padding: '24px 16px',
                   background: '#F9F7F2',
                   borderRadius: 14,
-                  border: '1px dashed #123F3D',
+                  border: '1.5px dashed #123F3D',
                   marginBottom: 24,
                 }}
               >
-                <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#123F3D', marginBottom: 12 }}>
-                  YOUR SINGLE OFFICIAL PASS QR CODE
+                <div style={{ fontSize: '0.85rem', fontWeight: 800, letterSpacing: 1, textTransform: 'uppercase', color: '#123F3D', marginBottom: 12 }}>
+                  OFFICIAL EVENT ENTRY QR CODE
                 </div>
 
                 {qrCodeDataUrl ? (
-                  <div style={{ display: 'inline-block', padding: 10, background: '#FFFFFF', borderRadius: 12, boxShadow: '0 4px 16px rgba(0,0,0,0.08)' }}>
+                  <div style={{ display: 'inline-block', padding: 12, background: '#FFFFFF', borderRadius: 14, boxShadow: '0 4px 16px rgba(0,0,0,0.08)' }}>
                     <img
                       src={qrCodeDataUrl}
                       alt={`MORAS LIVE QR Pass ${confirmedPass.passId}`}
@@ -581,8 +496,8 @@ export default function MorasLiveAudiencePasses() {
                   <div style={{ padding: '40px 20px', color: '#666' }}>Generating high-res QR code...</div>
                 )}
 
-                <div style={{ fontSize: '0.82rem', color: '#555', marginTop: 12, maxWidth: 440, margin: '12px auto 0' }}>
-                  This exact QR remains your only pass for payment verification, complimentary cappuccino, and event entry.
+                <div style={{ fontSize: '0.84rem', color: '#555', marginTop: 12, maxWidth: 440, margin: '12px auto 0', lineHeight: 1.5 }}>
+                  Present this exact QR code at the entrance desk to pay ₹149 (Cash/UPI), check in, and redeem your complimentary cappuccino.
                 </div>
               </div>
 
@@ -592,7 +507,7 @@ export default function MorasLiveAudiencePasses() {
                   display: 'grid',
                   gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
                   gap: 16,
-                  padding: '16px 20px',
+                  padding: '18px 20px',
                   background: '#F5E8D0',
                   borderRadius: 12,
                   marginBottom: 24,
@@ -618,10 +533,10 @@ export default function MorasLiveAudiencePasses() {
 
                 <div>
                   <div style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', color: '#666' }}>
-                    Email
+                    Pass Fee
                   </div>
-                  <div style={{ fontSize: '0.95rem', fontWeight: 700, color: '#123F3D', wordBreak: 'break-all' }}>
-                    {confirmedPass.email}
+                  <div style={{ fontSize: '1rem', fontWeight: 800, color: '#123F3D' }}>
+                    ₹{confirmedPass.payableAmount || 149} <span style={{ fontSize: '0.78rem', fontWeight: 600, color: '#8B0000' }}>(Payable at Entrance)</span>
                   </div>
                 </div>
 
@@ -657,10 +572,10 @@ export default function MorasLiveAudiencePasses() {
                   </div>
                   <div style={{ fontSize: '0.82rem', marginTop: 4, color: '#555' }}>
                     {confirmedPass.cappuccinoRedeemed
-                      ? 'Redeemed at Café Counter'
+                      ? 'Redeemed at Café Bar'
                       : confirmedPass.paymentStatus === 'PAID'
-                      ? 'Ready to redeem at Café Counter'
-                      : 'Available after payment confirmation'}
+                      ? 'Ready to redeem at Café Bar'
+                      : 'Available upon entrance check-in'}
                   </div>
                 </div>
 
@@ -680,7 +595,7 @@ export default function MorasLiveAudiencePasses() {
                       ? 'Admitted / Checked In'
                       : confirmedPass.paymentStatus === 'PAID'
                       ? 'Ready for Door Check-In'
-                      : 'Requires payment before entry'}
+                      : 'Pay ₹149 at entrance desk to enter'}
                   </div>
                 </div>
               </div>
@@ -690,26 +605,26 @@ export default function MorasLiveAudiencePasses() {
                 style={{
                   background: '#FAF5EF',
                   borderLeft: '4px solid #123F3D',
-                  padding: '16px 18px',
+                  padding: '18px 20px',
                   borderRadius: '0 10px 10px 0',
                   marginBottom: 26,
                 }}
               >
                 <div style={{ fontWeight: 800, color: '#123F3D', fontSize: '0.95rem', marginBottom: 8 }}>
-                  📌 What to do next:
+                  📌 Event Entrance Instructions:
                 </div>
-                <ol style={{ margin: 0, paddingLeft: 20, fontSize: '0.88rem', color: '#4A5568', lineHeight: 1.6 }}>
+                <ol style={{ margin: 0, paddingLeft: 20, fontSize: '0.88rem', color: '#4A5568', lineHeight: 1.65 }}>
                   <li>
-                    <strong>Visit THE MORAS CAFE</strong> (B M Patil Circle, Solapur Bypass, Vijayapura).
+                    Tap <strong>DOWNLOAD MY PASS</strong> below to save your pass image, or check your registered email for your pass copy.
                   </li>
                   <li>
-                    Show this <strong>QR Code or Pass ID (#{confirmedPass.passId})</strong> to our cashier desk.
+                    Arrive at <strong>THE MORAS CAFE</strong> on event day and present this QR code at the entrance desk.
                   </li>
                   <li>
-                    Pay via <strong>UPI or Cash</strong> at the counter to activate your ticket.
+                    Pay <strong>₹149 via Cash or UPI</strong> directly to the entrance team to complete check-in.
                   </li>
                   <li>
-                    Enjoy your <strong>complimentary freshly-brewed cappuccino</strong> and keep this QR handy for event admission!
+                    Head over to the coffee bar to claim your <strong>complimentary freshly brewed cappuccino</strong> and enjoy the show!
                   </li>
                 </ol>
               </div>
@@ -720,22 +635,23 @@ export default function MorasLiveAudiencePasses() {
                   type="button"
                   onClick={handleDownloadQr}
                   style={{
-                    flex: '1 1 180px',
-                    padding: '12px 18px',
+                    flex: '1 1 200px',
+                    padding: '14px 20px',
                     background: '#123F3D',
                     color: '#FAF5EF',
                     border: 'none',
                     borderRadius: 10,
-                    fontWeight: 700,
-                    fontSize: '0.92rem',
+                    fontWeight: 800,
+                    fontSize: '0.95rem',
                     cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     gap: 8,
+                    boxShadow: '0 4px 14px rgba(18, 63, 61, 0.25)',
                   }}
                 >
-                  📥 Download QR Image
+                  📥 DOWNLOAD MY PASS
                 </button>
 
                 <button
@@ -743,7 +659,7 @@ export default function MorasLiveAudiencePasses() {
                   onClick={handleCopyId}
                   style={{
                     flex: '1 1 140px',
-                    padding: '12px 18px',
+                    padding: '14px 18px',
                     background: '#FAF5EF',
                     color: '#123F3D',
                     border: '1.5px solid #123F3D',
@@ -758,28 +674,10 @@ export default function MorasLiveAudiencePasses() {
 
                 <button
                   type="button"
-                  onClick={handleCopyLink}
-                  style={{
-                    flex: '1 1 140px',
-                    padding: '12px 18px',
-                    background: '#FAF5EF',
-                    color: '#123F3D',
-                    border: '1.5px solid #123F3D',
-                    borderRadius: 10,
-                    fontWeight: 700,
-                    fontSize: '0.92rem',
-                    cursor: 'pointer',
-                  }}
-                >
-                  {copiedLink ? '✓ Link Copied' : '🔗 Copy Link'}
-                </button>
-
-                <button
-                  type="button"
                   onClick={handleWhatsAppShare}
                   style={{
                     flex: '1 1 180px',
-                    padding: '12px 18px',
+                    padding: '14px 18px',
                     background: '#25D366',
                     color: '#FFFFFF',
                     border: 'none',
@@ -797,7 +695,7 @@ export default function MorasLiveAudiencePasses() {
                 </button>
               </div>
 
-              {/* Lookup another pass link */}
+              {/* Reset link */}
               <div style={{ textAlign: 'center', marginTop: 24 }}>
                 <button
                   type="button"
@@ -811,7 +709,7 @@ export default function MorasLiveAudiencePasses() {
                     textDecoration: 'underline',
                   }}
                 >
-                  ← Register another person or look up a different pass
+                  ← Register another person
                 </button>
               </div>
             </div>
@@ -821,7 +719,7 @@ export default function MorasLiveAudiencePasses() {
         {/* ======================================================== */}
         {/* 2. REGISTRATION FORM (WHEN NOT VIEWING CONFIRMED PASS) */}
         {/* ======================================================== */}
-        {!confirmedPass && activeTab === 'reserve' && (
+        {!confirmedPass && (
           <div
             style={{
               background: '#FFFFFF',
@@ -838,23 +736,8 @@ export default function MorasLiveAudiencePasses() {
                 <h2 style={{ color: '#8B0000', margin: '0 0 12px' }}>ALL 60 AUDIENCE PASSES HAVE BEEN RESERVED</h2>
                 <p style={{ color: '#555', maxWidth: 500, margin: '0 auto 20px', lineHeight: 1.6 }}>
                   Thank you for the tremendous enthusiasm from Vijayapura's creative community! All 60 individual
-                  audience passes have been allocated.
+                  audience passes have been allocated. If you already registered, please check your email for your confirmation pass.
                 </p>
-                <button
-                  type="button"
-                  onClick={() => setActiveTab('lookup')}
-                  style={{
-                    padding: '12px 24px',
-                    background: '#123F3D',
-                    color: '#FAF5EF',
-                    border: 'none',
-                    borderRadius: 10,
-                    fontWeight: 700,
-                    cursor: 'pointer',
-                  }}
-                >
-                  Already registered? View your pass &amp; QR code
-                </button>
               </div>
             ) : (
               <>
@@ -866,7 +749,7 @@ export default function MorasLiveAudiencePasses() {
                     Reserve Your Audience Pass
                   </h2>
                   <p style={{ margin: 0, color: '#666', fontSize: '0.92rem', lineHeight: 1.5 }}>
-                    <strong>1 Person = 1 Pass.</strong> Group bookings are strictly not permitted. Fill out your details below to generate your single official QR pass immediately.
+                    <strong>1 Person = 1 Pass.</strong> Group bookings are strictly not permitted. Fill out your details below to reserve your individual pass and receive your unique entry QR code immediately.
                   </p>
                 </div>
 
@@ -948,7 +831,7 @@ export default function MorasLiveAudiencePasses() {
                       <div style={{ color: '#DC2626', fontSize: '0.82rem', marginTop: 4 }}>{errors.mobileNumber}</div>
                     )}
                     <small style={{ color: '#6B7280', fontSize: '0.78rem', marginTop: 4, display: 'block' }}>
-                      Strictly one pass per mobile number. Your QR pass is verified against this number at the café.
+                      Strictly one pass per mobile number. Your QR pass is verified against this number at the entrance desk.
                     </small>
                   </div>
 
@@ -981,9 +864,12 @@ export default function MorasLiveAudiencePasses() {
                     {errors.email && (
                       <div style={{ color: '#DC2626', fontSize: '0.82rem', marginTop: 4 }}>{errors.email}</div>
                     )}
+                    <small style={{ color: '#6B7280', fontSize: '0.78rem', marginTop: 4, display: 'block' }}>
+                      Your official QR ticket will also be emailed to this address.
+                    </small>
                   </div>
 
-                  {/* Pricing and Payment Notice */}
+                  {/* Pricing and Entrance Payment Notice */}
                   <div
                     style={{
                       background: '#F9F7F2',
@@ -997,13 +883,11 @@ export default function MorasLiveAudiencePasses() {
                     }}
                   >
                     <div style={{ fontWeight: 800, color: '#123F3D', marginBottom: 4 }}>
-                      ☕ What's included in your pass:
+                      ☕ Official Pass Details:
                     </div>
-                    <div>• Full admission to MORAS LIVE live performances.</div>
-                    <div>• One complimentary freshly-brewed hot Cappuccino.</div>
-                    <div style={{ marginTop: 8, fontSize: '0.82rem', color: '#6B7280' }}>
-                      <em>Note: Proposed pass price is ₹149. Payment is collected in person at THE MORAS CAFE via UPI or Cash. Online payment is not accepted.</em>
-                    </div>
+                    <div>• <strong>Price:</strong> ₹149 per person (no payment needed today).</div>
+                    <div>• <strong>Payment Method:</strong> Cash or UPI collected physically at the event entrance upon arrival.</div>
+                    <div>• <strong>Perk Included:</strong> Full admission plus one complimentary freshly-brewed hot Cappuccino.</div>
                   </div>
 
                   {/* Submit Button */}
@@ -1031,83 +915,6 @@ export default function MorasLiveAudiencePasses() {
                 </form>
               </>
             )}
-          </div>
-        )}
-
-        {/* ======================================================== */}
-        {/* 3. LOOKUP FORM (FIND EXISTING PASS) */}
-        {/* ======================================================== */}
-        {!confirmedPass && activeTab === 'lookup' && (
-          <div
-            style={{
-              background: '#FFFFFF',
-              borderRadius: 18,
-              boxShadow: '0 10px 30px rgba(0,0,0,0.06)',
-              border: '1px solid #E5DFD5',
-              padding: '32px 24px',
-              marginBottom: 30,
-            }}
-          >
-            <div style={{ borderBottom: '2px solid #F5E8D0', paddingBottom: 16, marginBottom: 24 }}>
-              <div style={{ fontSize: '0.8rem', fontWeight: 700, letterSpacing: 1.5, textTransform: 'uppercase', color: '#123F3D' }}>
-                PASS RETRIEVAL
-              </div>
-              <h2 style={{ margin: '4px 0 8px', color: '#123F3D', fontFamily: "'Playfair Display', serif", fontSize: '1.75rem' }}>
-                Find Your MORAS LIVE Pass
-              </h2>
-              <p style={{ margin: 0, color: '#666', fontSize: '0.92rem', lineHeight: 1.5 }}>
-                Enter your 10-digit mobile number or Pass ID (e.g. ML-0001) to view your official pass, QR code, and current status.
-              </p>
-            </div>
-
-            <form onSubmit={handleManualLookup}>
-              <div style={{ marginBottom: 20 }}>
-                <label
-                  htmlFor="lookupQuery"
-                  style={{ display: 'block', fontSize: '0.88rem', fontWeight: 700, color: '#123F3D', marginBottom: 6 }}
-                >
-                  Mobile Number or Pass ID
-                </label>
-                <input
-                  id="lookupQuery"
-                  type="text"
-                  placeholder="e.g. 9876543210 or ML-0001"
-                  value={lookupQuery}
-                  onChange={(e) => setLookupQuery(e.target.value)}
-                  disabled={isLookingUp}
-                  style={{
-                    width: '100%',
-                    padding: '12px 14px',
-                    borderRadius: 8,
-                    border: '1.5px solid #D1D5DB',
-                    fontSize: '0.98rem',
-                    outline: 'none',
-                    boxSizing: 'border-box',
-                  }}
-                />
-              </div>
-
-              <button
-                type="submit"
-                disabled={isLookingUp}
-                style={{
-                  width: '100%',
-                  padding: '14px 20px',
-                  background: '#123F3D',
-                  color: '#FAF5EF',
-                  border: 'none',
-                  borderRadius: 10,
-                  fontSize: '0.98rem',
-                  fontWeight: 800,
-                  letterSpacing: 1,
-                  textTransform: 'uppercase',
-                  cursor: 'pointer',
-                  boxShadow: '0 4px 14px rgba(18, 63, 61, 0.25)',
-                }}
-              >
-                {isLookingUp ? 'SEARCHING...' : 'FIND MY PASS & QR CODE'}
-              </button>
-            </form>
           </div>
         )}
 

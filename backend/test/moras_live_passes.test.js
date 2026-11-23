@@ -23,10 +23,10 @@ let mockSettings = {
   maximumPasses: 60,
   proposedPassPrice: 149,
   approvedPassPrice: 149,
-  priceConfirmed: false,
+  priceConfirmed: true,
   reservationsEnabled: true,
-  paymentCollectionEnabled: false,
-  reservationExpiryHours: 24,
+  paymentCollectionEnabled: true,
+  reservationExpiryHours: 0,
   cappuccinoIncluded: true,
 };
 
@@ -120,8 +120,12 @@ async function runTests() {
 
     MorasLiveAudiencePass.findOne = (query) => {
       let found = null;
-      if (query.passId) {
+      if (query.passId && query.emailAccessTokenHash) {
+        found = mockPasses.find((p) => p.passId === query.passId && p.emailAccessTokenHash === query.emailAccessTokenHash);
+      } else if (query.passId) {
         found = mockPasses.find((p) => p.passId === query.passId);
+      } else if (query.emailAccessTokenHash) {
+        found = mockPasses.find((p) => p.emailAccessTokenHash === query.emailAccessTokenHash);
       } else if (query.qrTokenHash) {
         found = mockPasses.find((p) => p.qrTokenHash === query.qrTokenHash);
       } else if (query.qrToken) {
@@ -143,6 +147,9 @@ async function runTests() {
       if (found && !found.save) {
         found.save = function () { return Promise.resolve(this); };
       }
+      if (found && !found.toObject) {
+        found.toObject = function () { return { ...this }; };
+      }
 
       return {
         select: () => Promise.resolve(found ? { _id: found._id, passId: found.passId } : null),
@@ -150,10 +157,19 @@ async function runTests() {
       };
     };
 
+    MorasLiveAudiencePass.updateOne = (filter, update) => {
+      const item = mockPasses.find((p) => p._id === filter._id || p.passId === filter.passId);
+      if (item && update.$set) {
+        Object.assign(item, update.$set);
+      }
+      return Promise.resolve({ modifiedCount: item ? 1 : 0 });
+    };
+
     MorasLiveAudiencePass.find = (filter = {}) => {
       let filtered = [...mockPasses];
       filtered.forEach((p) => {
         if (!p.save) p.save = function () { return Promise.resolve(this); };
+        if (!p.toObject) p.toObject = function () { return { ...this }; };
       });
       if (filter.paymentStatus) filtered = filtered.filter((p) => p.paymentStatus === filter.paymentStatus);
       if (filter.reservationStatus) filtered = filtered.filter((p) => p.reservationStatus === filter.reservationStatus);
@@ -179,6 +195,7 @@ async function runTests() {
         createdAt: new Date(),
         updatedAt: new Date(),
         save: function () { return Promise.resolve(this); },
+        toObject: function () { return { ...this }; },
       };
       mockPasses.push(created);
       return Promise.resolve(created);
@@ -187,6 +204,8 @@ async function runTests() {
     MorasLiveAudiencePass.findOneAndUpdate = (query, update, options) => {
       const item = mockPasses.find((p) => {
         if (query.passId && p.passId !== query.passId) return false;
+        if (query.entryCheckedIn !== undefined && p.entryCheckedIn !== query.entryCheckedIn) return false;
+        if (query.paymentStatus && p.paymentStatus !== query.paymentStatus) return false;
         if (query.qrTokenHash && p.qrTokenHash !== query.qrTokenHash) return false;
         return true;
       });
@@ -252,6 +271,7 @@ async function runTests() {
   try {
     let savedPassId = null;
     let savedQrToken = null;
+    let savedAccessToken = null;
 
     // 1. Public Settings & Inventory Check
     {
@@ -266,8 +286,9 @@ async function runTests() {
       assert.strictEqual(res.body.inventory.maximumPasses, 60);
       assert.strictEqual(res.body.inventory.availablePasses, 60);
       assert.strictEqual(res.body.inventory.isSoldOut, false);
-      assert.strictEqual(res.body.settings.priceConfirmed, false);
-      console.log('  ✅ PASS: 1. Public Settings & Live Inventory — Total 60, Available 60, Draft Price Unconfirmed');
+      assert.strictEqual(res.body.settings.priceConfirmed, true);
+      assert.strictEqual(res.body.settings.approvedPassPrice, 149);
+      console.log('  ✅ PASS: 1. Public Settings & Live Inventory — Total 60, Available 60, Price Confirmed ₹149');
     }
 
     // 2. Name Validation (<2 chars rejected)
@@ -342,10 +363,12 @@ async function runTests() {
       assert.ok(res.body.qrCodeDataUrl.startsWith('data:image/png;base64,'));
       assert.strictEqual(res.body.pass.normalizedMobileNumber, '9876543210');
       assert.strictEqual(res.body.pass.paymentStatus, 'PENDING');
-      assert.strictEqual(res.body.pass.reservationStatus, 'RESERVED');
+      assert.strictEqual(res.body.pass.reservationStatus, 'ACTIVE');
+      assert.ok(res.body.accessToken);
 
       savedPassId = res.body.pass.passId;
       savedQrToken = res.body.pass.qrToken;
+      savedAccessToken = res.body.accessToken;
       console.log(`  ✅ PASS: 5. Pass Reservation — Issued ${savedPassId} with offline base64 QR code and normalized mobile`);
     }
 
@@ -364,11 +387,11 @@ async function runTests() {
       });
 
       assert.strictEqual(res.status, 409);
-      assert.strictEqual(res.body.existingPassId, savedPassId);
-      console.log('  ✅ PASS: 6. Duplicate Mobile Guard — Rejects registration with 409 and returns existing Pass ID');
+      assert.strictEqual(res.body.duplicate, true);
+      console.log('  ✅ PASS: 6. Duplicate Mobile Guard — Rejects registration with 409 duplicate without leaking QR');
     }
 
-    // 7. Public Lookup by Pass ID
+    // 7. Unauthenticated Public Lookup Blocked (403 Forbidden for privacy)
     {
       const res = await makeRequest(server, {
         hostname: 'localhost',
@@ -376,22 +399,31 @@ async function runTests() {
         path: `/api/moras-live/passes/lookup?passId=${savedPassId}`,
         method: 'GET',
       });
-      assert.strictEqual(res.status, 200);
-      assert.strictEqual(res.body.pass.passId, savedPassId);
-      console.log(`  ✅ PASS: 7. Public Lookup by Pass ID — Successfully resolved ${savedPassId}`);
+      assert.strictEqual(res.status, 403);
+      console.log('  ✅ PASS: 7. Privacy Protection — Unauthenticated public pass lookup disabled (403)');
     }
 
-    // 8. Public Lookup by Mobile
+    // 8. Secure Pass View (Authenticated via High-Entropy Token)
     {
       const res = await makeRequest(server, {
         hostname: 'localhost',
         port,
-        path: `/api/moras-live/passes/lookup?mobileNumber=9876543210`,
+        path: `/api/moras-live/passes/secure-view?passId=${savedPassId}&access=${savedAccessToken}`,
         method: 'GET',
       });
       assert.strictEqual(res.status, 200);
       assert.strictEqual(res.body.pass.passId, savedPassId);
-      console.log('  ✅ PASS: 8. Public Lookup by Mobile — Successfully found pass via 10-digit number');
+      assert.ok(res.body.qrCodeDataUrl);
+
+      // Verify invalid token is rejected with 403
+      const badRes = await makeRequest(server, {
+        hostname: 'localhost',
+        port,
+        path: `/api/moras-live/passes/secure-view?passId=${savedPassId}&access=wrong_token_123`,
+        method: 'GET',
+      });
+      assert.strictEqual(badRes.status, 403);
+      console.log('  ✅ PASS: 8. Secure Pass View — High-entropy token authenticated; invalid token blocked');
     }
 
     // 9. Staff QR Verification
@@ -411,11 +443,11 @@ async function runTests() {
 
       assert.strictEqual(res.status, 200);
       assert.strictEqual(res.body.pass.passId, savedPassId);
-      assert.strictEqual(res.body.permissions.canCollectPayment, false); // because price not confirmed yet!
-      console.log('  ✅ PASS: 9. Staff QR Verification — Verified unhashed token; blocks payment collection while unconfirmed');
+      assert.strictEqual(res.body.permissions.canCollectPayment, true);
+      console.log('  ✅ PASS: 9. Staff QR Verification — Verified unhashed token; canCollectPayment enabled');
     }
 
-    // 10. Payment Collection Blocked When Price Unconfirmed (400)
+    // 10. Payment Method Validation (Invalid payment method rejected with 400)
     {
       const res = await makeRequest(server, {
         hostname: 'localhost',
@@ -428,12 +460,11 @@ async function runTests() {
         },
       }, {
         passId: savedPassId,
-        paymentMethod: 'CASH',
+        paymentMethod: 'BITCOIN',
       });
 
       assert.strictEqual(res.status, 400);
-      assert.ok(res.body.message.toLowerCase().includes('not yet been approved') || res.body.message.toLowerCase().includes('disabled'));
-      console.log('  ✅ PASS: 10. Pricing Guard — Blocks physical payment collection until administrator confirms price');
+      console.log('  ✅ PASS: 10. Payment Method Guard — Rejects unsupported payment methods');
     }
 
     // 11. Admin Price Approval
@@ -637,9 +668,63 @@ async function runTests() {
         qrToken: savedQrToken,
       });
 
-      assert.strictEqual(res.status, 400);
-      assert.ok(res.body.message.toLowerCase().includes('already checked in') || res.body.message.toLowerCase().includes('already been checked in'));
-      console.log('  ✅ PASS: 19. Duplicate Entry Blocked — Prevents pass sharing or multiple admissions');
+      assert.strictEqual(res.status, 409);
+      assert.strictEqual(res.body.alreadyCheckedIn, true);
+      assert.ok(res.body.message.toLowerCase().includes('already checked in'));
+      console.log('  ✅ PASS: 19. Duplicate Entry Blocked — Prevents pass sharing or multiple admissions with 409 Conflict');
+    }
+
+    // 19B. Combined Entrance Desk Admission (Payment + Check-In)
+    {
+      const guestRes = await makeRequest(server, {
+        hostname: 'localhost',
+        port,
+        path: '/api/moras-live/passes/reserve',
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      }, {
+        fullName: 'Entrance Desk Guest',
+        mobileNumber: '9555544444',
+        email: 'entrance@example.com',
+      });
+      assert.strictEqual(guestRes.status, 201);
+      const guestPassId = guestRes.body.pass.passId;
+
+      // Admit directly at entrance with Cash payment
+      const admitRes = await makeRequest(server, {
+        hostname: 'localhost',
+        port,
+        path: '/api/moras-live/passes/entrance-admit',
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${adminToken}`,
+        },
+      }, {
+        passId: guestPassId,
+        paymentMethod: 'CASH',
+      });
+      assert.strictEqual(admitRes.status, 200);
+      assert.strictEqual(admitRes.body.entryCheckedIn, true);
+      assert.strictEqual(admitRes.body.paymentStatus, 'PAID');
+
+      // Duplicate admission attempt returns 409 Conflict
+      const dupAdmitRes = await makeRequest(server, {
+        hostname: 'localhost',
+        port,
+        path: '/api/moras-live/passes/entrance-admit',
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${adminToken}`,
+        },
+      }, {
+        passId: guestPassId,
+        paymentMethod: 'CASH',
+      });
+      assert.strictEqual(dupAdmitRes.status, 409);
+      assert.strictEqual(dupAdmitRes.body.alreadyCheckedIn, true);
+      console.log('  ✅ PASS: 19B. Combined Entrance Desk Admission — Atomically collects payment and admits, blocking duplicates');
     }
 
     // 20. Capacity Enforcement: Max 60 passes

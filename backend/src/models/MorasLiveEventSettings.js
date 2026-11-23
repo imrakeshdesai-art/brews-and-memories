@@ -56,7 +56,7 @@ const morasLiveEventSettingsSchema = new mongoose.Schema(
     },
     priceConfirmed: {
       type: Boolean,
-      default: false, // Must be explicitly confirmed by administrator
+      default: true, // Officially approved at ₹149
     },
     reservationsEnabled: {
       type: Boolean,
@@ -64,12 +64,16 @@ const morasLiveEventSettingsSchema = new mongoose.Schema(
     },
     paymentCollectionEnabled: {
       type: Boolean,
-      default: false, // Disabled until price and event details are approved
+      default: true, // Enabled for event entrance collection
     },
     reservationExpiryHours: {
       type: Number,
-      default: 24,
-      min: 1,
+      default: 0, // 0 = no auto-expiry countdown, active until cutoff
+      min: 0,
+    },
+    reservationCutoffDate: {
+      type: Date,
+      default: null, // Admin-defined reservation cutoff
     },
     cappuccinoIncluded: {
       type: Boolean,

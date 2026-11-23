@@ -51,10 +51,10 @@ const morasLiveAudiencePassSchema = new mongoose.Schema(
     reservationStatus: {
       type: String,
       enum: {
-        values: ['RESERVED', 'CONFIRMED', 'EXPIRED', 'CANCELLED'],
+        values: ['ACTIVE', 'RESERVED', 'CONFIRMED', 'EXPIRED', 'CANCELLED'],
         message: '{VALUE} is not a valid reservation status',
       },
-      default: 'RESERVED',
+      default: 'ACTIVE',
       index: true,
     },
     paymentStatus: {
@@ -72,7 +72,7 @@ const morasLiveAudiencePassSchema = new mongoose.Schema(
         values: ['INACTIVE', 'ACTIVE', 'REVOKED'],
         message: '{VALUE} is not a valid ticket status',
       },
-      default: 'INACTIVE',
+      default: 'ACTIVE',
       index: true,
     },
     cappuccinoRedeemed: {
@@ -123,10 +123,38 @@ const morasLiveAudiencePassSchema = new mongoose.Schema(
       default: '',
       trim: true,
     },
+    paymentRecordedBy: {
+      type: String,
+      default: '',
+      trim: true,
+    },
+    paymentRecordedAt: {
+      type: Date,
+      default: null,
+    },
     expiresAt: {
       type: Date,
-      required: true,
+      default: null,
       index: true,
+    },
+    emailAccessTokenHash: {
+      type: String,
+      default: '',
+      trim: true,
+      index: true,
+    },
+    emailDeliveryStatus: {
+      type: String,
+      enum: ['PENDING', 'SENT', 'FAILED', 'NOT_ATTEMPTED'],
+      default: 'PENDING',
+      index: true,
+    },
+    emailDeliveryDetails: {
+      provider: { type: String, default: '' },
+      messageId: { type: String, default: '' },
+      attemptedAt: { type: Date, default: null },
+      errorReason: { type: String, default: '' },
+      retryCount: { type: Number, default: 0 },
     },
     ipAddress: {
       type: String,

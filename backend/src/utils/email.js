@@ -721,6 +721,199 @@ async function sendOrderEmail(orderData) {
   });
 }
 
+// ── MORAS LIVE Audience Pass Email ───────────────────────────────────────────
+function buildMorasLivePassEmailHTML({ pass, qrDataUrl, secureAccessUrl }) {
+  const name = pass.name || 'Valued Guest';
+  const passId = pass.passId || 'ML-XXXX';
+  const mobile = pass.mobileNumber || '';
+  const price = pass.approvedPassPrice != null ? pass.approvedPassPrice : 149;
+  const eventName = pass.eventName || 'MORAS LIVE';
+  const venue = pass.venue || 'THE MORAS CAFE, Solapur Rd, Vijayapura';
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MORAS LIVE Pass Reserved - ${passId}</title>
+</head>
+<body style="margin:0;padding:0;background-color:#f5f0e8;font-family:'Plus Jakarta Sans','Segoe UI',Arial,sans-serif;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%">
+  <center style="width:100%;background-color:#f5f0e8">
+    <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#f5f0e8" style="background-color:#f5f0e8;margin:0;padding:32px 0;width:100%">
+      <tr>
+        <td align="center" valign="top" style="text-align:center">
+          <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width:560px;width:100%;background-color:#ffffff;border-radius:16px;overflow:hidden;border:1px solid #e8e2d2;box-shadow:0 4px 24px rgba(0,0,0,0.08);margin:0 auto;text-align:left">
+            <tr>
+              <td>
+                <!-- Header -->
+                <div style="background:linear-gradient(135deg,#0f3d3e 0%,#185c5d 100%);padding:36px 28px;text-align:center;border-bottom:3px solid #fbbf24">
+                  <div style="margin-bottom:14px;text-align:center">
+                    <div style="width:72px;height:72px;border-radius:50%;overflow:hidden;margin:0 auto;box-shadow:0 4px 14px rgba(0,0,0,0.35);background-color:#FAF5EF;border:2px solid #fbbf24;display:inline-block">
+                      <img src="https://themorascafe.in/images/brand/secondary-badge-light.png" alt="The Moras Cafe" width="72" height="72" style="width:100%;height:100%;object-fit:contain;display:block;border:0" />
+                    </div>
+                  </div>
+                  <div style="color:#fbbf24;font-size:12px;letter-spacing:4px;text-transform:uppercase;font-weight:800;margin-bottom:6px">THE MORAS CAFE PRESENTS</div>
+                  <h1 style="color:#fff;margin:0;font-size:26px;font-weight:800;font-family:'Playfair Display', Georgia, serif;letter-spacing:-0.5px">${eventName}</h1>
+                  <p style="color:rgba(255,255,255,0.85);margin:8px 0 0;font-size:14px;font-style:italic;font-family:'Playfair Display', Georgia, serif">YOUR MIC. YOUR MOMENT.</p>
+                </div>
+
+                <!-- Main Status Banner -->
+                <div style="background:#fef3c7;border-bottom:1px solid #fde68a;padding:14px 24px;text-align:center">
+                  <div style="color:#92400e;font-size:13px;font-weight:800;letter-spacing:1px;text-transform:uppercase">
+                    &#x1F39F;&#xFE0F; RESERVATION CONFIRMED &mdash; PAYMENT DUE AT EVENT ENTRY
+                  </div>
+                </div>
+
+                <!-- Content Body -->
+                <div style="padding:28px">
+                  <p style="color:#2d2d2d;font-size:15px;line-height:1.6;margin:0 0 20px;">
+                    Dear <strong>${name}</strong>,<br/><br/>
+                    Your individual audience pass for <strong>${eventName}</strong> has been successfully reserved! Please present your QR code at the event entrance and pay <strong>&#x20B9;${price}</strong> by cash or UPI to receive entry.
+                  </p>
+
+                  <!-- QR Code Card -->
+                  <div style="background:#faf8f5;border-radius:14px;padding:24px 20px;text-align:center;border:1px solid #e8e2d2;margin-bottom:24px">
+                    <div style="font-size:11px;color:#8e8a7e;letter-spacing:2px;text-transform:uppercase;font-weight:700;margin-bottom:6px">Official Entry QR Code</div>
+                    ${qrDataUrl ? `
+                    <div style="margin:12px auto 14px;display:inline-block;padding:10px;background:#ffffff;border-radius:12px;border:2px solid #0f3d3e;box-shadow:0 2px 10px rgba(0,0,0,0.06)">
+                      <img src="${qrDataUrl}" alt="MORAS LIVE Pass QR" width="180" height="180" style="display:block;width:180px;height:180px;border:0" />
+                    </div>` : ''}
+                    <div style="font-size:18px;font-weight:800;color:#0f3d3e;font-family:monospace;letter-spacing:2px">${passId}</div>
+                    <div style="font-size:12px;color:#666;margin-top:4px">Valid for 1 Individual Admission &middot; Non-transferable</div>
+                    
+                    ${secureAccessUrl ? `
+                    <div style="margin-top:16px">
+                      <a href="${secureAccessUrl}" target="_blank" style="display:inline-block;background:#0f3d3e;color:#ffffff;text-decoration:none;padding:12px 24px;border-radius:8px;font-weight:700;font-size:13px;letter-spacing:1px;box-shadow:0 3px 10px rgba(15,61,62,0.25)">DOWNLOAD MY PASS</a>
+                    </div>` : ''}
+                  </div>
+
+                  <!-- Pass Details Box -->
+                  <div style="background:#ffffff;border-radius:12px;border:1px solid #e8e2d2;padding:18px 20px;margin-bottom:24px">
+                    <div style="font-size:12px;font-weight:800;color:#0f3d3e;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px;border-bottom:1px solid #eee;padding-bottom:8px">Pass Summary</div>
+                    <table width="100%" cellpadding="6" cellspacing="0" style="font-size:14px;color:#333">
+                      <tr>
+                        <td width="40%" style="color:#777;padding:6px 0">Pass ID:</td>
+                        <td width="60%" style="font-weight:700;color:#0f3d3e;font-family:monospace;padding:6px 0">${passId}</td>
+                      </tr>
+                      <tr>
+                        <td style="color:#777;padding:6px 0">Attendee Name:</td>
+                        <td style="font-weight:600;padding:6px 0">${name}</td>
+                      </tr>
+                      <tr>
+                        <td style="color:#777;padding:6px 0">Registered Mobile:</td>
+                        <td style="font-weight:600;padding:6px 0">+91 ${mobile}</td>
+                      </tr>
+                      <tr>
+                        <td style="color:#777;padding:6px 0">Pass Fee:</td>
+                        <td style="font-weight:800;color:#0f3d3e;padding:6px 0">&#x20B9;${price} <span style="font-size:12px;font-weight:normal;color:#b45309">(Payable at entrance)</span></td>
+                      </tr>
+                      <tr>
+                        <td style="color:#777;padding:6px 0">Complimentary:</td>
+                        <td style="font-weight:700;color:#047857;padding:6px 0">&#x2615; 1 Freshly Brewed Cappuccino</td>
+                      </tr>
+                      <tr>
+                        <td style="color:#777;padding:6px 0">Venue:</td>
+                        <td style="font-weight:500;padding:6px 0">${venue}</td>
+                      </tr>
+                    </table>
+                  </div>
+
+                  <!-- Important Instructions Box -->
+                  <div style="background:#f8fafc;border-radius:12px;border:1px solid #cbd5e1;padding:16px 20px;margin-bottom:20px">
+                    <div style="font-size:12px;color:#1e293b;text-transform:uppercase;letter-spacing:1px;font-weight:800;margin-bottom:8px">&#x1F4CB; EVENT ENTRANCE INSTRUCTIONS</div>
+                    <ul style="margin:0;padding-left:18px;font-size:13px;color:#475569;line-height:1.6">
+                      <li>Save this email or take a screenshot of your QR code before arriving.</li>
+                      <li>Payment of <strong>&#x20B9;${price}</strong> will be collected in cash or UPI at the event desk upon arrival.</li>
+                      <li>After your QR code is scanned and entry is checked in, head to the barista counter to claim your complimentary cappuccino!</li>
+                    </ul>
+                  </div>
+
+                  <p style="color:#666;font-size:13px;line-height:1.5;margin:0;text-align:center">
+                    Questions or need help? Contact THE MORAS CAFE desk at <strong>+91 99454 46137</strong> or reply to this email.
+                  </p>
+                </div>
+
+                <!-- Footer -->
+                <div style="background:#111;padding:24px 20px;text-align:center;color:#999;font-size:12px;line-height:1.5">
+                  <div style="color:#fbbf24;font-weight:700;font-size:13px;margin-bottom:4px">THE MORAS CAFE</div>
+                  <div>Udayashree Sports Academy, Solapur Rd, Vijayapura, Karnataka 586103</div>
+                  <div style="margin-top:8px;color:#666">&copy; ${new Date().getFullYear()} The Moras Cafe. All rights reserved.</div>
+                </div>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </center>
+</body>
+</html>`;
+}
+
+function buildMorasLivePassEmailText({ pass, secureAccessUrl }) {
+  const name = pass.name || 'Valued Guest';
+  const passId = pass.passId || 'ML-XXXX';
+  const mobile = pass.mobileNumber || '';
+  const price = pass.approvedPassPrice != null ? pass.approvedPassPrice : 149;
+  const eventName = pass.eventName || 'MORAS LIVE';
+  const venue = pass.venue || 'THE MORAS CAFE, Solapur Rd, Vijayapura';
+
+  return `THE MORAS CAFE PRESENTS: ${eventName}
+YOUR MIC. YOUR MOMENT.
+==============================================
+RESERVATION CONFIRMED — PAYMENT DUE AT EVENT ENTRY
+
+Dear ${name},
+
+Your MORAS LIVE audience pass has been reserved!
+
+Pass Details:
+- Pass ID: ${passId}
+- Name: ${name}
+- Mobile: +91 ${mobile}
+- Pass Fee: ₹${price} (Payable at Event Entrance via Cash or UPI)
+- Complimentary Perk: 1 Freshly Brewed Cappuccino included
+- Venue: ${venue}
+
+Access your QR Pass online:
+${secureAccessUrl || 'https://themorascafe.in/moras-live/passes'}
+
+IMPORTANT INSTRUCTIONS:
+1. Please present your QR code at the event entrance.
+2. Pay ₹${price} by cash or UPI at the entrance desk to receive admission.
+3. Once admitted, redeem your complimentary cappuccino at the barista counter.
+
+Need assistance? Call our desk at +91 99454 46137.
+
+THE MORAS CAFE, Vijayapura
+`;
+}
+
+async function sendMorasLivePassEmail({ pass, qrDataUrl, secureAccessUrl }) {
+  if (!pass || !pass.email) {
+    console.log('[Email] No customer email provided for MORAS LIVE pass — skipping.');
+    return { success: false, error: 'No customer email provided', method: 'skipped' };
+  }
+  const passId = pass.passId || 'PASS';
+  const subject = `MORAS LIVE Pass Reserved (#${passId}) — Payment Due at Entry 🎟️`;
+  const htmlContent = buildMorasLivePassEmailHTML({ pass, qrDataUrl, secureAccessUrl });
+  const textContent = buildMorasLivePassEmailText({ pass, secureAccessUrl });
+
+  try {
+    const result = await dispatchEmail({
+      to: pass.email,
+      toName: pass.name,
+      subject,
+      htmlContent,
+      textContent,
+    });
+    return result;
+  } catch (err) {
+    console.error('[Email] sendMorasLivePassEmail error:', err.message);
+    return { success: false, error: err.message, method: 'error' };
+  }
+}
+
 // ── Table Reservation Email ───────────────────────────────────────────────────
 async function sendReservationEmail(reservationData) {
   if (!reservationData || !reservationData.email) {
@@ -789,6 +982,7 @@ function getEmailConfigDiagnostic() {
 module.exports = {
   sendOrderEmail,
   sendReservationEmail,
+  sendMorasLivePassEmail,
   sendTestEmail,
   getEmailConfigDiagnostic,
 };

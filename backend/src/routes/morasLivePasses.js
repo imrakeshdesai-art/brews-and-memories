@@ -1,18 +1,29 @@
 const express = require('express');
 const router = express.Router();
+const crypto = require('crypto');
 const rateLimit = require('express-rate-limit');
 const auth = require('../middleware/auth');
 const checkRole = require('../middleware/checkRole');
+const { checkPermission } = require('../middleware/checkPermission');
 const { MorasLiveAudiencePass } = require('../models/MorasLiveAudiencePass');
 const { MorasLivePayment } = require('../models/MorasLivePayment');
 const { MorasLiveEventSettings } = require('../models/MorasLiveEventSettings');
 const { generateAudiencePassId } = require('../utils/generateAudiencePassId');
+const { sendMorasLivePassEmail } = require('../utils/email');
 const {
   generateQrToken,
   hashQrToken,
   generateQrCodeDataUrl,
   buildPassQrPayload,
 } = require('../utils/qrPassCrypto');
+
+// Helper: Generate high-entropy access token & SHA-256 hash
+function generateAccessToken() {
+  return crypto.randomBytes(32).toString('hex'); // 64-char random hex
+}
+function hashAccessToken(token) {
+  return crypto.createHash('sha256').update(String(token).trim()).digest('hex');
+}
 
 // Rate limiter for pass reservations
 const passReservationLimiter = rateLimit({
@@ -58,23 +69,24 @@ router.get('/settings', async (req, res) => {
     const settings = await MorasLiveEventSettings.getSettings('moras-live-2026');
     const now = new Date();
 
-    // Auto-expire stale reservations
-    await MorasLiveAudiencePass.updateMany(
-      {
-        eventId: 'moras-live-2026',
-        reservationStatus: 'RESERVED',
-        expiresAt: { $lte: now },
-      },
-      { $set: { reservationStatus: 'EXPIRED' } }
-    );
+    // Check if reservation cutoff has passed
+    const isPastCutoff = settings.reservationCutoffDate && now > new Date(settings.reservationCutoffDate);
+    const reservationsEnabled = settings.reservationsEnabled && !isPastCutoff;
 
-    // Concurrency-safe count calculation
-    const activeReservedCount = await MorasLiveAudiencePass.countDocuments({
+    // Concurrency-safe count calculation:
+    // Active reservations: reservationStatus in ['ACTIVE', 'RESERVED', 'CONFIRMED'], paymentStatus != 'PAID'
+    const activeReservedQuery = {
       eventId: 'moras-live-2026',
-      reservationStatus: 'RESERVED',
+      reservationStatus: { $in: ['ACTIVE', 'RESERVED', 'CONFIRMED'] },
       paymentStatus: { $ne: 'PAID' },
-      expiresAt: { $gt: now },
-    });
+    };
+    if (settings.reservationCutoffDate) {
+      activeReservedQuery.$or = [
+        { expiresAt: null },
+        { expiresAt: { $gt: now } },
+      ];
+    }
+    const activeReservedCount = await MorasLiveAudiencePass.countDocuments(activeReservedQuery);
 
     const paidCount = await MorasLiveAudiencePass.countDocuments({
       eventId: 'moras-live-2026',
@@ -96,13 +108,13 @@ router.get('/settings', async (req, res) => {
         eventEndTime: settings.eventEndTime,
         venue: settings.venue,
         maximumPasses: maxPasses,
-        proposedPassPrice: settings.proposedPassPrice,
-        approvedPassPrice: settings.priceConfirmed ? settings.approvedPassPrice : null,
-        priceConfirmed: settings.priceConfirmed,
-        reservationsEnabled: settings.reservationsEnabled,
-        paymentCollectionEnabled: settings.paymentCollectionEnabled && settings.priceConfirmed,
-        reservationExpiryHours: settings.reservationExpiryHours,
-        cappuccinoIncluded: settings.cappuccinoIncluded,
+        proposedPassPrice: 149,
+        approvedPassPrice: 149,
+        priceConfirmed: true,
+        reservationsEnabled,
+        paymentCollectionEnabled: true,
+        reservationCutoffDate: settings.reservationCutoffDate,
+        cappuccinoIncluded: true,
       },
       inventory: {
         maximumPasses: maxPasses,
@@ -158,8 +170,15 @@ router.post('/reserve', passReservationLimiter, async (req, res) => {
       });
     }
 
-    // 4. Check Event Settings
+    // 4. Check Event Settings & Cutoff
     const settings = await MorasLiveEventSettings.getSettings('moras-live-2026');
+    const now = new Date();
+    if (settings.reservationCutoffDate && now > new Date(settings.reservationCutoffDate)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Pass reservations for MORAS LIVE have ended as the reservation cutoff date has passed.',
+      });
+    }
     if (!settings.reservationsEnabled) {
       return res.status(400).json({
         success: false,
@@ -167,120 +186,35 @@ router.post('/reserve', passReservationLimiter, async (req, res) => {
       });
     }
 
-    const now = new Date();
-
     // 5. Duplicate Check: One Mobile Number = One Pass
     const existing = await MorasLiveAudiencePass.findOne({
       eventId: 'moras-live-2026',
       normalizedMobileNumber: normalizedMobile,
     });
 
-    if (existing) {
-      // Check if existing pass is paid or currently reserved
-      const isPaid = existing.paymentStatus === 'PAID';
-      const isStillReserved = existing.reservationStatus === 'RESERVED' && existing.expiresAt > now;
-
-      if (isPaid || isStillReserved) {
-        const qrPayload = buildPassQrPayload(existing.passId, existing.qrToken, req);
-        const qrCodeDataUrl = await generateQrCodeDataUrl(qrPayload);
-
-        return res.status(409).json({
-          success: false,
-          duplicate: true,
-          existingPassId: existing.passId,
-          message:
-            "You're already registered for MORAS LIVE. Each person is eligible for only one pass. Please use your existing QR confirmation.",
-          pass: {
-            passId: existing.passId,
-            customerName: existing.customerName,
-            normalizedMobileNumber: existing.normalizedMobileNumber,
-            email: existing.email,
-            qrToken: existing.qrToken,
-            reservationStatus: existing.reservationStatus,
-            paymentStatus: existing.paymentStatus,
-            ticketStatus: existing.ticketStatus,
-            payableAmount: existing.payableAmount,
-            cappuccinoIncluded: true,
-            cappuccinoRedeemed: existing.cappuccinoRedeemed,
-            entryCheckedIn: existing.entryCheckedIn,
-            expiresAt: existing.expiresAt,
-            createdAt: existing.createdAt,
-          },
-          qrCodeDataUrl,
-          passUrl: qrPayload,
-        });
-      }
-
-      // If existing reservation is EXPIRED, check inventory to allow reactivation using same passId & QR
-      if (existing.reservationStatus === 'EXPIRED') {
-        const activeCount = await MorasLiveAudiencePass.countDocuments({
-          eventId: 'moras-live-2026',
-          reservationStatus: 'RESERVED',
-          paymentStatus: { $ne: 'PAID' },
-          expiresAt: { $gt: now },
-        });
-        const paidCount = await MorasLiveAudiencePass.countDocuments({
-          eventId: 'moras-live-2026',
-          paymentStatus: 'PAID',
-        });
-
-        if (activeCount + paidCount >= settings.maximumPasses) {
-          return res.status(400).json({
-            success: false,
-            soldOut: true,
-            message: 'ALL 60 MORAS LIVE PASSES HAVE BEEN RESERVED.',
-          });
-        }
-
-        // Reactivate existing pass holding original pass ID and QR token!
-        existing.customerName = cleanName;
-        existing.email = cleanEmail;
-        existing.reservationStatus = 'RESERVED';
-        existing.expiresAt = new Date(Date.now() + settings.reservationExpiryHours * 60 * 60 * 1000);
-        await existing.save();
-
-        const qrPayload = buildPassQrPayload(existing.passId, existing.qrToken, req);
-        const qrCodeDataUrl = await generateQrCodeDataUrl(qrPayload);
-
-        return res.status(200).json({
-          success: true,
-          reactivated: true,
-          message: 'YOUR MORAS LIVE PASS IS RESERVED!',
-          subheading:
-            'Your previous reservation has been reactivated. Visit THE MORAS CAFE to complete your payment through UPI or cash and activate your event entry.',
-          pass: {
-            passId: existing.passId,
-            customerName: existing.customerName,
-            normalizedMobileNumber: existing.normalizedMobileNumber,
-            email: existing.email,
-            qrToken: existing.qrToken,
-            reservationStatus: existing.reservationStatus,
-            paymentStatus: existing.paymentStatus,
-            ticketStatus: existing.ticketStatus,
-            payableAmount: existing.payableAmount,
-            cappuccinoIncluded: true,
-            expiresAt: existing.expiresAt,
-            createdAt: existing.createdAt,
-          },
-          qrCodeDataUrl,
-          passUrl: qrPayload,
-        });
-      }
+    if (existing && existing.reservationStatus !== 'CANCELLED') {
+      return res.status(409).json({
+        success: false,
+        duplicate: true,
+        existingPassId: existing.passId,
+        message:
+          "You're already registered for MORAS LIVE. Each person is eligible for only one pass. Please check your registered email or present your original pass at the event entrance.",
+      });
     }
 
     // 6. Strict Inventory Check: Exactly 60 Passes Max
     const activeReservedCount = await MorasLiveAudiencePass.countDocuments({
       eventId: 'moras-live-2026',
-      reservationStatus: 'RESERVED',
+      reservationStatus: { $in: ['ACTIVE', 'RESERVED', 'CONFIRMED'] },
       paymentStatus: { $ne: 'PAID' },
-      expiresAt: { $gt: now },
     });
     const paidCount = await MorasLiveAudiencePass.countDocuments({
       eventId: 'moras-live-2026',
       paymentStatus: 'PAID',
     });
 
-    if (activeReservedCount + paidCount >= settings.maximumPasses) {
+    const maxPasses = settings.maximumPasses || 60;
+    if (activeReservedCount + paidCount >= maxPasses) {
       return res.status(400).json({
         success: false,
         soldOut: true,
@@ -288,13 +222,15 @@ router.post('/reserve', passReservationLimiter, async (req, res) => {
       });
     }
 
-    // 7. Generate Single Pass ID and Single QR Token
+    // 7. Cryptographically Random Tokens
     const passId = await generateAudiencePassId('moras-live-2026');
     const qrToken = generateQrToken();
     const qrTokenHash = hashQrToken(qrToken);
-    const expiresAt = new Date(Date.now() + settings.reservationExpiryHours * 60 * 60 * 1000);
+    const emailAccessToken = generateAccessToken();
+    const emailAccessTokenHash = hashAccessToken(emailAccessToken);
+    const expiresAt = settings.reservationCutoffDate || null;
 
-    // 8. Persist Pass to MongoDB
+    // 8. Persist Pass to MongoDB First
     const pass = await MorasLiveAudiencePass.create({
       passId,
       eventId: 'moras-live-2026',
@@ -303,11 +239,13 @@ router.post('/reserve', passReservationLimiter, async (req, res) => {
       email: cleanEmail,
       qrToken,
       qrTokenHash,
-      reservationStatus: 'RESERVED',
+      emailAccessTokenHash,
+      reservationStatus: 'ACTIVE',
       paymentStatus: 'PENDING',
-      ticketStatus: 'INACTIVE',
-      payableAmount: settings.priceConfirmed ? settings.approvedPassPrice : settings.proposedPassPrice,
+      ticketStatus: 'ACTIVE',
+      payableAmount: 149,
       expiresAt,
+      emailDeliveryStatus: 'PENDING',
       ipAddress: req.ip || req.headers['x-forwarded-for'] || '',
       userAgent: req.headers['user-agent'] || '',
     });
@@ -316,11 +254,23 @@ router.post('/reserve', passReservationLimiter, async (req, res) => {
     const qrPayload = buildPassQrPayload(passId, qrToken, req);
     const qrCodeDataUrl = await generateQrCodeDataUrl(qrPayload);
 
-    return res.status(201).json({
+    // Derive secure access URL for the email link
+    let origin = 'https://themorascafe.in';
+    if (req.headers && req.headers['x-forwarded-host']) {
+      const proto = req.headers['x-forwarded-proto'] || 'https';
+      origin = `${proto}://${req.headers['x-forwarded-host']}`;
+    } else if (req.headers && req.headers.host) {
+      const proto = req.protocol || 'https';
+      origin = `${proto}://${req.headers.host}`;
+    }
+    const secureAccessUrl = `${origin}/moras-live/passes?passId=${pass.passId}&access=${emailAccessToken}`;
+
+    // 10. Respond to user immediately with QR code confirmation
+    res.status(201).json({
       success: true,
-      message: 'YOUR MORAS LIVE PASS IS RESERVED!',
+      message: 'RESERVATION CONFIRMED — PAYMENT DUE AT EVENT ENTRY',
       subheading:
-        'Your unique QR pass has been generated. Visit THE MORAS CAFE to complete your payment through UPI or cash and activate your event entry.',
+        'Your MORAS LIVE pass is reserved. Please present your QR code at the event entrance and pay ₹149 by cash or UPI to receive entry.',
       pass: {
         passId: pass.passId,
         customerName: pass.customerName,
@@ -337,16 +287,59 @@ router.post('/reserve', passReservationLimiter, async (req, res) => {
       },
       qrCodeDataUrl,
       passUrl: qrPayload,
+      accessToken: emailAccessToken,
+    });
+
+    // 11. Asynchronous Isolated Email Dispatch (never blocks or rolls back reservation)
+    setImmediate(async () => {
+      try {
+        const emailRes = await sendMorasLivePassEmail({
+          pass: {
+            ...pass.toObject(),
+            venue: settings.venue,
+            eventDate: settings.eventDate,
+            eventStartTime: settings.eventStartTime,
+          },
+          qrDataUrl: qrCodeDataUrl,
+          secureAccessUrl,
+        });
+
+        const isSent = Boolean(emailRes && emailRes.success);
+        await MorasLiveAudiencePass.updateOne(
+          { _id: pass._id },
+          {
+            $set: {
+              emailDeliveryStatus: isSent ? 'SENT' : 'FAILED',
+              'emailDeliveryDetails.provider': emailRes?.method || (isSent ? 'brevo_https' : 'none'),
+              'emailDeliveryDetails.messageId': emailRes?.messageId || '',
+              'emailDeliveryDetails.attemptedAt': new Date(),
+              'emailDeliveryDetails.errorReason': isSent ? '' : (emailRes?.error || 'Email delivery failed'),
+              'emailDeliveryDetails.retryCount': 1,
+            },
+          }
+        );
+      } catch (err) {
+        console.error('[MORAS LIVE] Background email dispatch failed:', err.message);
+        await MorasLiveAudiencePass.updateOne(
+          { _id: pass._id },
+          {
+            $set: {
+              emailDeliveryStatus: 'FAILED',
+              'emailDeliveryDetails.errorReason': err.message,
+              'emailDeliveryDetails.attemptedAt': new Date(),
+            },
+          }
+        ).catch(() => {});
+      }
     });
   } catch (error) {
     console.error('[MORAS LIVE PASSES] Reservation error:', error);
-    // MongoDB duplicate key error code 11000
     if (error.code === 11000) {
       return res.status(409).json({
         success: false,
         duplicate: true,
         message:
-          "You're already registered for MORAS LIVE. Each person is eligible for only one pass. Please use your existing QR confirmation.",
+          "You're already registered for MORAS LIVE. Each person is eligible for only one pass. Please check your registered email or present your original pass at the event entrance.",
       });
     }
     return res.status(500).json({
@@ -357,31 +350,38 @@ router.post('/reserve', passReservationLimiter, async (req, res) => {
 });
 
 // =========================================================================
-// 3. PUBLIC: LOOKUP EXISTING PASS (BY PASS ID OR MOBILE)
-// GET /api/moras-live/passes/lookup
+// 3. SECURE PASS VIEW (AUTHENTICATED VIA HIGH-ENTROPY EMAIL TOKEN)
+// GET /api/moras-live/passes/secure-view
 // =========================================================================
-router.get('/lookup', async (req, res) => {
+router.get('/secure-view', async (req, res) => {
   try {
-    const { passId, mobileNumber, token } = req.query;
+    const { passId, access, token } = req.query;
+    if (!passId || (!access && !token)) {
+      return res.status(400).json({
+        success: false,
+        message: 'passId and access or QR token are required to securely view this pass.',
+      });
+    }
 
-    const query = { eventId: 'moras-live-2026' };
-    if (passId) {
-      query.passId = String(passId).trim().toUpperCase();
-    } else if (mobileNumber) {
-      const norm = normalizeIndianMobile(String(mobileNumber));
-      if (!norm) {
-        return res.status(400).json({ success: false, message: 'Invalid mobile number format' });
-      }
-      query.normalizedMobileNumber = norm;
+    const cleanPassId = String(passId).trim().toUpperCase();
+    const query = {
+      eventId: 'moras-live-2026',
+      passId: cleanPassId,
+    };
+
+    if (access) {
+      query.emailAccessTokenHash = hashAccessToken(String(access));
     } else if (token) {
       query.qrTokenHash = hashQrToken(String(token));
-    } else {
-      return res.status(400).json({ success: false, message: 'passId, mobileNumber, or token required' });
     }
 
     const pass = await MorasLiveAudiencePass.findOne(query);
+
     if (!pass) {
-      return res.status(404).json({ success: false, message: 'Audience pass not found' });
+      return res.status(403).json({
+        success: false,
+        message: 'Invalid or expired secure access token. Please access your pass through your official email confirmation link.',
+      });
     }
 
     const qrPayload = buildPassQrPayload(pass.passId, pass.qrToken, req);
@@ -394,7 +394,6 @@ router.get('/lookup', async (req, res) => {
         customerName: pass.customerName,
         normalizedMobileNumber: pass.normalizedMobileNumber,
         email: pass.email,
-        qrToken: pass.qrToken,
         reservationStatus: pass.reservationStatus,
         paymentStatus: pass.paymentStatus,
         ticketStatus: pass.ticketStatus,
@@ -413,9 +412,20 @@ router.get('/lookup', async (req, res) => {
       passUrl: qrPayload,
     });
   } catch (error) {
-    console.error('[MORAS LIVE PASSES] Lookup error:', error);
-    return res.status(500).json({ success: false, message: 'Failed to look up pass' });
+    console.error('[MORAS LIVE PASSES] Secure view error:', error);
+    return res.status(500).json({ success: false, message: 'Failed to securely retrieve pass' });
   }
+});
+
+// =========================================================================
+// 3B. DEPRECATED PUBLIC LOOKUP (DISABLED FOR PASS PRIVACY & ANTI-SCRAPING)
+// GET /api/moras-live/passes/lookup
+// =========================================================================
+router.get('/lookup', async (req, res) => {
+  return res.status(403).json({
+    success: false,
+    message: 'Public unauthenticated pass lookup is disabled for security and privacy. Please open your pass from your confirmation email or present your pass at the event entrance.',
+  });
 });
 
 // =========================================================================
@@ -525,7 +535,7 @@ router.post('/verify-qr', auth, checkRole(['admin', 'kitchen']), async (req, res
 // 5. STAFF / ADMIN: PAYMENT DESK — VERIFY PAYMENT & ACTIVATE PASS (SAME QR)
 // POST /api/moras-live/passes/collect-payment
 // =========================================================================
-router.post('/collect-payment', auth, checkRole(['admin']), async (req, res) => {
+router.post('/collect-payment', auth, checkPermission('moras_live_payment_collect'), async (req, res) => {
   try {
     const { passId, token, qrToken, paymentMethod, upiTransactionReference, amount, notes } = req.body || {};
     const rawToken = token || qrToken;
@@ -544,25 +554,15 @@ router.post('/collect-payment', auth, checkRole(['admin']), async (req, res) => 
       return res.status(404).json({ success: false, message: 'Pass not found' });
     }
 
-    // 1. Price Confirmation Guard: Administrator must have explicitly approved ticket price
-    const settings = await MorasLiveEventSettings.getSettings('moras-live-2026');
-    if (!settings.priceConfirmed) {
-      return res.status(400).json({
-        success: false,
-        message:
-          'Ticket price has not yet been approved by the administrator. Payment collection is currently disabled.',
-      });
-    }
-
-    // 2. Check if already paid
+    // 1. Check if already paid
     if (pass.paymentStatus === 'PAID') {
       return res.status(400).json({
         success: false,
-        message: `Pass ${pass.passId} is already PAID and active.`,
+        message: `Pass ${pass.passId} is already PAID.`,
       });
     }
 
-    // 3. Payment Method validation
+    // 2. Payment Method validation
     if (!['UPI', 'CASH'].includes(paymentMethod)) {
       return res.status(400).json({
         success: false,
@@ -570,7 +570,7 @@ router.post('/collect-payment', auth, checkRole(['admin']), async (req, res) => 
       });
     }
 
-    // 4. UPI Reference validation
+    // 3. UPI Reference validation
     const cleanUpiRef = typeof upiTransactionReference === 'string' ? upiTransactionReference.trim() : '';
     if (paymentMethod === 'UPI' && cleanUpiRef.length < 4) {
       return res.status(400).json({
@@ -580,19 +580,21 @@ router.post('/collect-payment', auth, checkRole(['admin']), async (req, res) => 
       });
     }
 
-    const confirmedAmount = Number(amount) || settings.approvedPassPrice || 149;
-    const verifiedBy = req.user?.username || 'admin';
+    const confirmedAmount = Number(amount) || pass.payableAmount || 149;
+    const verifiedBy = req.user?.username || req.user?.email || 'admin';
 
-    // 5. Atomic Update on existing pass document
+    // 4. Atomic Update on existing pass document
     pass.paymentStatus = 'PAID';
     pass.reservationStatus = 'CONFIRMED';
     pass.ticketStatus = 'ACTIVE';
     pass.paidAmount = confirmedAmount;
     pass.paymentMethod = paymentMethod;
     pass.upiTransactionReference = cleanUpiRef;
+    pass.paymentRecordedBy = verifiedBy;
+    pass.paymentRecordedAt = new Date();
     await pass.save();
 
-    // 6. Record in Payment Ledger
+    // 5. Record in Payment Ledger
     const paymentId = `PAY-${pass.passId}-${Date.now().toString(36).toUpperCase()}`;
     const paymentRecord = await MorasLivePayment.create({
       paymentId,
@@ -610,7 +612,7 @@ router.post('/collect-payment', auth, checkRole(['admin']), async (req, res) => 
 
     return res.json({
       success: true,
-      message: `Payment of ₹${confirmedAmount} verified via ${paymentMethod}. Pass ${pass.passId} is now ACTIVE!`,
+      message: `Payment of ₹${confirmedAmount} verified via ${paymentMethod}. Pass ${pass.passId} is confirmed!`,
       payment: paymentRecord,
       pass: {
         passId: pass.passId,
@@ -633,7 +635,7 @@ router.post('/collect-payment', auth, checkRole(['admin']), async (req, res) => 
 // 6. STAFF / ADMIN: CAPPUCCINO REDEMPTION (SAME QR, INDEPENDENT STATUS)
 // POST /api/moras-live/passes/redeem-cappuccino
 // =========================================================================
-router.post('/redeem-cappuccino', auth, checkRole(['admin', 'kitchen']), async (req, res) => {
+router.post('/redeem-cappuccino', auth, checkPermission('moras_live_cappuccino_redeem'), async (req, res) => {
   try {
     const { passId, token, qrToken, staffId } = req.body || {};
     const rawToken = token || qrToken;
@@ -655,7 +657,7 @@ router.post('/redeem-cappuccino', auth, checkRole(['admin', 'kitchen']), async (
     if (pass.paymentStatus !== 'PAID') {
       return res.status(400).json({
         success: false,
-        message: 'Payment has not been completed. Complimentary cappuccino is available only after payment verification.',
+        message: 'Payment has not been completed. Complimentary cappuccino is available only after entrance payment.',
       });
     }
 
@@ -669,7 +671,7 @@ router.post('/redeem-cappuccino', auth, checkRole(['admin', 'kitchen']), async (
       });
     }
 
-    const verifier = staffId || req.user?.username || 'Staff';
+    const verifier = staffId || req.user?.username || req.user?.email || 'Barista Staff';
     pass.cappuccinoRedeemed = true;
     pass.cappuccinoRedeemedAt = new Date();
     pass.cappuccinoRedeemedBy = verifier;
@@ -704,7 +706,7 @@ router.post('/redeem-cappuccino', auth, checkRole(['admin', 'kitchen']), async (
 // 7. STAFF / ADMIN: EVENT ENTRY SCANNER (SAME QR)
 // POST /api/moras-live/passes/check-in-entry
 // =========================================================================
-router.post('/check-in-entry', auth, checkRole(['admin', 'kitchen']), async (req, res) => {
+router.post('/check-in-entry', auth, checkPermission('moras_live_entry_checkin'), async (req, res) => {
   try {
     const { passId, token, qrToken, staffId } = req.body || {};
     const rawToken = token || qrToken;
@@ -723,22 +725,9 @@ router.post('/check-in-entry', auth, checkRole(['admin', 'kitchen']), async (req
       return res.status(404).json({ success: false, message: 'INVALID PASS' });
     }
 
-    if (pass.paymentStatus !== 'PAID') {
-      return res.status(400).json({
-        success: false,
-        message: 'PAYMENT NOT CONFIRMED — ENTRY DENIED',
-      });
-    }
-
-    if (pass.ticketStatus !== 'ACTIVE') {
-      return res.status(400).json({
-        success: false,
-        message: 'INVALID PASS — Pass is inactive or has been revoked.',
-      });
-    }
-
+    // 1. Duplicate check: Already Checked In?
     if (pass.entryCheckedIn) {
-      return res.status(400).json({
+      return res.status(409).json({
         success: false,
         alreadyCheckedIn: true,
         message: 'ALREADY CHECKED IN',
@@ -749,8 +738,23 @@ router.post('/check-in-entry', auth, checkRole(['admin', 'kitchen']), async (req
       });
     }
 
+    // 2. Payment check
+    if (pass.paymentStatus !== 'PAID') {
+      return res.status(400).json({
+        success: false,
+        message: 'PAYMENT NOT CONFIRMED — Payment of ₹149 is due at the event entrance before admission.',
+      });
+    }
+
+    if (pass.ticketStatus !== 'ACTIVE') {
+      return res.status(400).json({
+        success: false,
+        message: 'INVALID PASS — Pass is inactive or has been revoked.',
+      });
+    }
+
     // Atomic update
-    const verifier = staffId || req.user?.username || 'Entry Staff';
+    const verifier = staffId || req.user?.username || req.user?.email || 'Door Staff';
     const updated = await MorasLiveAudiencePass.findOneAndUpdate(
       { passId: pass.passId, entryCheckedIn: false, paymentStatus: 'PAID' },
       {
@@ -785,6 +789,128 @@ router.post('/check-in-entry', auth, checkRole(['admin', 'kitchen']), async (req
   } catch (error) {
     console.error('[MORAS LIVE PASSES] Event entry check-in error:', error);
     return res.status(500).json({ success: false, message: 'Failed to process event entry' });
+  }
+});
+
+// =========================================================================
+// 7B. STAFF / ADMIN: COMBINED ENTRANCE DESK ADMISSION (PAYMENT + CHECK-IN)
+// POST /api/moras-live/passes/entrance-admit
+// =========================================================================
+router.post('/entrance-admit', auth, checkPermission('moras_live_entry_checkin'), async (req, res) => {
+  try {
+    const { passId, token, qrToken, paymentMethod, upiTransactionReference, staffId } = req.body || {};
+    const rawToken = token || qrToken;
+
+    let query = { eventId: 'moras-live-2026' };
+    if (passId) {
+      query.passId = String(passId).trim().toUpperCase();
+    } else if (rawToken) {
+      query.qrTokenHash = hashQrToken(rawToken);
+    } else {
+      return res.status(400).json({ success: false, message: 'passId or token is required' });
+    }
+
+    const pass = await MorasLiveAudiencePass.findOne(query);
+    if (!pass) {
+      return res.status(404).json({ success: false, message: 'INVALID PASS' });
+    }
+
+    // 1. Duplicate check: Already Checked In?
+    if (pass.entryCheckedIn) {
+      return res.status(409).json({
+        success: false,
+        alreadyCheckedIn: true,
+        message: 'ALREADY CHECKED IN',
+        checkedInAt: pass.entryCheckedInAt,
+        checkedInBy: pass.entryCheckedInBy,
+        customerName: pass.customerName,
+        passId: pass.passId,
+      });
+    }
+
+    if (pass.ticketStatus === 'REVOKED' || pass.reservationStatus === 'CANCELLED') {
+      return res.status(400).json({
+        success: false,
+        message: 'INVALID PASS — Pass is inactive or has been revoked.',
+      });
+    }
+
+    const verifier = staffId || req.user?.username || req.user?.email || 'Entrance Desk';
+
+    // 2. If Payment is Pending, collect payment
+    if (pass.paymentStatus !== 'PAID') {
+      if (!['UPI', 'CASH'].includes(paymentMethod)) {
+        return res.status(400).json({
+          success: false,
+          message: 'Payment of ₹149 is required for entrance admission. Please select CASH or UPI.',
+        });
+      }
+
+      const cleanUpiRef = typeof upiTransactionReference === 'string' ? upiTransactionReference.trim() : '';
+      if (paymentMethod === 'UPI' && cleanUpiRef.length < 4) {
+        return res.status(400).json({
+          success: false,
+          field: 'upiTransactionReference',
+          message: 'Please enter the official UPI transaction reference/UTR number.',
+        });
+      }
+
+      const confirmedAmount = pass.payableAmount || 149;
+      pass.paymentStatus = 'PAID';
+      pass.reservationStatus = 'CONFIRMED';
+      pass.ticketStatus = 'ACTIVE';
+      pass.paidAmount = confirmedAmount;
+      pass.paymentMethod = paymentMethod;
+      pass.upiTransactionReference = cleanUpiRef;
+      pass.paymentRecordedBy = verifier;
+      pass.paymentRecordedAt = new Date();
+
+      const paymentId = `PAY-${pass.passId}-${Date.now().toString(36).toUpperCase()}`;
+      await MorasLivePayment.create({
+        paymentId,
+        passId: pass.passId,
+        amount: confirmedAmount,
+        paymentMethod,
+        upiTransactionReference: cleanUpiRef,
+        paymentStatus: 'PAID',
+        verifiedBy: verifier,
+        verifiedAt: new Date(),
+        notes: 'Collected at event entrance desk',
+      });
+    }
+
+    // 3. Mark Entry Checked In
+    pass.entryCheckedIn = true;
+    pass.entryCheckedInAt = new Date();
+    pass.entryCheckedInBy = verifier;
+    await pass.save();
+
+    return res.json({
+      success: true,
+      message: 'ADMISSION GRANTED — ENTRY CHECKED IN',
+      customerName: pass.customerName,
+      passId: pass.passId,
+      entryCheckedIn: true,
+      cappuccinoRedeemed: pass.cappuccinoRedeemed,
+      paymentStatus: pass.paymentStatus,
+      paidAmount: pass.paidAmount,
+      paymentMethod: pass.paymentMethod,
+      checkedInAt: pass.entryCheckedInAt,
+      checkedInBy: pass.entryCheckedInBy,
+      pass: {
+        passId: pass.passId,
+        customerName: pass.customerName,
+        entryCheckedIn: true,
+        cappuccinoRedeemed: pass.cappuccinoRedeemed,
+        paymentStatus: pass.paymentStatus,
+        paidAmount: pass.paidAmount,
+        checkedInAt: pass.entryCheckedInAt,
+        checkedInBy: pass.entryCheckedInBy,
+      },
+    });
+  } catch (error) {
+    console.error('[MORAS LIVE PASSES] Entrance admit error:', error);
+    return res.status(500).json({ success: false, message: 'Failed to process entrance admission' });
   }
 });
 
@@ -847,19 +973,17 @@ router.get('/admin/list', auth, checkRole(['admin']), async (req, res) => {
 router.get('/admin/stats', auth, checkRole(['admin']), async (req, res) => {
   try {
     const settings = await MorasLiveEventSettings.getSettings('moras-live-2026');
-    const now = new Date();
 
     const activeReservations = await MorasLiveAudiencePass.countDocuments({
       eventId: 'moras-live-2026',
-      reservationStatus: 'RESERVED',
-      expiresAt: { $gt: now },
+      reservationStatus: { $in: ['ACTIVE', 'RESERVED', 'CONFIRMED'] },
+      paymentStatus: { $ne: 'PAID' },
     });
 
     const pendingPayments = await MorasLiveAudiencePass.countDocuments({
       eventId: 'moras-live-2026',
       paymentStatus: 'PENDING',
-      reservationStatus: 'RESERVED',
-      expiresAt: { $gt: now },
+      reservationStatus: { $in: ['ACTIVE', 'RESERVED', 'CONFIRMED'] },
     });
 
     const confirmedPaidPasses = await MorasLiveAudiencePass.countDocuments({
@@ -878,13 +1002,14 @@ router.get('/admin/stats', auth, checkRole(['admin']), async (req, res) => {
     let cashTotal = 0;
 
     payments.forEach((p) => {
-      totalAmountCollected += p.amount;
+      const amt = Number(p.amount) || 0;
+      totalAmountCollected += amt;
       if (p.paymentMethod === 'UPI') {
         upiCount++;
-        upiTotal += p.amount;
+        upiTotal += amt;
       } else if (p.paymentMethod === 'CASH') {
         cashCount++;
-        cashTotal += p.amount;
+        cashTotal += amt;
       }
     });
 
@@ -896,6 +1021,16 @@ router.get('/admin/stats', auth, checkRole(['admin']), async (req, res) => {
     const eventCheckIns = await MorasLiveAudiencePass.countDocuments({
       eventId: 'moras-live-2026',
       entryCheckedIn: true,
+    });
+
+    const emailsSent = await MorasLiveAudiencePass.countDocuments({
+      eventId: 'moras-live-2026',
+      emailDeliveryStatus: 'SENT',
+    });
+
+    const emailsFailed = await MorasLiveAudiencePass.countDocuments({
+      eventId: 'moras-live-2026',
+      emailDeliveryStatus: 'FAILED',
     });
 
     return res.json({
@@ -913,6 +1048,8 @@ router.get('/admin/stats', auth, checkRole(['admin']), async (req, res) => {
         cashCount,
         cappuccinosRedeemed,
         eventCheckIns,
+        emailsSent,
+        emailsFailed,
       },
     });
   } catch (error) {
@@ -947,6 +1084,7 @@ router.patch('/admin/settings', auth, checkRole(['admin']), async (req, res) => 
       reservationsEnabled,
       paymentCollectionEnabled,
       reservationExpiryHours,
+      reservationCutoffDate,
     } = req.body || {};
 
     const updateFields = {};
@@ -960,6 +1098,7 @@ router.patch('/admin/settings', auth, checkRole(['admin']), async (req, res) => 
     if (reservationsEnabled !== undefined) updateFields.reservationsEnabled = Boolean(reservationsEnabled);
     if (paymentCollectionEnabled !== undefined) updateFields.paymentCollectionEnabled = Boolean(paymentCollectionEnabled);
     if (reservationExpiryHours !== undefined) updateFields.reservationExpiryHours = Number(reservationExpiryHours);
+    if (reservationCutoffDate !== undefined) updateFields.reservationCutoffDate = reservationCutoffDate ? new Date(reservationCutoffDate) : null;
 
     const settings = await MorasLiveEventSettings.findOneAndUpdate(
       { eventId: 'moras-live-2026' },
