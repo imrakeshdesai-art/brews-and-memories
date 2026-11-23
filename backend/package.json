@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "nodemon src/server.js",
     "start": "node src/server.js",
-    "test": "node test/orders_security.test.js && node test/email.test.js && node test/orders_track.test.js && node test/menu_availability.test.js && node test/moras_live.test.js"
+    "test": "node test/orders_security.test.js && node test/email.test.js && node test/orders_track.test.js && node test/menu_availability.test.js && node test/moras_live.test.js && node test/moras_live_passes.test.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
@@ -19,6 +19,7 @@
     "mongoose": "^7.5.5",
     "morgan": "^1.10.0",
     "nodemailer": "^8.0.9",
+    "qrcode": "^1.5.4",
     "twilio": "^6.0.2"
   },
   "devDependencies": {

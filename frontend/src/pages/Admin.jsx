@@ -354,6 +354,307 @@ function Admin() {
     }
   };
 
+  // ================= MORAS LIVE AUDIENCE PASSES STATE & ACTIONS =================
+  const [morasPasses, setMorasPasses] = useState([]);
+  const [morasPassStats, setMorasPassStats] = useState({
+    totalCapacity: 60,
+    activeReservations: 0,
+    pendingPayments: 0,
+    confirmedPaidPasses: 0,
+    availablePasses: 60,
+    totalAmountCollected: 0,
+    upiCollections: 0,
+    cashCollections: 0,
+    cappuccinosRedeemed: 0,
+    eventCheckIns: 0,
+  });
+  const [morasEventSettings, setMorasEventSettings] = useState(null);
+  const [morasPassLoading, setMorasPassLoading] = useState(false);
+  const [morasPassSearch, setMorasPassSearch] = useState('');
+  const [morasPassStatusFilter, setMorasPassStatusFilter] = useState('');
+  const [morasPassPaymentFilter, setMorasPassPaymentFilter] = useState('');
+
+  // Scanner & Action Desk State
+  const [scannerInput, setScannerInput] = useState('');
+  const [scannedPass, setScannedPass] = useState(null);
+  const [scannerPermissions, setScannerPermissions] = useState(null);
+  const [scannerLoading, setScannerLoading] = useState(false);
+  const [paymentMethodChoice, setPaymentMethodChoice] = useState('UPI');
+  const [upiUtrInput, setUpiUtrInput] = useState('');
+  const [paymentNotesInput, setPaymentNotesInput] = useState('');
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+  const [isProcessingCappuccino, setIsProcessingCappuccino] = useState(false);
+  const [isProcessingEntry, setIsProcessingEntry] = useState(false);
+
+  // Settings Modal State
+  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
+  const [settingsDraft, setSettingsDraft] = useState({
+    approvedPassPrice: 149,
+    proposedPassPrice: 149,
+    priceConfirmed: false,
+    eventDate: '',
+    eventStartTime: '',
+    eventEndTime: '',
+    reservationsEnabled: true,
+    paymentCollectionEnabled: false,
+    reservationExpiryHours: 24,
+  });
+  const [isSavingSettings, setIsSavingSettings] = useState(false);
+
+  const fetchMorasPassStats = useCallback(async () => {
+    try {
+      const res = await api.get('/moras-live/passes/admin/stats');
+      if (res.data?.success && res.data?.stats) {
+        setMorasPassStats(res.data.stats);
+      }
+    } catch (err) {
+      console.warn('Failed to fetch pass stats:', err.message);
+    }
+  }, []);
+
+  const fetchMorasPassSettings = useCallback(async () => {
+    try {
+      const res = await api.get('/moras-live/passes/admin/settings');
+      if (res.data?.success && res.data?.settings) {
+        setMorasEventSettings(res.data.settings);
+        setSettingsDraft({
+          approvedPassPrice: res.data.settings.approvedPassPrice || 149,
+          proposedPassPrice: res.data.settings.proposedPassPrice || 149,
+          priceConfirmed: !!res.data.settings.priceConfirmed,
+          eventDate: res.data.settings.eventDate || '',
+          eventStartTime: res.data.settings.eventStartTime || '',
+          eventEndTime: res.data.settings.eventEndTime || '',
+          reservationsEnabled: res.data.settings.reservationsEnabled !== false,
+          paymentCollectionEnabled: !!res.data.settings.paymentCollectionEnabled,
+          reservationExpiryHours: res.data.settings.reservationExpiryHours || 24,
+        });
+      }
+    } catch (err) {
+      console.warn('Failed to fetch pass settings:', err.message);
+    }
+  }, []);
+
+  const fetchMorasPasses = useCallback(async () => {
+    setMorasPassLoading(true);
+    try {
+      const params = {};
+      if (morasPassStatusFilter) params.status = morasPassStatusFilter;
+      if (morasPassPaymentFilter) params.paymentStatus = morasPassPaymentFilter;
+      if (morasPassSearch.trim()) params.search = morasPassSearch.trim();
+
+      const res = await api.get('/moras-live/passes/admin/list', { params });
+      if (res.data?.success && res.data?.passes) {
+        setMorasPasses(res.data.passes);
+      }
+    } catch (err) {
+      toast('Failed to load audience passes: ' + (err.response?.data?.message || err.message));
+    } finally {
+      setMorasPassLoading(false);
+    }
+  }, [morasPassStatusFilter, morasPassPaymentFilter, morasPassSearch, toast]);
+
+  useEffect(() => {
+    if (activeTab === 'moras-live-passes') {
+      fetchMorasPassStats();
+      fetchMorasPassSettings();
+      fetchMorasPasses();
+    }
+  }, [activeTab, fetchMorasPassStats, fetchMorasPassSettings, fetchMorasPasses]);
+
+  const handleVerifyPass = async (queryOverride) => {
+    const raw = (queryOverride || scannerInput).trim();
+    if (!raw) {
+      toast('Please enter a Pass ID (e.g. ML-0001), 10-digit mobile number, or QR token');
+      return;
+    }
+
+    setScannerLoading(true);
+    try {
+      let body = {};
+      if (raw.toUpperCase().startsWith('ML-')) {
+        body.passId = raw.toUpperCase();
+      } else if (raw.length === 64) {
+        body.token = raw;
+      } else if (raw.includes('token=')) {
+        try {
+          const parsedUrl = new URL(raw.startsWith('http') ? raw : `https://${raw}`);
+          const tok = parsedUrl.searchParams.get('token');
+          const pid = parsedUrl.searchParams.get('passId');
+          if (tok) body.token = tok;
+          else if (pid) body.passId = pid;
+        } catch (e) {
+          body.token = raw;
+        }
+      } else {
+        body.passId = raw;
+      }
+
+      const res = await api.post('/moras-live/passes/verify-qr', body);
+      if (res.data?.success && res.data?.pass) {
+        setScannedPass(res.data.pass);
+        setScannerPermissions(res.data.permissions || null);
+        toast(`Pass ${res.data.pass.passId} verified successfully!`);
+      }
+    } catch (err) {
+      toast(err.response?.data?.message || 'Invalid pass or pass not found in system.');
+    } finally {
+      setScannerLoading(false);
+    }
+  };
+
+  const handleCollectPayment = async (targetPassId) => {
+    if (!targetPassId) return;
+    if (paymentMethodChoice === 'UPI' && (!upiUtrInput || upiUtrInput.trim().length < 6)) {
+      toast('Please enter a valid UPI Transaction Reference / UTR (at least 6 digits)');
+      return;
+    }
+
+    setIsProcessingPayment(true);
+    try {
+      const res = await api.post('/moras-live/passes/collect-payment', {
+        passId: targetPassId,
+        paymentMethod: paymentMethodChoice,
+        upiTransactionReference: paymentMethodChoice === 'UPI' ? upiUtrInput.trim() : '',
+        notes: paymentNotesInput.trim(),
+      });
+
+      if (res.data?.success) {
+        toast(`✅ Payment collected! Pass ${targetPassId} is now PAID and active.`);
+        setScannedPass(res.data.pass);
+        setUpiUtrInput('');
+        setPaymentNotesInput('');
+        fetchMorasPassStats();
+        fetchMorasPasses();
+      }
+    } catch (err) {
+      toast('Payment collection failed: ' + (err.response?.data?.message || err.message));
+    } finally {
+      setIsProcessingPayment(false);
+    }
+  };
+
+  const handleRedeemCappuccino = async (targetPassId) => {
+    if (!targetPassId) return;
+    setIsProcessingCappuccino(true);
+    try {
+      const res = await api.post('/moras-live/passes/redeem-cappuccino', {
+        passId: targetPassId,
+      });
+
+      if (res.data?.success) {
+        toast(`☕ ${res.data.message || '1 Cappuccino redeemed successfully!'}`);
+        if (scannedPass && scannedPass.passId === targetPassId) {
+          setScannedPass((prev) => ({
+            ...prev,
+            cappuccinoRedeemed: true,
+            cappuccinoRedeemedAt: res.data.redeemedAt || new Date().toISOString(),
+          }));
+        }
+        fetchMorasPassStats();
+        fetchMorasPasses();
+      }
+    } catch (err) {
+      toast(err.response?.data?.message || 'Failed to redeem cappuccino');
+    } finally {
+      setIsProcessingCappuccino(false);
+    }
+  };
+
+  const handleCheckInEntry = async (targetPassId) => {
+    if (!targetPassId) return;
+    setIsProcessingEntry(true);
+    try {
+      const res = await api.post('/moras-live/passes/check-in-entry', {
+        passId: targetPassId,
+      });
+
+      if (res.data?.success) {
+        toast(`🚪 ${res.data.message || 'Entry check-in approved!'}`);
+        if (scannedPass && scannedPass.passId === targetPassId) {
+          setScannedPass((prev) => ({
+            ...prev,
+            entryCheckedIn: true,
+            entryCheckedInAt: res.data.checkedInAt || new Date().toISOString(),
+          }));
+        }
+        fetchMorasPassStats();
+        fetchMorasPasses();
+      }
+    } catch (err) {
+      toast(err.response?.data?.message || 'Door check-in denied');
+    } finally {
+      setIsProcessingEntry(false);
+    }
+  };
+
+  const handleReactivatePass = async (targetPassId) => {
+    if (!targetPassId) return;
+    if (!window.confirm(`Reactivate reservation for pass ${targetPassId}? Original QR will remain active.`)) return;
+    try {
+      const res = await api.post('/moras-live/passes/admin/reactivate', { passId: targetPassId });
+      if (res.data?.success) {
+        toast(res.data.message || `Pass ${targetPassId} reactivated`);
+        fetchMorasPassStats();
+        fetchMorasPasses();
+      }
+    } catch (err) {
+      toast('Failed to reactivate: ' + (err.response?.data?.message || err.message));
+    }
+  };
+
+  const handleRevokePass = async (targetPassId, customerName) => {
+    if (!targetPassId) return;
+    if (!window.confirm(`Are you sure you want to cancel and revoke pass ${targetPassId} (${customerName})?`)) return;
+    try {
+      const res = await api.delete(`/moras-live/passes/admin/${targetPassId}`);
+      if (res.data?.success) {
+        toast(`Pass ${targetPassId} has been revoked`);
+        if (scannedPass && scannedPass.passId === targetPassId) {
+          setScannedPass(null);
+        }
+        fetchMorasPassStats();
+        fetchMorasPasses();
+      }
+    } catch (err) {
+      toast('Failed to revoke pass: ' + (err.response?.data?.message || err.message));
+    }
+  };
+
+  const handleExportPassesCsv = async () => {
+    try {
+      const res = await api.get('/moras-live/passes/admin/export', { responseType: 'blob' });
+      const blob = new Blob([res.data], { type: 'text/csv;charset=utf-8;' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `moras_live_audience_passes_${new Date().toISOString().slice(0, 10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+      toast('Exported audience passes to CSV successfully!');
+    } catch (err) {
+      toast('Failed to export CSV: ' + (err.response?.data?.message || err.message));
+    }
+  };
+
+  const handleSaveEventSettings = async () => {
+    setIsSavingSettings(true);
+    try {
+      const res = await api.patch('/moras-live/passes/admin/settings', settingsDraft);
+      if (res.data?.success) {
+        toast('MORAS LIVE event settings updated successfully!');
+        setMorasEventSettings(res.data.settings);
+        setIsSettingsModalOpen(false);
+        fetchMorasPassStats();
+      }
+    } catch (err) {
+      toast('Failed to save settings: ' + (err.response?.data?.message || err.message));
+    } finally {
+      setIsSavingSettings(false);
+    }
+  };
+
   useEffect(() => {
     const currentPendingCount = orders.filter((o) => o.status === 'pending').length;
     if (currentPendingCount > prevPendingCountRef.current && prevPendingCountRef.current > 0) {
@@ -899,6 +1200,17 @@ function Admin() {
                 {morasLiveStats.total}
               </span>
             )}
+          </button>
+
+          <button
+            type="button"
+            className={`admin-tab-btn ${activeTab === 'moras-live-passes' ? 'active' : ''}`}
+            onClick={() => setActiveTab('moras-live-passes')}
+          >
+            <span>🎟️ Passes &amp; QR</span>
+            <span className={`admin-tab-badge ${activeTab === 'moras-live-passes' ? 'badge-active' : 'badge-inactive'}`}>
+              {morasPassStats.confirmedPaidPasses}/60
+            </span>
           </button>
         </nav>
 
@@ -2656,6 +2968,990 @@ function Admin() {
                         🗑️ Delete
                       </button>
                     </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ======================================================== */}
+        {/* MORAS LIVE — AUDIENCE PASSES & DIGITAL ENTRY DASHBOARD */}
+        {/* ======================================================== */}
+        {activeTab === 'moras-live-passes' && (role === 'admin' || role === 'kitchen') && (
+          <div className="moras-live-passes-admin-section" style={{ textAlign: 'left' }}>
+            {/* Header Toolbar */}
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                flexWrap: 'wrap',
+                gap: 16,
+                marginBottom: 20,
+                background: '#123F3D',
+                padding: '20px 24px',
+                borderRadius: 14,
+                color: '#F5E8D0',
+                border: '1px solid rgba(197, 168, 128, 0.3)',
+              }}
+            >
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <span style={{ fontSize: '1.8rem' }}>🎟️</span>
+                  <div>
+                    <h3
+                      style={{
+                        margin: 0,
+                        fontSize: '1.45rem',
+                        fontFamily: "'Playfair Display', serif",
+                        letterSpacing: '0.04em',
+                        color: '#F5E8D0',
+                      }}
+                    >
+                      MORAS LIVE — Audience Passes &amp; Digital Entry
+                    </h3>
+                    <p style={{ margin: '4px 0 0', fontSize: '0.85rem', color: '#c5a880' }}>
+                      Strict 60-Pass Capacity • Single QR Verification • Cafe Payment Desk • Cappuccino • Door Entry
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+                <a
+                  href="/moras-live/passes"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 6,
+                    padding: '8px 14px',
+                    borderRadius: 8,
+                    background: 'rgba(245, 232, 208, 0.12)',
+                    color: '#F5E8D0',
+                    border: '1px solid rgba(245, 232, 208, 0.3)',
+                    fontSize: '0.84rem',
+                    fontWeight: 600,
+                    textDecoration: 'none',
+                  }}
+                >
+                  <span>🔗</span> Public Pass Page
+                </a>
+
+                {role === 'admin' && (
+                  <button
+                    type="button"
+                    onClick={() => setIsSettingsModalOpen(true)}
+                    style={{
+                      padding: '8px 14px',
+                      borderRadius: 8,
+                      background: '#F5E8D0',
+                      color: '#123F3D',
+                      border: 'none',
+                      fontSize: '0.84rem',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    ⚙️ Event &amp; Pricing Settings
+                  </button>
+                )}
+
+                <button
+                  type="button"
+                  onClick={handleExportPassesCsv}
+                  style={{
+                    padding: '8px 14px',
+                    borderRadius: 8,
+                    background: 'rgba(245, 232, 208, 0.15)',
+                    color: '#F5E8D0',
+                    border: '1px solid rgba(245, 232, 208, 0.3)',
+                    fontSize: '0.84rem',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                  }}
+                >
+                  📥 Export Passes CSV
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    fetchMorasPassStats();
+                    fetchMorasPassSettings();
+                    fetchMorasPasses();
+                  }}
+                  disabled={morasPassLoading}
+                  style={{
+                    padding: '8px 14px',
+                    borderRadius: 8,
+                    background: 'rgba(245, 232, 208, 0.15)',
+                    color: '#F5E8D0',
+                    border: '1px solid rgba(245, 232, 208, 0.3)',
+                    fontSize: '0.84rem',
+                    fontWeight: 600,
+                    cursor: morasPassLoading ? 'wait' : 'pointer',
+                  }}
+                >
+                  🔄 {morasPassLoading ? 'Refreshing…' : 'Refresh'}
+                </button>
+              </div>
+            </div>
+
+            {/* Pricing Approval Status Alert */}
+            {morasEventSettings && !morasEventSettings.priceConfirmed ? (
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  flexWrap: 'wrap',
+                  gap: 12,
+                  background: '#FFFBEB',
+                  border: '1.5px solid #F59E0B',
+                  borderRadius: 12,
+                  padding: '14px 20px',
+                  marginBottom: 20,
+                  color: '#92400E',
+                }}
+              >
+                <div>
+                  <div style={{ fontWeight: 800, fontSize: '0.95rem' }}>
+                    ⚠️ TICKET PRICE UNCONFIRMED (₹{morasEventSettings.proposedPassPrice || 149} Draft)
+                  </div>
+                  <div style={{ fontSize: '0.85rem', marginTop: 2, color: '#78350F' }}>
+                    Payment collection at the café is <strong>disabled</strong> until an administrator explicitly approves the final ticket price.
+                  </div>
+                </div>
+
+                {role === 'admin' && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSettingsDraft((prev) => ({
+                        ...prev,
+                        priceConfirmed: true,
+                        approvedPassPrice: prev.proposedPassPrice || 149,
+                        paymentCollectionEnabled: true,
+                      }));
+                      setIsSettingsModalOpen(true);
+                    }}
+                    style={{
+                      padding: '8px 16px',
+                      background: '#15803D',
+                      color: '#FFF',
+                      border: 'none',
+                      borderRadius: 8,
+                      fontWeight: 800,
+                      fontSize: '0.86rem',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    Approve Final Price (₹{morasEventSettings.proposedPassPrice || 149})
+                  </button>
+                )}
+              </div>
+            ) : (
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  flexWrap: 'wrap',
+                  gap: 12,
+                  background: '#F0FDF4',
+                  border: '1.5px solid #86EFAC',
+                  borderRadius: 12,
+                  padding: '12px 20px',
+                  marginBottom: 20,
+                  color: '#166534',
+                  fontSize: '0.88rem',
+                }}
+              >
+                <div>
+                  <strong>✅ Approved Ticket Price:</strong> ₹{morasEventSettings?.approvedPassPrice || 149} per pass • Physical payment collection is <strong>ACTIVE</strong>.
+                </div>
+                <div style={{ fontSize: '0.82rem', color: '#15803D' }}>
+                  Complimentary Cappuccino included with each confirmed pass.
+                </div>
+              </div>
+            )}
+
+            {/* 10 Operational Summary Stat Cards */}
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
+                gap: 12,
+                marginBottom: 24,
+              }}
+            >
+              {/* 1. Total Capacity */}
+              <div style={{ background: '#FFFFFF', padding: '14px 16px', borderRadius: 10, border: '1px solid #E2E8F0', boxShadow: '0 2px 6px rgba(0,0,0,0.03)' }}>
+                <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', color: '#64748B', fontWeight: 700 }}>Total Capacity</div>
+                <div style={{ fontSize: '1.6rem', fontWeight: 900, color: '#123F3D', marginTop: 4 }}>
+                  {morasPassStats.totalCapacity || 60}
+                </div>
+                <div style={{ fontSize: '0.72rem', color: '#94A3B8' }}>Strict max ceiling</div>
+              </div>
+
+              {/* 2. Available Passes */}
+              <div style={{ background: '#FFFFFF', padding: '14px 16px', borderRadius: 10, border: '1px solid #E2E8F0', boxShadow: '0 2px 6px rgba(0,0,0,0.03)' }}>
+                <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', color: '#64748B', fontWeight: 700 }}>Available Passes</div>
+                <div style={{ fontSize: '1.6rem', fontWeight: 900, color: morasPassStats.availablePasses > 0 ? '#15803D' : '#DC2626', marginTop: 4 }}>
+                  {morasPassStats.availablePasses}
+                </div>
+                <div style={{ fontSize: '0.72rem', color: morasPassStats.availablePasses > 0 ? '#166534' : '#DC2626' }}>
+                  {morasPassStats.availablePasses > 0 ? 'Remaining slots' : 'SOLD OUT'}
+                </div>
+              </div>
+
+              {/* 3. Confirmed Paid Passes */}
+              <div style={{ background: '#FFFFFF', padding: '14px 16px', borderRadius: 10, border: '1px solid #E2E8F0', boxShadow: '0 2px 6px rgba(0,0,0,0.03)' }}>
+                <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', color: '#64748B', fontWeight: 700 }}>Paid &amp; Active</div>
+                <div style={{ fontSize: '1.6rem', fontWeight: 900, color: '#15803D', marginTop: 4 }}>
+                  {morasPassStats.confirmedPaidPasses || 0}
+                </div>
+                <div style={{ fontSize: '0.72rem', color: '#64748B' }}>Confirmed passes</div>
+              </div>
+
+              {/* 4. Active Reservations */}
+              <div style={{ background: '#FFFFFF', padding: '14px 16px', borderRadius: 10, border: '1px solid #E2E8F0', boxShadow: '0 2px 6px rgba(0,0,0,0.03)' }}>
+                <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', color: '#64748B', fontWeight: 700 }}>Reserved (Unpaid)</div>
+                <div style={{ fontSize: '1.6rem', fontWeight: 900, color: '#D97706', marginTop: 4 }}>
+                  {morasPassStats.activeReservations || 0}
+                </div>
+                <div style={{ fontSize: '0.72rem', color: '#64748B' }}>Payment pending</div>
+              </div>
+
+              {/* 5. Total Collections */}
+              <div style={{ background: '#FFFFFF', padding: '14px 16px', borderRadius: 10, border: '1px solid #E2E8F0', boxShadow: '0 2px 6px rgba(0,0,0,0.03)' }}>
+                <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', color: '#64748B', fontWeight: 700 }}>Total Collected</div>
+                <div style={{ fontSize: '1.6rem', fontWeight: 900, color: '#123F3D', marginTop: 4 }}>
+                  ₹{morasPassStats.totalAmountCollected || 0}
+                </div>
+                <div style={{ fontSize: '0.72rem', color: '#64748B' }}>Physical collections</div>
+              </div>
+
+              {/* 6. UPI Collections */}
+              <div style={{ background: '#FFFFFF', padding: '14px 16px', borderRadius: 10, border: '1px solid #E2E8F0', boxShadow: '0 2px 6px rgba(0,0,0,0.03)' }}>
+                <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', color: '#64748B', fontWeight: 700 }}>UPI Collections</div>
+                <div style={{ fontSize: '1.6rem', fontWeight: 900, color: '#2563EB', marginTop: 4 }}>
+                  ₹{morasPassStats.upiCollections || 0}
+                </div>
+                <div style={{ fontSize: '0.72rem', color: '#64748B' }}>Verified with UTR</div>
+              </div>
+
+              {/* 7. Cash Collections */}
+              <div style={{ background: '#FFFFFF', padding: '14px 16px', borderRadius: 10, border: '1px solid #E2E8F0', boxShadow: '0 2px 6px rgba(0,0,0,0.03)' }}>
+                <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', color: '#64748B', fontWeight: 700 }}>Cash Collections</div>
+                <div style={{ fontSize: '1.6rem', fontWeight: 900, color: '#059669', marginTop: 4 }}>
+                  ₹{morasPassStats.cashCollections || 0}
+                </div>
+                <div style={{ fontSize: '0.72rem', color: '#64748B' }}>Counter register</div>
+              </div>
+
+              {/* 8. Cappuccinos Redeemed */}
+              <div style={{ background: '#FFFFFF', padding: '14px 16px', borderRadius: 10, border: '1px solid #E2E8F0', boxShadow: '0 2px 6px rgba(0,0,0,0.03)' }}>
+                <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', color: '#64748B', fontWeight: 700 }}>☕ Cappuccinos</div>
+                <div style={{ fontSize: '1.6rem', fontWeight: 900, color: '#92400E', marginTop: 4 }}>
+                  {morasPassStats.cappuccinosRedeemed || 0}
+                </div>
+                <div style={{ fontSize: '0.72rem', color: '#64748B' }}>Served at café</div>
+              </div>
+
+              {/* 9. Event Check-Ins */}
+              <div style={{ background: '#FFFFFF', padding: '14px 16px', borderRadius: 10, border: '1px solid #E2E8F0', boxShadow: '0 2px 6px rgba(0,0,0,0.03)' }}>
+                <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', color: '#64748B', fontWeight: 700 }}>🚪 Door Check-Ins</div>
+                <div style={{ fontSize: '1.6rem', fontWeight: 900, color: '#7C3AED', marginTop: 4 }}>
+                  {morasPassStats.eventCheckIns || 0}
+                </div>
+                <div style={{ fontSize: '0.72rem', color: '#64748B' }}>Admitted attendees</div>
+              </div>
+            </div>
+
+            {/* ACTION DESK & SCANNER (The central operational tool for Cashier & Kitchen) */}
+            <div
+              style={{
+                background: '#FFFFFF',
+                borderRadius: 14,
+                border: '2px solid #123F3D',
+                padding: '24px',
+                marginBottom: 24,
+                boxShadow: '0 6px 18px rgba(18, 63, 61, 0.08)',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
+                <span style={{ fontSize: '1.5rem' }}>📷</span>
+                <div>
+                  <h4 style={{ margin: 0, fontSize: '1.2rem', color: '#123F3D' }}>
+                    Staff Action Desk &amp; Single-QR Scanner
+                  </h4>
+                  <p style={{ margin: '2px 0 0', fontSize: '0.82rem', color: '#666' }}>
+                    Type or paste a Pass ID (e.g. <code>ML-0001</code>), 10-digit mobile number, or raw QR Token to verify customer.
+                  </p>
+                </div>
+              </div>
+
+              {/* Scanner Search Bar */}
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleVerifyPass();
+                }}
+                style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 20 }}
+              >
+                <input
+                  type="text"
+                  placeholder="Scan QR payload, paste token, or enter ML-0001 / 9876543210..."
+                  value={scannerInput}
+                  onChange={(e) => setScannerInput(e.target.value)}
+                  disabled={scannerLoading}
+                  style={{
+                    flex: '1 1 300px',
+                    padding: '12px 16px',
+                    borderRadius: 8,
+                    border: '1.5px solid #CBD5E1',
+                    fontSize: '0.98rem',
+                    outline: 'none',
+                  }}
+                />
+                <button
+                  type="submit"
+                  disabled={scannerLoading}
+                  style={{
+                    padding: '12px 24px',
+                    borderRadius: 8,
+                    background: '#123F3D',
+                    color: '#FAF5EF',
+                    border: 'none',
+                    fontWeight: 700,
+                    fontSize: '0.95rem',
+                    cursor: scannerLoading ? 'wait' : 'pointer',
+                  }}
+                >
+                  {scannerLoading ? 'Verifying…' : '🔍 Verify Pass'}
+                </button>
+                {scannedPass && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setScannedPass(null);
+                      setScannerInput('');
+                    }}
+                    style={{
+                      padding: '12px 18px',
+                      borderRadius: 8,
+                      background: '#F1F5F9',
+                      color: '#475569',
+                      border: '1px solid #CBD5E1',
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    Clear
+                  </button>
+                )}
+              </form>
+
+              {/* Scanned Pass Action Panel */}
+              {scannedPass && (
+                <div
+                  style={{
+                    background: '#F8FAFC',
+                    border: '1.5px solid #CBD5E1',
+                    borderRadius: 12,
+                    padding: '20px',
+                  }}
+                >
+                  {/* Pass Quick Header */}
+                  <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      flexWrap: 'wrap',
+                      gap: 12,
+                      borderBottom: '1px solid #E2E8F0',
+                      paddingBottom: 14,
+                      marginBottom: 16,
+                    }}
+                  >
+                    <div>
+                      <span
+                        style={{
+                          fontFamily: 'monospace',
+                          fontSize: '1.3rem',
+                          fontWeight: 900,
+                          color: '#123F3D',
+                          background: '#E0E7FF',
+                          padding: '4px 10px',
+                          borderRadius: 6,
+                          marginRight: 10,
+                        }}
+                      >
+                        #{scannedPass.passId}
+                      </span>
+                      <strong style={{ fontSize: '1.15rem', color: '#0F172A' }}>{scannedPass.customerName}</strong>
+                      <span style={{ color: '#64748B', marginLeft: 8, fontSize: '0.9rem' }}>
+                        (+91 {scannedPass.mobileNumber})
+                      </span>
+                    </div>
+
+                    <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                      <span
+                        style={{
+                          padding: '4px 12px',
+                          borderRadius: 20,
+                          fontWeight: 800,
+                          fontSize: '0.78rem',
+                          background: scannedPass.paymentStatus === 'PAID' ? '#DCFCE7' : '#FEF3C7',
+                          color: scannedPass.paymentStatus === 'PAID' ? '#166534' : '#92400E',
+                        }}
+                      >
+                        {scannedPass.paymentStatus === 'PAID' ? 'PAID' : 'PAYMENT PENDING'}
+                      </span>
+                      <span
+                        style={{
+                          padding: '4px 12px',
+                          borderRadius: 20,
+                          fontWeight: 800,
+                          fontSize: '0.78rem',
+                          background: scannedPass.ticketStatus === 'ACTIVE' ? '#E0F2FE' : '#F1F5F9',
+                          color: scannedPass.ticketStatus === 'ACTIVE' ? '#0369A1' : '#475569',
+                        }}
+                      >
+                        {scannedPass.ticketStatus}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Operational Desks Grid */}
+                  <div
+                    style={{
+                      display: 'grid',
+                      gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+                      gap: 18,
+                    }}
+                  >
+                    {/* DESK 1: PAYMENT COLLECTION (Admin Only) */}
+                    <div
+                      style={{
+                        background: '#FFFFFF',
+                        border: '1px solid #E2E8F0',
+                        borderRadius: 10,
+                        padding: '16px',
+                      }}
+                    >
+                      <div style={{ fontWeight: 800, fontSize: '0.92rem', color: '#123F3D', marginBottom: 8 }}>
+                        💰 1. Payment Desk
+                      </div>
+
+                      {scannedPass.paymentStatus === 'PAID' ? (
+                        <div style={{ color: '#166534', fontSize: '0.88rem', background: '#F0FDF4', padding: '10px 12px', borderRadius: 8 }}>
+                          <strong>✅ PAID ₹{scannedPass.paidAmount || scannedPass.payableAmount}</strong> via {scannedPass.paymentMethod}
+                          {scannedPass.upiTransactionReference && (
+                            <div style={{ fontSize: '0.78rem', color: '#555', marginTop: 4 }}>
+                              UTR: <code>{scannedPass.upiTransactionReference}</code>
+                            </div>
+                          )}
+                        </div>
+                      ) : role === 'admin' ? (
+                        <div>
+                          <div style={{ fontSize: '0.82rem', color: '#64748B', marginBottom: 10 }}>
+                            Payable: <strong>₹{scannedPass.payableAmount}</strong> (Exact same QR will remain active)
+                          </div>
+
+                          <div style={{ display: 'flex', gap: 12, marginBottom: 10 }}>
+                            <label style={{ fontSize: '0.85rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 4 }}>
+                              <input
+                                type="radio"
+                                name="payMethod"
+                                value="UPI"
+                                checked={paymentMethodChoice === 'UPI'}
+                                onChange={() => setPaymentMethodChoice('UPI')}
+                              />
+                              UPI
+                            </label>
+                            <label style={{ fontSize: '0.85rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 4 }}>
+                              <input
+                                type="radio"
+                                name="payMethod"
+                                value="CASH"
+                                checked={paymentMethodChoice === 'CASH'}
+                                onChange={() => setPaymentMethodChoice('CASH')}
+                              />
+                              Cash
+                            </label>
+                          </div>
+
+                          {paymentMethodChoice === 'UPI' && (
+                            <div style={{ marginBottom: 10 }}>
+                              <input
+                                type="text"
+                                placeholder="UPI UTR / Ref (e.g. 324109845612)"
+                                value={upiUtrInput}
+                                onChange={(e) => setUpiUtrInput(e.target.value)}
+                                style={{
+                                  width: '100%',
+                                  padding: '8px 12px',
+                                  borderRadius: 6,
+                                  border: '1px solid #CBD5E1',
+                                  fontSize: '0.85rem',
+                                  boxSizing: 'border-box',
+                                }}
+                              />
+                            </div>
+                          )}
+
+                          <button
+                            type="button"
+                            onClick={() => handleCollectPayment(scannedPass.passId)}
+                            disabled={isProcessingPayment || !scannedPass.priceConfirmed}
+                            style={{
+                              width: '100%',
+                              padding: '10px',
+                              borderRadius: 6,
+                              background: scannedPass.priceConfirmed ? '#123F3D' : '#9CA3AF',
+                              color: '#FAF5EF',
+                              border: 'none',
+                              fontWeight: 700,
+                              fontSize: '0.86rem',
+                              cursor: scannedPass.priceConfirmed ? 'pointer' : 'not-allowed',
+                            }}
+                          >
+                            {isProcessingPayment
+                              ? 'Recording Payment…'
+                              : scannedPass.priceConfirmed
+                              ? `Collect ₹${scannedPass.payableAmount} & Activate Pass`
+                              : 'Price Approval Required'}
+                          </button>
+                        </div>
+                      ) : (
+                        <div style={{ color: '#92400E', fontSize: '0.82rem', background: '#FFFBEB', padding: '10px 12px', borderRadius: 8 }}>
+                          Payment collection is handled by Cashier / Admin.
+                        </div>
+                      )}
+                    </div>
+
+                    {/* DESK 2: CAPPUCCINO REDEMPTION (Kitchen & Admin) */}
+                    <div
+                      style={{
+                        background: '#FFFFFF',
+                        border: '1px solid #E2E8F0',
+                        borderRadius: 10,
+                        padding: '16px',
+                      }}
+                    >
+                      <div style={{ fontWeight: 800, fontSize: '0.92rem', color: '#123F3D', marginBottom: 8 }}>
+                        ☕ 2. Cappuccino Desk
+                      </div>
+
+                      {scannedPass.cappuccinoRedeemed ? (
+                        <div style={{ color: '#166534', fontSize: '0.85rem', background: '#F0FDF4', padding: '10px 12px', borderRadius: 8 }}>
+                          <strong>✅ ALREADY REDEEMED</strong>
+                          <div style={{ fontSize: '0.78rem', color: '#666', marginTop: 4 }}>
+                            Redeemed at: {new Date(scannedPass.cappuccinoRedeemedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          </div>
+                        </div>
+                      ) : (
+                        <div>
+                          <div style={{ fontSize: '0.82rem', color: '#64748B', marginBottom: 10 }}>
+                            1 Complimentary hot Cappuccino included with this pass.
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => handleRedeemCappuccino(scannedPass.passId)}
+                            disabled={isProcessingCappuccino || scannedPass.paymentStatus !== 'PAID'}
+                            style={{
+                              width: '100%',
+                              padding: '10px',
+                              borderRadius: 6,
+                              background: scannedPass.paymentStatus === 'PAID' ? '#92400E' : '#E2E8F0',
+                              color: scannedPass.paymentStatus === 'PAID' ? '#FAF5EF' : '#94A3B8',
+                              border: 'none',
+                              fontWeight: 700,
+                              fontSize: '0.86rem',
+                              cursor: scannedPass.paymentStatus === 'PAID' ? 'pointer' : 'not-allowed',
+                            }}
+                          >
+                            {isProcessingCappuccino
+                              ? 'Redeeming…'
+                              : scannedPass.paymentStatus === 'PAID'
+                              ? '☕ Redeem 1 Cappuccino'
+                              : 'Requires Payment First'}
+                          </button>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* DESK 3: EVENT DOOR ENTRY CHECK-IN (Kitchen & Admin) */}
+                    <div
+                      style={{
+                        background: '#FFFFFF',
+                        border: '1px solid #E2E8F0',
+                        borderRadius: 10,
+                        padding: '16px',
+                      }}
+                    >
+                      <div style={{ fontWeight: 800, fontSize: '0.92rem', color: '#123F3D', marginBottom: 8 }}>
+                        🚪 3. Door Entry Scanner
+                      </div>
+
+                      {scannedPass.entryCheckedIn ? (
+                        <div style={{ color: '#166534', fontSize: '0.85rem', background: '#F0FDF4', padding: '10px 12px', borderRadius: 8 }}>
+                          <strong>✅ CHECKED IN / ADMITTED</strong>
+                          <div style={{ fontSize: '0.78rem', color: '#666', marginTop: 4 }}>
+                            Admitted at: {new Date(scannedPass.entryCheckedInAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          </div>
+                        </div>
+                      ) : scannedPass.paymentStatus !== 'PAID' ? (
+                        <div style={{ color: '#DC2626', fontSize: '0.85rem', background: '#FEF2F2', padding: '10px 12px', borderRadius: 8 }}>
+                          <strong>⛔ ENTRY DENIED</strong>
+                          <div style={{ fontSize: '0.78rem', marginTop: 2 }}>
+                            Payment has not been completed. Attendee must pay at cashier desk before entry.
+                          </div>
+                        </div>
+                      ) : (
+                        <div>
+                          <div style={{ fontSize: '0.82rem', color: '#64748B', marginBottom: 10 }}>
+                            Pass verified &amp; paid. Ready for stage admission.
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => handleCheckInEntry(scannedPass.passId)}
+                            disabled={isProcessingEntry}
+                            style={{
+                              width: '100%',
+                              padding: '10px',
+                              borderRadius: 6,
+                              background: '#15803D',
+                              color: '#FAF5EF',
+                              border: 'none',
+                              fontWeight: 700,
+                              fontSize: '0.86rem',
+                              cursor: 'pointer',
+                            }}
+                          >
+                            {isProcessingEntry ? 'Admitting…' : '🚪 Admit Attendee (Check-In)'}
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* PASSES MASTER TABLE & FILTERS */}
+            <div
+              style={{
+                background: '#FFFFFF',
+                borderRadius: 14,
+                border: '1px solid #E2E8F0',
+                padding: '20px',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
+              }}
+            >
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  flexWrap: 'wrap',
+                  gap: 12,
+                  marginBottom: 16,
+                }}
+              >
+                <div style={{ fontWeight: 800, fontSize: '1.1rem', color: '#123F3D' }}>
+                  Audience Passes Directory ({morasPasses.length})
+                </div>
+
+                {/* Filter Controls */}
+                <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                  <input
+                    type="text"
+                    placeholder="Search name, mobile, Pass ID..."
+                    value={morasPassSearch}
+                    onChange={(e) => setMorasPassSearch(e.target.value)}
+                    style={{
+                      padding: '7px 12px',
+                      borderRadius: 6,
+                      border: '1px solid #CBD5E1',
+                      fontSize: '0.85rem',
+                      width: 220,
+                    }}
+                  />
+
+                  <select
+                    value={morasPassPaymentFilter}
+                    onChange={(e) => setMorasPassPaymentFilter(e.target.value)}
+                    style={{
+                      padding: '7px 12px',
+                      borderRadius: 6,
+                      border: '1px solid #CBD5E1',
+                      fontSize: '0.85rem',
+                      background: '#FFF',
+                    }}
+                  >
+                    <option value="">All Payments</option>
+                    <option value="PAID">Paid Only</option>
+                    <option value="PENDING">Pending Only</option>
+                  </select>
+
+                  <select
+                    value={morasPassStatusFilter}
+                    onChange={(e) => setMorasPassStatusFilter(e.target.value)}
+                    style={{
+                      padding: '7px 12px',
+                      borderRadius: 6,
+                      border: '1px solid #CBD5E1',
+                      fontSize: '0.85rem',
+                      background: '#FFF',
+                    }}
+                  >
+                    <option value="">All Statuses</option>
+                    <option value="RESERVED">Reserved</option>
+                    <option value="CONFIRMED">Confirmed</option>
+                    <option value="EXPIRED">Expired</option>
+                    <option value="CANCELLED">Cancelled</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Table */}
+              {morasPassLoading ? (
+                <div style={{ textAlign: 'center', padding: '40px', color: '#666' }}>Loading passes…</div>
+              ) : morasPasses.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '40px', color: '#94A3B8' }}>No audience passes found.</div>
+              ) : (
+                <div style={{ overflowX: 'auto' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.86rem' }}>
+                    <thead>
+                      <tr style={{ background: '#F8FAFC', borderBottom: '2px solid #E2E8F0', color: '#475569', textAlign: 'left' }}>
+                        <th style={{ padding: '10px 12px' }}>Pass ID</th>
+                        <th style={{ padding: '10px 12px' }}>Attendee</th>
+                        <th style={{ padding: '10px 12px' }}>Mobile &amp; Email</th>
+                        <th style={{ padding: '10px 12px' }}>Payment</th>
+                        <th style={{ padding: '10px 12px' }}>Cappuccino</th>
+                        <th style={{ padding: '10px 12px' }}>Door Entry</th>
+                        <th style={{ padding: '10px 12px', textAlign: 'right' }}>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {morasPasses.map((pass) => (
+                        <tr key={pass.passId} style={{ borderBottom: '1px solid #F1F5F9' }}>
+                          <td style={{ padding: '10px 12px', fontFamily: 'monospace', fontWeight: 800, color: '#123F3D' }}>
+                            #{pass.passId}
+                          </td>
+                          <td style={{ padding: '10px 12px', fontWeight: 700, color: '#0F172A' }}>
+                            {pass.customerName}
+                          </td>
+                          <td style={{ padding: '10px 12px', color: '#475569' }}>
+                            <div>+91 {pass.normalizedMobileNumber}</div>
+                            <div style={{ fontSize: '0.78rem', color: '#94A3B8' }}>{pass.email}</div>
+                          </td>
+                          <td style={{ padding: '10px 12px' }}>
+                            <span
+                              style={{
+                                padding: '3px 8px',
+                                borderRadius: 12,
+                                fontSize: '0.74rem',
+                                fontWeight: 800,
+                                background: pass.paymentStatus === 'PAID' ? '#DCFCE7' : '#FEF3C7',
+                                color: pass.paymentStatus === 'PAID' ? '#166534' : '#92400E',
+                              }}
+                            >
+                              {pass.paymentStatus === 'PAID' ? `PAID (₹${pass.paidAmount || pass.payableAmount})` : 'PENDING'}
+                            </span>
+                          </td>
+                          <td style={{ padding: '10px 12px' }}>
+                            {pass.cappuccinoRedeemed ? (
+                              <span style={{ color: '#166534', fontWeight: 700 }}>✅ Redeemed</span>
+                            ) : (
+                              <span style={{ color: '#94A3B8' }}>Pending</span>
+                            )}
+                          </td>
+                          <td style={{ padding: '10px 12px' }}>
+                            {pass.entryCheckedIn ? (
+                              <span style={{ color: '#166534', fontWeight: 700 }}>✅ Admitted</span>
+                            ) : (
+                              <span style={{ color: '#94A3B8' }}>Not checked in</span>
+                            )}
+                          </td>
+                          <td style={{ padding: '10px 12px', textAlign: 'right' }}>
+                            <div style={{ display: 'inline-flex', gap: 6 }}>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setScannerInput(pass.passId);
+                                  handleVerifyPass(pass.passId);
+                                  window.scrollTo({ top: 400, behavior: 'smooth' });
+                                }}
+                                style={{
+                                  padding: '4px 10px',
+                                  borderRadius: 6,
+                                  background: '#123F3D',
+                                  color: '#FAF5EF',
+                                  border: 'none',
+                                  fontSize: '0.75rem',
+                                  fontWeight: 700,
+                                  cursor: 'pointer',
+                                }}
+                              >
+                                Desk
+                              </button>
+
+                              {pass.reservationStatus === 'EXPIRED' && role === 'admin' && (
+                                <button
+                                  type="button"
+                                  onClick={() => handleReactivatePass(pass.passId)}
+                                  style={{
+                                    padding: '4px 8px',
+                                    borderRadius: 6,
+                                    background: '#F59E0B',
+                                    color: '#FFF',
+                                    border: 'none',
+                                    fontSize: '0.75rem',
+                                    fontWeight: 700,
+                                    cursor: 'pointer',
+                                  }}
+                                >
+                                  Reactivate
+                                </button>
+                              )}
+
+                              {role === 'admin' && pass.ticketStatus !== 'REVOKED' && (
+                                <button
+                                  type="button"
+                                  onClick={() => handleRevokePass(pass.passId, pass.customerName)}
+                                  style={{
+                                    padding: '4px 8px',
+                                    borderRadius: 6,
+                                    background: '#FEE2E2',
+                                    color: '#DC2626',
+                                    border: '1px solid #FECACA',
+                                    fontSize: '0.75rem',
+                                    fontWeight: 700,
+                                    cursor: 'pointer',
+                                  }}
+                                >
+                                  Revoke
+                                </button>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+
+            {/* EVENT & PRICING SETTINGS MODAL (Admin Only) */}
+            {isSettingsModalOpen && role === 'admin' && (
+              <div
+                style={{
+                  position: 'fixed',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  background: 'rgba(0,0,0,0.65)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  zIndex: 99999,
+                  padding: 20,
+                }}
+              >
+                <div
+                  style={{
+                    background: '#FFFFFF',
+                    borderRadius: 16,
+                    maxWidth: 500,
+                    width: '100%',
+                    padding: '24px',
+                    boxShadow: '0 20px 40px rgba(0,0,0,0.2)',
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+                    <h3 style={{ margin: 0, color: '#123F3D' }}>⚙️ MORAS LIVE Settings</h3>
+                    <button
+                      type="button"
+                      onClick={() => setIsSettingsModalOpen(false)}
+                      style={{ background: 'none', border: 'none', fontSize: '1.2rem', cursor: 'pointer' }}
+                    >
+                      ✕
+                    </button>
+                  </div>
+
+                  {/* Price Approval Section */}
+                  <div style={{ background: '#F8FAFC', padding: '16px', borderRadius: 10, marginBottom: 16, border: '1px solid #E2E8F0' }}>
+                    <label style={{ display: 'block', fontWeight: 700, fontSize: '0.88rem', color: '#123F3D', marginBottom: 6 }}>
+                      Approved Ticket Price (₹)
+                    </label>
+                    <input
+                      type="number"
+                      min={0}
+                      value={settingsDraft.approvedPassPrice}
+                      onChange={(e) => setSettingsDraft({ ...settingsDraft, approvedPassPrice: Number(e.target.value) })}
+                      style={{ width: '100%', padding: '10px', borderRadius: 6, border: '1px solid #CBD5E1', fontSize: '1rem', boxSizing: 'border-box' }}
+                    />
+
+                    <div style={{ marginTop: 12 }}>
+                      <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: '0.88rem', fontWeight: 700, color: '#15803D', cursor: 'pointer' }}>
+                        <input
+                          type="checkbox"
+                          checked={settingsDraft.priceConfirmed}
+                          onChange={(e) => setSettingsDraft({ ...settingsDraft, priceConfirmed: e.target.checked })}
+                        />
+                        <span>Confirm Price &amp; Enable In-Person Payments</span>
+                      </label>
+                      <small style={{ color: '#64748B', display: 'block', marginTop: 4 }}>
+                        When checked, staff can collect physical payments at the café.
+                      </small>
+                    </div>
+                  </div>
+
+                  {/* Reservation Expiry Window */}
+                  <div style={{ marginBottom: 16 }}>
+                    <label style={{ display: 'block', fontWeight: 700, fontSize: '0.88rem', color: '#123F3D', marginBottom: 6 }}>
+                      Unpaid Reservation Expiry Window (Hours)
+                    </label>
+                    <input
+                      type="number"
+                      min={1}
+                      max={72}
+                      value={settingsDraft.reservationExpiryHours}
+                      onChange={(e) => setSettingsDraft({ ...settingsDraft, reservationExpiryHours: Number(e.target.value) })}
+                      style={{ width: '100%', padding: '10px', borderRadius: 6, border: '1px solid #CBD5E1', fontSize: '1rem', boxSizing: 'border-box' }}
+                    />
+                    <small style={{ color: '#64748B', display: 'block', marginTop: 4 }}>
+                      Reservations not paid within this window expire to free up slots for other attendees.
+                    </small>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end', marginTop: 24 }}>
+                    <button
+                      type="button"
+                      onClick={() => setIsSettingsModalOpen(false)}
+                      style={{ padding: '10px 18px', borderRadius: 8, background: '#F1F5F9', border: '1px solid #CBD5E1', cursor: 'pointer' }}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleSaveEventSettings}
+                      disabled={isSavingSettings}
+                      style={{ padding: '10px 22px', borderRadius: 8, background: '#123F3D', color: '#FAF5EF', border: 'none', fontWeight: 700, cursor: 'pointer' }}
+                    >
+                      {isSavingSettings ? 'Saving…' : 'Save Settings'}
+                    </button>
                   </div>
                 </div>
               </div>

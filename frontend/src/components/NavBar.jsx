@@ -149,7 +149,14 @@ function NavBar({ cartCount, onCartClick, activeTable, onReserveClick, theme, to
           className={({ isActive }) => `mobile-nav-link ${isActive ? 'active' : ''}`} 
           onClick={() => setMenuOpen(false)}
         >
-          🎤 MORAS LIVE
+          🎤 MORAS LIVE (Performers)
+        </NavLink>
+        <NavLink 
+          to="/moras-live/passes" 
+          className={({ isActive }) => `mobile-nav-link ${isActive ? 'active' : ''}`} 
+          onClick={() => setMenuOpen(false)}
+        >
+          🎟️ Audience Passes (60 Max)
         </NavLink>
         <NavLink 
           to="/reviews" 

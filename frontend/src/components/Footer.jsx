@@ -70,6 +70,11 @@ function Footer({ onReserveClick }) {
                 </Link>
               </li>
               <li>
+                <Link to="/moras-live/passes" style={{ color: '#FBBF24', textDecoration: 'none', fontSize: '0.92rem', letterSpacing: '0.3px', fontWeight: 700, transition: 'color 0.2s' }}>
+                  🎟️ MORAS LIVE (Audience Passes)
+                </Link>
+              </li>
+              <li>
                 <button 
                   onClick={onReserveClick} 
                   style={{ color: '#E6DFD5', textDecoration: 'none', fontSize: '0.92rem', background: 'none', border: 'none', padding: 0, cursor: 'pointer', textAlign: 'left', fontFamily: 'inherit', letterSpacing: '0.3px', transition: 'color 0.2s' }}

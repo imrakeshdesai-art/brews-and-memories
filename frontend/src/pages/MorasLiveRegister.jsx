@@ -933,6 +933,40 @@ export default function MorasLiveRegister() {
             </div>
           </form>
         )}
+
+        {/* Audience Pass Callout */}
+        <div
+          style={{
+            marginTop: 26,
+            background: '#F5E8D0',
+            border: '1px solid #D4C3A3',
+            borderRadius: 14,
+            padding: '18px 20px',
+            textAlign: 'center',
+          }}
+        >
+          <div style={{ fontSize: '0.98rem', fontWeight: 800, color: '#123F3D', marginBottom: 4 }}>
+            🎟️ Attending as an Audience Member?
+          </div>
+          <p style={{ margin: '0 auto 10px', fontSize: '0.85rem', color: '#555' }}>
+            Audience admission is limited to strictly 60 passes and includes 1 complimentary hot Cappuccino!
+          </p>
+          <Link
+            to="/moras-live/passes"
+            style={{
+              display: 'inline-block',
+              background: '#123F3D',
+              color: '#FAF5EF',
+              padding: '8px 18px',
+              borderRadius: 8,
+              fontSize: '0.84rem',
+              fontWeight: 700,
+              textDecoration: 'none',
+            }}
+          >
+            Reserve Audience Pass (60 Max) →
+          </Link>
+        </div>
       </div>
     </section>
   );

@@ -9,6 +9,7 @@ const orderRoutes = require('./routes/orders');
 const reservationRoutes = require('./routes/reservations');
 const menuRoutes = require('./routes/menu');
 const morasLiveRoutes = require('./routes/morasLive');
+const morasLivePassesRoutes = require('./routes/morasLivePasses');
 
 const app = express();
 
@@ -80,6 +81,7 @@ app.use('/api/orders', orderRoutes);
 app.use('/api/reservations', reservationRoutes);
 app.use('/api/menu', menuRoutes);
 app.use('/api/moras-live', morasLiveRoutes);
+app.use('/api/moras-live/passes', morasLivePassesRoutes);
 
 app.get('/api/health', async (req, res) => {
   let userList = [];
