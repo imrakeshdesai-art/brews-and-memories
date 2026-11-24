@@ -227,20 +227,30 @@ function Admin() {
     }
   };
 
-  // Helper: Generate professional prefilled WhatsApp messages based on registration status
-  const getPerformerWhatsAppMessage = (reg) => {
+  // Helper: Generate professional prefilled WhatsApp messages based on registration status or explicit intent
+  const getPerformerWhatsAppMessage = (reg, intent = null, customNote = '') => {
     if (!reg) return '';
     const name = reg.fullName || 'there';
     const regId = reg.registrationId || 'ML-REG';
     const role = reg.participationRole || 'Performer';
     const otherRole = reg.otherRole ? ` (${reg.otherRole})` : '';
 
-    if (reg.registrationStatus === 'Rejected') {
-      return `Hi ${name}!\nGreetings from THE MORAS CAFE.\n\nThank you for registering for *MORAS LIVE (Season 1)* (Reg ID: #${regId}).\n\nDue to limited stage slots, our curation team could select *only the top 4 performers* for this edition. Unfortunately, your registration was not selected this time.\n\nWe have saved your details for our upcoming open mics and future editions.\n\nIf you would like to attend and watch the show, audience passes are available for *₹149* (includes 1 complimentary cappuccino) at themorascafe.in.\n\nThank you,\nTHE MORAS CAFE, Vijayapura\n📞 +91 99454 46137`;
+    const effectiveType = intent || (
+      reg.registrationStatus === 'Rejected'
+        ? 'rejected'
+        : reg.registrationStatus === 'Confirmed'
+        ? 'confirmed'
+        : 'pending'
+    );
+
+    if (effectiveType === 'rejected' || effectiveType === 'rejection') {
+      const noteSection = customNote && customNote.trim() ? `\n\nNote from our team:\n${customNote.trim()}` : '';
+      return `Hi ${name}!\nGreetings from THE MORAS CAFE.\n\nThank you for registering for *MORAS LIVE (Season 1)* (Reg ID: #${regId}).\n\nDue to limited stage slots, our curation team could select *only the top 4 performers* for this edition. Unfortunately, your registration was not selected this time.\n\nWe have saved your details for our upcoming open mics and future editions.${noteSection}\n\nIf you would like to attend and watch the show, audience passes are available for *₹149* (includes 1 complimentary cappuccino) at themorascafe.in.\n\nThank you,\nTHE MORAS CAFE, Vijayapura\n📞 +91 99454 46137`;
     }
 
-    if (reg.registrationStatus === 'Confirmed') {
-      return `Hi ${name}!\nCongratulations from THE MORAS CAFE! 🎤\n\nYour live performance slot for *MORAS LIVE (Season 1)* (Reg ID: #${regId}) as a *${role}${otherRole}* has been officially CONFIRMED!\n\n${reg.stageSlot ? `Allocated Slot: *${reg.stageSlot}*\n` : ''}Please arrive at least 30 minutes prior to your slot for soundcheck. Complimentary barista coffee is on the house for you!\n\nFor any audio/stage questions, contact our artist desk at +91 99454 46137.\n\nSee you on stage!\nThe Moras Cafe Team`;
+    if (effectiveType === 'confirmed' || effectiveType === 'confirmation') {
+      const slotText = reg.stageSlot ? `Allocated Slot: *${reg.stageSlot}*\n` : '';
+      return `Hi ${name}!\nCongratulations from THE MORAS CAFE! 🎤\n\nYour live performance slot for *MORAS LIVE (Season 1)* (Reg ID: #${regId}) as a *${role}${otherRole}* has been officially CONFIRMED!\n\n${slotText}Please arrive at least 30 minutes prior to your slot for soundcheck. Complimentary barista coffee is on the house for you!\n\nFor any audio/stage questions, contact our artist desk at +91 99454 46137.\n\nSee you on stage!\nThe Moras Cafe Team`;
     }
 
     return `Hi ${name}!\nGreetings from THE MORAS CAFE.\n\nWe have received your registration for *MORAS LIVE* (ID: ${regId}) as a *${role}${otherRole}*.\n\nOur team will be in touch with you regarding performance coordination and stage schedule soon. Stay tuned!\n\nBest,\nThe Moras Cafe Team`;
@@ -3521,41 +3531,73 @@ function Admin() {
                         />
                       </div>
 
-                      <button
-                        type="button"
-                        onClick={() =>
-                          handleSendLiveConfirmationEmail(
-                            selectedLiveParticipant._id || selectedLiveParticipant.registrationId,
-                            customSlotDraft,
-                            customEmailMessageDraft
-                          )
-                        }
-                        disabled={sendingLiveEmailId === (selectedLiveParticipant._id || selectedLiveParticipant.registrationId)}
-                        style={{
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: 6,
-                          padding: '9px 16px',
-                          borderRadius: 6,
-                          background: '#123F3D',
-                          color: '#F5E8D0',
-                          border: 'none',
-                          fontSize: '0.84rem',
-                          fontWeight: 700,
-                          cursor:
-                            sendingLiveEmailId === (selectedLiveParticipant._id || selectedLiveParticipant.registrationId)
-                              ? 'wait'
-                              : 'pointer',
-                          boxShadow: '0 2px 6px rgba(18,63,61,0.25)',
-                        }}
-                      >
-                        <span>✉️</span>
-                        {sendingLiveEmailId === (selectedLiveParticipant._id || selectedLiveParticipant.registrationId)
-                          ? 'Dispatching Email...'
-                          : selectedLiveParticipant.confirmationEmailSent
-                          ? 'Resend Official Confirmation Email'
-                          : 'Send Official Confirmation Email'}
-                      </button>
+                      <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center' }}>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            handleSendLiveConfirmationEmail(
+                              selectedLiveParticipant._id || selectedLiveParticipant.registrationId,
+                              customSlotDraft,
+                              customEmailMessageDraft
+                            )
+                          }
+                          disabled={sendingLiveEmailId === (selectedLiveParticipant._id || selectedLiveParticipant.registrationId)}
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: 6,
+                            padding: '9px 16px',
+                            borderRadius: 6,
+                            background: '#123F3D',
+                            color: '#F5E8D0',
+                            border: 'none',
+                            fontSize: '0.84rem',
+                            fontWeight: 700,
+                            cursor:
+                              sendingLiveEmailId === (selectedLiveParticipant._id || selectedLiveParticipant.registrationId)
+                                ? 'wait'
+                                : 'pointer',
+                            boxShadow: '0 2px 6px rgba(18,63,61,0.25)',
+                          }}
+                        >
+                          <span>✉️</span>
+                          {sendingLiveEmailId === (selectedLiveParticipant._id || selectedLiveParticipant.registrationId)
+                            ? 'Dispatching Email...'
+                            : selectedLiveParticipant.confirmationEmailSent
+                            ? 'Resend Official Confirmation Email'
+                            : 'Send Official Confirmation Email'}
+                        </button>
+
+                        <a
+                          href={`https://wa.me/91${selectedLiveParticipant.mobileNumber}?text=${encodeURIComponent(
+                            getPerformerWhatsAppMessage(
+                              {
+                                ...selectedLiveParticipant,
+                                stageSlot: customSlotDraft || selectedLiveParticipant.stageSlot,
+                              },
+                              'confirmed'
+                            )
+                          )}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          title="Open WhatsApp with official slot confirmation message"
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: 6,
+                            padding: '9px 14px',
+                            borderRadius: 6,
+                            background: '#25D366',
+                            color: '#ffffff',
+                            textDecoration: 'none',
+                            fontSize: '0.84rem',
+                            fontWeight: 700,
+                            boxShadow: '0 2px 6px rgba(37,211,102,0.25)',
+                          }}
+                        >
+                          <span>💬</span> WhatsApp Confirmation Notice
+                        </a>
+                      </div>
                     </div>
 
                     {/* Official Performer Non-Selection / Rejection Email Card */}
@@ -3701,11 +3743,11 @@ function Admin() {
 
                         <a
                           href={`https://wa.me/91${selectedLiveParticipant.mobileNumber}?text=${encodeURIComponent(
-                            getPerformerWhatsAppMessage(selectedLiveParticipant)
+                            getPerformerWhatsAppMessage(selectedLiveParticipant, 'rejected', customRejectionMessageDraft)
                           )}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          title="Open WhatsApp with courteous non-selection message"
+                          title="Open WhatsApp with professional non-selection notice"
                           style={{
                             display: 'inline-flex',
                             alignItems: 'center',
