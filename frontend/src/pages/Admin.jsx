@@ -227,6 +227,25 @@ function Admin() {
     }
   };
 
+  // Helper: Generate professional prefilled WhatsApp messages based on registration status
+  const getPerformerWhatsAppMessage = (reg) => {
+    if (!reg) return '';
+    const name = reg.fullName || 'there';
+    const regId = reg.registrationId || 'ML-REG';
+    const role = reg.participationRole || 'Performer';
+    const otherRole = reg.otherRole ? ` (${reg.otherRole})` : '';
+
+    if (reg.registrationStatus === 'Rejected') {
+      return `Hi ${name}!\nGreetings from THE MORAS CAFE.\n\nThank you very much for registering and auditioning for *MORAS LIVE (Season 1)* (Reg ID: #${regId}) as a *${role}${otherRole}*.\n\nOur curation panel had the challenging task of selecting *only the top 4 featured performance acts* from a large pool of talented applicants for this inaugural edition. Due to strict slot constraints, we are unable to offer you a stage slot for this specific session.\n\nPlease know this was an exceptionally difficult decision driven purely by time limits, not a reflection of your talent. Your profile remains saved on our *Featured Artist Roster* for priority consideration in upcoming editions and open mics!\n\nWe warmly invite you to attend MORAS LIVE as our guest and connect with the community.\n\nBest regards,\nThe Curation & Production Team\nTHE MORAS CAFE, Vijayapura\n📞 +91 99454 46137`;
+    }
+
+    if (reg.registrationStatus === 'Confirmed') {
+      return `Hi ${name}!\nCongratulations from THE MORAS CAFE! 🎤\n\nYour live performance slot for *MORAS LIVE (Season 1)* (Reg ID: #${regId}) as a *${role}${otherRole}* has been officially CONFIRMED!\n\n${reg.stageSlot ? `Allocated Slot: *${reg.stageSlot}*\n` : ''}Please arrive at least 30 minutes prior to your slot for soundcheck. Complimentary barista coffee is on the house for you!\n\nFor any audio/stage questions, contact our artist desk at +91 99454 46137.\n\nSee you on stage!\nThe Moras Cafe Team`;
+    }
+
+    return `Hi ${name}!\nGreetings from THE MORAS CAFE.\n\nWe have received your registration for *MORAS LIVE* (ID: ${regId}) as a *${role}${otherRole}*.\n\nOur team will be in touch with you regarding performance coordination and stage schedule soon. Stay tuned!\n\nBest,\nThe Moras Cafe Team`;
+  };
+
   // ================= MORAS LIVE EVENT REGISTRATIONS STATE & ACTIONS =================
   const [morasLiveRegistrations, setMorasLiveRegistrations] = useState([]);
   const [morasLiveStats, setMorasLiveStats] = useState({
@@ -2842,11 +2861,17 @@ function Admin() {
                               </a>
                               <a
                                 href={`https://wa.me/91${reg.mobileNumber}?text=${encodeURIComponent(
-                                  `Hi ${reg.fullName}! Greetings from THE MORAS CAFE regarding your MORAS LIVE registration (${reg.registrationId}).`
+                                  getPerformerWhatsAppMessage(reg)
                                 )}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                title="Message on WhatsApp"
+                                title={
+                                  reg.registrationStatus === 'Rejected'
+                                    ? 'Send professional non-selection note on WhatsApp'
+                                    : reg.registrationStatus === 'Confirmed'
+                                    ? 'Send confirmation note on WhatsApp'
+                                    : 'Message on WhatsApp'
+                                }
                                 style={{
                                   textDecoration: 'none',
                                   fontSize: '0.9rem',
@@ -3638,40 +3663,66 @@ function Admin() {
                         />
                       </div>
 
-                      <button
-                        type="button"
-                        onClick={() =>
-                          handleSendLiveRejectionEmail(
-                            selectedLiveParticipant._id || selectedLiveParticipant.registrationId,
-                            customRejectionMessageDraft
-                          )
-                        }
-                        disabled={sendingLiveRejectionId === (selectedLiveParticipant._id || selectedLiveParticipant.registrationId)}
-                        style={{
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: 6,
-                          padding: '9px 16px',
-                          borderRadius: 6,
-                          background: '#991b1b',
-                          color: '#ffffff',
-                          border: 'none',
-                          fontSize: '0.84rem',
-                          fontWeight: 700,
-                          cursor:
-                            sendingLiveRejectionId === (selectedLiveParticipant._id || selectedLiveParticipant.registrationId)
-                              ? 'wait'
-                              : 'pointer',
-                          boxShadow: '0 2px 6px rgba(153,27,27,0.25)',
-                        }}
-                      >
-                        <span>✉️</span>
-                        {sendingLiveRejectionId === (selectedLiveParticipant._id || selectedLiveParticipant.registrationId)
-                          ? 'Dispatching Non-Selection Email...'
-                          : selectedLiveParticipant.rejectionEmailSent
-                          ? 'Resend Non-Selection Notification'
-                          : 'Send Professional Non-Selection Email'}
-                      </button>
+                      <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center' }}>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            handleSendLiveRejectionEmail(
+                              selectedLiveParticipant._id || selectedLiveParticipant.registrationId,
+                              customRejectionMessageDraft
+                            )
+                          }
+                          disabled={sendingLiveRejectionId === (selectedLiveParticipant._id || selectedLiveParticipant.registrationId)}
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: 6,
+                            padding: '9px 16px',
+                            borderRadius: 6,
+                            background: '#991b1b',
+                            color: '#ffffff',
+                            border: 'none',
+                            fontSize: '0.84rem',
+                            fontWeight: 700,
+                            cursor:
+                              sendingLiveRejectionId === (selectedLiveParticipant._id || selectedLiveParticipant.registrationId)
+                                ? 'wait'
+                                : 'pointer',
+                            boxShadow: '0 2px 6px rgba(153,27,27,0.25)',
+                          }}
+                        >
+                          <span>✉️</span>
+                          {sendingLiveRejectionId === (selectedLiveParticipant._id || selectedLiveParticipant.registrationId)
+                            ? 'Dispatching Non-Selection Email...'
+                            : selectedLiveParticipant.rejectionEmailSent
+                            ? 'Resend Non-Selection Notification'
+                            : 'Send Professional Non-Selection Email'}
+                        </button>
+
+                        <a
+                          href={`https://wa.me/91${selectedLiveParticipant.mobileNumber}?text=${encodeURIComponent(
+                            getPerformerWhatsAppMessage(selectedLiveParticipant)
+                          )}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          title="Open WhatsApp with courteous non-selection message"
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: 6,
+                            padding: '9px 14px',
+                            borderRadius: 6,
+                            background: '#25D366',
+                            color: '#ffffff',
+                            textDecoration: 'none',
+                            fontSize: '0.84rem',
+                            fontWeight: 700,
+                            boxShadow: '0 2px 6px rgba(37,211,102,0.25)',
+                          }}
+                        >
+                          <span>💬</span> WhatsApp Non-Selection Notice
+                        </a>
+                      </div>
                     </div>
 
                     {/* Direct Contact Actions */}
@@ -3686,7 +3737,7 @@ function Admin() {
                     >
                       <a
                         href={`https://wa.me/91${selectedLiveParticipant.mobileNumber}?text=${encodeURIComponent(
-                          `Hi ${selectedLiveParticipant.fullName}!\nGreetings from THE MORAS CAFE.\n\nWe have received your registration for *MORAS LIVE* (ID: ${selectedLiveParticipant.registrationId}) as a *${selectedLiveParticipant.participationRole}*.\n\nOur team will be in touch with you regarding performance coordination and stage schedule soon. Stay tuned!\n\nBest,\nThe Moras Cafe Team`
+                          getPerformerWhatsAppMessage(selectedLiveParticipant)
                         )}`}
                         target="_blank"
                         rel="noopener noreferrer"
@@ -3705,7 +3756,12 @@ function Admin() {
                           fontSize: '0.88rem',
                         }}
                       >
-                        <span>💬</span> WhatsApp Participant
+                        <span>💬</span>{' '}
+                        {selectedLiveParticipant.registrationStatus === 'Rejected'
+                          ? 'WhatsApp Non-Selection Notice'
+                          : selectedLiveParticipant.registrationStatus === 'Confirmed'
+                          ? 'WhatsApp Confirmation Notice'
+                          : 'WhatsApp Participant'}
                       </a>
 
                       <button
