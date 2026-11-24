@@ -9,6 +9,7 @@ async function runTests() {
   const emailModule = require('../src/utils/email');
   assert(typeof emailModule.sendOrderEmail === 'function', 'sendOrderEmail must be exported');
   assert(typeof emailModule.sendReservationEmail === 'function', 'sendReservationEmail must be exported');
+  assert(typeof emailModule.sendMorasLivePerformerEmail === 'function', 'sendMorasLivePerformerEmail must be exported');
   assert(typeof emailModule.sendTestEmail === 'function', 'sendTestEmail must be exported');
   assert(typeof emailModule.getEmailConfigDiagnostic === 'function', 'getEmailConfigDiagnostic must be exported');
   console.log('  ✅ PASS: 1. Export signatures verified');
@@ -54,6 +55,41 @@ async function runTests() {
   // Without credentials configured in test env, it should return success: false with informative errors
   assert(typeof dispatchResult === 'object', 'Result must be an object');
   console.log('  ✅ PASS: 4. Order email dispatch gracefully traverses fallback chain without crash');
+
+  // Test 5: MORAS LIVE Performer Confirmation Email generation & sanitization
+  const mockRegistration = {
+    registrationId: 'ML-998877',
+    fullName: '<script>alert(1)</script>Aarav Sharma',
+    email: 'aarav@example.com',
+    participationRole: 'Singer',
+    otherRole: '',
+    instagramUsername: 'aaravmusic',
+  };
+  const performerHtml = emailModule.buildMorasLivePerformerEmailHTML({
+    registration: mockRegistration,
+    customSlot: '<b>Saturday 7:30 PM</b>',
+    customMessage: '<img src=x onerror=alert(2)>Excited to have you!',
+  });
+  assert.ok(!performerHtml.includes('<script>alert(1)</script>'), 'Script tag in performer name must be escaped');
+  assert.ok(performerHtml.includes('&lt;script&gt;alert(1)&lt;/script&gt;'), 'Performer name must be escaped');
+  assert.ok(!performerHtml.includes('<b>Saturday'), 'HTML tags in custom slot must be escaped');
+  assert.ok(performerHtml.includes('&lt;b&gt;Saturday'), 'Custom slot must be escaped');
+  assert.ok(!performerHtml.includes('<img src=x'), 'HTML tags in custom message must be escaped');
+  assert.ok(performerHtml.includes('ML-998877'), 'Registration ID must be present');
+  assert.ok(performerHtml.includes('Singer'), 'Participation role must be present');
+  assert.ok(performerHtml.includes('Artist Briefing &amp; Event Guidelines'), 'Guidelines must be present');
+
+  const performerText = emailModule.buildMorasLivePerformerEmailText({
+    registration: mockRegistration,
+    customSlot: 'Saturday 7:30 PM',
+    customMessage: 'Excited to have you!',
+  });
+  assert.ok(performerText.includes('ML-998877'));
+  assert.ok(performerText.includes('Saturday 7:30 PM'));
+
+  const performerEmailRes = await emailModule.sendMorasLivePerformerEmail({});
+  assert.strictEqual(performerEmailRes.success, false, 'Should fail gracefully if performer has no email');
+  console.log('  ✅ PASS: 5. MORAS LIVE Performer confirmation email generation, sanitization & fallback verified');
 
   console.log('\n🎉 All Email integration checks passed successfully!\n');
 }

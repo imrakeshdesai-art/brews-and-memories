@@ -939,6 +939,213 @@ async function sendMorasLivePassEmail({ pass, qrDataUrl, qrPayload, secureAccess
   }
 }
 
+// ── MORAS LIVE Performer Confirmation Email ───────────────────────────────────
+function buildMorasLivePerformerEmailHTML({ registration, customSlot, customMessage }) {
+  const safeName = escapeHtml(registration.fullName || 'Valued Performer');
+  const safeRegId = escapeHtml(registration.registrationId || 'ML-PERFORMER');
+  const safeRole = escapeHtml(registration.participationRole || 'Featured Performer');
+  const safeOtherRole = registration.otherRole ? escapeHtml(registration.otherRole) : '';
+  const safeInstagram = registration.instagramUsername ? escapeHtml(registration.instagramUsername.replace(/^@+/, '')) : '';
+  const safeSlot = customSlot ? escapeHtml(customSlot) : '';
+  const safeMessage = customMessage ? escapeHtml(customMessage) : '';
+  const safeEventName = 'MORAS LIVE (Season 1)';
+  const safeVenue = 'THE MORAS CAFE, Solapur Rd, Vijayapura, Karnataka 586103';
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Performance Confirmed - MORAS LIVE</title>
+</head>
+<body style="margin:0;padding:0;background-color:#f4efe6;font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased">
+  <center style="width:100%;background-color:#f4efe6;padding:24px 10px">
+    <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width:620px;margin:0 auto;background-color:#ffffff;border-radius:18px;overflow:hidden;box-shadow:0 8px 30px rgba(0,0,0,0.08);border:1px solid #e8e2d2">
+      <!-- Top Brand Header Banner -->
+      <tr>
+        <td style="background:#123F3D;padding:32px 24px 28px;text-align:center;border-bottom:3px solid #c5a880">
+          <div style="color:#c5a880;font-size:11px;font-weight:800;letter-spacing:3px;text-transform:uppercase;margin-bottom:8px">THE MORAS CAFE PRESENTS</div>
+          <h1 style="color:#ffffff;font-family:'Playfair Display',Georgia,serif;font-size:28px;margin:0 0 6px;letter-spacing:1px;font-weight:700">${safeEventName}</h1>
+          <div style="display:inline-block;background:rgba(197,168,128,0.22);color:#F5E8D0;border:1px solid rgba(197,168,128,0.45);padding:4px 14px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-top:6px">
+            OFFICIAL ARTIST CONFIRMATION
+          </div>
+        </td>
+      </tr>
+
+      <!-- Main Body -->
+      <tr>
+        <td style="padding:32px 28px 24px">
+          <!-- Congratulatory Intro -->
+          <div style="text-align:center;margin-bottom:24px">
+            <div style="font-size:36px;line-height:1;margin-bottom:10px">🎤✨</div>
+            <h2 style="margin:0 0 8px;font-family:'Playfair Display',Georgia,serif;font-size:22px;color:#123F3D;font-weight:700">
+              Your Stage is Confirmed!
+            </h2>
+            <div style="font-size:12px;color:#8e8a7e;letter-spacing:2px;text-transform:uppercase;font-weight:700">YOUR MIC. YOUR MOMENT.</div>
+          </div>
+
+          <p style="font-size:15px;line-height:1.65;color:#2d2d2d;margin:0 0 20px">
+            Dear <strong>${safeName}</strong>,
+          </p>
+
+          <p style="font-size:15px;line-height:1.65;color:#475569;margin:0 0 24px">
+            Congratulations! The event curation team at <strong>THE MORAS CAFE</strong> has reviewed your registration and performance pitch. We are delighted to officially confirm your slot as a featured artist for <strong>${safeEventName}</strong>!
+          </p>
+
+          <!-- Performer Card -->
+          <div style="background:#faf8f5;border-radius:14px;border:1px solid #e8e2d2;padding:22px 20px;margin-bottom:24px">
+            <div style="font-size:11px;font-weight:800;color:#123F3D;letter-spacing:2px;text-transform:uppercase;margin-bottom:14px;border-bottom:1px solid #e8e2d2;padding-bottom:8px">
+              🎯 Performance Allocation Details
+            </div>
+            <table width="100%" cellpadding="6" cellspacing="0" style="font-size:14px;color:#333">
+              <tr>
+                <td width="38%" style="color:#777;padding:6px 0">Artist Name:</td>
+                <td width="62%" style="font-weight:700;color:#123F3D;padding:6px 0">${safeName}</td>
+              </tr>
+              <tr>
+                <td style="color:#777;padding:6px 0">Registration ID:</td>
+                <td style="font-weight:700;color:#047857;font-family:monospace;letter-spacing:1px;padding:6px 0">${safeRegId}</td>
+              </tr>
+              <tr>
+                <td style="color:#777;padding:6px 0">Performance Act:</td>
+                <td style="font-weight:700;color:#8B0000;padding:6px 0">
+                  ${safeRole}${safeOtherRole ? ` <span style="font-weight:normal;color:#666">(${safeOtherRole})</span>` : ''}
+                </td>
+              </tr>
+              ${safeInstagram ? `
+              <tr>
+                <td style="color:#777;padding:6px 0">Instagram:</td>
+                <td style="font-weight:600;color:#e11d48;padding:6px 0">@${safeInstagram}</td>
+              </tr>` : ''}
+              <tr>
+                <td style="color:#777;padding:6px 0">Allocated Slot:</td>
+                <td style="font-weight:700;color:#123F3D;padding:6px 0">
+                  ${safeSlot || 'Coordinated by Artist Desk (Team will connect via Call/WhatsApp)'}
+                </td>
+              </tr>
+              <tr>
+                <td style="color:#777;padding:6px 0">Venue:</td>
+                <td style="font-weight:600;color:#333;padding:6px 0">${safeVenue}</td>
+              </tr>
+            </table>
+          </div>
+
+          ${safeMessage ? `
+          <!-- Custom Message from Curation Team -->
+          <div style="background:#f0fdf4;border-radius:12px;border:1px solid #bbf7d0;padding:18px 20px;margin-bottom:24px">
+            <div style="font-size:12px;color:#166534;text-transform:uppercase;letter-spacing:1px;font-weight:800;margin-bottom:6px">
+              📌 Note from Event Curation Team
+            </div>
+            <div style="font-size:14px;color:#15803d;line-height:1.6;white-space:pre-wrap">${safeMessage}</div>
+          </div>` : ''}
+
+          <!-- Artist Guidelines & Hospitality -->
+          <div style="background:#ffffff;border-radius:12px;border:1px solid #e2e8f0;padding:20px;margin-bottom:24px">
+            <div style="font-size:12px;color:#123F3D;text-transform:uppercase;letter-spacing:1.5px;font-weight:800;margin-bottom:12px">
+              📋 Artist Briefing &amp; Event Guidelines
+            </div>
+            <ul style="margin:0;padding-left:18px;font-size:13.5px;color:#334155;line-height:1.7">
+              <li style="margin-bottom:8px"><strong>Arrival &amp; Soundcheck:</strong> Please arrive at the venue at least <strong>30 minutes prior</strong> to your performance slot to check in at the artist desk, meet our stage coordinator, and soundcheck.</li>
+              <li style="margin-bottom:8px"><strong>Audio &amp; Instrument Setup:</strong> High-definition vocal mics, PA audio monitors, and acoustic DI connections are fully provided. If your performance requires custom backing tracks or instrument lines, please keep your audio files ready on your smartphone or flash drive.</li>
+              <li style="margin-bottom:8px"><strong>Artist Hospitality:</strong> As our featured guest artist, enjoy complimentary freshly brewed specialty coffee and refreshments on the house from our barista counter!</li>
+              <li style="margin-bottom:8px"><strong>Bring Your Cheering Squad:</strong> MORAS LIVE is a warm, high-vibe cafe community showcase. Invite your friends, family, and fans to cheer for you! Audience passes can be reserved at <a href="https://themorascafe.in" target="_blank" style="color:#123F3D;font-weight:700">themorascafe.in</a>.</li>
+              <li><strong>Artist Coordination Hotline:</strong> For any questions, timing updates, or audio coordination, please contact our artist desk at <strong>+91 99454 46137</strong> or reply directly to this email.</li>
+            </ul>
+          </div>
+
+          <!-- Motivational Closing -->
+          <p style="font-size:15px;line-height:1.65;color:#334155;text-align:center;margin:0 0 24px">
+            We are honored to have your talent on our stage and look forward to an unforgettable night of art, culture, and coffee.
+          </p>
+
+          <div style="text-align:center;margin-bottom:12px">
+            <div style="font-size:14px;font-weight:700;color:#123F3D">The Curation &amp; Production Team</div>
+            <div style="font-size:12px;color:#777;margin-top:2px">THE MORAS CAFE, Vijayapura</div>
+          </div>
+        </td>
+      </tr>
+
+      <!-- Footer -->
+      <tr>
+        <td style="background:#111111;padding:24px 20px;text-align:center;color:#999999;font-size:12px;line-height:1.6">
+          <div style="color:#fbbf24;font-weight:700;font-size:13px;margin-bottom:4px">THE MORAS CAFE</div>
+          <div>Udayashree Sports Academy, Solapur Rd, Vijayapura, Karnataka 586103</div>
+          <div style="margin-top:4px">Instagram: <a href="https://instagram.com/themorascafe" target="_blank" style="color:#c5a880;text-decoration:none">@themorascafe</a> &middot; Phone: +91 99454 46137</div>
+          <div style="margin-top:10px;color:#666666">&copy; ${new Date().getFullYear()} The Moras Cafe. All rights reserved.</div>
+        </td>
+      </tr>
+    </table>
+  </center>
+</body>
+</html>`;
+}
+
+function buildMorasLivePerformerEmailText({ registration, customSlot, customMessage }) {
+  const name = registration.fullName || 'Valued Performer';
+  const regId = registration.registrationId || 'ML-PERFORMER';
+  const role = registration.participationRole || 'Featured Performer';
+  const otherRole = registration.otherRole ? ` (${registration.otherRole})` : '';
+  const slot = customSlot || 'Coordinated by Artist Desk (Team will connect via Call/WhatsApp)';
+
+  return `THE MORAS CAFE PRESENTS: MORAS LIVE (Season 1)
+YOUR MIC. YOUR MOMENT.
+============================================================
+OFFICIAL ARTIST CONFIRMATION — YOU ARE SCHEDULED TO PERFORM!
+
+Dear ${name},
+
+Congratulations! The event curation team at THE MORAS CAFE has reviewed your registration. We are thrilled to officially confirm your live performance slot for MORAS LIVE!
+
+PERFORMANCE DETAILS:
+------------------------------------------------------------
+- Artist Name: ${name}
+- Registration ID: ${regId}
+- Performance Act: ${role}${otherRole}
+- Allocated Slot: ${slot}
+- Venue: THE MORAS CAFE, Udayashree Sports Academy, Solapur Rd, Vijayapura, Karnataka 586103
+
+${customMessage ? `NOTE FROM CURATION TEAM:\n${customMessage}\n\n` : ''}ARTIST BRIEFING & GUIDELINES:
+1. Arrival: Please arrive at the venue at least 30 minutes prior to your performance slot for backstage check-in and soundcheck.
+2. Audio Equipment: Vocal microphones, stage monitors, and acoustic DI lines are provided. If using backing tracks, keep them ready on your smartphone or USB drive.
+3. Hospitality: Enjoy complimentary freshly brewed coffee on the house from our barista counter!
+4. Audience & Fans: Feel free to invite your friends and family. Audience passes can be reserved at https://themorascafe.in.
+5. Artist Support Desk: If you need anything, call us at +91 99454 46137 or reply to this email.
+
+We look forward to an electrifying performance!
+
+Warm regards,
+The Curation & Production Team
+THE MORAS CAFE, Vijayapura
+`;
+}
+
+async function sendMorasLivePerformerEmail({ registration, customSlot = '', customMessage = '' }) {
+  if (!registration || !registration.email) {
+    console.log('[Email] No email address provided for performer — skipping.');
+    return { success: false, error: 'No performer email provided', method: 'skipped' };
+  }
+
+  const name = registration.fullName || 'Valued Performer';
+  const regId = registration.registrationId || 'CONFIRMED';
+  const subject = `Congratulations! Your Performance at MORAS LIVE is Confirmed (#${regId}) 🎤 — THE MORAS CAFE`;
+  const htmlContent = buildMorasLivePerformerEmailHTML({ registration, customSlot, customMessage });
+  const textContent = buildMorasLivePerformerEmailText({ registration, customSlot, customMessage });
+
+  try {
+    const result = await dispatchEmail({
+      to: registration.email,
+      toName: name,
+      subject,
+      htmlContent,
+      textContent,
+    });
+    return result;
+  } catch (err) {
+    console.error('[Email] sendMorasLivePerformerEmail error:', err.message);
+    return { success: false, error: err.message, method: 'error' };
+  }
+}
+
 // ── Table Reservation Email ───────────────────────────────────────────────────
 async function sendReservationEmail(reservationData) {
   if (!reservationData || !reservationData.email) {
@@ -1010,9 +1217,12 @@ module.exports = {
   buildCustomerEmailHTML,
   buildReservationEmailHTML,
   buildMorasLivePassEmailHTML,
+  buildMorasLivePerformerEmailHTML,
+  buildMorasLivePerformerEmailText,
   sendOrderEmail,
   sendReservationEmail,
   sendMorasLivePassEmail,
+  sendMorasLivePerformerEmail,
   sendTestEmail,
   getEmailConfigDiagnostic,
 };

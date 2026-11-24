@@ -308,7 +308,7 @@ router.get('/stats', auth, checkRole(['admin']), async (req, res) => {
 router.patch('/registrations/:id/status', auth, checkRole(['admin']), async (req, res) => {
   try {
     const { id } = req.params;
-    const { status, adminNotes } = req.body;
+    const { status, adminNotes, sendConfirmationEmail, customSlot, customMessage } = req.body;
 
     if (!REGISTRATION_STATUSES.includes(status)) {
       return res.status(400).json({
@@ -323,6 +323,9 @@ router.patch('/registrations/:id/status', auth, checkRole(['admin']), async (req
     if (typeof adminNotes === 'string') {
       updateFields.adminNotes = adminNotes.trim();
     }
+    if (typeof customSlot === 'string') {
+      updateFields.stageSlot = customSlot.trim();
+    }
 
     const updated = await MorasLiveRegistration.findByIdAndUpdate(
       id,
@@ -334,10 +337,35 @@ router.patch('/registrations/:id/status', auth, checkRole(['admin']), async (req
       return res.status(404).json({ success: false, message: 'Registration not found' });
     }
 
+    // Optional immediate email dispatch if requested upon confirmation
+    let emailStatus = null;
+    if (status === 'Confirmed' && sendConfirmationEmail && updated.email) {
+      try {
+        const { sendMorasLivePerformerEmail } = require('../utils/email');
+        const emailRes = await sendMorasLivePerformerEmail({
+          registration: updated,
+          customSlot: typeof customSlot === 'string' ? customSlot.trim() : (updated.stageSlot || ''),
+          customMessage: typeof customMessage === 'string' ? customMessage.trim() : '',
+        });
+        if (emailRes && emailRes.success) {
+          updated.confirmationEmailSent = true;
+          updated.confirmationEmailSentAt = new Date();
+          await updated.save();
+          emailStatus = 'sent';
+        } else {
+          emailStatus = 'failed: ' + (emailRes?.error || 'delivery error');
+        }
+      } catch (mailErr) {
+        console.error('[MORAS LIVE] Automated confirmation email error:', mailErr);
+        emailStatus = 'failed: ' + mailErr.message;
+      }
+    }
+
     return res.json({
       success: true,
-      message: `Registration status updated to ${status}`,
+      message: `Registration status updated to ${status}${emailStatus === 'sent' ? ' and confirmation email dispatched' : ''}`,
       registration: updated,
+      emailStatus,
     });
   } catch (error) {
     console.error('[MORAS LIVE] Status update error:', error);
@@ -431,6 +459,62 @@ router.get('/export', auth, checkRole(['admin']), async (req, res) => {
   } catch (error) {
     console.error('[MORAS LIVE] CSV export error:', error);
     return res.status(500).json({ success: false, message: 'Failed to generate CSV export' });
+  }
+});
+
+// ==================== 7. ADMIN: SEND OFFICIAL CONFIRMATION EMAIL ====================
+// POST /api/moras-live/registrations/:id/send-confirmation-email
+router.post('/registrations/:id/send-confirmation-email', auth, checkRole(['admin']), async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { customSlot, customMessage } = req.body || {};
+
+    const registration = await MorasLiveRegistration.findById(id);
+    if (!registration) {
+      return res.status(404).json({ success: false, message: 'Registration not found' });
+    }
+
+    if (!registration.email) {
+      return res.status(400).json({ success: false, message: 'This participant does not have an email address on file.' });
+    }
+
+    const { sendMorasLivePerformerEmail } = require('../utils/email');
+
+    const cleanSlot = typeof customSlot === 'string' ? customSlot.trim() : (registration.stageSlot || '');
+    const cleanMessage = typeof customMessage === 'string' ? customMessage.trim() : '';
+
+    const emailResult = await sendMorasLivePerformerEmail({
+      registration,
+      customSlot: cleanSlot,
+      customMessage: cleanMessage,
+    });
+
+    if (!emailResult || !emailResult.success) {
+      const errMsg = emailResult?.error || (emailResult?.errors && emailResult.errors.join(', ')) || 'Failed to dispatch email';
+      return res.status(502).json({
+        success: false,
+        message: `Could not send confirmation email: ${errMsg}`,
+      });
+    }
+
+    // Update state to confirmed with email tracking
+    registration.confirmationEmailSent = true;
+    registration.confirmationEmailSentAt = new Date();
+    registration.registrationStatus = 'Confirmed';
+    if (cleanSlot) {
+      registration.stageSlot = cleanSlot;
+    }
+    await registration.save();
+
+    return res.json({
+      success: true,
+      message: `Official confirmation email successfully sent to ${registration.email}!`,
+      registration,
+      emailResult,
+    });
+  } catch (error) {
+    console.error('[MORAS LIVE] Send confirmation email error:', error);
+    return res.status(500).json({ success: false, message: 'Internal error sending confirmation email: ' + error.message });
   }
 });
 

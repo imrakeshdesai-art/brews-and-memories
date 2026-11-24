@@ -243,6 +243,9 @@ function Admin() {
   const [selectedLiveParticipant, setSelectedLiveParticipant] = useState(null);
   const [updatingLiveId, setUpdatingLiveId] = useState(null);
   const [adminNoteDraft, setAdminNoteDraft] = useState('');
+  const [sendingLiveEmailId, setSendingLiveEmailId] = useState(null);
+  const [customSlotDraft, setCustomSlotDraft] = useState('');
+  const [customEmailMessageDraft, setCustomEmailMessageDraft] = useState('');
 
   const fetchMorasLiveStats = useCallback(async () => {
     try {
@@ -311,6 +314,33 @@ function Admin() {
       toast('Failed to update status: ' + (err.response?.data?.message || err.message));
     } finally {
       setUpdatingLiveId(null);
+    }
+  };
+
+  const handleSendLiveConfirmationEmail = async (id, customSlot, customMessage) => {
+    setSendingLiveEmailId(id);
+    try {
+      const res = await api.post(`/moras-live/registrations/${id}/send-confirmation-email`, {
+        customSlot,
+        customMessage,
+      });
+      if (res.data?.success) {
+        toast(`Official confirmation email sent to ${res.data.registration.email}!`);
+        setMorasLiveRegistrations((prev) =>
+          prev.map((r) => (r._id === id || r.registrationId === id ? res.data.registration : r))
+        );
+        if (
+          selectedLiveParticipant &&
+          (selectedLiveParticipant._id === id || selectedLiveParticipant.registrationId === id)
+        ) {
+          setSelectedLiveParticipant(res.data.registration);
+        }
+        fetchMorasLiveStats();
+      }
+    } catch (err) {
+      toast('Failed to send confirmation email: ' + (err.response?.data?.message || err.message));
+    } finally {
+      setSendingLiveEmailId(null);
     }
   };
 
@@ -2873,6 +2903,55 @@ function Admin() {
                               <option value="Rejected">Rejected</option>
                               <option value="Cancelled">Cancelled</option>
                             </select>
+                            {reg.registrationStatus === 'Confirmed' && (
+                              <div style={{ marginTop: 4 }}>
+                                {reg.confirmationEmailSent ? (
+                                  <span
+                                    title={`Official confirmation email sent on ${new Date(reg.confirmationEmailSentAt).toLocaleString('en-IN', { dateStyle: 'short', timeStyle: 'short' })}`}
+                                    style={{
+                                      display: 'inline-flex',
+                                      alignItems: 'center',
+                                      gap: 3,
+                                      fontSize: '0.68rem',
+                                      fontWeight: 700,
+                                      color: '#047857',
+                                      background: '#ecfdf5',
+                                      border: '1px solid #a7f3d0',
+                                      padding: '2px 5px',
+                                      borderRadius: 4,
+                                      cursor: 'default',
+                                    }}
+                                  >
+                                    ✉️ Email Sent
+                                  </span>
+                                ) : (
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setSelectedLiveParticipant(reg);
+                                      setAdminNoteDraft(reg.adminNotes || '');
+                                      setCustomSlotDraft(reg.stageSlot || '');
+                                      setCustomEmailMessageDraft('');
+                                    }}
+                                    style={{
+                                      display: 'inline-flex',
+                                      alignItems: 'center',
+                                      gap: 3,
+                                      fontSize: '0.68rem',
+                                      fontWeight: 700,
+                                      color: '#1e40af',
+                                      background: '#dbeafe',
+                                      border: '1px solid #bfdbfe',
+                                      padding: '2px 5px',
+                                      borderRadius: 4,
+                                      cursor: 'pointer',
+                                    }}
+                                  >
+                                    ✉️ Send Email
+                                  </button>
+                                )}
+                              </div>
+                            )}
                           </td>
 
                           <td style={{ padding: '12px 14px', verticalAlign: 'top', textAlign: 'right' }}>
@@ -2882,6 +2961,8 @@ function Admin() {
                                 onClick={() => {
                                   setSelectedLiveParticipant(reg);
                                   setAdminNoteDraft(reg.adminNotes || '');
+                                  setCustomSlotDraft(reg.stageSlot || '');
+                                  setCustomEmailMessageDraft('');
                                 }}
                                 title="View full details &amp; curate"
                                 style={{
@@ -3183,6 +3264,179 @@ function Admin() {
                         }}
                       >
                         Save Note
+                      </button>
+                    </div>
+
+                    {/* Official Performer Confirmation Email Card */}
+                    <div
+                      style={{
+                        marginBottom: 20,
+                        padding: '16px',
+                        background: '#f8fafc',
+                        borderRadius: 12,
+                        border: '1px solid #cbd5e1',
+                      }}
+                    >
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          marginBottom: 8,
+                          flexWrap: 'wrap',
+                          gap: 6,
+                        }}
+                      >
+                        <div
+                          style={{
+                            fontSize: '0.82rem',
+                            color: '#123F3D',
+                            textTransform: 'uppercase',
+                            fontWeight: 800,
+                            letterSpacing: '0.04em',
+                          }}
+                        >
+                          ✉️ Official Performer Confirmation Email
+                        </div>
+                        {selectedLiveParticipant.confirmationEmailSent ? (
+                          <span
+                            style={{
+                              fontSize: '0.74rem',
+                              fontWeight: 700,
+                              color: '#047857',
+                              background: '#ecfdf5',
+                              padding: '2px 8px',
+                              borderRadius: 12,
+                              border: '1px solid #a7f3d0',
+                            }}
+                          >
+                            ✅ Sent{' '}
+                            {selectedLiveParticipant.confirmationEmailSentAt
+                              ? new Date(selectedLiveParticipant.confirmationEmailSentAt).toLocaleDateString('en-IN', {
+                                  month: 'short',
+                                  day: 'numeric',
+                                  hour: '2-digit',
+                                  minute: '2-digit',
+                                })
+                              : ''}
+                          </span>
+                        ) : (
+                          <span
+                            style={{
+                              fontSize: '0.74rem',
+                              fontWeight: 700,
+                              color: '#b45309',
+                              background: '#fef3c7',
+                              padding: '2px 8px',
+                              borderRadius: 12,
+                              border: '1px solid #fde68a',
+                            }}
+                          >
+                            ⏳ Not Dispatched Yet
+                          </span>
+                        )}
+                      </div>
+
+                      <p style={{ margin: '0 0 12px', fontSize: '0.82rem', color: '#475569', lineHeight: 1.45 }}>
+                        Send an official, branded invitation &amp; stage confirmation email to{' '}
+                        <strong>{selectedLiveParticipant.email}</strong> detailing their stage act, soundcheck guidelines, artist hospitality, and desk hotline.
+                      </p>
+
+                      <div style={{ marginBottom: 10 }}>
+                        <label
+                          style={{
+                            display: 'block',
+                            fontSize: '0.74rem',
+                            fontWeight: 700,
+                            color: '#334155',
+                            textTransform: 'uppercase',
+                            marginBottom: 4,
+                          }}
+                        >
+                          Stage Slot / Performance Timing (Optional)
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="e.g. Saturday 7:30 PM (Slot 2) or 7:00 PM - 7:20 PM"
+                          value={customSlotDraft}
+                          onChange={(e) => setCustomSlotDraft(e.target.value)}
+                          style={{
+                            width: '100%',
+                            padding: '8px 12px',
+                            borderRadius: 6,
+                            border: '1px solid #cbd5e1',
+                            fontSize: '0.84rem',
+                            background: '#fff',
+                            boxSizing: 'border-box',
+                          }}
+                        />
+                      </div>
+
+                      <div style={{ marginBottom: 12 }}>
+                        <label
+                          style={{
+                            display: 'block',
+                            fontSize: '0.74rem',
+                            fontWeight: 700,
+                            color: '#334155',
+                            textTransform: 'uppercase',
+                            marginBottom: 4,
+                          }}
+                        >
+                          Special Note from Curation Team (Optional)
+                        </label>
+                        <textarea
+                          rows={2}
+                          placeholder="e.g. Please bring your acoustic guitar. Your backing track has been loaded into our mixer."
+                          value={customEmailMessageDraft}
+                          onChange={(e) => setCustomEmailMessageDraft(e.target.value)}
+                          style={{
+                            width: '100%',
+                            padding: '8px 12px',
+                            borderRadius: 6,
+                            border: '1px solid #cbd5e1',
+                            fontSize: '0.84rem',
+                            fontFamily: 'inherit',
+                            background: '#fff',
+                            boxSizing: 'border-box',
+                          }}
+                        />
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() =>
+                          handleSendLiveConfirmationEmail(
+                            selectedLiveParticipant._id || selectedLiveParticipant.registrationId,
+                            customSlotDraft,
+                            customEmailMessageDraft
+                          )
+                        }
+                        disabled={sendingLiveEmailId === (selectedLiveParticipant._id || selectedLiveParticipant.registrationId)}
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: 6,
+                          padding: '9px 16px',
+                          borderRadius: 6,
+                          background: '#123F3D',
+                          color: '#F5E8D0',
+                          border: 'none',
+                          fontSize: '0.84rem',
+                          fontWeight: 700,
+                          cursor:
+                            sendingLiveEmailId === (selectedLiveParticipant._id || selectedLiveParticipant.registrationId)
+                              ? 'wait'
+                              : 'pointer',
+                          boxShadow: '0 2px 6px rgba(18,63,61,0.25)',
+                        }}
+                      >
+                        <span>✉️</span>
+                        {sendingLiveEmailId === (selectedLiveParticipant._id || selectedLiveParticipant.registrationId)
+                          ? 'Dispatching Email...'
+                          : selectedLiveParticipant.confirmationEmailSent
+                          ? 'Resend Official Confirmation Email'
+                          : 'Send Official Confirmation Email'}
                       </button>
                     </div>
 

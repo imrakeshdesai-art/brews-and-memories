@@ -92,6 +92,21 @@ const morasLiveRegistrationSchema = new mongoose.Schema(
       trim: true,
       maxlength: [1000, 'Admin notes cannot exceed 1000 characters'],
     },
+    confirmationEmailSent: {
+      type: Boolean,
+      default: false,
+      index: true,
+    },
+    confirmationEmailSentAt: {
+      type: Date,
+      default: null,
+    },
+    stageSlot: {
+      type: String,
+      default: '',
+      trim: true,
+      maxlength: [200, 'Stage slot description cannot exceed 200 characters'],
+    },
     ipAddress: {
       type: String,
       default: '',
