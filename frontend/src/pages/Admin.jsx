@@ -236,7 +236,7 @@ function Admin() {
     const otherRole = reg.otherRole ? ` (${reg.otherRole})` : '';
 
     if (reg.registrationStatus === 'Rejected') {
-      return `Hi ${name}!\nGreetings from THE MORAS CAFE.\n\nThank you very much for registering and auditioning for *MORAS LIVE (Season 1)* (Reg ID: #${regId}) as a *${role}${otherRole}*.\n\nOur curation panel had the challenging task of selecting *only the top 4 featured performance acts* from a large pool of talented applicants for this inaugural edition. Due to strict slot constraints, we are unable to offer you a stage slot for this specific session.\n\nPlease know this was an exceptionally difficult decision driven purely by time limits, not a reflection of your talent. Your profile remains saved on our *Featured Artist Roster* for priority consideration in upcoming editions and open mics!\n\nWe warmly invite you to attend MORAS LIVE as our guest and connect with the community.\n\nBest regards,\nThe Curation & Production Team\nTHE MORAS CAFE, Vijayapura\n📞 +91 99454 46137`;
+      return `Hi ${name}!\nGreetings from THE MORAS CAFE.\n\nThank you for registering for *MORAS LIVE (Season 1)* (Reg ID: #${regId}).\n\nDue to limited stage slots, our curation team could select *only the top 4 performers* for this edition. Unfortunately, your registration was not selected this time.\n\nWe have saved your details for our upcoming open mics and future editions.\n\nIf you would like to attend and watch the show, audience passes are available for *₹149* (includes 1 complimentary cappuccino) at themorascafe.in.\n\nThank you,\nTHE MORAS CAFE, Vijayapura\n📞 +91 99454 46137`;
     }
 
     if (reg.registrationStatus === 'Confirmed') {
@@ -3629,7 +3629,7 @@ function Admin() {
                       </div>
 
                       <p style={{ margin: '0 0 12px', fontSize: '0.82rem', color: '#7f1d1d', lineHeight: 1.45 }}>
-                        Sends a courteous, dignified notification explaining that only the <strong>top 4 acts</strong> could be curated for this edition, while reassuring the artist that their profile is saved in our <em>Featured Artist Roster</em> for upcoming showcases and inviting them to attend.
+                        Sends a concise, professional notification explaining that only the <strong>top 4 performers</strong> could be curated for this edition, confirming their details are saved for future open mics, and sharing ₹149 audience pass details (with complimentary cappuccino) if they wish to attend.
                       </p>
 
                       <div style={{ marginBottom: 12 }}>

@@ -101,15 +101,22 @@ async function runTests() {
   assert.ok(rejectionHtml.includes('&lt;script&gt;evil()&lt;/script&gt;'), 'Custom message must be escaped');
   assert.ok(!rejectionHtml.includes('<script>alert(1)</script>'), 'Script tag in applicant name must be escaped');
   assert.ok(rejectionHtml.includes('ML-998877'), 'Registration ID must be present');
-  assert.ok(rejectionHtml.includes('top 4 featured performances'), 'Top 4 policy context must be clearly stated');
-  assert.ok(rejectionHtml.includes('Featured Artist Roster'), 'Featured Artist Roster mention must be present');
+  assert.ok(rejectionHtml.includes('top 4 performers'), 'Top 4 policy context must be clearly stated');
+  assert.ok(rejectionHtml.includes('149'), '₹149 audience pass info must be present');
+  assert.ok(rejectionHtml.includes('complimentary cappuccino'), 'Complimentary cappuccino must be mentioned');
+  assert.ok(!rejectionHtml.toLowerCase().includes('as our guest'), 'Must not promise free guest attendance');
+  assert.ok(!rejectionHtml.toLowerCase().includes('guest invitation'), 'Must not include confusing guest invitation');
 
   const rejectionText = emailModule.buildMorasLiveRejectionEmailText({
     registration: mockRegistration,
     customMessage: 'Special message to artist',
   });
   assert.ok(rejectionText.includes('ML-998877'));
-  assert.ok(rejectionText.includes('top 4 featured performance acts'));
+  assert.ok(rejectionText.includes('top 4 performers'));
+  assert.ok(rejectionText.includes('149'));
+  assert.ok(rejectionText.includes('complimentary cappuccino'));
+  assert.ok(!rejectionText.toLowerCase().includes('as our guest'));
+  assert.ok(!rejectionText.toLowerCase().includes('guest invitation'));
 
   const rejectionEmailRes = await emailModule.sendMorasLiveRejectionEmail({});
   assert.strictEqual(rejectionEmailRes.success, false, 'Should fail gracefully if rejection recipient has no email');

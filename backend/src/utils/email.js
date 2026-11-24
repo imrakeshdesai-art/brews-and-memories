@@ -1150,7 +1150,7 @@ async function sendMorasLivePerformerEmail({ registration, customSlot = '', cust
 function buildMorasLiveRejectionEmailHTML({ registration, customMessage }) {
   const safeName = escapeHtml(registration.fullName || 'Valued Artist');
   const safeRegId = escapeHtml(registration.registrationId || 'ML-REG');
-  const safeRole = escapeHtml(registration.participationRole || 'Creative Artist');
+  const safeRole = escapeHtml(registration.participationRole || 'Performer');
   const safeOtherRole = registration.otherRole ? escapeHtml(registration.otherRole) : '';
   const safeMessage = customMessage ? escapeHtml(customMessage) : '';
   const safeEventName = 'MORAS LIVE (Season 1)';
@@ -1160,89 +1160,88 @@ function buildMorasLiveRejectionEmailHTML({ registration, customMessage }) {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MORAS LIVE Curation Update</title>
+  <title>MORAS LIVE Registration Update</title>
 </head>
 <body style="margin:0;padding:0;background-color:#f4efe6;font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased">
   <center style="width:100%;background-color:#f4efe6;padding:24px 10px">
-    <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width:620px;margin:0 auto;background-color:#ffffff;border-radius:18px;overflow:hidden;box-shadow:0 8px 30px rgba(0,0,0,0.08);border:1px solid #e8e2d2">
+    <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width:560px;margin:0 auto;background-color:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 8px 30px rgba(0,0,0,0.08);border:1px solid #e8e2d2">
       <!-- Top Brand Header Banner -->
       <tr>
-        <td style="background:#123F3D;padding:32px 24px 28px;text-align:center;border-bottom:3px solid #c5a880">
-          <div style="color:#c5a880;font-size:11px;font-weight:800;letter-spacing:3px;text-transform:uppercase;margin-bottom:8px">THE MORAS CAFE PRESENTS</div>
-          <h1 style="color:#ffffff;font-family:'Playfair Display',Georgia,serif;font-size:28px;margin:0 0 6px;letter-spacing:1px;font-weight:700">${safeEventName}</h1>
-          <div style="display:inline-block;background:rgba(197,168,128,0.22);color:#F5E8D0;border:1px solid rgba(197,168,128,0.45);padding:4px 14px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-top:6px">
-            ARTIST CURATION UPDATE
+        <td style="background:#123F3D;padding:28px 24px;text-align:center;border-bottom:3px solid #c5a880">
+          <div style="color:#c5a880;font-size:11px;font-weight:800;letter-spacing:3px;text-transform:uppercase;margin-bottom:6px">THE MORAS CAFE PRESENTS</div>
+          <h1 style="color:#ffffff;font-family:'Playfair Display',Georgia,serif;font-size:24px;margin:0 0 6px;letter-spacing:1px;font-weight:700">${safeEventName}</h1>
+          <div style="display:inline-block;background:rgba(197,168,128,0.22);color:#F5E8D0;border:1px solid rgba(197,168,128,0.45);padding:3px 12px;border-radius:20px;font-size:10.5px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase">
+            REGISTRATION UPDATE
           </div>
         </td>
       </tr>
 
       <!-- Main Body -->
       <tr>
-        <td style="padding:32px 28px 24px">
-          <p style="font-size:15px;line-height:1.65;color:#2d2d2d;margin:0 0 18px">
+        <td style="padding:26px 24px 20px">
+          <p style="font-size:15px;line-height:1.6;color:#2d2d2d;margin:0 0 16px">
             Dear <strong>${safeName}</strong>,
           </p>
 
-          <p style="font-size:15px;line-height:1.65;color:#475569;margin:0 0 20px">
-            Thank you very much for taking the time to register and audition for <strong>${safeEventName}</strong> as a <strong>${safeRole}${safeOtherRole ? ` (${safeOtherRole})` : ''}</strong>. Our entire curation committee was deeply inspired by the high standard of creativity, passion, and artistic talent you shared with us.
+          <p style="font-size:14.5px;line-height:1.6;color:#475569;margin:0 0 18px">
+            Thank you for registering to perform at <strong>${safeEventName}</strong> (Reg ID: <strong>#${safeRegId}</strong>).
           </p>
 
-          <!-- Selection Context Box -->
-          <div style="background:#faf8f5;border-radius:14px;border:1px solid #e8e2d2;padding:22px 20px;margin-bottom:24px">
-            <div style="font-size:11px;font-weight:800;color:#123F3D;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px">
-              🌟 The Selection Context
+          <!-- Selection Decision Box -->
+          <div style="background:#faf8f5;border-radius:12px;border:1px solid #e8e2d2;padding:18px 20px;margin-bottom:20px">
+            <div style="font-size:11px;font-weight:800;color:#123F3D;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px">
+              Selection Decision
             </div>
-            <p style="font-size:14px;line-height:1.65;color:#334155;margin:0 0 12px">
-              We received an overwhelmingly high volume of registrations from gifted performers across Vijayapura and surrounding regions. To preserve an intimate, focused acoustic cafe setting and ensure each featured act receives extended stage time, our panel had the challenging task of selecting <strong>only the top 4 featured performances</strong> for this inaugural edition.
+            <p style="font-size:14px;line-height:1.6;color:#334155;margin:0 0 10px">
+              Due to limited stage slots, our curation team could select <strong>only the top 4 performers</strong> for this edition.
             </p>
-            <p style="font-size:14px;line-height:1.65;color:#334155;margin:0">
-              Due to these strict slot limitations, we are unable to accommodate your performance in this specific lineup.
+            <p style="font-size:14px;line-height:1.6;color:#334155;margin:0">
+              Unfortunately, your registration was not selected this time. We have saved your details on file for our upcoming open mics and future editions.
             </p>
           </div>
-
-          <p style="font-size:15px;line-height:1.65;color:#475569;margin:0 0 24px">
-            Please know that this was an exceptionally difficult decision driven purely by stage format and time constraints — it is by no means a reflection of your artistic abilities or musical merit.
-          </p>
 
           ${safeMessage ? `
           <!-- Custom Note from Curation Panel -->
-          <div style="background:#f8fafc;border-radius:12px;border:1px solid #cbd5e1;padding:18px 20px;margin-bottom:24px">
-            <div style="font-size:12px;color:#1e293b;text-transform:uppercase;letter-spacing:1px;font-weight:800;margin-bottom:6px">
-              📌 Note from Event Curation Team
+          <div style="background:#f8fafc;border-radius:12px;border:1px solid #cbd5e1;padding:14px 18px;margin-bottom:20px">
+            <div style="font-size:11px;color:#1e293b;text-transform:uppercase;letter-spacing:1px;font-weight:800;margin-bottom:6px">
+              Note from Team
             </div>
-            <div style="font-size:14px;color:#334155;line-height:1.6;white-space:pre-wrap">${safeMessage}</div>
+            <div style="font-size:13.5px;color:#334155;line-height:1.6;white-space:pre-wrap">${safeMessage}</div>
           </div>` : ''}
 
-          <!-- Next Steps & Ongoing Partnership -->
-          <div style="background:#ffffff;border-radius:12px;border:1px solid #e2e8f0;padding:20px;margin-bottom:24px">
-            <div style="font-size:12px;color:#123F3D;text-transform:uppercase;letter-spacing:1.5px;font-weight:800;margin-bottom:12px">
-              🤝 What Comes Next &amp; Future Editions
+          <!-- Audience Pass Notice -->
+          <div style="background:#fffbeb;border-radius:12px;border:1px solid #fef3c7;padding:18px 20px;margin-bottom:22px">
+            <div style="font-size:11px;font-weight:800;color:#92400e;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px">
+              Want to attend and watch?
             </div>
-            <ul style="margin:0;padding-left:18px;font-size:13.5px;color:#334155;line-height:1.7">
-              <li style="margin-bottom:8px"><strong>Priority for Upcoming Editions:</strong> Your registration record (<strong>${safeRegId}</strong>) remains securely saved in our <em>Featured Artist Roster</em>. You will be prioritized for upcoming MORAS LIVE editions, acoustic evenings, and open mic showcases.</li>
-              <li style="margin-bottom:8px"><strong>Special Guest Invitation:</strong> We warmly invite you to join us as an honored guest for MORAS LIVE! Come experience the vibe, enjoy great coffee, and connect with fellow creators in our local arts community.</li>
-              <li><strong>Stay Connected:</strong> If you record new music, spoken word, or demo videos in the coming months, feel free to reply to this email or tag us on Instagram <a href="https://instagram.com/themorascafe" target="_blank" style="color:#123F3D;font-weight:700">@themorascafe</a>.</li>
-            </ul>
+            <p style="font-size:14px;line-height:1.6;color:#78350f;margin:0 0 12px">
+              If you would like to watch the live performances, audience passes are available for <strong>₹149</strong> (which includes <strong>1 complimentary cappuccino</strong>).
+            </p>
+            <div style="text-align:center">
+              <a href="https://themorascafe.in" target="_blank" style="display:inline-block;background:#123F3D;color:#ffffff;text-decoration:none;padding:9px 20px;border-radius:6px;font-size:13px;font-weight:700">
+                Book Audience Pass at themorascafe.in
+              </a>
+            </div>
           </div>
 
-          <p style="font-size:14.5px;line-height:1.65;color:#334155;text-align:center;margin:0 0 24px">
-            We sincerely appreciate your interest in performing with us and look forward to collaborating with you in future editions.
+          <p style="font-size:14px;line-height:1.6;color:#64748b;margin:0 0 20px;text-align:center">
+            Thank you again for your interest and support.
           </p>
 
           <div style="text-align:center;margin-bottom:12px">
-            <div style="font-size:14px;font-weight:700;color:#123F3D">The Curation &amp; Production Team</div>
-            <div style="font-size:12px;color:#777;margin-top:2px">THE MORAS CAFE, Vijayapura</div>
+            <div style="font-size:14px;font-weight:700;color:#123F3D">THE MORAS CAFE Team</div>
+            <div style="font-size:12px;color:#777;margin-top:2px">Vijayapura &middot; +91 99454 46137</div>
           </div>
         </td>
       </tr>
 
       <!-- Footer -->
       <tr>
-        <td style="background:#111111;padding:24px 20px;text-align:center;color:#999999;font-size:12px;line-height:1.6">
+        <td style="background:#111111;padding:20px;text-align:center;color:#999999;font-size:12px;line-height:1.6">
           <div style="color:#fbbf24;font-weight:700;font-size:13px;margin-bottom:4px">THE MORAS CAFE</div>
-          <div>Udayashree Sports Academy, Solapur Rd, Vijayapura, Karnataka 586103</div>
-          <div style="margin-top:4px">Instagram: <a href="https://instagram.com/themorascafe" target="_blank" style="color:#c5a880;text-decoration:none">@themorascafe</a> &middot; Phone: +91 99454 46137</div>
-          <div style="margin-top:10px;color:#666666">&copy; ${new Date().getFullYear()} The Moras Cafe. All rights reserved.</div>
+          <div>B.M. Patil Circle, Ring Rd, Solapur Bypass, Vijayapura, Karnataka 586102</div>
+          <div style="margin-top:4px">Phone / WhatsApp: +91 99454 46137</div>
+          <div style="margin-top:8px;color:#666666">&copy; ${new Date().getFullYear()} The Moras Cafe. All rights reserved.</div>
         </td>
       </tr>
     </table>
@@ -1254,35 +1253,28 @@ function buildMorasLiveRejectionEmailHTML({ registration, customMessage }) {
 function buildMorasLiveRejectionEmailText({ registration, customMessage }) {
   const name = registration.fullName || 'Valued Artist';
   const regId = registration.registrationId || 'ML-REG';
-  const role = registration.participationRole || 'Creative Artist';
-  const otherRole = registration.otherRole ? ` (${registration.otherRole})` : '';
 
-  return `THE MORAS CAFE PRESENTS: MORAS LIVE (Season 1)
-YOUR MIC. YOUR MOMENT.
+  return `THE MORAS CAFE — MORAS LIVE (Season 1)
 ============================================================
-ARTIST CURATION UPDATE — REGISTRATION #${regId}
+REGISTRATION UPDATE — #${regId}
 
 Dear ${name},
 
-Thank you very much for registering and auditioning for MORAS LIVE (Season 1) as a ${role}${otherRole}. Our curation team was genuinely impressed by your creative submission and artistic standard.
+Thank you for registering to perform at MORAS LIVE (Season 1) (Reg ID: #${regId}).
 
-THE SELECTION CONTEXT:
-------------------------------------------------------------
-We received an exceptionally high volume of applications from talented performers across Vijayapura and northern Karnataka. To ensure each act receives dedicated stage time within an intimate cafe environment, our panel had the difficult responsibility of selecting only the top 4 featured performance acts for this inaugural edition.
+Due to limited stage slots, our team could select only the top 4 performers for this edition. Unfortunately, your registration was not selected this time.
 
-Due to these strict slot limitations, we are unable to offer you a stage slot in this specific lineup. Please know that this decision was driven purely by limited stage time and event format, and is not a reflection of your talent.
+We have saved your details on file for our upcoming open mics and future editions.
 
-${customMessage ? `NOTE FROM THE TEAM:\n${customMessage}\n\n` : ''}WHAT COMES NEXT:
-1. Priority for Future Editions: Your registration record (#${regId}) is saved in our Featured Artist Directory. You will be prioritized for upcoming MORAS LIVE editions, acoustic cafe sessions, and open mic events.
-2. Guest Invitation: We warmly invite you to attend MORAS LIVE, soak in the performances, and connect with fellow creators in our community.
-3. Stay in Touch: If you release new tracks, demos, or videos, reply to this email or connect with us on Instagram @themorascafe.
+${customMessage ? `NOTE FROM THE TEAM:\n${customMessage}\n\n` : ''}WANT TO ATTEND THE SHOW?
+If you would like to attend and watch the live performances, audience passes are available for ₹149 (includes 1 complimentary cappuccino) at themorascafe.in.
 
-Thank you again for sharing your art with us. Keep creating!
+Thank you again for your interest.
 
 Warm regards,
-The Curation & Production Team
-THE MORAS CAFE, Vijayapura
-Phone: +91 99454 46137
+THE MORAS CAFE Team, Vijayapura
+Phone / WhatsApp: +91 99454 46137
+Website: https://themorascafe.in
 `;
 }
 
@@ -1294,7 +1286,7 @@ async function sendMorasLiveRejectionEmail({ registration, customMessage = '' })
 
   const name = registration.fullName || 'Valued Artist';
   const regId = registration.registrationId || 'UPDATE';
-  const subject = `Update on Your MORAS LIVE Audition & Performance Registration (#${regId}) — THE MORAS CAFE`;
+  const subject = `Update on Your MORAS LIVE Registration (#${regId}) — THE MORAS CAFE`;
   const htmlContent = buildMorasLiveRejectionEmailHTML({ registration, customMessage });
   const textContent = buildMorasLiveRejectionEmailText({ registration, customMessage });
 
