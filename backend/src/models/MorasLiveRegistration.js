@@ -101,6 +101,15 @@ const morasLiveRegistrationSchema = new mongoose.Schema(
       type: Date,
       default: null,
     },
+    rejectionEmailSent: {
+      type: Boolean,
+      default: false,
+      index: true,
+    },
+    rejectionEmailSentAt: {
+      type: Date,
+      default: null,
+    },
     stageSlot: {
       type: String,
       default: '',

@@ -244,8 +244,10 @@ function Admin() {
   const [updatingLiveId, setUpdatingLiveId] = useState(null);
   const [adminNoteDraft, setAdminNoteDraft] = useState('');
   const [sendingLiveEmailId, setSendingLiveEmailId] = useState(null);
+  const [sendingLiveRejectionId, setSendingLiveRejectionId] = useState(null);
   const [customSlotDraft, setCustomSlotDraft] = useState('');
   const [customEmailMessageDraft, setCustomEmailMessageDraft] = useState('');
+  const [customRejectionMessageDraft, setCustomRejectionMessageDraft] = useState('');
 
   const fetchMorasLiveStats = useCallback(async () => {
     try {
@@ -341,6 +343,46 @@ function Admin() {
       toast('Failed to send confirmation email: ' + (err.response?.data?.message || err.message));
     } finally {
       setSendingLiveEmailId(null);
+    }
+  };
+
+  const handleSendLiveRejectionEmail = async (id, customMessage) => {
+    const reg =
+      morasLiveRegistrations.find((r) => r._id === id || r.registrationId === id) ||
+      selectedLiveParticipant;
+    const recipientName = reg?.fullName || 'this participant';
+    const recipientEmail = reg?.email || '';
+
+    if (
+      !window.confirm(
+        `Are you sure you want to send the professional non-selection notification to ${recipientName} (${recipientEmail})? This email explains the top 4 act limit with utmost courtesy and keeps them on file for future showcases.`
+      )
+    ) {
+      return;
+    }
+
+    setSendingLiveRejectionId(id);
+    try {
+      const res = await api.post(`/moras-live/registrations/${id}/send-rejection-email`, {
+        customMessage,
+      });
+      if (res.data?.success) {
+        toast(`Official non-selection notification sent to ${res.data.registration.email}!`);
+        setMorasLiveRegistrations((prev) =>
+          prev.map((r) => (r._id === id || r.registrationId === id ? res.data.registration : r))
+        );
+        if (
+          selectedLiveParticipant &&
+          (selectedLiveParticipant._id === id || selectedLiveParticipant.registrationId === id)
+        ) {
+          setSelectedLiveParticipant(res.data.registration);
+        }
+        fetchMorasLiveStats();
+      }
+    } catch (err) {
+      toast('Failed to send rejection notification: ' + (err.response?.data?.message || err.message));
+    } finally {
+      setSendingLiveRejectionId(null);
     }
   };
 
@@ -2952,6 +2994,56 @@ function Admin() {
                                 )}
                               </div>
                             )}
+                            {reg.registrationStatus === 'Rejected' && (
+                              <div style={{ marginTop: 4 }}>
+                                {reg.rejectionEmailSent ? (
+                                  <span
+                                    title={`Non-selection notification sent on ${new Date(reg.rejectionEmailSentAt).toLocaleString('en-IN', { dateStyle: 'short', timeStyle: 'short' })}`}
+                                    style={{
+                                      display: 'inline-flex',
+                                      alignItems: 'center',
+                                      gap: 3,
+                                      fontSize: '0.68rem',
+                                      fontWeight: 700,
+                                      color: '#991b1b',
+                                      background: '#fef2f2',
+                                      border: '1px solid #fecaca',
+                                      padding: '2px 5px',
+                                      borderRadius: 4,
+                                      cursor: 'default',
+                                    }}
+                                  >
+                                    ✉️ Rejection Sent
+                                  </span>
+                                ) : (
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setSelectedLiveParticipant(reg);
+                                      setAdminNoteDraft(reg.adminNotes || '');
+                                      setCustomSlotDraft(reg.stageSlot || '');
+                                      setCustomEmailMessageDraft('');
+                                      setCustomRejectionMessageDraft('');
+                                    }}
+                                    style={{
+                                      display: 'inline-flex',
+                                      alignItems: 'center',
+                                      gap: 3,
+                                      fontSize: '0.68rem',
+                                      fontWeight: 700,
+                                      color: '#b91c1c',
+                                      background: '#fee2e2',
+                                      border: '1px solid #fca5a5',
+                                      padding: '2px 5px',
+                                      borderRadius: 4,
+                                      cursor: 'pointer',
+                                    }}
+                                  >
+                                    ✉️ Send Rejection
+                                  </button>
+                                )}
+                              </div>
+                            )}
                           </td>
 
                           <td style={{ padding: '12px 14px', verticalAlign: 'top', textAlign: 'right' }}>
@@ -2963,6 +3055,7 @@ function Admin() {
                                   setAdminNoteDraft(reg.adminNotes || '');
                                   setCustomSlotDraft(reg.stageSlot || '');
                                   setCustomEmailMessageDraft('');
+                                  setCustomRejectionMessageDraft('');
                                 }}
                                 title="View full details &amp; curate"
                                 style={{
@@ -3437,6 +3530,147 @@ function Admin() {
                           : selectedLiveParticipant.confirmationEmailSent
                           ? 'Resend Official Confirmation Email'
                           : 'Send Official Confirmation Email'}
+                      </button>
+                    </div>
+
+                    {/* Official Performer Non-Selection / Rejection Email Card */}
+                    <div
+                      style={{
+                        marginBottom: 20,
+                        padding: '16px',
+                        background: '#fef2f2',
+                        borderRadius: 12,
+                        border: '1px solid #fecaca',
+                      }}
+                    >
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          marginBottom: 8,
+                          flexWrap: 'wrap',
+                          gap: 6,
+                        }}
+                      >
+                        <div
+                          style={{
+                            fontSize: '0.82rem',
+                            color: '#991b1b',
+                            textTransform: 'uppercase',
+                            fontWeight: 800,
+                            letterSpacing: '0.04em',
+                          }}
+                        >
+                          ✉️ Professional Non-Selection Email (Top 4 Policy)
+                        </div>
+                        {selectedLiveParticipant.rejectionEmailSent ? (
+                          <span
+                            style={{
+                              fontSize: '0.74rem',
+                              fontWeight: 700,
+                              color: '#991b1b',
+                              background: '#fee2e2',
+                              padding: '2px 8px',
+                              borderRadius: 12,
+                              border: '1px solid #fca5a5',
+                            }}
+                          >
+                            ✅ Sent{' '}
+                            {selectedLiveParticipant.rejectionEmailSentAt
+                              ? new Date(selectedLiveParticipant.rejectionEmailSentAt).toLocaleDateString('en-IN', {
+                                  month: 'short',
+                                  day: 'numeric',
+                                  hour: '2-digit',
+                                  minute: '2-digit',
+                                })
+                              : ''}
+                          </span>
+                        ) : (
+                          <span
+                            style={{
+                              fontSize: '0.74rem',
+                              fontWeight: 700,
+                              color: '#6b7280',
+                              background: '#f3f4f6',
+                              padding: '2px 8px',
+                              borderRadius: 12,
+                              border: '1px solid #e5e7eb',
+                            }}
+                          >
+                            ⏳ Not Dispatched Yet
+                          </span>
+                        )}
+                      </div>
+
+                      <p style={{ margin: '0 0 12px', fontSize: '0.82rem', color: '#7f1d1d', lineHeight: 1.45 }}>
+                        Sends a courteous, dignified notification explaining that only the <strong>top 4 acts</strong> could be curated for this edition, while reassuring the artist that their profile is saved in our <em>Featured Artist Roster</em> for upcoming showcases and inviting them to attend.
+                      </p>
+
+                      <div style={{ marginBottom: 12 }}>
+                        <label
+                          style={{
+                            display: 'block',
+                            fontSize: '0.74rem',
+                            fontWeight: 700,
+                            color: '#7f1d1d',
+                            textTransform: 'uppercase',
+                            marginBottom: 4,
+                          }}
+                        >
+                          Personal Curation Note (Optional)
+                        </label>
+                        <textarea
+                          rows={2}
+                          placeholder="e.g. Loved your vocal range on the audition clip. We definitely want to feature you in our acoustic open mic session next month!"
+                          value={customRejectionMessageDraft}
+                          onChange={(e) => setCustomRejectionMessageDraft(e.target.value)}
+                          style={{
+                            width: '100%',
+                            padding: '8px 12px',
+                            borderRadius: 6,
+                            border: '1px solid #fca5a5',
+                            fontSize: '0.84rem',
+                            fontFamily: 'inherit',
+                            background: '#fff',
+                            boxSizing: 'border-box',
+                          }}
+                        />
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() =>
+                          handleSendLiveRejectionEmail(
+                            selectedLiveParticipant._id || selectedLiveParticipant.registrationId,
+                            customRejectionMessageDraft
+                          )
+                        }
+                        disabled={sendingLiveRejectionId === (selectedLiveParticipant._id || selectedLiveParticipant.registrationId)}
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: 6,
+                          padding: '9px 16px',
+                          borderRadius: 6,
+                          background: '#991b1b',
+                          color: '#ffffff',
+                          border: 'none',
+                          fontSize: '0.84rem',
+                          fontWeight: 700,
+                          cursor:
+                            sendingLiveRejectionId === (selectedLiveParticipant._id || selectedLiveParticipant.registrationId)
+                              ? 'wait'
+                              : 'pointer',
+                          boxShadow: '0 2px 6px rgba(153,27,27,0.25)',
+                        }}
+                      >
+                        <span>✉️</span>
+                        {sendingLiveRejectionId === (selectedLiveParticipant._id || selectedLiveParticipant.registrationId)
+                          ? 'Dispatching Non-Selection Email...'
+                          : selectedLiveParticipant.rejectionEmailSent
+                          ? 'Resend Non-Selection Notification'
+                          : 'Send Professional Non-Selection Email'}
                       </button>
                     </div>
 

@@ -91,6 +91,30 @@ async function runTests() {
   assert.strictEqual(performerEmailRes.success, false, 'Should fail gracefully if performer has no email');
   console.log('  ✅ PASS: 5. MORAS LIVE Performer confirmation email generation, sanitization & fallback verified');
 
+  // Test 6: MORAS LIVE Performer Rejection / Non-Selection Email generation & sanitization (Top 4 policy)
+  assert(typeof emailModule.sendMorasLiveRejectionEmail === 'function', 'sendMorasLiveRejectionEmail must be exported');
+  const rejectionHtml = emailModule.buildMorasLiveRejectionEmailHTML({
+    registration: mockRegistration,
+    customMessage: '<script>evil()</script>Special message to artist',
+  });
+  assert.ok(!rejectionHtml.includes('<script>evil()</script>'), 'Script tag in custom message must be escaped');
+  assert.ok(rejectionHtml.includes('&lt;script&gt;evil()&lt;/script&gt;'), 'Custom message must be escaped');
+  assert.ok(!rejectionHtml.includes('<script>alert(1)</script>'), 'Script tag in applicant name must be escaped');
+  assert.ok(rejectionHtml.includes('ML-998877'), 'Registration ID must be present');
+  assert.ok(rejectionHtml.includes('top 4 featured performances'), 'Top 4 policy context must be clearly stated');
+  assert.ok(rejectionHtml.includes('Featured Artist Roster'), 'Featured Artist Roster mention must be present');
+
+  const rejectionText = emailModule.buildMorasLiveRejectionEmailText({
+    registration: mockRegistration,
+    customMessage: 'Special message to artist',
+  });
+  assert.ok(rejectionText.includes('ML-998877'));
+  assert.ok(rejectionText.includes('top 4 featured performance acts'));
+
+  const rejectionEmailRes = await emailModule.sendMorasLiveRejectionEmail({});
+  assert.strictEqual(rejectionEmailRes.success, false, 'Should fail gracefully if rejection recipient has no email');
+  console.log('  ✅ PASS: 6. MORAS LIVE Professional rejection (top 4 policy) email generation, sanitization & fallback verified');
+
   console.log('\n🎉 All Email integration checks passed successfully!\n');
 }
 
