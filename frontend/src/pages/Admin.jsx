@@ -487,12 +487,6 @@ function Admin() {
   const [isProcessingCappuccino, setIsProcessingCappuccino] = useState(false);
   const [isProcessingEntry, setIsProcessingEntry] = useState(false);
 
-  // Delete Test Records State
-  const [isDeleteTestsModalOpen, setIsDeleteTestsModalOpen] = useState(false);
-  const [selectedTestPassIds, setSelectedTestPassIds] = useState([]);
-  const [deleteStep, setDeleteStep] = useState(1);
-  const [isDeletingTests, setIsDeletingTests] = useState(false);
-
   const fetchMorasPassStats = useCallback(async () => {
     try {
       const res = await api.get('/moras-live/passes/admin/stats');
@@ -778,65 +772,6 @@ function Admin() {
       toast('Exported audience passes to CSV successfully!');
     } catch (err) {
       toast('Failed to export CSV: ' + (err.response?.data?.message || err.message));
-    }
-  };
-
-  const handleOpenDeleteTestsModal = () => {
-    // Pre-select passes marked as isTest or allow manual selection
-    const initialSelected = (morasPasses || []).filter((p) => p.isTest).map((p) => p.passId);
-    setSelectedTestPassIds(initialSelected);
-    setDeleteStep(1);
-    setIsDeleteTestsModalOpen(true);
-  };
-
-  const handleToggleSelectTestPass = (passId) => {
-    setSelectedTestPassIds((prev) =>
-      prev.includes(passId) ? prev.filter((id) => id !== passId) : [...prev, passId]
-    );
-  };
-
-  const handleToggleClassifyTest = async (passId, currentIsTest) => {
-    try {
-      const res = await api.patch('/moras-live/passes/admin/classify-test', {
-        passId,
-        isTest: !currentIsTest,
-      });
-      if (res.data?.success) {
-        toast(`Pass ${passId} marked as ${!currentIsTest ? 'TEST' : 'GENUINE'}`);
-        setMorasPasses((prev) =>
-          prev.map((p) => (p.passId === passId ? { ...p, isTest: !currentIsTest } : p))
-        );
-      }
-    } catch (err) {
-      toast('Failed to update pass classification: ' + (err.response?.data?.message || err.message));
-    }
-  };
-
-  const handleExecuteDeleteTests = async () => {
-    if (selectedTestPassIds.length === 0) {
-      toast('Please select at least one test record to delete.');
-      return;
-    }
-    setIsDeletingTests(true);
-    try {
-      const res = await api.post('/moras-live/passes/admin/delete-tests', {
-        passIds: selectedTestPassIds,
-      });
-      if (res.data?.success) {
-        toast(`🗑️ DELETED: ${res.data.deletedCount} test record(s) removed.`);
-        setIsDeleteTestsModalOpen(false);
-        setSelectedTestPassIds([]);
-        setDeleteStep(1);
-        if (scannedPass && selectedTestPassIds.includes(scannedPass.passId)) {
-          setScannedPass(null);
-        }
-        fetchMorasPassStats();
-        fetchMorasPasses();
-      }
-    } catch (err) {
-      toast('Failed to delete test records: ' + (err.response?.data?.message || err.message));
-    } finally {
-      setIsDeletingTests(false);
     }
   };
 
@@ -1576,29 +1511,26 @@ function Admin() {
             <div style={{ fontWeight: 800, fontSize: '1.08rem', color: 'var(--green)' }}>
               All Café Orders ({orders.length})
             </div>
-            {orders.length > 0 && (
-              <button
-                type="button"
-                onClick={handleClearAllOrders}
-                style={{
-                  padding: '7px 14px',
-                  borderRadius: 8,
-                  background: '#FEE2E2',
-                  color: '#DC2626',
-                  border: '1px solid #FECACA',
-                  fontWeight: 700,
-                  fontSize: '0.82rem',
-                  cursor: 'pointer',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 6
-                }}
-                title="Delete all previous test orders from database"
-              >
-                <span>🗑️</span>
-                <span>Clear All Test Orders</span>
-              </button>
-            )}
+            <button
+              type="button"
+              onClick={fetchOrders}
+              disabled={loading}
+              className="btn-outline"
+              style={{
+                padding: '6px 14px',
+                borderRadius: 8,
+                fontSize: '0.82rem',
+                fontWeight: 600,
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                cursor: loading ? 'wait' : 'pointer'
+              }}
+              title="Refresh live orders from database"
+            >
+              <span>🔄</span>
+              <span>{loading ? 'Refreshing…' : 'Refresh'}</span>
+            </button>
           </div>
 
           <table
@@ -1789,7 +1721,6 @@ function Admin() {
                     </td>
 
                     <td style={{ padding: '12px 14px' }}>
-
                       <select
                         className="status-select"
                         value={o.status}
@@ -1821,71 +1752,66 @@ function Admin() {
                           cursor: 'pointer',
                         }}
                       >
-
                         <option value="pending">
                           ⏳ Pending
                         </option>
-
                         <option value="preparing">
                           👨‍🍳 Preparing
                         </option>
-
                         <option value="completed">
                           ✅ Completed
                         </option>
-
                       </select>
-
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setSelectedBillOrder(o);
-                          setBillEmailInput(o.email || '');
-                        }}
-                        style={{
-                          background: '#0F3D3E',
-                          color: '#FAF5EF',
-                          border: 'none',
-                          borderRadius: 6,
-                          padding: '5px 10px',
-                          fontSize: '0.78rem',
-                          fontWeight: 700,
-                          cursor: 'pointer',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: 4,
-                          marginTop: 6
-                        }}
-                        title="View, Print, or Email Bill Receipt"
-                      >
-                        <span>🧾</span>
-                        <span>Bill Slip</span>
-                      </button>
-
                     </td>
 
                     <td style={{ padding: '12px 14px', textAlign: 'center' }}>
-                      <button
-                        type="button"
-                        onClick={() => handleDeleteSingleOrder(o._id, o.name)}
-                        style={{
-                          background: '#FEE2E2',
-                          color: '#DC2626',
-                          border: '1px solid #FECACA',
-                          borderRadius: 6,
-                          padding: '5px 10px',
-                          fontSize: '0.76rem',
-                          fontWeight: 700,
-                          cursor: 'pointer',
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: 4
-                        }}
-                        title="Permanently delete this order"
-                      >
-                        <span>🗑️</span>
-                        <span>Delete</span>
-                      </button>
+                      <div style={{ display: 'inline-flex', gap: 6, alignItems: 'center' }}>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSelectedBillOrder(o);
+                            setBillEmailInput(o.email || '');
+                          }}
+                          style={{
+                            background: '#0F3D3E',
+                            color: '#FAF5EF',
+                            border: 'none',
+                            borderRadius: 6,
+                            padding: '5px 10px',
+                            fontSize: '0.78rem',
+                            fontWeight: 700,
+                            cursor: 'pointer',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: 4
+                          }}
+                          title="View, Print, or Email Bill Receipt"
+                        >
+                          <span>🧾</span>
+                          <span>Bill</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteSingleOrder(o._id, o.name)}
+                          style={{
+                            background: '#FEE2E2',
+                            color: '#DC2626',
+                            border: '1px solid #FECACA',
+                            borderRadius: 6,
+                            padding: '5px 8px',
+                            fontSize: '0.76rem',
+                            fontWeight: 700,
+                            cursor: 'pointer',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: 4
+                          }}
+                          title="Permanently delete this order"
+                        >
+                          <span>🗑️</span>
+                        </button>
+                      </div>
                     </td>
 
                   </tr>
@@ -2029,29 +1955,26 @@ function Admin() {
                   Customer requests. Contact customers via Phone/WhatsApp to collect ₹59 advance online, then mark Confirmed to dispatch email confirmation.
                 </p>
               </div>
-              {reservations.length > 0 && (
-                <button
-                  type="button"
-                  onClick={handleClearAllReservations}
-                  style={{
-                    padding: '8px 14px',
-                    borderRadius: 8,
-                    background: '#FEE2E2',
-                    color: '#DC2626',
-                    border: '1px solid #FECACA',
-                    fontWeight: 700,
-                    fontSize: '0.82rem',
-                    cursor: 'pointer',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: 6
-                  }}
-                  title="Delete all previous test birthday bookings from database"
-                >
-                  <span>🗑️</span>
-                  <span>Clear All Test Bookings</span>
-                </button>
-              )}
+              <button
+                type="button"
+                onClick={fetchReservations}
+                disabled={loading}
+                className="btn-outline"
+                style={{
+                  padding: '6px 14px',
+                  borderRadius: 8,
+                  fontSize: '0.82rem',
+                  fontWeight: 600,
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  cursor: loading ? 'wait' : 'pointer'
+                }}
+                title="Refresh birthday bookings from database"
+              >
+                <span>🔄</span>
+                <span>{loading ? 'Refreshing…' : 'Refresh'}</span>
+              </button>
             </div>
 
             <div style={{ overflowX: 'auto' }}>
@@ -2212,76 +2135,77 @@ function Admin() {
                               <option value="cancelled">❌ Cancelled</option>
                             </select>
 
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setSelectedBirthdayBill(r);
-                                setBirthdayFoodTotal('');
-                                setBillEmailInput(r.email || '');
-                              }}
-                              style={{
-                                background: '#0F3D3E',
-                                color: '#FAF5EF',
-                                border: 'none',
-                                borderRadius: 6,
-                                padding: '4px 8px',
-                                fontSize: '0.74rem',
-                                fontWeight: 700,
-                                cursor: 'pointer',
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                gap: 4
-                              }}
-                              title="Generate Final Bill for Birthday Event"
-                            >
-                              <span>🧾</span>
-                              <span>Final Bill</span>
-                            </button>
-
-                            {r.email && (
+                            <div style={{ display: 'flex', gap: 4, alignItems: 'center', flexWrap: 'wrap' }}>
                               <button
                                 type="button"
-                                onClick={() => resendReservationEmail(r._id, r.email)}
+                                onClick={() => {
+                                  setSelectedBirthdayBill(r);
+                                  setBirthdayFoodTotal('');
+                                  setBillEmailInput(r.email || '');
+                                }}
                                 style={{
-                                  background: 'none',
-                                  border: '1px solid var(--cream-dark)',
+                                  background: '#0F3D3E',
+                                  color: '#FAF5EF',
+                                  border: 'none',
                                   borderRadius: 6,
-                                  padding: '3px 8px',
-                                  fontSize: '0.72rem',
+                                  padding: '4px 8px',
+                                  fontSize: '0.74rem',
+                                  fontWeight: 700,
                                   cursor: 'pointer',
-                                  color: 'var(--green)',
-                                  fontWeight: 600,
                                   display: 'inline-flex',
                                   alignItems: 'center',
                                   gap: 4
                                 }}
-                                title="Re-send Confirmation Email to customer"
+                                title="Generate Final Bill for Birthday Event"
                               >
-                                {r.confirmationEmailSent ? '✓ Sent (Resend)' : '✉️ Send Email'}
+                                <span>🧾</span>
+                                <span>Bill</span>
                               </button>
-                            )}
 
-                            <button
-                              type="button"
-                              onClick={() => handleDeleteSingleReservation(r._id, r.name)}
-                              style={{
-                                background: '#FEE2E2',
-                                color: '#DC2626',
-                                border: '1px solid #FECACA',
-                                borderRadius: 6,
-                                padding: '3px 8px',
-                                fontSize: '0.72rem',
-                                cursor: 'pointer',
-                                fontWeight: 700,
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                gap: 4
-                              }}
-                              title="Permanently delete this reservation"
-                            >
-                              <span>🗑️</span>
-                              <span>Delete</span>
-                            </button>
+                              {r.email && (
+                                <button
+                                  type="button"
+                                  onClick={() => resendReservationEmail(r._id, r.email)}
+                                  style={{
+                                    background: 'none',
+                                    border: '1px solid var(--cream-dark)',
+                                    borderRadius: 6,
+                                    padding: '3px 8px',
+                                    fontSize: '0.72rem',
+                                    cursor: 'pointer',
+                                    color: 'var(--green)',
+                                    fontWeight: 600,
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: 3
+                                  }}
+                                  title="Re-send Confirmation Email to customer"
+                                >
+                                  {r.confirmationEmailSent ? '✓ Sent' : '✉️ Email'}
+                                </button>
+                              )}
+
+                              <button
+                                type="button"
+                                onClick={() => handleDeleteSingleReservation(r._id, r.name)}
+                                style={{
+                                  background: '#FEE2E2',
+                                  color: '#DC2626',
+                                  border: '1px solid #FECACA',
+                                  borderRadius: 6,
+                                  padding: '3px 8px',
+                                  fontSize: '0.72rem',
+                                  cursor: 'pointer',
+                                  fontWeight: 700,
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: 2
+                                }}
+                                title="Permanently delete this reservation"
+                              >
+                                <span>🗑️</span>
+                              </button>
+                            </div>
                           </div>
                         </td>
                       </tr>
@@ -3002,30 +2926,22 @@ function Admin() {
                                     ✉️ Email Sent
                                   </span>
                                 ) : (
-                                  <button
-                                    type="button"
-                                    onClick={() => {
-                                      setSelectedLiveParticipant(reg);
-                                      setAdminNoteDraft(reg.adminNotes || '');
-                                      setCustomSlotDraft(reg.stageSlot || '');
-                                      setCustomEmailMessageDraft('');
-                                    }}
+                                  <span
                                     style={{
                                       display: 'inline-flex',
                                       alignItems: 'center',
                                       gap: 3,
                                       fontSize: '0.68rem',
-                                      fontWeight: 700,
+                                      fontWeight: 600,
                                       color: '#1e40af',
-                                      background: '#dbeafe',
-                                      border: '1px solid #bfdbfe',
+                                      background: '#eff6ff',
+                                      border: '1px solid #dbeafe',
                                       padding: '2px 5px',
                                       borderRadius: 4,
-                                      cursor: 'pointer',
                                     }}
                                   >
-                                    ✉️ Send Email
-                                  </button>
+                                    ⏳ Email Pending
+                                  </span>
                                 )}
                               </div>
                             )}
@@ -3048,34 +2964,25 @@ function Admin() {
                                       cursor: 'default',
                                     }}
                                   >
-                                    ✉️ Rejection Sent
+                                    ✉️ Notice Sent
                                   </span>
                                 ) : (
-                                  <button
-                                    type="button"
-                                    onClick={() => {
-                                      setSelectedLiveParticipant(reg);
-                                      setAdminNoteDraft(reg.adminNotes || '');
-                                      setCustomSlotDraft(reg.stageSlot || '');
-                                      setCustomEmailMessageDraft('');
-                                      setCustomRejectionMessageDraft('');
-                                    }}
+                                  <span
                                     style={{
                                       display: 'inline-flex',
                                       alignItems: 'center',
                                       gap: 3,
                                       fontSize: '0.68rem',
-                                      fontWeight: 700,
-                                      color: '#b91c1c',
-                                      background: '#fee2e2',
-                                      border: '1px solid #fca5a5',
+                                      fontWeight: 600,
+                                      color: '#991b1b',
+                                      background: '#fff1f2',
+                                      border: '1px solid #fee2e2',
                                       padding: '2px 5px',
                                       borderRadius: 4,
-                                      cursor: 'pointer',
                                     }}
                                   >
-                                    ✉️ Send Rejection
-                                  </button>
+                                    ⏳ Notice Pending
+                                  </span>
                                 )}
                               </div>
                             )}
@@ -3767,44 +3674,34 @@ function Admin() {
                       </div>
                     </div>
 
-                    {/* Direct Contact Actions */}
+                    {/* Modal Footer Actions */}
                     <div
                       style={{
                         display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
                         gap: 10,
                         paddingTop: 16,
                         borderTop: '1px solid #e2e8f0',
                         flexWrap: 'wrap',
                       }}
                     >
-                      <a
-                        href={`https://wa.me/91${selectedLiveParticipant.mobileNumber}?text=${encodeURIComponent(
-                          getPerformerWhatsAppMessage(selectedLiveParticipant)
-                        )}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
+                      <button
+                        type="button"
+                        onClick={() => setSelectedLiveParticipant(null)}
                         style={{
-                          flex: 1,
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          gap: 8,
-                          padding: '10px 16px',
+                          padding: '9px 18px',
                           borderRadius: 8,
-                          background: '#25D366',
-                          color: '#fff',
-                          textDecoration: 'none',
+                          border: '1px solid #cbd5e1',
+                          background: '#ffffff',
+                          color: '#475569',
                           fontWeight: 700,
-                          fontSize: '0.88rem',
+                          fontSize: '0.86rem',
+                          cursor: 'pointer',
                         }}
                       >
-                        <span>💬</span>{' '}
-                        {selectedLiveParticipant.registrationStatus === 'Rejected'
-                          ? 'WhatsApp Non-Selection Notice'
-                          : selectedLiveParticipant.registrationStatus === 'Confirmed'
-                          ? 'WhatsApp Confirmation Notice'
-                          : 'WhatsApp Participant'}
-                      </a>
+                        Close Modal
+                      </button>
 
                       <button
                         type="button"
@@ -3815,17 +3712,21 @@ function Admin() {
                           )
                         }
                         style={{
-                          padding: '10px 14px',
+                          padding: '9px 14px',
                           borderRadius: 8,
                           border: '1px solid #fecaca',
                           background: '#fff1f2',
                           color: '#dc2626',
                           fontWeight: 700,
-                          fontSize: '0.86rem',
+                          fontSize: '0.84rem',
                           cursor: 'pointer',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: 6,
                         }}
                       >
-                        🗑️ Delete
+                        <span>🗑️</span>
+                        <span>Delete Registration</span>
                       </button>
                     </div>
                   </div>
@@ -3900,28 +3801,6 @@ function Admin() {
                   <span>🔗</span> Public Pass Page
                 </a>
 
-                {role === 'admin' && (
-                  <button
-                    type="button"
-                    onClick={handleOpenDeleteTestsModal}
-                    style={{
-                      padding: '8px 14px',
-                      borderRadius: 8,
-                      background: '#DC2626',
-                      color: '#FFFFFF',
-                      border: 'none',
-                      fontSize: '0.84rem',
-                      fontWeight: 700,
-                      cursor: 'pointer',
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: 6,
-                    }}
-                  >
-                    <span>🗑️</span> Delete Test Records
-                  </button>
-                )}
-
                 <button
                   type="button"
                   onClick={handleExportPassesCsv}
@@ -3987,115 +3866,67 @@ function Admin() {
               </div>
             </div>
 
-            {/* 10 Operational Summary Stat Cards */}
+            {/* 5 Core Operational Metric Cards */}
             <div
               style={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
-                gap: 12,
+                gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+                gap: 14,
                 marginBottom: 24,
               }}
             >
-              {/* 1. Total Capacity */}
-              <div style={{ background: '#FFFFFF', padding: '14px 16px', borderRadius: 10, border: '1px solid #E2E8F0', boxShadow: '0 2px 6px rgba(0,0,0,0.03)' }}>
-                <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', color: '#64748B', fontWeight: 700 }}>Total Capacity</div>
-                <div style={{ fontSize: '1.6rem', fontWeight: 900, color: '#123F3D', marginTop: 4 }}>
-                  {morasPassStats.totalCapacity || 60}
-                </div>
-                <div style={{ fontSize: '0.72rem', color: '#94A3B8' }}>Strict max ceiling</div>
-              </div>
-
-              {/* 2. Available Passes */}
-              <div style={{ background: '#FFFFFF', padding: '14px 16px', borderRadius: 10, border: '1px solid #E2E8F0', boxShadow: '0 2px 6px rgba(0,0,0,0.03)' }}>
-                <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', color: '#64748B', fontWeight: 700 }}>Available Passes</div>
-                <div style={{ fontSize: '1.6rem', fontWeight: 900, color: (morasPassStats.availablePasses ?? 60) > 0 ? '#15803D' : '#DC2626', marginTop: 4 }}>
+              {/* 1. Available Passes */}
+              <div style={{ background: '#FFFFFF', padding: '16px 18px', borderRadius: 12, border: '1px solid #E2E8F0', boxShadow: '0 2px 6px rgba(0,0,0,0.03)' }}>
+                <div style={{ fontSize: '0.74rem', textTransform: 'uppercase', color: '#64748B', fontWeight: 800, letterSpacing: '0.04em' }}>Available Slots</div>
+                <div style={{ fontSize: '1.75rem', fontWeight: 900, color: (morasPassStats.availablePasses ?? 60) > 0 ? '#15803D' : '#DC2626', marginTop: 4 }}>
                   {morasPassStats.availablePasses ?? 60}
                 </div>
-                <div style={{ fontSize: '0.72rem', color: (morasPassStats.availablePasses ?? 60) > 0 ? '#166534' : '#DC2626' }}>
-                  {(morasPassStats.availablePasses ?? 60) > 0 ? 'Remaining slots' : 'SOLD OUT'}
+                <div style={{ fontSize: '0.74rem', color: '#64748B', marginTop: 2 }}>
+                  Capacity: {morasPassStats.totalCapacity || 60} ceiling
                 </div>
               </div>
 
-              {/* 3. Confirmed Paid Passes */}
-              <div style={{ background: '#FFFFFF', padding: '14px 16px', borderRadius: 10, border: '1px solid #E2E8F0', boxShadow: '0 2px 6px rgba(0,0,0,0.03)' }}>
-                <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', color: '#64748B', fontWeight: 700 }}>Paid &amp; Active</div>
-                <div style={{ fontSize: '1.6rem', fontWeight: 900, color: '#15803D', marginTop: 4 }}>
+              {/* 2. Confirmed Paid Passes */}
+              <div style={{ background: '#FFFFFF', padding: '16px 18px', borderRadius: 12, border: '1px solid #E2E8F0', boxShadow: '0 2px 6px rgba(0,0,0,0.03)' }}>
+                <div style={{ fontSize: '0.74rem', textTransform: 'uppercase', color: '#64748B', fontWeight: 800, letterSpacing: '0.04em' }}>Confirmed Passes</div>
+                <div style={{ fontSize: '1.75rem', fontWeight: 900, color: '#15803D', marginTop: 4 }}>
                   {morasPassStats.confirmedPaidPasses || 0}
                 </div>
-                <div style={{ fontSize: '0.72rem', color: '#64748B' }}>Confirmed passes</div>
-              </div>
-
-              {/* 4. Active Reservations */}
-              <div style={{ background: '#FFFFFF', padding: '14px 16px', borderRadius: 10, border: '1px solid #E2E8F0', boxShadow: '0 2px 6px rgba(0,0,0,0.03)' }}>
-                <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', color: '#64748B', fontWeight: 700 }}>Reserved (Unpaid)</div>
-                <div style={{ fontSize: '1.6rem', fontWeight: 900, color: '#D97706', marginTop: 4 }}>
-                  {morasPassStats.activeReservations || 0}
+                <div style={{ fontSize: '0.74rem', color: '#D97706', marginTop: 2 }}>
+                  {morasPassStats.activeReservations || 0} payment pending
                 </div>
-                <div style={{ fontSize: '0.72rem', color: '#64748B' }}>Payment pending</div>
               </div>
 
-              {/* 5. Total Collections */}
-              <div style={{ background: '#FFFFFF', padding: '14px 16px', borderRadius: 10, border: '1px solid #E2E8F0', boxShadow: '0 2px 6px rgba(0,0,0,0.03)' }}>
-                <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', color: '#64748B', fontWeight: 700 }}>Total Collected</div>
-                <div style={{ fontSize: '1.6rem', fontWeight: 900, color: '#123F3D', marginTop: 4 }}>
+              {/* 3. Total Collections with Cash/UPI Breakdown */}
+              <div style={{ background: '#FFFFFF', padding: '16px 18px', borderRadius: 12, border: '1px solid #E2E8F0', boxShadow: '0 2px 6px rgba(0,0,0,0.03)' }}>
+                <div style={{ fontSize: '0.74rem', textTransform: 'uppercase', color: '#64748B', fontWeight: 800, letterSpacing: '0.04em' }}>Total Collected</div>
+                <div style={{ fontSize: '1.75rem', fontWeight: 900, color: '#123F3D', marginTop: 4 }}>
                   ₹{morasPassStats.totalAmountCollected || 0}
                 </div>
-                <div style={{ fontSize: '0.72rem', color: '#64748B' }}>Physical collections</div>
-              </div>
-
-              {/* 6. UPI Collections */}
-              <div style={{ background: '#FFFFFF', padding: '14px 16px', borderRadius: 10, border: '1px solid #E2E8F0', boxShadow: '0 2px 6px rgba(0,0,0,0.03)' }}>
-                <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', color: '#64748B', fontWeight: 700 }}>UPI Collections</div>
-                <div style={{ fontSize: '1.6rem', fontWeight: 900, color: '#2563EB', marginTop: 4 }}>
-                  ₹{typeof morasPassStats.upiCollections === 'object' ? (morasPassStats.upiCollections?.total || 0) : (morasPassStats.upiCollections || 0)}
+                <div style={{ fontSize: '0.74rem', color: '#64748B', marginTop: 2 }}>
+                  UPI: ₹{typeof morasPassStats.upiCollections === 'object' ? (morasPassStats.upiCollections?.total || 0) : (morasPassStats.upiCollections || 0)} • Cash: ₹{typeof morasPassStats.cashCollections === 'object' ? (morasPassStats.cashCollections?.total || 0) : (morasPassStats.cashCollections || 0)}
                 </div>
-                <div style={{ fontSize: '0.72rem', color: '#64748B' }}>Verified with UTR</div>
               </div>
 
-              {/* 7. Cash Collections */}
-              <div style={{ background: '#FFFFFF', padding: '14px 16px', borderRadius: 10, border: '1px solid #E2E8F0', boxShadow: '0 2px 6px rgba(0,0,0,0.03)' }}>
-                <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', color: '#64748B', fontWeight: 700 }}>Cash Collections</div>
-                <div style={{ fontSize: '1.6rem', fontWeight: 900, color: '#059669', marginTop: 4 }}>
-                  ₹{typeof morasPassStats.cashCollections === 'object' ? (morasPassStats.cashCollections?.total || 0) : (morasPassStats.cashCollections || 0)}
-                </div>
-                <div style={{ fontSize: '0.72rem', color: '#64748B' }}>Counter register</div>
-              </div>
-
-              {/* 8. Cappuccinos Redeemed */}
-              <div style={{ background: '#FFFFFF', padding: '14px 16px', borderRadius: 10, border: '1px solid #E2E8F0', boxShadow: '0 2px 6px rgba(0,0,0,0.03)' }}>
-                <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', color: '#64748B', fontWeight: 700 }}>☕ Cappuccinos</div>
-                <div style={{ fontSize: '1.6rem', fontWeight: 900, color: '#92400E', marginTop: 4 }}>
-                  {morasPassStats.cappuccinosRedeemed || 0}
-                </div>
-                <div style={{ fontSize: '0.72rem', color: '#64748B' }}>Served at café</div>
-              </div>
-
-              {/* 9. Event Check-Ins */}
-              <div style={{ background: '#FFFFFF', padding: '14px 16px', borderRadius: 10, border: '1px solid #E2E8F0', boxShadow: '0 2px 6px rgba(0,0,0,0.03)' }}>
-                <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', color: '#64748B', fontWeight: 700 }}>🚪 Door Check-Ins</div>
-                <div style={{ fontSize: '1.6rem', fontWeight: 900, color: '#7C3AED', marginTop: 4 }}>
+              {/* 4. Event Check-Ins */}
+              <div style={{ background: '#FFFFFF', padding: '16px 18px', borderRadius: 12, border: '1px solid #E2E8F0', boxShadow: '0 2px 6px rgba(0,0,0,0.03)' }}>
+                <div style={{ fontSize: '0.74rem', textTransform: 'uppercase', color: '#7C3AED', fontWeight: 800, letterSpacing: '0.04em' }}>🚪 Door Check-Ins</div>
+                <div style={{ fontSize: '1.75rem', fontWeight: 900, color: '#7C3AED', marginTop: 4 }}>
                   {morasPassStats.eventCheckIns || 0}
                 </div>
-                <div style={{ fontSize: '0.72rem', color: '#64748B' }}>Admitted attendees</div>
+                <div style={{ fontSize: '0.74rem', color: '#64748B', marginTop: 2 }}>
+                  Admitted attendees
+                </div>
               </div>
 
-              {/* 10. Emails Delivered */}
-              <div style={{ background: '#FFFFFF', padding: '14px 16px', borderRadius: 10, border: '1px solid #E2E8F0', boxShadow: '0 2px 6px rgba(0,0,0,0.03)' }}>
-                <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', color: '#64748B', fontWeight: 700 }}>✉️ Emails Sent</div>
-                <div style={{ fontSize: '1.6rem', fontWeight: 900, color: '#0284C7', marginTop: 4 }}>
-                  {morasPassStats.emailsSent || 0}
+              {/* 5. Cappuccinos Redeemed */}
+              <div style={{ background: '#FFFFFF', padding: '16px 18px', borderRadius: 12, border: '1px solid #E2E8F0', boxShadow: '0 2px 6px rgba(0,0,0,0.03)' }}>
+                <div style={{ fontSize: '0.74rem', textTransform: 'uppercase', color: '#92400E', fontWeight: 800, letterSpacing: '0.04em' }}>☕ Cappuccinos</div>
+                <div style={{ fontSize: '1.75rem', fontWeight: 900, color: '#92400E', marginTop: 4 }}>
+                  {morasPassStats.cappuccinosRedeemed || 0}
                 </div>
-                <div style={{ fontSize: '0.72rem', color: '#64748B' }}>Confirmation dispatched</div>
-              </div>
-
-              {/* 11. Email Failures */}
-              <div style={{ background: '#FFFFFF', padding: '14px 16px', borderRadius: 10, border: '1px solid #E2E8F0', boxShadow: '0 2px 6px rgba(0,0,0,0.03)' }}>
-                <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', color: '#64748B', fontWeight: 700 }}>⚠️ Email Failures</div>
-                <div style={{ fontSize: '1.6rem', fontWeight: 900, color: (morasPassStats.emailsFailed || 0) > 0 ? '#DC2626' : '#10B981', marginTop: 4 }}>
-                  {morasPassStats.emailsFailed || 0}
-                </div>
-                <div style={{ fontSize: '0.72rem', color: (morasPassStats.emailsFailed || 0) > 0 ? '#DC2626' : '#64748B' }}>
-                  {(morasPassStats.emailsFailed || 0) > 0 ? 'Delivery issues' : 'All delivered'}
+                <div style={{ fontSize: '0.74rem', color: '#64748B', marginTop: 2 }}>
+                  Served at café
                 </div>
               </div>
             </div>
@@ -4735,26 +4566,6 @@ function Admin() {
                                 </button>
                               )}
 
-                              {role === 'admin' && (
-                                <button
-                                  type="button"
-                                  onClick={() => handleToggleClassifyTest(pass.passId, pass.isTest)}
-                                  style={{
-                                    padding: '4px 8px',
-                                    borderRadius: 6,
-                                    background: pass.isTest ? '#FEF3C7' : '#F1F5F9',
-                                    color: pass.isTest ? '#92400E' : '#475569',
-                                    border: '1px solid #CBD5E1',
-                                    fontSize: '0.72rem',
-                                    fontWeight: 700,
-                                    cursor: 'pointer',
-                                  }}
-                                  title={pass.isTest ? 'Classified as test. Click to mark as genuine.' : 'Click to classify as test record'}
-                                >
-                                  {pass.isTest ? '🧪 Test' : 'Set Test'}
-                                </button>
-                              )}
-
                               {role === 'admin' && pass.ticketStatus !== 'REVOKED' && (
                                 <button
                                   type="button"
@@ -4783,273 +4594,6 @@ function Admin() {
               )}
             </div>
 
-            {/* DELETE TEST RECORDS MODAL (Admin Only) */}
-            {isDeleteTestsModalOpen && role === 'admin' && (
-              <div
-                style={{
-                  position: 'fixed',
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  background: 'rgba(0,0,0,0.65)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  zIndex: 99999,
-                  padding: 20,
-                }}
-              >
-                <div
-                  style={{
-                    background: '#FFFFFF',
-                    borderRadius: 16,
-                    maxWidth: 580,
-                    width: '100%',
-                    maxHeight: '90vh',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    boxShadow: '0 20px 40px rgba(0,0,0,0.25)',
-                    overflow: 'hidden',
-                  }}
-                >
-                  {/* Modal Header */}
-                  <div
-                    style={{
-                      padding: '20px 24px',
-                      background: deleteStep === 2 ? '#991B1B' : '#123F3D',
-                      color: '#FAF5EF',
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                    }}
-                  >
-                    <div>
-                      <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800 }}>
-                        {deleteStep === 1 ? '🗑️ Delete Test Records' : '⚠️ Confirm Permanent Deletion'}
-                      </h3>
-                      <div style={{ fontSize: '0.8rem', color: deleteStep === 2 ? '#FEE2E2' : '#C5A880', marginTop: 2 }}>
-                        {deleteStep === 1
-                          ? 'Select only verified test reservations to delete'
-                          : 'Second Confirmation — This action cannot be undone'}
-                      </div>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => setIsDeleteTestsModalOpen(false)}
-                      style={{ background: 'none', border: 'none', color: '#FAF5EF', fontSize: '1.3rem', cursor: 'pointer' }}
-                    >
-                      ✕
-                    </button>
-                  </div>
-
-                  {/* Modal Body */}
-                  <div style={{ padding: '24px', overflowY: 'auto', flex: 1 }}>
-                    {deleteStep === 1 ? (
-                      <div>
-                        <div
-                          style={{
-                            background: '#FFFBEB',
-                            border: '1px solid #FDE68A',
-                            borderRadius: 10,
-                            padding: '12px 16px',
-                            marginBottom: 16,
-                            fontSize: '0.84rem',
-                            color: '#92400E',
-                            lineHeight: 1.5,
-                          }}
-                        >
-                          <strong>🛡️ Data Protection Notice:</strong>
-                          <br />
-                          Select only reservations created for internal testing. Genuine customer records, confirmed passes, payments, and QR credentials will remain completely untouched.
-                        </div>
-
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-                          <span style={{ fontSize: '0.88rem', fontWeight: 800, color: '#123F3D' }}>
-                            Audience Passes Directory ({morasPasses.length} total)
-                          </span>
-                          <span style={{ fontSize: '0.82rem', fontWeight: 700, color: selectedTestPassIds.length > 0 ? '#DC2626' : '#64748B' }}>
-                            {selectedTestPassIds.length} test record(s) selected
-                          </span>
-                        </div>
-
-                        {morasPasses.length === 0 ? (
-                          <div style={{ textAlign: 'center', padding: '30px', color: '#94A3B8' }}>
-                            No passes found in database.
-                          </div>
-                        ) : (
-                          <div style={{ maxHeight: 280, overflowY: 'auto', border: '1px solid #E2E8F0', borderRadius: 8 }}>
-                            {morasPasses.map((p) => {
-                              const isChecked = selectedTestPassIds.includes(p.passId);
-                              return (
-                                <label
-                                  key={p.passId}
-                                  style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: 12,
-                                    padding: '10px 14px',
-                                    borderBottom: '1px solid #F1F5F9',
-                                    background: isChecked ? '#FEF2F2' : '#FFFFFF',
-                                    cursor: 'pointer',
-                                    transition: 'background 0.15s ease',
-                                  }}
-                                >
-                                  <input
-                                    type="checkbox"
-                                    checked={isChecked}
-                                    onChange={() => handleToggleSelectTestPass(p.passId)}
-                                    style={{ width: 18, height: 18, cursor: 'pointer' }}
-                                  />
-                                  <div style={{ flex: 1, minWidth: 0 }}>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                                      <span style={{ fontFamily: 'monospace', fontWeight: 800, color: '#123F3D', fontSize: '0.88rem' }}>
-                                        #{p.passId}
-                                      </span>
-                                      <strong style={{ fontSize: '0.88rem', color: '#0F172A' }}>
-                                        {p.customerName}
-                                      </strong>
-                                      {p.isTest && (
-                                        <span style={{ background: '#FEF3C7', color: '#92400E', padding: '1px 5px', borderRadius: 4, fontSize: '0.66rem', fontWeight: 800 }}>
-                                          TEST
-                                        </span>
-                                      )}
-                                    </div>
-                                    <div style={{ fontSize: '0.78rem', color: '#64748B', marginTop: 2 }}>
-                                      +91 {p.normalizedMobileNumber} • {p.email} • {p.paymentStatus}
-                                    </div>
-                                  </div>
-                                </label>
-                              );
-                            })}
-                          </div>
-                        )}
-                      </div>
-                    ) : (
-                      <div>
-                        {/* Step 2: Explicit Confirmation Warning */}
-                        <div
-                          style={{
-                            background: '#FEF2F2',
-                            border: '1.5px solid #DC2626',
-                            borderRadius: 12,
-                            padding: '18px 20px',
-                            color: '#991B1B',
-                            marginBottom: 20,
-                          }}
-                        >
-                          <div style={{ fontWeight: 800, fontSize: '1rem', display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-                            <span>⚠️</span> FINAL DELETION CONFIRMATION
-                          </div>
-                          <p style={{ margin: '0 0 12px', fontSize: '0.86rem', lineHeight: 1.5 }}>
-                            You are about to permanently delete <strong>{selectedTestPassIds.length}</strong> test reservation(s):
-                          </p>
-                          <div
-                            style={{
-                              background: '#FFFFFF',
-                              border: '1px solid #FECACA',
-                              borderRadius: 8,
-                              padding: '10px 14px',
-                              fontFamily: 'monospace',
-                              fontWeight: 700,
-                              fontSize: '0.88rem',
-                              color: '#B91C1C',
-                              marginBottom: 14,
-                              wordBreak: 'break-all',
-                            }}
-                          >
-                            {selectedTestPassIds.join(', ')}
-                          </div>
-                          <ul style={{ margin: 0, paddingLeft: 18, fontSize: '0.82rem', lineHeight: 1.6 }}>
-                            <li>The selected audience pass documents will be permanently purged from MongoDB.</li>
-                            <li>Any associated test payment ledger records will be removed.</li>
-                            <li><strong>{selectedTestPassIds.length} slot(s)</strong> will be restored to available capacity.</li>
-                            <li>This action is permanently logged to the system audit trail.</li>
-                            <li><strong>Genuine customer passes remain 100% safe and untouched.</strong></li>
-                          </ul>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Modal Footer Controls */}
-                  <div
-                    style={{
-                      padding: '16px 24px',
-                      background: '#F8FAFC',
-                      borderTop: '1px solid #E2E8F0',
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                    }}
-                  >
-                    <button
-                      type="button"
-                      onClick={() => {
-                        if (deleteStep === 2) {
-                          setDeleteStep(1);
-                        } else {
-                          setIsDeleteTestsModalOpen(false);
-                        }
-                      }}
-                      style={{
-                        padding: '10px 18px',
-                        borderRadius: 8,
-                        background: '#FFFFFF',
-                        border: '1px solid #CBD5E1',
-                        color: '#475569',
-                        fontWeight: 600,
-                        fontSize: '0.86rem',
-                        cursor: 'pointer',
-                      }}
-                    >
-                      {deleteStep === 2 ? '← Back to Selection' : 'Cancel'}
-                    </button>
-
-                    {deleteStep === 1 ? (
-                      <button
-                        type="button"
-                        onClick={() => setDeleteStep(2)}
-                        disabled={selectedTestPassIds.length === 0}
-                        style={{
-                          padding: '10px 22px',
-                          borderRadius: 8,
-                          background: selectedTestPassIds.length > 0 ? '#DC2626' : '#94A3B8',
-                          color: '#FFFFFF',
-                          border: 'none',
-                          fontWeight: 700,
-                          fontSize: '0.86rem',
-                          cursor: selectedTestPassIds.length > 0 ? 'pointer' : 'not-allowed',
-                        }}
-                      >
-                        Proceed to Confirmation ({selectedTestPassIds.length}) →
-                      </button>
-                    ) : (
-                      <button
-                        type="button"
-                        onClick={handleExecuteDeleteTests}
-                        disabled={isDeletingTests}
-                        style={{
-                          padding: '10px 24px',
-                          borderRadius: 8,
-                          background: '#B91C1C',
-                          color: '#FFFFFF',
-                          border: 'none',
-                          fontWeight: 800,
-                          fontSize: '0.88rem',
-                          cursor: isDeletingTests ? 'wait' : 'pointer',
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: 8,
-                        }}
-                      >
-                        {isDeletingTests ? 'Deleting Records…' : `🔴 Yes, Permanently Delete ${selectedTestPassIds.length} Test Record(s)`}
-                      </button>
-                    )}
-                  </div>
-                </div>
-              </div>
-            )}
           </div>
         )}
 
