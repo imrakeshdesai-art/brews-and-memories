@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const crypto = require('crypto');
+const mongoose = require('mongoose');
 const rateLimit = require('express-rate-limit');
 const auth = require('../middleware/auth');
 const checkRole = require('../middleware/checkRole');
@@ -8,6 +9,7 @@ const { checkPermission } = require('../middleware/checkPermission');
 const { MorasLiveAudiencePass } = require('../models/MorasLiveAudiencePass');
 const { MorasLivePayment } = require('../models/MorasLivePayment');
 const { MorasLiveEventSettings } = require('../models/MorasLiveEventSettings');
+const AuditLog = require('../models/AuditLog');
 const { generateAudiencePassId } = require('../utils/generateAudiencePassId');
 const { sendMorasLivePassEmail } = require('../utils/email');
 const {
@@ -53,10 +55,14 @@ function normalizeIndianMobile(raw) {
   return null;
 }
 
-// Helper: Escape CSV fields
+// Helper: Escape CSV fields securely against formula injection (CWE-1236)
 function escapeCsv(val) {
   if (val === null || val === undefined) return '""';
-  const str = String(val).replace(/"/g, '""');
+  let str = String(val).replace(/"/g, '""');
+  // Neutralize formula injection including leading whitespace, tabs, and control characters
+  if (/^[\s\x00-\x1f]*[=+\-@\t\r%]/.test(str)) {
+    str = `'${str}`;
+  }
   return `"${str}"`;
 }
 
@@ -248,6 +254,7 @@ router.post('/reserve', passReservationLimiter, async (req, res) => {
       emailDeliveryStatus: 'PENDING',
       ipAddress: req.ip || req.headers['x-forwarded-for'] || '',
       userAgent: req.headers['user-agent'] || '',
+      isTest: false, // Security: Public pass creation always defaults to genuine; client isTest is strictly ignored
     });
 
     // 9. Generate Single Official QR Data URL Immediately
@@ -1321,73 +1328,214 @@ router.patch('/admin/classify-test', auth, checkRole(['admin']), async (req, res
 // =========================================================================
 // 15. ADMIN: DELETE EXPLICITLY CLASSIFIED TEST RECORDS
 // POST /api/moras-live/passes/admin/delete-tests
+// Strictly verifies isTest === true; aborts completely if any genuine record is encountered
 // =========================================================================
 router.post('/admin/delete-tests', auth, checkRole(['admin']), async (req, res) => {
+  const adminEmail = req.user?.email || req.user?.username || 'admin';
+  const timestamp = new Date().toISOString();
+
   try {
     const { passIds, deleteMarkedOnly } = req.body || {};
+    let recordsToDelete = [];
 
-    let targetPassIds = [];
     if (Array.isArray(passIds) && passIds.length > 0) {
-      targetPassIds = passIds.map((p) => String(p).trim().toUpperCase()).filter(Boolean);
-    } else if (deleteMarkedOnly) {
-      const markedPasses = await MorasLiveAudiencePass.find({
+      const targetPassIds = passIds.map((p) => String(p).trim().toUpperCase()).filter(Boolean);
+      recordsToDelete = await MorasLiveAudiencePass.find({
+        eventId: 'moras-live-2026',
+        passId: { $in: targetPassIds },
+      });
+
+      // 1. Verify every requested record exists
+      if (recordsToDelete.length !== targetPassIds.length) {
+        console.warn(`[AUDIT - MORAS LIVE TEST DELETION FAILED] Admin ${adminEmail} requested ${targetPassIds.length} pass IDs, found ${recordsToDelete.length}. Aborting.`);
+        return res.status(404).json({
+          success: false,
+          message: 'Operation rejected: One or more requested pass records were not found.',
+        });
+      }
+
+      // 2. Verify every requested record has isTest: true
+      const genuinePass = recordsToDelete.find((p) => p.isTest !== true);
+      if (genuinePass) {
+        console.warn(`[AUDIT - MORAS LIVE TEST DELETION BLOCKED] Admin ${adminEmail} attempted deletion of genuine pass ${genuinePass.passId}. Entire operation aborted.`);
+        await AuditLog.create({
+          admin: adminEmail,
+          operationType: 'DELETE_TEST_MORAS_LIVE_PASSES',
+          targetRecordIds: targetPassIds,
+          deletedCount: 0,
+          operationResult: 'BLOCKED',
+          metadata: { reason: `Genuine pass ${genuinePass.passId} targeted; operation aborted.` },
+        }).catch((err) => console.error('[AUDIT LOG WRITE ERROR]', err));
+
+        return res.status(403).json({
+          success: false,
+          message: `Operation rejected: Pass ${genuinePass.passId} is a genuine customer pass and cannot be deleted. Entire operation aborted.`,
+        });
+      }
+    } else if (deleteMarkedOnly || !passIds) {
+      // 3. Delete marked tests only
+      recordsToDelete = await MorasLiveAudiencePass.find({
         eventId: 'moras-live-2026',
         isTest: true,
-      }).select('passId');
-      targetPassIds = markedPasses.map((p) => p.passId);
-    }
-
-    if (targetPassIds.length === 0) {
-      return res.status(400).json({
-        success: false,
-        message: 'No test records specified or found for deletion. Please select explicit test pass IDs.',
       });
     }
 
-    // Find the records first to audit and capture details before deletion
-    const recordsToDelete = await MorasLiveAudiencePass.find({
-      eventId: 'moras-live-2026',
-      passId: { $in: targetPassIds },
-    });
-
     if (recordsToDelete.length === 0) {
-      return res.status(404).json({
-        success: false,
-        message: 'No matching records found to delete.',
+      return res.json({
+        success: true,
+        message: 'No test records found for deletion. Genuine customer records are protected.',
+        count: 0,
       });
     }
 
     const deletedIds = recordsToDelete.map((r) => r.passId);
 
-    // 1. Delete associated test payment records
-    const paymentDeleteResult = await MorasLivePayment.deleteMany({
-      passId: { $in: deletedIds },
+    // 1. Initial audit record created in PENDING state before starting the transaction and outside that transaction
+    // If audit logging fails, execution halts and zero deletion is performed
+    const auditRecord = await AuditLog.create({
+      admin: adminEmail,
+      operationType: 'DELETE_TEST_MORAS_LIVE_PASSES',
+      targetRecordIds: deletedIds.map(String),
+      deletedCount: 0,
+      operationResult: 'PENDING',
+      metadata: { requestedPassIds: passIds || [] },
     });
 
-    // 2. Delete test audience passes
-    const passDeleteResult = await MorasLiveAudiencePass.deleteMany({
-      eventId: 'moras-live-2026',
-      passId: { $in: deletedIds },
-    });
+    // 2. Fail-closed check: MongoDB session & transaction support must be available
+    if (typeof mongoose.startSession !== 'function') {
+      const unsupportedErr = new Error('MongoDB deployment or driver does not support sessions/transactions');
+      await AuditLog.findByIdAndUpdate(auditRecord._id, {
+        operationResult: 'FAILED',
+        metadata: { ...(auditRecord.metadata || {}), error: unsupportedErr.message },
+      }).catch((e) => console.error('[AUDIT UPDATE ERROR]', e));
+      throw unsupportedErr;
+    }
 
-    const adminEmail = req.user?.email || 'admin';
+    let session;
+    try {
+      session = await mongoose.startSession();
+      if (!session || typeof session.startTransaction !== 'function') {
+        throw new Error('Failed to acquire valid MongoDB transaction session');
+      }
+      session.startTransaction();
+    } catch (sessionErr) {
+      if (session && typeof session.endSession === 'function') {
+        try { await session.endSession(); } catch (e) {}
+      }
+      await AuditLog.findByIdAndUpdate(auditRecord._id, {
+        operationResult: 'FAILED',
+        metadata: { ...(auditRecord.metadata || {}), error: `Session initialization failed: ${sessionErr.message}` },
+      }).catch((e) => console.error('[AUDIT UPDATE ERROR]', e));
+      throw sessionErr;
+    }
+
+    let actualDeletedPassCount = 0;
+    let actualDeletedPaymentCount = 0;
+    let commitAttempted = false;
+
+    try {
+      // Step 1 inside transaction: Revalidate that all target passes exist using the active session (unconditional)
+      const txRecords = await MorasLiveAudiencePass.find({
+        eventId: 'moras-live-2026',
+        passId: { $in: deletedIds },
+      }).session(session);
+
+      if (txRecords.length !== deletedIds.length) {
+        throw new Error(`Transaction pre-condition failed: expected ${deletedIds.length} passes, found ${txRecords.length}.`);
+      }
+
+      // Step 2 inside transaction: Revalidate that every pass has isTest === true
+      const genuinePass = txRecords.find((p) => p.isTest !== true);
+      if (genuinePass) {
+        throw new Error(`Transaction aborted: pass ${genuinePass.passId} is a genuine customer pass and cannot be deleted.`);
+      }
+
+      // Step 3 inside transaction: Delete associated test payment records using the active session
+      const paymentDeleteResult = await MorasLivePayment.deleteMany({
+        passId: { $in: deletedIds },
+      }, { session });
+      actualDeletedPaymentCount = paymentDeleteResult.deletedCount || 0;
+
+      // Step 4 inside transaction: Delete primary audience passes using the active session
+      const passDeleteResult = await MorasLiveAudiencePass.deleteMany({
+        eventId: 'moras-live-2026',
+        passId: { $in: deletedIds },
+      }, { session });
+      actualDeletedPassCount = passDeleteResult.deletedCount || 0;
+
+      // Step 5 inside transaction: Verify the actual deletion counts
+      if (actualDeletedPassCount !== deletedIds.length) {
+        throw new Error(`Transaction aborted: expected ${deletedIds.length} pass deletions, got ${actualDeletedPassCount}.`);
+      }
+
+      // Step 6: Commit transaction
+      commitAttempted = true;
+      await session.commitTransaction();
+    } catch (txError) {
+      const isUncertainCommit =
+        commitAttempted &&
+        (typeof txError.hasErrorLabel === 'function' && txError.hasErrorLabel('UnknownTransactionCommitResult'));
+
+      if (isUncertainCommit) {
+        // Do NOT mark FAILED: the commit may have succeeded on the replica set primary.
+        // Leave audit in PENDING with uncertainCommit flag for authoritative admin reconciliation.
+        await AuditLog.findByIdAndUpdate(auditRecord._id, {
+          metadata: { ...(auditRecord.metadata || {}), error: txError.message, uncertainCommit: true },
+        }).catch((e) => console.error('[AUDIT UPDATE ERROR]', e));
+      } else {
+        try { await session.abortTransaction(); } catch (abortErr) {}
+        await AuditLog.findByIdAndUpdate(auditRecord._id, {
+          operationResult: 'FAILED',
+          metadata: { ...(auditRecord.metadata || {}), error: txError.message },
+        }).catch((e) => console.error('[AUDIT UPDATE ERROR]', e));
+      }
+      throw txError;
+    } finally {
+      await session.endSession();
+    }
+
+    // 3. Handle audit-update failures after transaction commit:
+    // If transaction commits successfully but updating the audit record to SUCCESS fails,
+    // do not attempt destructive operation again, leave audit entry in PENDING, and return clean response.
+    try {
+      await AuditLog.findByIdAndUpdate(auditRecord._id, {
+        deletedCount: actualDeletedPassCount,
+        operationResult: 'SUCCESS',
+        metadata: {
+          ...(auditRecord.metadata || {}),
+          deletedPayments: actualDeletedPaymentCount,
+        },
+      });
+    } catch (auditUpdateError) {
+      console.error('[AUDIT UPDATE FAILED AFTER COMMIT] Transaction committed but audit finalization failed:', auditUpdateError);
+      return res.status(200).json({
+        success: true,
+        message: `Successfully deleted ${actualDeletedPassCount} test record(s) and ${actualDeletedPaymentCount} payment record(s) via committed transaction. Notice: Audit log finalization encountered an error and remains PENDING for reconciliation.`,
+        deletedCount: actualDeletedPassCount,
+        deletedPassIds: deletedIds,
+        auditId: auditRecord._id,
+        auditStatus: 'PENDING_RECONCILIATION',
+      });
+    }
+
     const auditLog = {
+      auditId: auditRecord._id,
       action: 'DELETE_TEST_RECORDS',
       admin: adminEmail,
-      timestamp: new Date().toISOString(),
-      deletedPassCount: passDeleteResult.deletedCount,
-      deletedPaymentCount: paymentDeleteResult.deletedCount,
+      timestamp,
+      deletedPassCount: actualDeletedPassCount,
+      deletedPaymentCount: actualDeletedPaymentCount,
       deletedPassIds: deletedIds,
-      summary: `Admin ${adminEmail} permanently deleted ${passDeleteResult.deletedCount} test pass(es) [${deletedIds.join(', ')}]`,
+      summary: `Admin ${adminEmail} permanently deleted ${actualDeletedPassCount} test pass(es) [${deletedIds.join(', ')}]`,
     };
 
     console.log('[AUDIT - MORAS LIVE TEST DELETION]', JSON.stringify(auditLog));
 
     return res.json({
       success: true,
-      message: `Successfully deleted ${passDeleteResult.deletedCount} test record(s). Genuine customer records remain untouched.`,
+      message: `Successfully deleted ${actualDeletedPassCount} test record(s). Genuine customer records remain untouched.`,
       audit: auditLog,
-      deletedCount: passDeleteResult.deletedCount,
+      deletedCount: actualDeletedPassCount,
       deletedPassIds: deletedIds,
     });
   } catch (error) {

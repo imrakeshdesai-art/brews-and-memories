@@ -31,9 +31,8 @@ async function generateQrCodeDataUrl(content) {
       },
     });
   } catch (err) {
-    console.error('Failed to generate QR data URL:', err);
-    // Fallback Quickchart URL if QRCode fails
-    return `https://quickchart.io/qr?text=${encodeURIComponent(content)}&size=300`;
+    console.error('Failed to generate offline QR data URL:', err);
+    throw new Error('QR code generation failed offline');
   }
 }
 

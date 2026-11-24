@@ -10,7 +10,11 @@ function auth(req, res, next) {
   const token = authHeader.split(' ')[1];
 
   try {
-    const secret = process.env.JWT_SECRET || 'dev_secret_change_in_production';
+    const secret = process.env.JWT_SECRET;
+    if (!secret) {
+      console.error('[AUTH] Critical: JWT_SECRET environment variable is missing.');
+      return res.status(500).json({ message: 'Authentication configuration error' });
+    }
     const decoded = jwt.verify(token, secret);
     req.user = decoded;
     next();

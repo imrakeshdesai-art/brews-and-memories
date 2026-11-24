@@ -8,15 +8,16 @@ const seedAdmin = require('./utils/seedAdmin');
 const PORT = process.env.PORT || 5000;
 
 async function startServer() {
-  if (!process.env.MONGODB_URI) {
-    console.error('MONGODB_URI is required');
+  const mongoUri = process.env.MONGODB_URI || process.env.MONGO_URI;
+  if (!mongoUri) {
+    console.error('MONGODB_URI (or MONGO_URI) is required');
     process.exit(1);
   }
   if (!process.env.JWT_SECRET || process.env.JWT_SECRET.length < 32) {
     console.error('JWT_SECRET must be at least 32 characters long');
     process.exit(1);
   }
-  await connectDB(process.env.MONGODB_URI);
+  await connectDB(mongoUri);
 
   // Synchronize database indexes (creates sparse unique idempotencyKey index safely)
   const Order = require('./models/Order');

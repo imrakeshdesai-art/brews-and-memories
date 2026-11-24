@@ -13,6 +13,16 @@ function cleanEnvVar(val) {
   return cleaned.trim();
 }
 
+function escapeHtml(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
 // ── Branded Sender & Service Configuration ────────────────────────────────────
 // Official identity for THE MORAS CAFE:
 // - Orders & Notifications: orders@themorascafe.in
@@ -179,14 +189,15 @@ function createTransporter() {
 // ── Format items as HTML rows ─────────────────────────────────────────────────
 function buildItemRows(items) {
   return (items || []).map((item) => {
-    const variant = item.variant ? ` <span style="color:#777;font-size:12px;font-weight:normal">(${item.variant})</span>` : '';
+    const safeName = escapeHtml(item.name || 'Menu Item');
+    const safeVariant = item.variant ? ` <span style="color:#777;font-size:12px;font-weight:normal">(${escapeHtml(item.variant)})</span>` : '';
     const unitPrice = item.price || 0;
     const qty = item.qty || 1;
     const lineTotal = unitPrice * qty;
     return `
       <tr>
         <td width="65%" style="padding:10px 0;border-bottom:1px solid #e8e2d2;font-size:14px;color:#2d2d2d;font-weight:500;width:65%">
-          <strong>${item.name}</strong>${variant}<br/>
+          <strong>${safeName}</strong>${safeVariant}<br/>
           <span style="color:#777;font-size:12px">${qty} &times; &#x20B9;${unitPrice}</span>
         </td>
         <td width="35%" style="padding:10px 0;border-bottom:1px solid #e8e2d2;text-align:right;font-weight:800;color:#0f3d3e;font-size:15px;width:35%;white-space:nowrap">
@@ -198,6 +209,8 @@ function buildItemRows(items) {
 
 // ── HTML Email Template: Tax Invoice & Bill Receipt ───────────────────────────
 function buildCustomerEmailHTML({ name, items, total, payment, address, orderId, trackingToken }) {
+  const safeName = escapeHtml(name);
+  const safeAddress = escapeHtml(address);
   const isPaid = payment && (payment.toLowerCase() === 'online' || payment.toLowerCase() === 'upi');
   const totalLabel = isPaid ? 'Total Paid' : 'Total Amount Due';
   const refCode = orderId ? String(orderId).slice(-6).toUpperCase() : 'RECEIPT';
@@ -250,7 +263,7 @@ function buildCustomerEmailHTML({ name, items, total, payment, address, orderId,
                 <!-- Body -->
                 <div class="email-body" style="padding:28px">
                   <p style="color:#2d2d2d;font-size:15px;line-height:1.6;margin:0 0 20px;font-family:'Plus Jakarta Sans', Arial, sans-serif">
-                    Dear <strong>${name}</strong>, &#x2728;<br/><br/>
+                    Dear <strong>${safeName}</strong>, &#x2728;<br/><br/>
                     Thank you for dining with <strong>The Moras Cafe</strong>. Here is your official digital bill receipt for your order:
                   </p>
 
@@ -276,11 +289,11 @@ function buildCustomerEmailHTML({ name, items, total, payment, address, orderId,
                           <table width="100%" cellpadding="0" cellspacing="0">
                             <tr>
                               <td style="font-size:13px;color:#666">Billed To:</td>
-                              <td style="text-align:right;font-size:13px;font-weight:700;color:#0f3d3e">${name}</td>
+                              <td style="text-align:right;font-size:13px;font-weight:700;color:#0f3d3e">${safeName}</td>
                             </tr>
                             <tr>
                               <td style="font-size:13px;color:#666">Seated At:</td>
-                              <td style="text-align:right;font-size:13px;font-weight:700;color:#0f3d3e">${address}</td>
+                              <td style="text-align:right;font-size:13px;font-weight:700;color:#0f3d3e">${safeAddress}</td>
                             </tr>
                             <tr>
                               <td style="font-size:13px;color:#666">Payment Mode:</td>
@@ -413,7 +426,13 @@ function buildReservationEmailHTML(reservationData) {
     _id 
   } = reservationData;
   const refCode = _id ? String(_id).slice(-6).toUpperCase() : 'CONFIRMED';
-  const celebrateWho = birthdayPerson || name;
+  const safeName = escapeHtml(name);
+  const safeBirthdayPerson = escapeHtml(birthdayPerson);
+  const safeCelebrateWho = safeBirthdayPerson || safeName;
+  const safeNotes = escapeHtml(notes);
+  const safeDate = escapeHtml(date);
+  const safeTime = escapeHtml(time);
+  const safeUpiRef = escapeHtml(upiRef);
 
   return `
 <!DOCTYPE html>
@@ -455,8 +474,8 @@ function buildReservationEmailHTML(reservationData) {
                 <!-- Body -->
                 <div class="email-body" style="padding:28px">
                   <p style="color:#2d2d2d;font-size:15px;line-height:1.6;margin:0 0 20px;font-family:'Plus Jakarta Sans', Arial, sans-serif">
-                    Dear <strong>${name}</strong>, &#x1F389;<br/><br/>
-                    We are thrilled to confirm your birthday celebration booking for <strong>${celebrateWho}</strong> at <strong>The Moras Cafe</strong>! Your illuminated "Happy Birthday" stand with glowing lights and celebration area are ready.
+                    Dear <strong>${safeName}</strong>, &#x1F389;<br/><br/>
+                    We are thrilled to confirm your birthday celebration booking for <strong>${safeCelebrateWho}</strong> at <strong>The Moras Cafe</strong>! Your illuminated "Happy Birthday" stand with glowing lights and celebration area are ready.
                   </p>
 
                   <!-- Important Bring Cake Notice -->
@@ -481,15 +500,15 @@ function buildReservationEmailHTML(reservationData) {
                           <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse">
                             <tr>
                               <td style="padding:7px 0;font-size:14px;color:#666">&#x1F389; Celebration For</td>
-                              <td style="padding:7px 0;text-align:right;font-size:15px;font-weight:700;color:#0f3d3e">${celebrateWho}</td>
+                              <td style="padding:7px 0;text-align:right;font-size:15px;font-weight:700;color:#0f3d3e">${safeCelebrateWho}</td>
                             </tr>
                             <tr>
                               <td style="padding:7px 0;font-size:14px;color:#666">&#x1F4C5; Date</td>
-                              <td style="padding:7px 0;text-align:right;font-size:15px;font-weight:700;color:#0f3d3e">${date}</td>
+                              <td style="padding:7px 0;text-align:right;font-size:15px;font-weight:700;color:#0f3d3e">${safeDate}</td>
                             </tr>
                             <tr>
                               <td style="padding:7px 0;font-size:14px;color:#666">&#x23F0; Time Slot</td>
-                              <td style="padding:7px 0;text-align:right;font-size:15px;font-weight:700;color:#0f3d3e">${time}</td>
+                              <td style="padding:7px 0;text-align:right;font-size:15px;font-weight:700;color:#0f3d3e">${safeTime}</td>
                             </tr>
                             <tr>
                               <td style="padding:7px 0;font-size:14px;color:#666">&#x1F465; Number of People</td>
@@ -507,15 +526,15 @@ function buildReservationEmailHTML(reservationData) {
                               <td style="padding:7px 0;font-size:14px;color:#666">&#x1F4B0; Balance Due at Cafe</td>
                               <td style="padding:7px 0;text-align:right;font-size:15px;font-weight:800;color:#c2410c">&#x20B9;${remainingBalance} + food &amp; drinks ordered</td>
                             </tr>
-                            ${upiRef ? `
+                            ${safeUpiRef ? `
                             <tr>
                               <td style="padding:7px 0;font-size:14px;color:#666">&#x1F522; UPI Ref / UTR</td>
-                              <td style="padding:7px 0;text-align:right;font-size:13px;font-weight:600;color:#555;font-family:monospace">${upiRef}</td>
+                              <td style="padding:7px 0;text-align:right;font-size:13px;font-weight:600;color:#555;font-family:monospace">${safeUpiRef}</td>
                             </tr>` : ''}
-                            ${notes ? `
+                            ${safeNotes ? `
                             <tr>
                               <td style="padding:7px 0;font-size:14px;color:#666">&#x1F4DD; Special Notes</td>
-                              <td style="padding:7px 0;text-align:right;font-size:14px;font-weight:500;color:#333">${notes}</td>
+                              <td style="padding:7px 0;text-align:right;font-size:14px;font-weight:500;color:#333">${safeNotes}</td>
                             </tr>` : ''}
                           </table>
                         </td>
@@ -723,24 +742,25 @@ async function sendOrderEmail(orderData) {
 
 // ── MORAS LIVE Audience Pass Email ───────────────────────────────────────────
 function buildMorasLivePassEmailHTML({ pass, qrDataUrl, qrPayload, secureAccessUrl }) {
-  const name = pass.customerName || pass.name || 'Valued Guest';
-  const passId = pass.passId || 'ML-XXXX';
-  const mobile = pass.normalizedMobileNumber || pass.mobileNumber || '';
+  const safeName = escapeHtml(pass.customerName || pass.name || 'Valued Guest');
+  const safePassId = escapeHtml(pass.passId || 'ML-XXXX');
+  const safeMobile = escapeHtml(pass.normalizedMobileNumber || pass.mobileNumber || '');
   const price = pass.approvedPassPrice != null ? pass.approvedPassPrice : (pass.payableAmount || 149);
-  const eventName = pass.eventName || 'MORAS LIVE';
-  const venue = pass.venue || 'THE MORAS CAFE, Solapur Rd, Vijayapura';
+  const safeEventName = escapeHtml(pass.eventName || 'MORAS LIVE');
+  const safeVenue = escapeHtml(pass.venue || 'THE MORAS CAFE, Solapur Rd, Vijayapura');
 
-  // Email clients (Gmail, Yahoo, Outlook) block data:image/png;base64 URIs.
-  // We use a high-resolution, CDN-backed HTTPS image URL so Gmail proxies and displays it cleanly.
-  const payloadUrl = qrPayload || pass.passUrl || secureAccessUrl || `https://themorascafe.in/moras-live/passes?passId=${passId}`;
-  const httpsQrUrl = `https://quickchart.io/qr?text=${encodeURIComponent(payloadUrl)}&size=300&dark=0f3d3e&margin=2`;
+  // In-house HTTPS QR stream for email clients (zero third-party leakage)
+  const backendBase = (process.env.BACKEND_URL || 'https://brews-backend.onrender.com').replace(/\/+$/, '');
+  const httpsQrUrl = pass.qrToken
+    ? `${backendBase}/api/moras-live/passes/qr-image?passId=${encodeURIComponent(pass.passId)}&token=${encodeURIComponent(pass.qrToken)}`
+    : (qrDataUrl || '');
 
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MORAS LIVE Pass Reserved - ${passId}</title>
+  <title>MORAS LIVE Pass Reserved - ${safePassId}</title>
 </head>
 <body style="margin:0;padding:0;background-color:#f5f0e8;font-family:'Plus Jakarta Sans','Segoe UI',Arial,sans-serif;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%">
   <center style="width:100%;background-color:#f5f0e8">
@@ -758,7 +778,7 @@ function buildMorasLivePassEmailHTML({ pass, qrDataUrl, qrPayload, secureAccessU
                     </div>
                   </div>
                   <div style="color:#fbbf24;font-size:12px;letter-spacing:4px;text-transform:uppercase;font-weight:800;margin-bottom:6px">THE MORAS CAFE PRESENTS</div>
-                  <h1 style="color:#fff;margin:0;font-size:26px;font-weight:800;font-family:'Playfair Display', Georgia, serif;letter-spacing:-0.5px">${eventName}</h1>
+                  <h1 style="color:#fff;margin:0;font-size:26px;font-weight:800;font-family:'Playfair Display', Georgia, serif;letter-spacing:-0.5px">${safeEventName}</h1>
                   <p style="color:rgba(255,255,255,0.85);margin:8px 0 0;font-size:14px;font-style:italic;font-family:'Playfair Display', Georgia, serif">YOUR MIC. YOUR MOMENT.</p>
                 </div>
 
@@ -772,17 +792,17 @@ function buildMorasLivePassEmailHTML({ pass, qrDataUrl, qrPayload, secureAccessU
                 <!-- Content Body -->
                 <div style="padding:28px">
                   <p style="color:#2d2d2d;font-size:15px;line-height:1.6;margin:0 0 20px;">
-                    Dear <strong>${name}</strong>,<br/><br/>
-                    Your individual audience pass for <strong>${eventName}</strong> has been successfully reserved! Please present your QR code at the event entrance and pay <strong>&#x20B9;${price}</strong> by cash or UPI to receive entry.
+                    Dear <strong>${safeName}</strong>,<br/><br/>
+                    Your individual audience pass for <strong>${safeEventName}</strong> has been successfully reserved! Please present your QR code at the event entrance and pay <strong>&#x20B9;${price}</strong> by cash or UPI to receive entry.
                   </p>
 
                   <!-- QR Code Card -->
                   <div style="background:#faf8f5;border-radius:14px;padding:24px 20px;text-align:center;border:1px solid #e8e2d2;margin-bottom:24px">
                     <div style="font-size:11px;color:#8e8a7e;letter-spacing:2px;text-transform:uppercase;font-weight:700;margin-bottom:6px">Official Entry QR Code</div>
                     <div style="margin:12px auto 14px;display:inline-block;padding:10px;background:#ffffff;border-radius:12px;border:2px solid #0f3d3e;box-shadow:0 2px 10px rgba(0,0,0,0.06)">
-                      <img src="${httpsQrUrl}" alt="MORAS LIVE Pass QR - ${passId}" width="180" height="180" style="display:block;width:180px;height:180px;border:0;margin:0 auto" />
+                      <img src="${httpsQrUrl}" alt="MORAS LIVE Pass QR - ${safePassId}" width="180" height="180" style="display:block;width:180px;height:180px;border:0;margin:0 auto" />
                     </div>
-                    <div style="font-size:18px;font-weight:800;color:#0f3d3e;font-family:monospace;letter-spacing:2px">${passId}</div>
+                    <div style="font-size:18px;font-weight:800;color:#0f3d3e;font-family:monospace;letter-spacing:2px">${safePassId}</div>
                     <div style="font-size:12px;color:#666;margin-top:4px">Valid for 1 Individual Admission &middot; Non-transferable</div>
                     
                     ${secureAccessUrl ? `
@@ -797,15 +817,15 @@ function buildMorasLivePassEmailHTML({ pass, qrDataUrl, qrPayload, secureAccessU
                     <table width="100%" cellpadding="6" cellspacing="0" style="font-size:14px;color:#333">
                       <tr>
                         <td width="40%" style="color:#777;padding:6px 0">Pass ID:</td>
-                        <td width="60%" style="font-weight:700;color:#0f3d3e;font-family:monospace;padding:6px 0">${passId}</td>
+                        <td width="60%" style="font-weight:700;color:#0f3d3e;font-family:monospace;padding:6px 0">${safePassId}</td>
                       </tr>
                       <tr>
                         <td style="color:#777;padding:6px 0">Attendee Name:</td>
-                        <td style="font-weight:600;padding:6px 0">${name}</td>
+                        <td style="font-weight:600;padding:6px 0">${safeName}</td>
                       </tr>
                       <tr>
                         <td style="color:#777;padding:6px 0">Registered Mobile:</td>
-                        <td style="font-weight:600;padding:6px 0">+91 ${mobile}</td>
+                        <td style="font-weight:600;padding:6px 0">+91 ${safeMobile}</td>
                       </tr>
                       <tr>
                         <td style="color:#777;padding:6px 0">Pass Fee:</td>
@@ -817,7 +837,7 @@ function buildMorasLivePassEmailHTML({ pass, qrDataUrl, qrPayload, secureAccessU
                       </tr>
                       <tr>
                         <td style="color:#777;padding:6px 0">Venue:</td>
-                        <td style="font-weight:500;padding:6px 0">${venue}</td>
+                        <td style="font-weight:500;padding:6px 0">${safeVenue}</td>
                       </tr>
                     </table>
                   </div>
@@ -985,6 +1005,11 @@ function getEmailConfigDiagnostic() {
 }
 
 module.exports = {
+  escapeHtml,
+  buildItemRows,
+  buildCustomerEmailHTML,
+  buildReservationEmailHTML,
+  buildMorasLivePassEmailHTML,
   sendOrderEmail,
   sendReservationEmail,
   sendMorasLivePassEmail,

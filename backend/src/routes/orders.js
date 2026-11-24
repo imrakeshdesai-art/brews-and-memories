@@ -7,6 +7,7 @@ const express = require('express');
 const router = express.Router();
 
 const Order = require('../models/Order');
+const AuditLog = require('../models/AuditLog');
 const MenuAvailability = require('../models/MenuAvailability');
 const { calculateOrderTotal } = require('../data/menuCatalog');
 const { sendOrderWhatsApp } = require('../utils/whatsapp');
@@ -213,6 +214,7 @@ router.post('/', async (req, res) => {
         status: 'pending',
         trackingTokenHash,
         idempotencyKey,
+        isTest: false, // Security: Public order creation always defaults to genuine; client isTest is strictly ignored
         createdAt: new Date(),
         updatedAt: new Date(),
       });
@@ -419,14 +421,198 @@ router.get('/track/:id', trackLimiter, async (req, res) => {
   }
 });
 
-// ==================== DELETE ALL ORDERS ====================
+// ==================== DELETE TEST ORDERS ====================
+// Deletes ONLY verified test orders (strictly isTest: true), preserving genuine customer orders
 router.delete('/clean-all-tests', auth, checkRole(['admin']), async (req, res) => {
+  const adminEmail = req.user?.username || req.user?.email || 'admin';
+  const timestamp = new Date().toISOString();
+
   try {
-    const result = await Order.deleteMany({});
-    console.log(`[ADMIN] Purged all orders (${result.deletedCount} orders deleted)`);
-    res.json({ success: true, message: 'All test orders deleted successfully', count: result.deletedCount });
+    const { targetIds } = req.body || {};
+    let recordsToDelete = [];
+
+    if (Array.isArray(targetIds) && targetIds.length > 0) {
+      // 1. Explicit IDs supplied: load EVERY requested record
+      const cleanIds = targetIds.map(String).filter(Boolean);
+      recordsToDelete = await Order.find({ _id: { $in: cleanIds } });
+
+      // Verify that EVERY requested record exists
+      if (recordsToDelete.length !== cleanIds.length) {
+        console.warn(`[AUDIT - ORDERS CLEANUP FAILED] Admin ${adminEmail} requested ${cleanIds.length} IDs, found ${recordsToDelete.length}. Aborting.`);
+        return res.status(404).json({
+          success: false,
+          message: 'Operation rejected: One or more requested order records were not found.',
+        });
+      }
+
+      // Verify that EVERY record has isTest: true
+      const genuineRecord = recordsToDelete.find((o) => o.isTest !== true);
+      if (genuineRecord) {
+        console.warn(`[AUDIT - ORDERS CLEANUP BLOCKED] Admin ${adminEmail} attempted deletion of genuine order #${genuineRecord._id}. Entire operation aborted.`);
+        await AuditLog.create({
+          admin: adminEmail,
+          operationType: 'DELETE_TEST_ORDERS',
+          targetRecordIds: cleanIds,
+          deletedCount: 0,
+          operationResult: 'BLOCKED',
+          metadata: { reason: `Genuine order #${genuineRecord._id} targeted; operation aborted.` },
+        }).catch((err) => console.error('[AUDIT LOG WRITE ERROR]', err));
+
+        return res.status(403).json({
+          success: false,
+          message: `Operation rejected: Order #${genuineRecord._id} is a genuine customer record and cannot be deleted. Entire operation aborted.`,
+        });
+      }
+    } else {
+      // 2. No explicit IDs: query strictly for records explicitly marked isTest: true
+      recordsToDelete = await Order.find({ isTest: true });
+    }
+
+    if (recordsToDelete.length === 0) {
+      return res.json({
+        success: true,
+        message: 'No test orders found to delete. Genuine customer orders are protected.',
+        count: 0,
+      });
+    }
+
+    const testIds = recordsToDelete.map((o) => o._id);
+
+    // 1. Initial audit record created in PENDING state before starting the transaction and outside that transaction
+    // If audit logging fails, execution halts and zero deletion is performed
+    const auditRecord = await AuditLog.create({
+      admin: adminEmail,
+      operationType: 'DELETE_TEST_ORDERS',
+      targetRecordIds: testIds.map(String),
+      deletedCount: 0,
+      operationResult: 'PENDING',
+      metadata: { requestedTargetIds: targetIds || [] },
+    });
+
+    // 2. Fail-closed check: MongoDB session & transaction support must be available
+    if (typeof mongoose.startSession !== 'function') {
+      const unsupportedErr = new Error('MongoDB deployment or driver does not support sessions/transactions');
+      await AuditLog.findByIdAndUpdate(auditRecord._id, {
+        operationResult: 'FAILED',
+        metadata: { ...(auditRecord.metadata || {}), error: unsupportedErr.message },
+      }).catch((e) => console.error('[AUDIT UPDATE ERROR]', e));
+      throw unsupportedErr;
+    }
+
+    let session;
+    try {
+      session = await mongoose.startSession();
+      if (!session || typeof session.startTransaction !== 'function') {
+        throw new Error('Failed to acquire valid MongoDB transaction session');
+      }
+      session.startTransaction();
+    } catch (sessionErr) {
+      if (session && typeof session.endSession === 'function') {
+        try { await session.endSession(); } catch (e) {}
+      }
+      await AuditLog.findByIdAndUpdate(auditRecord._id, {
+        operationResult: 'FAILED',
+        metadata: { ...(auditRecord.metadata || {}), error: `Session initialization failed: ${sessionErr.message}` },
+      }).catch((e) => console.error('[AUDIT UPDATE ERROR]', e));
+      throw sessionErr;
+    }
+
+    let actualDeletedCount = 0;
+    let commitAttempted = false;
+
+    try {
+      // Step 1 inside transaction: Revalidate that all requested records exist using the active session (unconditional)
+      const txRecords = await Order.find({ _id: { $in: testIds } }).session(session);
+
+      if (txRecords.length !== testIds.length) {
+        throw new Error(`Transaction pre-condition failed: expected ${testIds.length} orders, found ${txRecords.length}.`);
+      }
+
+      // Step 2 inside transaction: Revalidate that every target has isTest === true
+      const genuineRecord = txRecords.find((o) => o.isTest !== true);
+      if (genuineRecord) {
+        throw new Error(`Transaction aborted: order #${genuineRecord._id} is genuine and immune from deletion.`);
+      }
+
+      // Step 3 & 4 inside transaction: Delete primary records using the active session
+      const delResult = await Order.deleteMany({ _id: { $in: testIds } }, { session });
+
+      // Step 5 inside transaction: Verify the actual deletion counts
+      actualDeletedCount = delResult.deletedCount || 0;
+      if (actualDeletedCount !== testIds.length) {
+        throw new Error(`Transaction aborted: expected ${testIds.length} deletions, got ${actualDeletedCount}.`);
+      }
+
+      // Step 6: Commit the transaction
+      commitAttempted = true;
+      await session.commitTransaction();
+    } catch (txError) {
+      const isUncertainCommit =
+        commitAttempted &&
+        (typeof txError.hasErrorLabel === 'function' && txError.hasErrorLabel('UnknownTransactionCommitResult'));
+
+      if (isUncertainCommit) {
+        // Do NOT mark FAILED: the commit may have succeeded on the replica set primary.
+        // Leave audit in PENDING with uncertainCommit flag for authoritative admin reconciliation.
+        await AuditLog.findByIdAndUpdate(auditRecord._id, {
+          metadata: { ...(auditRecord.metadata || {}), error: txError.message, uncertainCommit: true },
+        }).catch((e) => console.error('[AUDIT UPDATE ERROR]', e));
+      } else {
+        try { await session.abortTransaction(); } catch (abortErr) {}
+        await AuditLog.findByIdAndUpdate(auditRecord._id, {
+          operationResult: 'FAILED',
+          metadata: { ...(auditRecord.metadata || {}), error: txError.message },
+        }).catch((e) => console.error('[AUDIT UPDATE ERROR]', e));
+      }
+      throw txError;
+    } finally {
+      await session.endSession();
+    }
+
+    // 3. Handle audit-update failures after transaction commit:
+    // If transaction commits successfully but updating the audit record to SUCCESS fails,
+    // do not attempt destructive operation again, leave audit entry in PENDING, and return clean response.
+    try {
+      await AuditLog.findByIdAndUpdate(auditRecord._id, {
+        deletedCount: actualDeletedCount,
+        operationResult: 'SUCCESS',
+      });
+    } catch (auditUpdateError) {
+      console.error('[AUDIT UPDATE FAILED AFTER COMMIT] Transaction committed but audit finalization failed:', auditUpdateError);
+      return res.status(200).json({
+        success: true,
+        message: `Deleted ${actualDeletedCount} test order(s) via committed transaction. Notice: Audit log finalization encountered an error and remains PENDING for reconciliation.`,
+        count: actualDeletedCount,
+        auditId: auditRecord._id,
+        auditStatus: 'PENDING_RECONCILIATION',
+      });
+    }
+
+    console.log('[AUDIT - ORDERS CLEANUP]', JSON.stringify({
+      auditId: auditRecord._id,
+      admin: adminEmail,
+      timestamp,
+      affectedIds: testIds,
+      count: actualDeletedCount,
+      status: 'SUCCESS',
+    }));
+
+    return res.json({
+      success: true,
+      message: `Deleted ${actualDeletedCount} test order(s). Genuine customer orders remain untouched.`,
+      count: actualDeletedCount,
+      audit: {
+        id: auditRecord._id,
+        action: 'DELETE_TEST_ORDERS',
+        admin: adminEmail,
+        timestamp,
+        affectedIds: testIds,
+        count: actualDeletedCount,
+        status: 'SUCCESS',
+      },
+    });
   } catch (error) {
-    console.error('Clean orders error:', error);
+    console.error('[AUDIT - ORDERS CLEANUP ERROR]', error);
     res.status(500).json({ success: false, message: 'Could not delete test orders', error: error.message });
   }
 });

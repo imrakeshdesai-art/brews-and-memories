@@ -33,6 +33,11 @@ const orderSchema = new mongoose.Schema({
     select: false,
     index: true,
   },
+  isTest: {
+    type: Boolean,
+    default: false,
+    index: true,
+  },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 });

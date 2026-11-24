@@ -38,10 +38,14 @@ function normalizeIndianMobile(raw) {
   return null;
 }
 
-// Helper: Escape CSV fields securely
+// Helper: Escape CSV fields securely against formula injection (CWE-1236)
 function escapeCsvValue(val) {
   if (val === null || val === undefined) return '""';
-  const str = String(val).replace(/"/g, '""');
+  let str = String(val).replace(/"/g, '""');
+  // Neutralize formula injection including leading whitespace, tabs, and control characters
+  if (/^[\s\x00-\x1f]*[=+\-@\t\r%]/.test(str)) {
+    str = `'${str}`;
+  }
   return `"${str}"`;
 }
 

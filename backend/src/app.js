@@ -10,6 +10,7 @@ const reservationRoutes = require('./routes/reservations');
 const menuRoutes = require('./routes/menu');
 const morasLiveRoutes = require('./routes/morasLive');
 const morasLivePassesRoutes = require('./routes/morasLivePasses');
+const auditRoutes = require('./routes/audit');
 
 const app = express();
 
@@ -82,25 +83,14 @@ app.use('/api/reservations', reservationRoutes);
 app.use('/api/menu', menuRoutes);
 app.use('/api/moras-live', morasLiveRoutes);
 app.use('/api/moras-live/passes', morasLivePassesRoutes);
+app.use('/api/audit', auditRoutes);
 
-app.get('/api/health', async (req, res) => {
-  let userList = [];
-  if (mongoose.connection.readyState === 1) {
-    try {
-      const User = require('./models/User');
-      const users = await User.find({}, { email: 1, role: 1 });
-      userList = users.map((u) => ({ email: u.email, role: u.role }));
-    } catch (err) {
-      userList = ['error: ' + err.message];
-    }
-  }
-
+app.get('/api/health', (req, res) => {
   res.json({
     status: 'ok',
     mode: 'mongo',
-    version: 'v-kds-deploy-17',
+    version: 'v-kds-deploy-18',
     serverTime: new Date().toISOString(),
-    users: userList,
     envCheck: {
       hasGmailUser: !!process.env.GMAIL_USER,
       hasGmailPass: !!process.env.GMAIL_APP_PASS,

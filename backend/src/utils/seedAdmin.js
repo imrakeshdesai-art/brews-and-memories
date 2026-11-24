@@ -27,25 +27,31 @@ async function seedAdmin() {
   }
 
   // 2. Seed Kitchen Staff
-  const kitchenEmail = (process.env.KITCHEN_EMAIL || 'rakeshdesai2909@gmail.com').toLowerCase().trim();
-  const rawKitchenPassword = process.env.KITCHEN_PASSWORD || 'Kitchen123!';
-  const kitchenPassword = rawKitchenPassword.trim();
+  const rawKitchenEmail = process.env.KITCHEN_EMAIL;
+  const rawKitchenPassword = process.env.KITCHEN_PASSWORD;
 
-  // Purge old dummy email and any non-matching kitchen roles
-  await User.deleteMany({ email: 'kitchen@brews-memories.local' });
-  await User.deleteMany({ role: 'kitchen', email: { $ne: kitchenEmail } });
+  if (rawKitchenEmail && rawKitchenPassword && rawKitchenPassword.trim().length >= 8) {
+    const kitchenEmail = rawKitchenEmail.toLowerCase().trim();
+    const kitchenPassword = rawKitchenPassword.trim();
 
-  const hashedKitchenPassword = await bcrypt.hash(kitchenPassword, 10);
-  await User.findOneAndUpdate(
-    { email: kitchenEmail },
-    {
-      email: kitchenEmail,
-      password: hashedKitchenPassword,
-      role: 'kitchen',
-    },
-    { upsert: true, new: true }
-  );
-  console.log(`[SEED] Kitchen staff user synced with verified bcrypt hash: ${kitchenEmail}`);
+    // Purge old dummy email and any non-matching kitchen roles
+    await User.deleteMany({ email: 'kitchen@brews-memories.local' });
+    await User.deleteMany({ role: 'kitchen', email: { $ne: kitchenEmail } });
+
+    const hashedKitchenPassword = await bcrypt.hash(kitchenPassword, 10);
+    await User.findOneAndUpdate(
+      { email: kitchenEmail },
+      {
+        email: kitchenEmail,
+        password: hashedKitchenPassword,
+        role: 'kitchen',
+      },
+      { upsert: true, new: true }
+    );
+    console.log(`[SEED] Kitchen staff user synced with verified bcrypt hash: ${kitchenEmail}`);
+  } else {
+    console.warn('⚠️ WARNING: KITCHEN_EMAIL or KITCHEN_PASSWORD environment variables are not configured or too short (min 8 chars). Kitchen staff seeding skipped.');
+  }
 }
 
 module.exports = seedAdmin;

@@ -26,6 +26,11 @@ const reservationSchema = new mongoose.Schema({
     enum: ['pending', 'confirmed', 'cancelled'],
     default: 'pending',
   },
+  isTest: {
+    type: Boolean,
+    default: false,
+    index: true,
+  },
   confirmedAt: { type: Date, default: null },
   createdAt: { type: Date, default: Date.now },
 });

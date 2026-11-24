@@ -1,6 +1,9 @@
 const express = require('express');
+const crypto = require('crypto');
+const mongoose = require('mongoose');
 const router = express.Router();
 const Reservation = require('../models/Reservation');
+const AuditLog = require('../models/AuditLog');
 const UpiPaymentLog = require('../models/UpiPaymentLog');
 const auth = require('../middleware/auth');
 const checkRole = require('../middleware/checkRole');
@@ -37,15 +40,36 @@ function parseUpiNotification(text = '', title = '') {
 }
 
 // ==================== 1. REAL-TIME PHONEPE / UPI WEBHOOK ====================
-// POST or GET /api/reservations/webhook/upi
-// Free Android webhook: forwards PhonePe notification in 1-2 seconds
-router.all('/webhook/upi', async (req, res) => {
+// POST /api/reservations/webhook/upi
+// Webhook for incoming PhonePe / UPI credit alerts
+// Strictly requires x-webhook-token header (rejects query and body tokens)
+router.post('/webhook/upi', async (req, res) => {
   try {
-    const token = req.headers['x-webhook-token'] || req.query.token || (req.body && req.body.token);
-    const expectedToken = process.env.UPI_WEBHOOK_SECRET || 'moras_upi_secret_2026';
+    const expectedToken = process.env.UPI_WEBHOOK_SECRET;
+    if (!expectedToken) {
+      console.error('[UPI Webhook] Misconfiguration: UPI_WEBHOOK_SECRET is not configured on the server');
+      return res.status(500).json({ message: 'Webhook authentication unavailable' });
+    }
 
-    if (token !== expectedToken) {
-      console.warn('[UPI Webhook] Rejected unauthorized webhook call');
+    const token = req.headers['x-webhook-token'];
+    if (!token || typeof token !== 'string') {
+      console.warn('[UPI Webhook] Rejected: Missing or invalid x-webhook-token header');
+      return res.status(401).json({ message: 'Missing or invalid webhook authentication header' });
+    }
+
+    let authorized = false;
+    try {
+      const tokenBuf = Buffer.from(token, 'utf8');
+      const expectedBuf = Buffer.from(expectedToken, 'utf8');
+      if (tokenBuf.length === expectedBuf.length && crypto.timingSafeEqual(tokenBuf, expectedBuf)) {
+        authorized = true;
+      }
+    } catch (e) {
+      authorized = false;
+    }
+
+    if (!authorized) {
+      console.warn('[UPI Webhook] Rejected: Unauthorized webhook token mismatch');
       return res.status(401).json({ message: 'Unauthorized webhook request' });
     }
 
@@ -63,14 +87,6 @@ router.all('/webhook/upi', async (req, res) => {
       explicitSender = req.body.sender;
     } else if (typeof req.body === 'string') {
       rawText = req.body;
-    }
-
-    // Fallback to query parameters (100% resilient if MacroDroid uses URL params)
-    if (!rawText && req.query.text) {
-      rawText = req.query.text;
-    }
-    if (!rawTitle && req.query.title) {
-      rawTitle = req.query.title;
     }
 
     if (!rawText && !explicitUtr && !explicitAmount) {
@@ -175,41 +191,9 @@ router.all('/webhook/upi', async (req, res) => {
   }
 });
 
-// ==================== 2. POLL RESERVATION STATUS (FRONTEND AUTO-DETECT) ====================
-// GET /api/reservations/status/:id
-router.get('/status/:id', async (req, res) => {
-  try {
-    const reservation = await Reservation.findById(req.params.id);
-    if (!reservation) {
-      return res.status(404).json({ message: 'Reservation not found' });
-    }
-
-    res.json({
-      _id: reservation._id,
-      status: reservation.status,
-      paymentStatus: reservation.paymentStatus,
-      confirmedAt: reservation.confirmedAt,
-      confirmationEmailSent: reservation.confirmationEmailSent,
-      name: reservation.name,
-      email: reservation.email,
-      phone: reservation.phone,
-      date: reservation.date,
-      time: reservation.time,
-      guests: reservation.guests,
-      amount: reservation.amount,
-      packagePrice: reservation.packagePrice || 199,
-      remainingBalance: reservation.remainingBalance || 140,
-      birthdayPerson: reservation.birthdayPerson || '',
-      eventType: reservation.eventType || 'birthday',
-      upiRef: reservation.upiRef,
-    });
-  } catch (err) {
-    res.status(500).json({ message: 'Could not fetch status' });
-  }
-});
-
-// ==================== 3. CREATE RESERVATION (STEP 1) ====================
+// ==================== 2. CREATE RESERVATION (PUBLIC) ====================
 // POST /api/reservations
+// Public reservation creation: isTest strictly defaults to false (client inputs ignored)
 router.post('/', async (req, res) => {
   try {
     const { 
@@ -259,7 +243,7 @@ router.post('/', async (req, res) => {
     const pkgPrice = Number(packagePrice) || 199;
     const remBalance = Number(remainingBalance) || (pkgPrice - bookingAmount);
 
-    // Step 1: New reservations start as pending payment!
+    // Step 1: Create pending reservation (isTest strictly false; public clients cannot set test flags)
     const newReservation = await Reservation.create({
       name: name.trim(),
       email: customerEmail,
@@ -279,6 +263,7 @@ router.post('/', async (req, res) => {
       status: 'pending',
       confirmedAt: null,
       confirmationEmailSent: false,
+      isTest: false,
       createdAt: new Date(),
     });
 
@@ -462,16 +447,208 @@ router.post('/:id/resend-email', auth, checkRole(['admin']), async (req, res) =>
   }
 });
 
-// ==================== 8. DELETE ALL TEST RESERVATIONS (ADMIN) ====================
+// ==================== 8. DELETE TEST RESERVATIONS (ADMIN) ====================
 // DELETE /api/reservations/clean-all-tests (requires auth)
+// Deletes ONLY verified test reservations (strictly isTest: true), preserving genuine customer bookings
 router.delete('/clean-all-tests', auth, checkRole(['admin']), async (req, res) => {
+  const adminEmail = req.user?.username || req.user?.email || 'admin';
+  const timestamp = new Date().toISOString();
+
   try {
-    const result = await Reservation.deleteMany({});
-    await UpiPaymentLog.deleteMany({});
-    console.log(`[ADMIN] Purged all reservations (${result.deletedCount} records deleted)`);
-    res.json({ success: true, message: 'All reservations deleted successfully', count: result.deletedCount });
+    const { targetIds } = req.body || {};
+    let recordsToDelete = [];
+
+    if (Array.isArray(targetIds) && targetIds.length > 0) {
+      // 1. Explicit IDs supplied: load EVERY requested record
+      const cleanIds = targetIds.map(String).filter(Boolean);
+      recordsToDelete = await Reservation.find({ _id: { $in: cleanIds } });
+
+      // Verify that EVERY requested record exists
+      if (recordsToDelete.length !== cleanIds.length) {
+        console.warn(`[AUDIT - RESERVATIONS CLEANUP FAILED] Admin ${adminEmail} requested ${cleanIds.length} IDs, found ${recordsToDelete.length}. Aborting.`);
+        return res.status(404).json({
+          success: false,
+          message: 'Operation rejected: One or more requested reservation records were not found.',
+        });
+      }
+
+      // Verify that EVERY record has isTest: true
+      const genuineRecord = recordsToDelete.find((r) => r.isTest !== true);
+      if (genuineRecord) {
+        console.warn(`[AUDIT - RESERVATIONS CLEANUP BLOCKED] Admin ${adminEmail} attempted deletion of genuine reservation #${genuineRecord._id}. Entire operation aborted.`);
+        await AuditLog.create({
+          admin: adminEmail,
+          operationType: 'DELETE_TEST_RESERVATIONS',
+          targetRecordIds: cleanIds,
+          deletedCount: 0,
+          operationResult: 'BLOCKED',
+          metadata: { reason: `Genuine reservation #${genuineRecord._id} targeted; operation aborted.` },
+        }).catch((err) => console.error('[AUDIT LOG WRITE ERROR]', err));
+
+        return res.status(403).json({
+          success: false,
+          message: `Operation rejected: Reservation #${genuineRecord._id} is a genuine customer record and cannot be deleted. Entire operation aborted.`,
+        });
+      }
+    } else {
+      // 2. No explicit IDs: query strictly for records explicitly marked isTest: true
+      recordsToDelete = await Reservation.find({ isTest: true });
+    }
+
+    if (recordsToDelete.length === 0) {
+      return res.json({
+        success: true,
+        message: 'No test reservations found to delete. Genuine customer records are protected.',
+        count: 0,
+      });
+    }
+
+    const testIds = recordsToDelete.map((r) => r._id);
+
+    // 1. Initial audit record created in PENDING state before starting the transaction and outside that transaction
+    // If audit logging fails, execution halts and zero deletion is performed
+    const auditRecord = await AuditLog.create({
+      admin: adminEmail,
+      operationType: 'DELETE_TEST_RESERVATIONS',
+      targetRecordIds: testIds.map(String),
+      deletedCount: 0,
+      operationResult: 'PENDING',
+      metadata: { requestedTargetIds: targetIds || [] },
+    });
+
+    // 2. Fail-closed check: MongoDB session & transaction support must be available
+    if (typeof mongoose.startSession !== 'function') {
+      const unsupportedErr = new Error('MongoDB deployment or driver does not support sessions/transactions');
+      await AuditLog.findByIdAndUpdate(auditRecord._id, {
+        operationResult: 'FAILED',
+        metadata: { ...(auditRecord.metadata || {}), error: unsupportedErr.message },
+      }).catch((e) => console.error('[AUDIT UPDATE ERROR]', e));
+      throw unsupportedErr;
+    }
+
+    let session;
+    try {
+      session = await mongoose.startSession();
+      if (!session || typeof session.startTransaction !== 'function') {
+        throw new Error('Failed to acquire valid MongoDB transaction session');
+      }
+      session.startTransaction();
+    } catch (sessionErr) {
+      if (session && typeof session.endSession === 'function') {
+        try { await session.endSession(); } catch (e) {}
+      }
+      await AuditLog.findByIdAndUpdate(auditRecord._id, {
+        operationResult: 'FAILED',
+        metadata: { ...(auditRecord.metadata || {}), error: `Session initialization failed: ${sessionErr.message}` },
+      }).catch((e) => console.error('[AUDIT UPDATE ERROR]', e));
+      throw sessionErr;
+    }
+
+    let actualDeletedCount = 0;
+    let actualDeletedPayments = 0;
+    let commitAttempted = false;
+
+    try {
+      // Step 1 inside transaction: Revalidate that all requested records exist using the active session (unconditional)
+      const txRecords = await Reservation.find({ _id: { $in: testIds } }).session(session);
+
+      if (txRecords.length !== testIds.length) {
+        throw new Error(`Transaction pre-condition failed: expected ${testIds.length} reservations, found ${txRecords.length}.`);
+      }
+
+      // Step 2 inside transaction: Revalidate that every target has isTest === true
+      const genuineRecord = txRecords.find((r) => r.isTest !== true);
+      if (genuineRecord) {
+        throw new Error(`Transaction aborted: reservation #${genuineRecord._id} is genuine and immune from deletion.`);
+      }
+
+      // Step 3 inside transaction: Delete associated payment records using the active session
+      const paymentResult = await UpiPaymentLog.deleteMany({ matchedReservationId: { $in: testIds } }, { session });
+      actualDeletedPayments = paymentResult.deletedCount || 0;
+
+      // Step 4 inside transaction: Delete primary reservation records using the active session
+      const resResult = await Reservation.deleteMany({ _id: { $in: testIds } }, { session });
+      actualDeletedCount = resResult.deletedCount || 0;
+
+      // Step 5 inside transaction: Verify the actual deletion counts
+      if (actualDeletedCount !== testIds.length) {
+        throw new Error(`Transaction aborted: expected ${testIds.length} reservation deletions, got ${actualDeletedCount}.`);
+      }
+
+      // Step 6: Commit transaction
+      commitAttempted = true;
+      await session.commitTransaction();
+    } catch (txError) {
+      const isUncertainCommit =
+        commitAttempted &&
+        (typeof txError.hasErrorLabel === 'function' && txError.hasErrorLabel('UnknownTransactionCommitResult'));
+
+      if (isUncertainCommit) {
+        // Do NOT mark FAILED: the commit may have succeeded on the replica set primary.
+        // Leave audit in PENDING with uncertainCommit flag for authoritative admin reconciliation.
+        await AuditLog.findByIdAndUpdate(auditRecord._id, {
+          metadata: { ...(auditRecord.metadata || {}), error: txError.message, uncertainCommit: true },
+        }).catch((e) => console.error('[AUDIT UPDATE ERROR]', e));
+      } else {
+        try { await session.abortTransaction(); } catch (abortErr) {}
+        await AuditLog.findByIdAndUpdate(auditRecord._id, {
+          operationResult: 'FAILED',
+          metadata: { ...(auditRecord.metadata || {}), error: txError.message },
+        }).catch((e) => console.error('[AUDIT UPDATE ERROR]', e));
+      }
+      throw txError;
+    } finally {
+      await session.endSession();
+    }
+
+    // 3. Handle audit-update failures after transaction commit:
+    // If transaction commits successfully but updating the audit record to SUCCESS fails,
+    // do not attempt destructive operation again, leave audit entry in PENDING, and return clean response.
+    try {
+      await AuditLog.findByIdAndUpdate(auditRecord._id, {
+        deletedCount: actualDeletedCount,
+        operationResult: 'SUCCESS',
+        metadata: {
+          ...(auditRecord.metadata || {}),
+          deletedPayments: actualDeletedPayments,
+        },
+      });
+    } catch (auditUpdateError) {
+      console.error('[AUDIT UPDATE FAILED AFTER COMMIT] Transaction committed but audit finalization failed:', auditUpdateError);
+      return res.status(200).json({
+        success: true,
+        message: `Deleted ${actualDeletedCount} test reservation(s) and ${actualDeletedPayments} payment log(s) via committed transaction. Notice: Audit log finalization encountered an error and remains PENDING for reconciliation.`,
+        count: actualDeletedCount,
+        auditId: auditRecord._id,
+        auditStatus: 'PENDING_RECONCILIATION',
+      });
+    }
+
+    console.log('[AUDIT - RESERVATIONS CLEANUP]', JSON.stringify({
+      auditId: auditRecord._id,
+      admin: adminEmail,
+      timestamp,
+      affectedIds: testIds,
+      count: actualDeletedCount,
+      status: 'SUCCESS',
+    }));
+
+    return res.json({
+      success: true,
+      message: `Deleted ${actualDeletedCount} test reservation(s). Genuine customer records remain untouched.`,
+      count: actualDeletedCount,
+      audit: {
+        id: auditRecord._id,
+        action: 'DELETE_TEST_RESERVATIONS',
+        admin: adminEmail,
+        timestamp,
+        affectedIds: testIds,
+        count: actualDeletedCount,
+        status: 'SUCCESS',
+      },
+    });
   } catch (error) {
-    console.error('Clean reservations error:', error);
+    console.error('[AUDIT - RESERVATIONS CLEANUP ERROR]', error);
     res.status(500).json({ success: false, message: 'Could not delete reservations', error: error.message });
   }
 });

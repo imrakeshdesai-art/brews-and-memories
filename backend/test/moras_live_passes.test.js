@@ -10,6 +10,7 @@ const app = require('../src/app');
 const { MorasLiveAudiencePass } = require('../src/models/MorasLiveAudiencePass');
 const { MorasLivePayment } = require('../src/models/MorasLivePayment');
 const { MorasLiveEventSettings } = require('../src/models/MorasLiveEventSettings');
+const AuditLog = require('../src/models/AuditLog');
 
 // In-memory mock stores for tests
 let mockPasses = [];
@@ -179,6 +180,7 @@ async function runTests() {
       const chain = {
         select: () => Promise.resolve(filtered),
         sort: () => chain,
+        session: () => chain,
         skip: (s) => ({
           limit: (l) => Promise.resolve(filtered.slice(s, s + l)),
           then: (resolve) => resolve(filtered.slice(s)),
@@ -252,6 +254,25 @@ async function runTests() {
       mockPayments.push(created);
       return Promise.resolve(created);
     };
+
+    AuditLog.create = (entry) => {
+      return Promise.resolve({
+        _id: 'mock_audit_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7),
+        ...entry,
+      });
+    };
+    AuditLog.findByIdAndUpdate = (id, update) => {
+      return Promise.resolve({ _id: id, ...update });
+    };
+
+    const mongoose = require('mongoose');
+    mongoose.startSession = () => Promise.resolve({
+      startTransaction: () => {},
+      commitTransaction: () => Promise.resolve(),
+      abortTransaction: () => Promise.resolve(),
+      endSession: () => Promise.resolve(),
+      inTransaction: () => true,
+    });
 
     MorasLivePayment.aggregate = (pipeline) => {
       const groupStage = pipeline.find((p) => p.$group);
