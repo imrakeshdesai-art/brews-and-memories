@@ -84,7 +84,7 @@ const INSTAGRAM_POSTS = [
 export default function Moments() {
   useSEO({
     title: 'Moments',
-    description: 'See the customer moments, photos, and Instagram gallery from The Moras Cafe at B.M. Patil Circle, Vijayapura. Share your cozy cafe memories with us.'
+    description: 'See the customer moments, photos, and Instagram gallery from The Moras Cafe on Solapur Rd, Vijayapura. Share your cozy cafe memories with us.'
   });
 
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);

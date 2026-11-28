@@ -738,7 +738,7 @@ function Home({ openReserve }) {
 
 
 
-    description: 'Welcome to The Moras Cafe at B.M. Patil Circle, Vijayapura. Enjoy freshly brewed coffee, pizzas, pasta, sizzling brownie, and cozy ambiance.'
+    description: 'Welcome to The Moras Cafe on Solapur Rd, Vijayapura. Enjoy freshly brewed robusta coffee, pizzas, pasta, sizzling brownie, and cozy ambiance.'
 
 
 

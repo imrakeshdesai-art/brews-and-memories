@@ -25,6 +25,8 @@ export default function MorasLiveRegister() {
     description:
       "Register as a performer for MORAS LIVE — an open stage celebration of poetry, music, rap, comedy, and creative expression at The Moras Cafe in Vijayapura. Your mic. Your moment.",
     canonical: '/moras-live/register',
+    image: 'https://themorascafe.in/moras-live-og.jpg',
+    imageAlt: 'MORAS LIVE — Open Stage Poetry, Music, Rap & Comedy at The Moras Cafe',
   });
 
   const toast = useToast();

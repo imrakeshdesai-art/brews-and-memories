@@ -5,11 +5,8 @@ import Breadcrumbs from '../components/Breadcrumbs';
 function About() {
 
   useSEO({
-
     title: 'About Us — The Story',
-
-    description: 'The Moras Cafe is Vijayapura\'s sanctuary for specialty coffee, artisan vegetarian craft, and slow, meaningful conversations at B.M. Patil Circle.'
-
+    description: "The Moras Cafe is Vijayapura's sanctuary for robusta coffee, pure vegetarian food, and meaningful conversations on Solapur Rd."
   });
 
 

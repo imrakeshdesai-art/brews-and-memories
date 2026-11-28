@@ -12,6 +12,8 @@ export default function MorasLiveAudiencePasses() {
     description:
       'Reserve your exclusive limited audience pass for MORAS LIVE at The Moras Cafe in Vijayapura. Exactly 60 passes available. Each pass includes one complimentary freshly-brewed Cappuccino.',
     canonical: '/moras-live/passes',
+    image: 'https://themorascafe.in/moras-live-og.jpg',
+    imageAlt: 'MORAS LIVE — Limited Audience Passes at The Moras Cafe',
   });
 
   const toast = useToast();
